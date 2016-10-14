@@ -31,6 +31,7 @@
 #include "ParsingDriver.hh"
 #include "ExtendedPreprocessorTypes.hh"
 #include "ConfigFile.hh"
+#include "run_dynare.hh"
 
 /* Prototype for second part of main function
    Splitting main() in two parts was necessary because ParsingDriver.h and MacroDriver.h can't be
@@ -65,21 +66,13 @@ usage()
   exit(EXIT_FAILURE);
 }
 
-int
-main(int argc, char **argv)
-{
+int run_dynare(char * modfile) {
   /*
     Redirect stderr to stdout.
     Made necessary because MATLAB/Octave can only capture stdout (but not
     stderr), in order to put it in the logfile (see issue #306)
   */
   dup2(STDOUT_FILENO, STDERR_FILENO);
-
-  if (argc < 2)
-    {
-      cerr << "Missing model file!" << endl;
-      usage();
-    }
 
   bool clear_all = true;
   bool clear_global = false;
@@ -114,192 +107,11 @@ main(int argc, char **argv)
   FileOutputType output_mode = none;
   LanguageOutputType language = matlab;
 
-  // Parse options
-  for (int arg = 2; arg < argc; arg++)
-    {
-      if (!strcmp(argv[arg], "debug"))
-        debug = true;
-      else if (!strcmp(argv[arg], "noclearall"))
-        clear_all = false;
-      else if (strlen(argv[arg]) >= 19 && !strncmp(argv[arg], "params_derivs_order", 19))
-        {
-          if (strlen(argv[arg]) >= 22 || argv[arg][19] != '=' ||
-              !(argv[arg][20] == '0' || argv[arg][20] == '1' || argv[arg][20] == '2'))
-            {
-              cerr << "Incorrect syntax for params_derivs_order option" << endl;
-              usage();
-            }
-          params_derivs_order = atoi(argv[arg] + 20);
-        }
-      else if (!strcmp(argv[arg], "onlyclearglobals"))
-        {
-          clear_all = false;
-          clear_global = true;
-        }
-      else if (!strcmp(argv[arg], "onlymacro"))
-        only_macro = true;
-      else if (strlen(argv[arg]) >= 9 && !strncmp(argv[arg], "savemacro", 9))
-        {
-          save_macro = true;
-          if (strlen(argv[arg]) > 9)
-            {
-              if (strlen(argv[arg]) == 10 || argv[arg][9] != '=')
-                {
-                  cerr << "Incorrect syntax for savemacro option" << endl;
-                  usage();
-                }
-              save_macro_file = string(argv[arg] + 10);
-            }
-        }
-      else if (!strcmp(argv[arg], "nolinemacro"))
-        no_line_macro = true;
-      else if (!strcmp(argv[arg], "notmpterms"))
-        no_tmp_terms = true;
-      else if (!strcmp(argv[arg], "nolog"))
-        no_log = true;
-      else if (!strcmp(argv[arg], "nowarn"))
-        no_warn = true;
-      else if (!strcmp(argv[arg], "warn_uninit"))
-        warn_uninit = true;
-      else if (!strcmp(argv[arg], "console"))
-        console = true;
-      else if (!strcmp(argv[arg], "nograph"))
-        nograph = true;
-      else if (!strcmp(argv[arg], "nointeractive"))
-        nointeractive = true;
-#if defined(_WIN32) || defined(__CYGWIN32__)
-      else if (!strcmp(argv[arg], "cygwin"))
-        cygwin = true;
-      else if (!strcmp(argv[arg], "msvc"))
-        msvc = true;
-#endif
-      else if (strlen(argv[arg]) >= 8 && !strncmp(argv[arg], "conffile", 8))
-        {
-          if (strlen(argv[arg]) <= 9 || argv[arg][8] != '=')
-            {
-              cerr << "Incorrect syntax for conffile option" << endl;
-              usage();
-            }
-          parallel_config_file = string(argv[arg] + 9);
-        }
-      else if (!strcmp(argv[arg], "parallel_slave_open_mode"))
-        parallel_slave_open_mode = true;
-      else if (!strcmp(argv[arg], "parallel_test"))
-        parallel_test = true;
-      else if (!strcmp(argv[arg], "nostrict"))
-        nostrict = true;
-      else if (!strcmp(argv[arg], "fast"))
-        check_model_changes = true;
-      else if (!strcmp(argv[arg], "minimal_workspace"))
-        minimal_workspace = true;
-      else if (!strcmp(argv[arg], "compute_xrefs"))
-        compute_xrefs = true;
-      else if (strlen(argv[arg]) >= 8 && !strncmp(argv[arg], "parallel", 8))
-        {
-          parallel = true;
-          if (strlen(argv[arg]) > 8)
-            {
-              if (strlen(argv[arg]) == 9 || argv[arg][8] != '=')
-                {
-                  cerr << "Incorrect syntax for parallel option" << endl;
-                  usage();
-                }
-              cluster_name = string(argv[arg] + 9);
-            }
-        }
-      else if (strlen(argv[arg]) >= 2 && !strncmp(argv[arg], "-D", 2))
-        {
-          if (strlen(argv[arg]) == 2)
-            {
-              cerr << "Incorrect syntax for command line define: the defined variable "
-                   << "must not be separated from -D by whitespace." << endl;
-              usage();
-            }
-
-          size_t equal_index = string(argv[arg]).find('=');
-          if (equal_index != string::npos)
-            {
-              string key = string(argv[arg]).erase(equal_index).erase(0,2);
-              defines[key] = string(argv[arg]).erase(0, equal_index+1);
-            }
-          else
-            {
-              string key = string(argv[arg]).erase(0,2);
-              defines[key] = "1";
-            }
-        }
-      else if (strlen(argv[arg]) >= 2 && !strncmp(argv[arg], "-I", 2))
-        {
-          if (strlen(argv[arg]) == 2)
-            {
-              cerr << "Incorrect syntax for command line define: the defined variable "
-                   << "must not be separated from -I by whitespace." << endl;
-              usage();
-            }
-          path.push_back(string(argv[arg]).erase(0,2));
-        }
-      else if (strlen(argv[arg]) >= 6 && !strncmp(argv[arg], "output", 6))
-        {
-	  if (strlen(argv[arg]) <= 7 || argv[arg][6] != '=')
-	    {
-	      cerr << "Incorrect syntax for ouput option" << endl;
-	      usage();
-	    }
-	  if (strlen(argv[arg]) == 14 && !strncmp(argv[arg] + 7, "dynamic", 7))
-	    output_mode = dynamic;
-	  else if (strlen(argv[arg]) ==  12 && !strncmp(argv[arg] + 7, "first", 5))
-	    output_mode = first;
-	  else if (strlen(argv[arg]) == 13 && !strncmp(argv[arg] + 7, "second", 6))
-	    output_mode = second;
-	  else if (strlen(argv[arg]) == 12 && !strncmp(argv[arg] + 7, "third", 5))
-	    output_mode = third;
-	  else
-	    {
-	      cerr << "Incorrect syntax for ouput option" << endl;
-	      usage();
-            }
-        }
-      else if (strlen(argv[arg]) >= 8 && !strncmp(argv[arg], "language", 8))
-        {
-	  if (strlen(argv[arg]) <= 9 || argv[arg][8] != '=')
-	    {
-	      cerr << "Incorrect syntax for language option" << endl;
-	      usage();
-	    }
-
-          if (strlen(argv[arg]) == 14 && !strncmp(argv[arg] + 9, "julia", 5))
-            language = julia;
-          else
-            {
-              // we don't want temp terms in external functions (except Julia)
-              no_tmp_terms = true;
-              if (strlen(argv[arg]) == 10 && !strncmp(argv[arg] + 9, "C", 1))
-                language = c;
-              else if (strlen(argv[arg]) ==  12 && !strncmp(argv[arg] + 9, "C++", 3))
-                language = cpp;
-              else if (strlen(argv[arg]) == 13 && !strncmp(argv[arg] + 9, "cuda", 4))
-                language = cuda;
-              else if (strlen(argv[arg]) == 15 && !strncmp(argv[arg] + 9, "python", 6))
-                language = python;
-              else
-                {
-                  cerr << "Incorrect syntax for language option" << endl;
-                  usage();
-                }
-            }
-        }
-      else
-        {
-          cerr << "Unknown option: " << argv[arg] << endl;
-          usage();
-        }
-    }
-
   cout << "Starting Dynare (version " << PACKAGE_VERSION << ")." << endl
        << "Starting preprocessing of the model file ..." << endl;
 
   // Construct basename (i.e. remove file extension if there is one)
-  string basename = argv[1];
+  string basename = modfile;
   size_t pos = basename.find_last_of('.');
   if (pos != string::npos)
     basename.erase(pos);
@@ -321,7 +133,7 @@ main(int argc, char **argv)
 
   // Do macro processing
   stringstream macro_output;
-  main1(argv[1], basename, debug, save_macro, save_macro_file, no_line_macro, defines, path, macro_output);
+  main1(modfile, basename, debug, save_macro, save_macro_file, no_line_macro, defines, path, macro_output);
 
   if (only_macro)
     return EXIT_SUCCESS;

@@ -1,0 +1,13 @@
+PKG_CXXFLAGS = @DEFS@
+SUBDIR = macro
+SUBLIB = lib$(SUBDIR).a
+
+all : $(SHLIB)
+
+$(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
+
+# TODO: handle dependencies
+
+$(SUBDIR)/$(SUBLIB) : 
+	@(cd $(SUBDIR) && $(MAKE) $(SUBLIB) \
+	  CXXFLAGS="$(CXXFLAGS)" AR="$(AR)")

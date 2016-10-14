@@ -1,9 +1,12 @@
 Package: dynparse
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Parse a Dynare model an generate R code
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Description: A Dynare parser.
+License: GPL (>= 2)
 LazyData: TRUE
+RoxygenNote: 5.0.1
+LinkingTo: Rcpp
+Imports: Rcpp
