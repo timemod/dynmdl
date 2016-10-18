@@ -11,7 +11,7 @@ PKG_LIBS = $(SUBDIR)/$(SUBLIB)
 # While developping on the same architecture is not not necessary  to clean sublib
 all : sublib $(SHLIB)
 
-$(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
+$(SHLIB) : check_source_files $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 # TODO: handle dependencies
 
@@ -21,7 +21,24 @@ subclean:
 
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
-# TODO: handle dependencies
-
 sublib:
 	@(cd $(SUBDIR) && $(MAKE) $(SUBLIB) AR="$(AR)")
+
+DEPS_DIR = deps
+DEP_FILE = $(DEPS_DIR)/makedeps
+DEP_PKL = $(DEPS_DIR)/deps.pkl
+SRC_C = $(wildcard *.c*)
+SRC_H =  $(wildcard *.h*)
+PYTHON = python
+
+check_source_files:
+	@$(PYTHON) $(DEPS_DIR)/check_srcfiles.py
+
+$(DEP_FILE) : $(DEP_PKL)
+	@$(PYTHON) $(DEPS_DIR)/write_makedeps.py $(DEP_PKL) $@
+
+$(DEP_PKL) : $(SRC_C) $(SRC_H)
+	@$(PYTHON) $(DEPS_DIR)/gendepend.py $@ $(?F)
+
+# dependencies C files
+include $(DEP_FILE)
