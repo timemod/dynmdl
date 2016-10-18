@@ -3,3 +3,4 @@ dynare_m
 Makefile
 Makefile.in
 .deps
+Makevars

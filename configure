@@ -629,6 +629,8 @@ LEXINC
 LEXPATH
 RANLIB
 AR
+R_CXXPICFLAGS
+R_CXXFLAGS
 ac_ct_CXX
 CXXFLAGS
 CXX
@@ -3070,7 +3072,15 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
-CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+R_CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+
+R_CXXPICFLAGS=`"${R_HOME}/bin/R" CMD config CXXPICFLAGS`
+
 
 # If default 'ar' is not available, try to find one with a host prefix (see ticket #145)
 for ac_prog in ar ${host_alias}-ar

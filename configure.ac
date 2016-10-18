@@ -26,7 +26,14 @@ AC_PROG_CXX
 # Use C++ for testing headers
 AC_LANG([C++])
 
-CXXFLAGS="$CXXFLAGS -Wall -Wno-parentheses"
+dnl Now find the compiler and compiler flags to use
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+AC_SUBST(R_CXXFLAGS, [`"${R_HOME}/bin/R" CMD config CXXFLAGS`])
+AC_SUBST(R_CXXPICFLAGS, [`"${R_HOME}/bin/R" CMD config CXXPICFLAGS`])
 
 # If default 'ar' is not available, try to find one with a host prefix (see ticket #145)
 AC_CHECK_PROGS([AR], [ar ${host_alias}-ar])
