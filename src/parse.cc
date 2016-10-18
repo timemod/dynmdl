@@ -108,5 +108,16 @@ ModFile* parse(char * modfile) {
 
   cout << "Preprocessing completed." << endl;
 
+   // Write outputs
+  if (output_mode != none)
+    mod_file->writeExternalFiles(basename, output_mode, language);
+  else
+    mod_file->writeOutputFiles(basename, clear_all, clear_global, no_log, no_warn, console, nograph,
+                               nointeractive, config_file, check_model_changes, minimal_workspace, compute_xrefs
+#if defined(_WIN32) || defined(__CYGWIN32__)
+			       , cygwin, msvc
+#endif
+			       );
+
   return mod_file;
 }

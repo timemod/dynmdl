@@ -570,7 +570,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
   if (basename.size())
     {
       string fname(basename);
-      fname += ".R";
+      fname += ".m";
       mOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!mOutputFile.is_open())
         {
@@ -584,17 +584,24 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
       exit(EXIT_FAILURE);
     }
 
+  mOutputFile << "%" << endl
+              << "% Status : main Dynare file" << endl
+              << "%" << endl
+              << "% Warning : this file is generated automatically by Dynare" << endl
+              << "%           from model file (.mod)" << endl << endl;
 
-  mOutputFile << "#" << endl
-              << "# Status : Dynare R file" << endl
-              << "#" << endl
-              << "# Warning : this file is generated automatically by dynsimr (Dynare Simulations with R) " << endl
-              << "#           from model file (.mod)" << endl << endl;
-
-  /*
   if (no_warn)
     mOutputFile << "warning off" << endl; // This will be executed *after* function warning_config()
 
+  if (clear_all)
+    mOutputFile << "if isoctave || matlab_ver_less_than('8.6')" << endl
+                << "    clear all" << endl
+		<< "else" << endl
+		<< "    clearvars -global" << endl
+		<< "    clear_persistent_variables(fileparts(which('dynare')), false)" << endl
+		<< "end" << endl;
+  else if (clear_global)
+    mOutputFile << "clear M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info estimation_info ys0_ ex0_;" << endl;
 
   mOutputFile << "tic0 = tic;" << endl
 	      << "% Save empty dates and dseries objects in memory." << endl
@@ -630,12 +637,35 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
 
   if (param_used_with_lead_lag)
     mOutputFile << "M_.parameter_used_with_lead_lag = true;" << endl;
-  */
+
   cout << "Processing outputs ..." << endl;
 
   symbol_table.writeOutput(mOutputFile);
 
-  /*
+  // Initialize M_.Sigma_e, M_.Correlation_matrix, M_.H, and M_.Correlation_matrix_ME
+  mOutputFile << "M_.Sigma_e = zeros(" << symbol_table.exo_nbr() << ", "
+              << symbol_table.exo_nbr() << ");" << endl
+              << "M_.Correlation_matrix = eye(" << symbol_table.exo_nbr() << ", "
+              << symbol_table.exo_nbr() << ");" << endl;
+
+  if (mod_file_struct.calibrated_measurement_errors)
+    mOutputFile << "M_.H = zeros(" << symbol_table.observedVariablesNbr() << ", "
+                << symbol_table.observedVariablesNbr() << ");" << endl
+                << "M_.Correlation_matrix_ME = eye(" << symbol_table.observedVariablesNbr() << ", "
+                << symbol_table.observedVariablesNbr() << ");" << endl;
+  else
+    mOutputFile << "M_.H = 0;" << endl
+                << "M_.Correlation_matrix_ME = 1;" << endl;
+
+  // May be later modified by a shocks block
+  mOutputFile << "M_.sigma_e_is_diagonal = 1;" << endl;
+
+  // Initialize M_.det_shocks
+  mOutputFile << "M_.det_shocks = [];" << endl;
+
+  if (linear == 1)
+    mOutputFile << "options_.linear = 1;" << endl;
+
   mOutputFile << "options_.block=" << block << ";" << endl
               << "options_.bytecode=" << byte_code << ";" << endl
               << "options_.use_dll=" << use_dll << ";" << endl;
@@ -654,7 +684,6 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
         }
       mOutputFile << "};" << endl;
     }
-    */
 
   config_file.writeCluster(mOutputFile);
 
@@ -670,9 +699,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
   if (hasModelChanged)
     {
       // Erase possible remnants of previous runs
-      //unlink((basename + ".R").c_str());
-
-      /*
+      unlink((basename + "_dynamic.m").c_str());
       unlink((basename + "_dynamic.cod").c_str());
       unlink((basename + "_dynamic.bin").c_str());
 
@@ -682,16 +709,13 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
 
       unlink((basename + "_steadystate2.m").c_str());
       unlink((basename + "_set_auxiliary_variables.m").c_str());
-      */
     }
   
-  /*
   if (!use_dll)
     {
       mOutputFile << "erase_compiled_function('" + basename + "_static');" << endl;
       mOutputFile << "erase_compiled_function('" + basename + "_dynamic');" << endl;
     }
-    */
 
 #if defined(_WIN32) || defined(__CYGWIN32__)
   // If using USE_DLL with MSVC, check that the user didn't use a function not supported by MSVC (because MSVC doesn't comply with C99 standard)
@@ -743,11 +767,9 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
   if (block && !byte_code)
     mOutputFile << "addpath " << basename << ";" << endl;
 
-  /*
   mOutputFile << "M_.orig_eq_nbr = " << mod_file_struct.orig_eq_nbr << ";" << endl
               << "M_.eq_nbr = " << dynamic_model.equation_number() << ";" << endl
               << "M_.ramsey_eq_nbr = " << mod_file_struct.ramsey_eq_nbr << ";" << endl;
-   */
 
   if (dynamic_model.equation_number() > 0)
     {
@@ -756,24 +778,36 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
         static_model.writeOutput(mOutputFile, block);
     }
 
-  // Print statements (among others, parameter initialisation.
-  // Todo: this code does not work yet.
-    
+  // Print statements
   for (vector<Statement *>::const_iterator it = statements.begin();
        it != statements.end(); it++)
     {
       (*it)->writeOutput(mOutputFile, basename, minimal_workspace);
+
+      /* Special treatment for initval block: insert initial values for the
+         auxiliary variables and initialize exo det */
+      InitValStatement *ivs = dynamic_cast<InitValStatement *>(*it);
+      if (ivs != NULL)
+        {
+          static_model.writeAuxVarInitval(mOutputFile, oMatlabOutsideModel);
+          ivs->writeOutputPostInit(mOutputFile);
+        }
+
+      // Special treatment for endval block: insert initial values for the auxiliary variables
+      EndValStatement *evs = dynamic_cast<EndValStatement *>(*it);
+      if (evs != NULL)
+        static_model.writeAuxVarInitval(mOutputFile, oMatlabOutsideModel);
 
       // Special treatment for load params and steady state statement: insert initial values for the auxiliary variables
       LoadParamsAndSteadyStateStatement *lpass = dynamic_cast<LoadParamsAndSteadyStateStatement *>(*it);
       if (lpass && !no_static)
         static_model.writeAuxVarInitval(mOutputFile, oMatlabOutsideModel);
     }
+
   // Remove path for block option with M-files
   if (block && !byte_code)
     mOutputFile << "rmpath " << basename << ";" << endl;
 
-  /*
   mOutputFile << "save('" << basename << "_results.mat', 'oo_', 'M_', 'options_');" << endl
               << "if exist('estim_params_', 'var') == 1" << endl
               << "  save('" << basename << "_results.mat', 'estim_params_', '-append');" << endl << "end" << endl
@@ -806,8 +840,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
 
   if (!no_log)
     mOutputFile << "diary off" << endl;
-    */
-    
+
   mOutputFile.close();
 
   if (hasModelChanged)
@@ -831,14 +864,6 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
 
   cout << "done" << endl;
 }
-
-#ifdef USE_R
-Rcpp::List ModFile::getModelListR(void)  {
-    return symbol_table.getSymbolListR();
-}
-#endif
-
-
 
 void
 ModFile::writeExternalFiles(const string &basename, FileOutputType output, LanguageOutputType language) const
@@ -1194,3 +1219,12 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
   jlOutputFile.close();
   cout << "done" << endl;
 }
+
+#ifdef USE_R
+Rcpp::List ModFile::getModelListR(void)  {
+    Rcpp::List symbols = symbol_table.getSymbolListR();
+    Rcpp::List dynmod = dynamic_model.getDynamicModelR();
+    return Rcpp::List::create(Rcpp::Named("symbols") = symbols,
+                              Rcpp::Named("dynmod") = dynmod);
+}
+#endif
