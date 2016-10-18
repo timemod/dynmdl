@@ -40,10 +40,6 @@ AC_CHECK_PROGS([AR], [ar ${host_alias}-ar])
 
 AC_PROG_RANLIB
 
-# Hack to get lex include dir, ticket #575
-AC_PATH_PROG([LEXPATH], [$LEX])
-AC_SUBST([LEXINC], [`eval "echo $LEXPATH | sed 's|\(.*\)$LEX$|\1../include|'"`])
-
 AC_CHECK_PROG([YACC], [bison], [bison])
 if test "x$YACC" = "x"; then
   unset YACC # AM_MISSING_PROG needs an unset variable: an empty variable won't do
