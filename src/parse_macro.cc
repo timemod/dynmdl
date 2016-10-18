@@ -21,9 +21,10 @@
 #include <fstream>
 
 #include "macro/MacroDriver.hh"
+#include "parse.hh"
 
 void
-main1(char *modfile, string &basename, bool debug, bool save_macro, string &save_macro_file, bool no_line_macro,
+parse_macro(char *modfile, string &basename, bool debug, bool save_macro, string &save_macro_file, bool no_line_macro,
       map<string, string> &defines, vector<string> &path, stringstream &macro_output)
 {
   // Do macro processing

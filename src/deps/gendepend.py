@@ -41,21 +41,34 @@ def update_dep_dict(src_files, dep_dict):
     # loop over sourcefiles
     for srcfile in src_files :
         # get list of dependencies for scrfile
-        depend = read_depend(srcfile)
+        depend = set()
+        read_depend(srcfile, srcfile, depend)
         if len(depend) > 0:
             dep_dict[srcfile] = depend
 
-def read_depend(srcfile) :
+def read_depend(srcfile, filenm, depend) :
     # read dependencies of file srcfile on modules
-    depend = set()
-    for line in open(srcfile) :
+    for line in open(filenm) :
         line = line.strip() # remove trailing blancs
         m = re.search(include_pattern, line)
         if m != None:
             # syntax is "include "mymodule""
             include_name = m.group(1)
-            depend.add(include_name)
-    return depend
+            if not include_name in depend:
+                    
+                ok = False
+                is_macro_header = False
+                if os.path.isfile(include_name):
+                    ok = True
+                else:
+                    include_name = os.path.join("macro", include_name)
+                    ok =os.path.isfile(include_name)
+                    is_macro_header = True
+                if ok:
+                    depend.add(include_name)
+                    if not is_macro_header:
+                        # call subroutine recursively
+                        read_depend(srcfile, include_name, depend);
 
 # main program
 if __name__ == "__main__":

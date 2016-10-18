@@ -164,6 +164,9 @@ public:
   void writeModelCC(const string &basename) const;
 
   void computeChecksum();
+#ifdef USE_R
+  Rcpp::List getModelListR(void);
+#endif
 };
 
 #endif // ! MOD_FILE_HH

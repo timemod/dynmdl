@@ -5,14 +5,14 @@
 
 using namespace Rcpp;
 
-// compile_model
-int compile_model(std::string modfile);
-RcppExport SEXP dynparse_compile_model(SEXP modfileSEXP) {
+// compile_model_
+Rcpp::List compile_model_(std::string modfile);
+RcppExport SEXP dynparse_compile_model_(SEXP modfileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
-    __result = Rcpp::wrap(compile_model(modfile));
+    __result = Rcpp::wrap(compile_model_(modfile));
     return __result;
 END_RCPP
 }

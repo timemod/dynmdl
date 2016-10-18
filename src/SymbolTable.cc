@@ -404,6 +404,18 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
   */
 }
 
+#ifdef USE_R
+Rcpp::List SymbolTable::getSymbolListR(void) const throw (NotYetFrozenException) {
+    if (!frozen) {
+        throw NotYetFrozenException();
+    }
+    return Rcpp::List::create(Rcpp::Named("exo_count") = exo_nbr(),
+                              Rcpp::Named("endo_count") = endo_nbr(),
+                              Rcpp::Named("param_count") = param_nbr());
+}
+#endif
+
+
 void
 SymbolTable::writeCOutput(ostream &output) const throw (NotYetFrozenException)
 {

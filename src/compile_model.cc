@@ -1,11 +1,17 @@
 #include <string>
-#include "run_dynare.hh"
+#include <Rcpp.h>
+#include  "parse.hh"
 
-//' Compile a Dynare Model
-//'
-//' @param modfile The name of the model
-//' @export
 // [[Rcpp::export]]
-int compile_model(std::string modfile) {
-    return run_dynare((char *) modfile.c_str());
+Rcpp::List compile_model_(std::string modfile) {
+    // the treatement of char in the next statement does not deserve a beauty
+    // price
+    ModFile *mod_file = parse((char *) modfile.c_str());
+    
+    Rcpp::List retval;
+    retval =  mod_file->getModelListR();
+
+    delete mod_file;
+
+    return retval;
 }

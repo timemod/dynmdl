@@ -832,6 +832,14 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
   cout << "done" << endl;
 }
 
+#ifdef USE_R
+Rcpp::List ModFile::getModelListR(void)  {
+    return symbol_table.getSymbolListR();
+}
+#endif
+
+
+
 void
 ModFile::writeExternalFiles(const string &basename, FileOutputType output, LanguageOutputType language) const
 {

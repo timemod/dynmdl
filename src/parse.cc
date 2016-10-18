@@ -32,48 +32,9 @@
 #include "ExtendedPreprocessorTypes.hh"
 #include "ConfigFile.hh"
 #include "run_dynare.hh"
+#include "parse.hh"
 
-/* Prototype for second part of main function
-   Splitting main() in two parts was necessary because ParsingDriver.h and MacroDriver.h can't be
-   included simultaneously (because of Bison limitations).
-*/
-void main2(stringstream &in, string &basename, bool debug, bool clear_all, bool clear_global,
-           bool no_tmp_terms, bool no_log, bool no_warn, bool warn_uninit, bool console,
-           bool nograph, bool nointeractive, bool parallel, ConfigFile &config_file,
-           WarningConsolidation &warnings_arg, bool nostrict, bool check_model_changes,
-           bool minimal_workspace, bool compute_xrefs, FileOutputType output_mode,
-           LanguageOutputType lang, int params_derivs_order
-#if defined(_WIN32) || defined(__CYGWIN32__)
-           , bool cygwin, bool msvc
-#endif
-           );
-
-void main1(char *modfile, string &basename, bool debug, bool save_macro, string &save_macro_file,
-           bool no_line_macro,
-           map<string, string> &defines, vector<string> &path, stringstream &macro_output);
-
-void
-usage()
-{
-  cerr << "Dynare usage: dynare mod_file [debug] [noclearall] [onlyclearglobals] [savemacro[=macro_file]] [onlymacro] [nolinemacro] [notmpterms] [nolog] [warn_uninit]"
-       << " [console] [nograph] [nointeractive] [parallel[=cluster_name]] [conffile=parallel_config_path_and_filename] [parallel_slave_open_mode] [parallel_test]"
-       << " [-D<variable>[=<value>]] [-I/path] [nostrict] [fast] [minimal_workspace] [compute_xrefs] [output=dynamic|first|second|third] [language=C|C++|julia]"
-       << " [params_derivs_order=0|1|2]"
-#if defined(_WIN32) || defined(__CYGWIN32__)
-       << " [cygwin] [msvc]"
-#endif
-       << endl;
-  exit(EXIT_FAILURE);
-}
-
-int run_dynare(char * modfile) {
-  /*
-    Redirect stderr to stdout.
-    Made necessary because MATLAB/Octave can only capture stdout (but not
-    stderr), in order to put it in the logfile (see issue #306)
-  */
-  dup2(STDOUT_FILENO, STDERR_FILENO);
-
+ModFile* parse(char * modfile) {
   bool clear_all = true;
   bool clear_global = false;
   bool save_macro = false;
@@ -133,13 +94,10 @@ int run_dynare(char * modfile) {
 
   // Do macro processing
   stringstream macro_output;
-  main1(modfile, basename, debug, save_macro, save_macro_file, no_line_macro, defines, path, macro_output);
-
-  if (only_macro)
-    return EXIT_SUCCESS;
+  parse_macro(modfile, basename, debug, save_macro, save_macro_file, no_line_macro, defines, path, macro_output);
 
   // Do the rest
-  main2(macro_output, basename, debug, clear_all, clear_global,
+  ModFile *mod_file = parse_post_macro(macro_output, basename, debug, clear_all, clear_global,
         no_tmp_terms, no_log, no_warn, warn_uninit, console, nograph, nointeractive,
         parallel, config_file, warnings, nostrict, check_model_changes, minimal_workspace,
         compute_xrefs, output_mode, language, params_derivs_order
@@ -148,5 +106,7 @@ int run_dynare(char * modfile) {
 #endif
         );
 
-  return EXIT_SUCCESS;
+  cout << "Preprocessing completed." << endl;
+
+  return mod_file;
 }

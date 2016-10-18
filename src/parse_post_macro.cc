@@ -1,4 +1,10 @@
 /*
+ * Parse the Model after the macro proprocessor
+ *
+ * The parsing is split in diffent parts  (macro and post macro)
+ *  because ParsingDriver.h and MacroDriver.h can't be
+ *  included simultaneously (because of Bison limitations).
+ *
  * Copyright (C) 2008-2016 Dynare Team
  *
  * This file is part of Dynare.
@@ -23,9 +29,9 @@
 #include "ModFile.hh"
 #include "ConfigFile.hh"
 #include "ExtendedPreprocessorTypes.hh"
+#include "parse.hh"
 
-void
-main2(stringstream &in, string &basename, bool debug, bool clear_all, bool clear_global,
+ModFile *parse_post_macro(stringstream &in, string &basename, bool debug, bool clear_all, bool clear_global,
       bool no_tmp_terms, bool no_log, bool no_warn, bool warn_uninit, bool console,
       bool nograph, bool nointeractive, bool parallel, ConfigFile &config_file,
       WarningConsolidation &warnings, bool nostrict, bool check_model_changes,
@@ -34,8 +40,7 @@ main2(stringstream &in, string &basename, bool debug, bool clear_all, bool clear
 #if defined(_WIN32) || defined(__CYGWIN32__)
       , bool cygwin, bool msvc
 #endif
-      )
-{
+      ) {
   ParsingDriver p(warnings, nostrict);
 
   // Do parsing and construct internal representation of mod file
@@ -53,18 +58,5 @@ main2(stringstream &in, string &basename, bool debug, bool clear_all, bool clear
   // Do computations
   mod_file->computingPass(no_tmp_terms, output_mode, compute_xrefs, params_derivs_order);
 
-  // Write outputs
-  if (output_mode != none)
-    mod_file->writeExternalFiles(basename, output_mode, language);
-  else
-    mod_file->writeOutputFiles(basename, clear_all, clear_global, no_log, no_warn, console, nograph,
-                               nointeractive, config_file, check_model_changes, minimal_workspace, compute_xrefs
-#if defined(_WIN32) || defined(__CYGWIN32__)
-			       , cygwin, msvc
-#endif
-			       );
-
-  delete mod_file;
-
-  cout << "Preprocessing completed." << endl;
+  return mod_file;
 }

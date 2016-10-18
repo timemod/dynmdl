@@ -19,7 +19,7 @@ dnl along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.62])
 AC_INIT([dynare], [4.6-unstable])
-AC_CONFIG_SRCDIR([src/DynareMain.cc])
+AC_CONFIG_SRCDIR([src/parse.cc])
 AC_PROG_CC
 AC_PROG_CXX
 
