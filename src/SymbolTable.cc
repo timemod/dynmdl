@@ -206,21 +206,17 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
   if (!frozen)
     throw NotYetFrozenException();
 
-  // output dimensions 
-  output << "exo_count = " << exo_nbr() << endl
-         << "endo_count = " << endo_nbr() << endl
-         << "param_count = " << param_nbr() << endl;
-
   if (exo_nbr() > 0)
     {
-      output << "exo_names = c(\"" << getName(exo_ids[0]) << "\"";
-      //output << "M_.exo_names_tex = '" << getTeXName(exo_ids[0]) << "';" << endl;
-      //output << "M_.exo_names_long = '" << getLongName(exo_ids[0]) << "';" << endl;
+      output << "M_.exo_names = '" << getName(exo_ids[0]) << "';" << endl;
+      output << "M_.exo_names_tex = '" << getTeXName(exo_ids[0]) << "';" << endl;
+      output << "M_.exo_names_long = '" << getLongName(exo_ids[0]) << "';" << endl;
       for (int id = 1; id < exo_nbr(); id++)
-        output << ", \"" << getName(exo_ids[id]) << "\"";
-      output << ")" << endl;
+        output << "M_.exo_names = char(M_.exo_names, '" << getName(exo_ids[id]) << "');" << endl
+               << "M_.exo_names_tex = char(M_.exo_names_tex, '" << getTeXName(exo_ids[id]) << "');" << endl
+               << "M_.exo_names_long = char(M_.exo_names_long, '" << getLongName(exo_ids[id]) << "');" << endl;
 
-      /*
+
       map<string, map<int, string> > partitions = getPartitionsForType(eExogenous);
       for (map<string, map<int, string> >::const_iterator it = partitions.begin();
            it != partitions.end(); it++)
@@ -238,9 +234,6 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
               }
             output << "};" << endl;
           }
-          */
-    } else {
-        output << "exo_names <- character(0)" << endl;
     }
 
   if (exo_det_nbr() > 0)
@@ -275,14 +268,14 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
 
   if (endo_nbr() > 0)
     {
-      output << "endo_names = c(\"" << getName(endo_ids[0]) << "\"";
-      //output << "M_.endo_names_tex = '" << getTeXName(endo_ids[0]) << "';" << endl;
-      //output << "M_.endo_names_long = '" << getLongName(endo_ids[0]) << "';" << endl;
+      output << "M_.endo_names = '" << getName(endo_ids[0]) << "';" << endl;
+      output << "M_.endo_names_tex = '" << getTeXName(endo_ids[0]) << "';" << endl;
+      output << "M_.endo_names_long = '" << getLongName(endo_ids[0]) << "';" << endl;
       for (int id = 1; id < endo_nbr(); id++)
-        output << ", \"" << getName(endo_ids[id]) << "\"";
-      output << ")" << endl;
+        output << "M_.endo_names = char(M_.endo_names, '" << getName(endo_ids[id]) << "');" << endl
+               << "M_.endo_names_tex = char(M_.endo_names_tex, '" << getTeXName(endo_ids[id]) << "');" << endl
+               << "M_.endo_names_long = char(M_.endo_names_long, '" << getLongName(endo_ids[id]) << "');" << endl;
 
-      /*
       output << "M_.endo_partitions = struct();" << endl;
       map<string, map<int, string> > partitions = getPartitionsForType(eEndogenous);
       for (map<string, map<int, string> >::const_iterator it = partitions.begin();
@@ -301,22 +294,23 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
               }
           output << "};" << endl;
           }
-        */
     }
 
   if (param_nbr() > 0)
     {
-      output << "params <- numeric(" << param_nbr() << ")" << endl;
-          output << "names(params) <-  c(\"" << getName(param_ids[0]) << "\"";
-      //output << "M_.param_names_tex = '" << getTeXName(param_ids[0]) << "';" << endl;
-      //output << "M_.param_names_long = '" << getLongName(param_ids[0]) << "';" << endl;
+      output << "M_.param_names = '" << getName(param_ids[0]) << "';" << endl;
+      output << "M_.param_names_tex = '" << getTeXName(param_ids[0]) << "';" << endl;
+      output << "M_.param_names_long = '" << getLongName(param_ids[0]) << "';" << endl;
       for (int id = 1; id < param_nbr(); id++)
         {
-          output << ", \"" << getName(param_ids[id]) << "\"";
+          output << "M_.param_names = char(M_.param_names, '" << getName(param_ids[id]) << "');" << endl
+                 << "M_.param_names_tex = char(M_.param_names_tex, '" << getTeXName(param_ids[id]) << "');" << endl
+                 << "M_.param_names_long = char(M_.param_names_long, '" << getLongName(param_ids[id]) << "');" << endl;
+
+          if (getName(param_ids[id]) == "dsge_prior_weight")
+            output << "options_.dsge_var = 1;" << endl;
         }
-      output << ")" << endl;
-    
-      /*
+
       output << "M_.param_partitions = struct();" << endl;
       map<string, map<int, string> > partitions = getPartitionsForType(eParameter);
       for (map<string, map<int, string> >::const_iterator it = partitions.begin();
@@ -335,15 +329,14 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
               }
             output << "};" << endl;
           }
-    */
-    } else {
-        output << "params <- numeric(0)" << endl;
     }
 
-  //output << "M_.exo_det_nbr = " << exo_det_nbr() << ";" << endl;
+  output << "M_.exo_det_nbr = " << exo_det_nbr() << ";" << endl
+         << "M_.exo_nbr = " << exo_nbr() << ";" << endl
+         << "M_.endo_nbr = " << endo_nbr() << ";" << endl
+         << "M_.param_nbr = " << param_nbr() << ";" << endl;
 
   // Write the auxiliary variable table
-  /*
   output << "M_.orig_endo_nbr = " << orig_endo_nbr() << ";" << endl;
   if (aux_vars.size() == 0)
     output << "M_.aux_vars = [];" << endl;
@@ -401,20 +394,7 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
         output << getTypeSpecificID(*it)+1 << " ";
       output << " ];"  << endl;
     }
-  */
 }
-
-#ifdef USE_R
-Rcpp::List SymbolTable::getSymbolListR(void) const throw (NotYetFrozenException) {
-    if (!frozen) {
-        throw NotYetFrozenException();
-    }
-    return Rcpp::List::create(Rcpp::Named("exo_count") = exo_nbr(),
-                              Rcpp::Named("endo_count") = endo_nbr(),
-                              Rcpp::Named("param_count") = param_nbr());
-}
-#endif
-
 
 void
 SymbolTable::writeCOutput(ostream &output) const throw (NotYetFrozenException)
@@ -970,3 +950,38 @@ SymbolTable::writeJuliaOutput(ostream &output) const throw (NotYetFrozenExceptio
         output << "                   ]" << endl;
       }
 }
+
+
+#ifdef USE_R
+Rcpp::List SymbolTable::getSymbolListR(void) const throw (NotYetFrozenException) {
+    if (!frozen) {
+        throw NotYetFrozenException();
+    }
+
+    int exo_count = exo_nbr();
+    int endo_count =  endo_nbr();
+    int param_count = param_nbr();
+
+    Rcpp::CharacterVector exo_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_names[i] = getName(exo_ids[i]).c_str();
+    }
+    Rcpp::CharacterVector endo_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_names[i] = getName(endo_ids[i]).c_str();
+    }
+    Rcpp::CharacterVector param_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_names[i] = getName(param_ids[i]).c_str();
+    }
+    Rcpp::NumericVector params(param_count);
+    params.names() = param_names;
+
+    return Rcpp::List::create(Rcpp::Named("exo_count") = exo_count,
+                              Rcpp::Named("endo_count") = endo_count,
+                              Rcpp::Named("param_count") = param_count,
+                              Rcpp::Named("exo_names") = exo_names,
+                              Rcpp::Named("endo_names") = endo_names,
+                              Rcpp::Named("params") = params);
+}
+#endif
