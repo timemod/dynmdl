@@ -66,7 +66,7 @@ ModFile* parse(char * modfile) {
   map<string, string> defines;
   vector<string> path;
   FileOutputType output_mode = none;
-  LanguageOutputType language = matlab;
+  LanguageOutputType language = r;
 
   cout << "Starting Dynare (version " << PACKAGE_VERSION << ")." << endl
        << "Starting preprocessing of the model file ..." << endl;

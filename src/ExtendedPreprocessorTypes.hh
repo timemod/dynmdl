@@ -36,6 +36,7 @@ enum LanguageOutputType
     cpp,                              // outputs files for C++
     cuda,                             // outputs files for CUDA (not yet implemented)
     julia,                            // outputs files for Julia
+    r,                                // outputs files for R
     python,                           // outputs files for Python (not yet implemented) (not yet implemented)
   };
 #endif

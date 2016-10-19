@@ -77,7 +77,9 @@ enum ExprNodeOutputType
     oJuliaDynamicSteadyStateOperator,             //!< Julia code, dynamic model, inside a steady state operator
     oSteadyStateFile,                             //!< Matlab code, in the generated steady state file
     oCSteadyStateFile,                            //!< C code, in the generated steady state file
-    oJuliaSteadyStateFile                         //!< Julia code, in the generated steady state file
+    oJuliaSteadyStateFile,                        //!< Julia code, in the generated steady state file
+    oRStaticModel,                                //!< R code, static model
+    oRDynamicModel                               //!< R code, dynamic model
   };
 
 #define IS_MATLAB(output_type) ((output_type) == oMatlabStaticModel     \
@@ -94,6 +96,9 @@ enum ExprNodeOutputType
                                || (output_type) == oJuliaDynamicSteadyStateOperator \
                                || (output_type) == oJuliaSteadyStateFile)
 
+#define IS_R(output_type) ((output_type) == oRStaticModel     \
+                          || (output_type) == oRDynamicModel)
+
 #define IS_C(output_type) ((output_type) == oCDynamicModel \
 			   || (output_type) == oCDynamic2Model \
 			   || (output_type) == oCStaticModel \
@@ -106,11 +111,15 @@ enum ExprNodeOutputType
 
 /* Equal to 1 for Matlab langage or Julia, or to 0 for C language. Not defined for LaTeX.
    In Matlab and Julia, array indexes begin at 1, while they begin at 0 in C */
-#define ARRAY_SUBSCRIPT_OFFSET(output_type) ((int) (IS_MATLAB(output_type) || IS_JULIA(output_type)))
+#define ARRAY_SUBSCRIPT_OFFSET(output_type) ((int) (IS_MATLAB(output_type) || IS_JULIA(output_type)  \
+                                                    || IS_R(output_type)))
 
 // Left and right array subscript delimiters: '(' and ')' for Matlab, '[' and ']' for C
-#define LEFT_ARRAY_SUBSCRIPT(output_type) (IS_MATLAB(output_type) ? '[' : '[')
-#define RIGHT_ARRAY_SUBSCRIPT(output_type) (IS_MATLAB(output_type) ? ']' : ']')
+// and other languages
+#define LEFT_ARRAY_SUBSCRIPT(output_type) (IS_MATLAB(output_type) ? '(' : '[')
+#define RIGHT_ARRAY_SUBSCRIPT(output_type) (IS_MATLAB(output_type) ? ')' : ']')
+
+#define ASSIGNMENT_OPERATOR(output_type) (IS_R(output_type) ? " <- " : " = ")
 
 // Left and right parentheses
 #define LEFT_PAR(output_type) (IS_LATEX(output_type) ? "\\left(" : "(")

@@ -1210,7 +1210,6 @@ StaticModel::writeStaticModel(ostream &StaticOutput, bool use_dll, bool julia) c
       int symb_id = getSymbIDByDerivID(it->first.second);
       expr_t d1 = it->second;
 
-      jacobian_output << INDENT_EQ;
       jacobianHelper(jacobian_output, eq, symbol_table.getTypeSpecificID(symb_id), output_type);
       jacobian_output << " <- ";
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
@@ -1221,23 +1220,23 @@ StaticModel::writeStaticModel(ostream &StaticOutput, bool use_dll, bool julia) c
   if (output_type == oMatlabStaticModel)
     {
       StaticOutput << "f_static <- function(y, x, params, jac = FALSE) {" << endl
-                    << INDENT_EQ << "residual <- numeric(" << equations.size() << ")" << endl << endl
-                   << INDENT_EQ << "#" << endl
-                   << INDENT_EQ << "# Model equations" << endl
-                   << INDENT_EQ << "#" << endl << endl
+                    << "residual <- numeric(" << equations.size() << ")" << endl << endl
+                   << "#" << endl
+                   << "# Model equations" << endl
+                   << "#" << endl << endl
                    << model_local_vars_output.str()
                    << model_output.str()
                    << endl << endl
-                   << INDENT_EQ << "if (!jac) {" << 
-                   endl <<  INDENT_EQ << "    return (residual) " << endl
-                   << INDENT_EQ << "}" << endl
-                   << INDENT_EQ << "g1 <- matrix(0,  nrow = " << equations.size() << ", ncol = " << symbol_table.endo_nbr() << ")" << endl << endl
-                   << INDENT_EQ << "#" << endl
-                   << INDENT_EQ << "# Jacobian matrix" << endl
-                   << INDENT_EQ << "#" << endl << endl
+                   << "if (!jac) {" << 
+                   endl <<  INDENT(1) << "return (residual)" << endl
+                   << "}" << endl
+                   << "g1 <- matrix(0,  nrow = " << equations.size() << ", ncol = " << symbol_table.endo_nbr() << ")" << endl << endl
+                   << "#" << endl
+                   << "# Jacobian matrix" << endl
+                   << "#" << endl << endl
                    << jacobian_output.str()
-                   << INDENT_EQ << "return (list(residual, g1))" << endl
-                   << endl <<   std::string(4, ' ') << "}" << endl;
+                   << "return (list(residual, g1))" << endl
+                   << "}" << endl;
     }
   else if (output_type == oCStaticModel)
     {

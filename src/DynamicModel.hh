@@ -89,7 +89,7 @@ private:
   void writeSparseDynamicMFile(const string &dynamic_basename, const string &basename) const;
   //! Writes the dynamic model equations and its derivatives
   /*! \todo add third derivatives handling in C output */
-  void writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia) const;
+  void writeDynamicModel(ostream &DynamicOutput, ExprNodeOutputType output_type = oMatlabDynamicModel) const;
   //! Writes the Block reordred structure of the model in M output
   void writeModelEquationsOrdered_M(const string &dynamic_basename) const;
   //! Writes the code of the Block reordred structure of the model in virtual machine bytecode

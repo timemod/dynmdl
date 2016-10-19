@@ -31,7 +31,7 @@ using namespace std;
 #include "DataTree.hh"
 #include "ExtendedPreprocessorTypes.hh"
 
-#define INDENT_EQ "      "
+#define INDENT(n) std::string(4 * n, ' ')
 
 //! Vector describing equations: BlockSimulationType, if BlockSimulationType == EVALUATE_s then a expr_t on the new normalized equation
 typedef vector<pair<EquationType, expr_t > > equation_type_and_normalized_equation_t;

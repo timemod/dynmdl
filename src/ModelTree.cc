@@ -1279,14 +1279,12 @@ ModelTree::writeTemporaryTerms(const temporary_terms_t &tt, const temporary_term
         else if (IS_JULIA(output_type))
           output << "  @inbounds const ";
 
-        output << INDENT_EQ;
         (*it)->writeOutput(output, output_type, tt, tef_terms);
-        output << " <- ";
+        output << " = ";
         (*it)->writeOutput(output, output_type, tt2, tef_terms);
 
-        if (IS_C(output_type)) {
+        if (IS_C(output_type) || IS_MATLAB(output_type))
           output << ";";
-        }
         output << endl;
 
         // Insert current node into tt2
@@ -1390,33 +1388,41 @@ ModelTree::writeModelEquations(ostream &output, ExprNodeOutputType output_type) 
         {
           if (IS_JULIA(output_type))
             output << "  @inbounds ";
-          output << INDENT_EQ << "lhs <- ";
+          output << "lhs" << ASSIGNMENT_OPERATOR(output_type);
           lhs->writeOutput(output, output_type, temp_terms);
+          if (!IS_R(output_type)) {
+              output << ";";
+          }        
           output << endl;
-
           if (IS_JULIA(output_type))
             output << "  @inbounds ";
-          output << INDENT_EQ << "rhs <- ";
+          output << "rhs" << ASSIGNMENT_OPERATOR(output_type);
           rhs->writeOutput(output, output_type, temp_terms);
+          if (!IS_R(output_type)) {
+              output << ";";
+          }        
           output << endl;
-
           if (IS_JULIA(output_type))
             output << "  @inbounds ";
-          output << INDENT_EQ << "residual" << LEFT_ARRAY_SUBSCRIPT(output_type)
+          output << "residual" << LEFT_ARRAY_SUBSCRIPT(output_type)
                  << eq + ARRAY_SUBSCRIPT_OFFSET(output_type)
                  << RIGHT_ARRAY_SUBSCRIPT(output_type)
-                 << " <- lhs - rhs" << endl;
+                 << ASSIGNMENT_OPERATOR(output_type) << "lhs - rhs";
+          if (!IS_R(output_type)) {
+              output << ";";
+          }        
+          output << endl;
         }
       else // The right hand side of the equation is empty ==> residual=lhs;
         {
           if (IS_JULIA(output_type))
             output << "  @inbounds ";
-          output << INDENT_EQ << "residual" << LEFT_ARRAY_SUBSCRIPT(output_type)
+          output << "residual" << LEFT_ARRAY_SUBSCRIPT(output_type)
                  << eq + ARRAY_SUBSCRIPT_OFFSET(output_type)
                  << RIGHT_ARRAY_SUBSCRIPT(output_type)
-                 << " <- ";
+                 << " = ";
           lhs->writeOutput(output, output_type, temp_terms);
-          output << endl;
+          output << ";" << endl;
         }
     }
 }
@@ -1640,8 +1646,8 @@ ModelTree::jacobianHelper(ostream &output, int eq_nb, int col_nb, ExprNodeOutput
   if (IS_JULIA(output_type))
     output << "@inbounds ";
   output << "g1" << LEFT_ARRAY_SUBSCRIPT(output_type);
-  if (IS_MATLAB(output_type) || IS_JULIA(output_type))
-    output << eq_nb + 1 << "," << col_nb + 1;
+  if (IS_MATLAB(output_type) || IS_JULIA(output_type) || IS_R(output_type))
+    output << eq_nb + 1 << ", " << col_nb + 1;
   else
     output << eq_nb + col_nb *equations.size();
   output << RIGHT_ARRAY_SUBSCRIPT(output_type);
