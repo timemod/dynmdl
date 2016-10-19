@@ -109,6 +109,7 @@ ModFile* parse(char * modfile) {
   cout << "Preprocessing completed." << endl;
 
    // Write outputs
+   /*
   if (output_mode != none)
     mod_file->writeExternalFiles(basename, output_mode, language);
   else
@@ -118,6 +119,7 @@ ModFile* parse(char * modfile) {
 			       , cygwin, msvc
 #endif
 			       );
+    */
 
   return mod_file;
 }

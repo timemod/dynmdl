@@ -5185,7 +5185,7 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
             // Print variableID if exists with current period, otherwise print 0
             try {
                 int varID = getDerivID(symbol_table.getID(eEndogenous, endoID), lag);
-                endo_column[lag + max_endo_lag] = getDynJacobianCol(varID);
+                endo_column[lag + max_endo_lag] = getDynJacobianCol(varID) + 1;
             } catch (UnknownDerivIDException &e) {
             }
         }
