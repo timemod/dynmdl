@@ -5307,7 +5307,11 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
     writeDynamicModel(dynout, oRDynamicModel);
 
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
-                              Rcpp::Named("dynamic_function_body") = Rcpp::String(dynout.str())
+                              Rcpp::Named("dynamic_function_body") = Rcpp::String(dynout.str()),
+                              Rcpp::Named("max_endo_lag") = max_endo_lag,
+                              Rcpp::Named("max_endo_lead") = max_endo_lead,
+                              Rcpp::Named("max_exo_lag") = max_exo_lag,
+                              Rcpp::Named("max_exo_lead") = max_exo_lead
                              );
 }
 #endif
