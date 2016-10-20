@@ -44,15 +44,11 @@ void
 InitParamStatement::writeOutput(ostream &output, const string &basename, bool minimal_workspace) const
 {
   int id = symbol_table.getTypeSpecificID(symb_id) + 1;
-  output << "params[ " << id << " ] <- ";
-  /* TODO rvh: is it possible to get the actual parameter value instead of an
-   * expression ? */
+  output << "M_.params( " << id << " ) = ";
   param_value->writeOutput(output);
-  output << endl;
-  /*
+  output << ";" << endl;
   if (!minimal_workspace)
     output << symbol_table.getName(symb_id) << " = M_.params( " << id << " );" << endl;
-  */
 }
 
 void

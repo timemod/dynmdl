@@ -30,9 +30,6 @@ using namespace std;
 
 #include "CodeInterpreter.hh"
 #include "ExprNode.hh"
-#ifdef USE_R
-#include <Rcpp.h>
-#endif
 
 typedef class ExprNode *expr_t;
 
@@ -259,6 +256,8 @@ public:
   inline bool exists(const string &name) const;
   //! Get symbol name (by ID)
   inline string getName(int id) const throw (UnknownSymbolIDException);
+  //! Get symbol name (by type specific ID)
+  string getName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
   //! Get TeX name
   inline string getTeXName(int id) const throw (UnknownSymbolIDException);
   //! Get long name
@@ -328,10 +327,6 @@ public:
   bool isAuxiliaryVariableButNotMultiplier(int symb_id) const;
   //! Get list of endogenous variables without aux vars
   set <int> getOrigEndogenous() const;
-  //! Returns an R list with information from the Symbol table
-#ifdef USE_R
-  Rcpp::List getSymbolListR(void) const throw (NotYetFrozenException);
-#endif
 };
 
 inline bool

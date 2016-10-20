@@ -183,6 +183,42 @@ SymbolTable::getID(SymbolType type, int tsid) const throw (UnknownTypeSpecificID
     }
 }
 
+string
+SymbolTable::getName(SymbolType type, int tsid) const throw (UnknownTypeSpecificIDException)
+{
+  int id;
+  switch (type) {
+    case eEndogenous:
+      if (tsid < 0 || tsid >= (int) endo_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = endo_ids[tsid];
+      break;
+    case eExogenous:
+      if (tsid < 0 || tsid >= (int) exo_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else 
+        id = exo_ids[tsid];
+      break;
+    case eExogenousDet:
+      if (tsid < 0 || tsid >= (int) exo_det_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = exo_det_ids[tsid];
+      break;
+    case eParameter:
+      if (tsid < 0 || tsid >= (int) param_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = param_ids[tsid];
+      break;
+    default:
+      throw UnknownTypeSpecificIDException(tsid, type);
+    }
+    return name_table[id];
+
+}
+
 map<string, map<int, string> >
 SymbolTable::getPartitionsForType(enum SymbolType st) const throw (UnknownSymbolIDException)
 {
@@ -950,38 +986,3 @@ SymbolTable::writeJuliaOutput(ostream &output) const throw (NotYetFrozenExceptio
         output << "                   ]" << endl;
       }
 }
-
-
-#ifdef USE_R
-Rcpp::List SymbolTable::getSymbolListR(void) const throw (NotYetFrozenException) {
-    if (!frozen) {
-        throw NotYetFrozenException();
-    }
-
-    int exo_count = exo_nbr();
-    int endo_count =  endo_nbr();
-    int param_count = param_nbr();
-
-    Rcpp::CharacterVector exo_names(exo_count);
-    for (int i = 0; i < exo_count; i++) {
-        exo_names[i] = getName(exo_ids[i]).c_str();
-    }
-    Rcpp::CharacterVector endo_names(endo_count);
-    for (int i = 0; i < endo_count; i++) {
-        endo_names[i] = getName(endo_ids[i]).c_str();
-    }
-    Rcpp::CharacterVector param_names(param_count);
-    for (int i = 0; i < param_count; i++) {
-        param_names[i] = getName(param_ids[i]).c_str();
-    }
-    Rcpp::NumericVector params(param_count);
-    params.names() = param_names;
-
-    return Rcpp::List::create(Rcpp::Named("exo_count") = exo_count,
-                              Rcpp::Named("endo_count") = endo_count,
-                              Rcpp::Named("param_count") = param_count,
-                              Rcpp::Named("exo_names") = exo_names,
-                              Rcpp::Named("endo_names") = endo_names,
-                              Rcpp::Named("params") = params);
-}
-#endif

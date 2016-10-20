@@ -1222,10 +1222,53 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
 
 #ifdef USE_R
 Rcpp::List ModFile::getModelListR(void)  {
-    Rcpp::List symbols = symbol_table.getSymbolListR();
+
+    int exo_count = symbol_table.exo_nbr();
+    int endo_count =  symbol_table.endo_nbr();
+    int param_count = symbol_table.param_nbr();
+
+    Rcpp::CharacterVector exo_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_names[i] = symbol_table.getName(eExogenous, i).c_str();
+    }
+    Rcpp::CharacterVector endo_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_names[i] = symbol_table.getName(eEndogenous, i).c_str();
+    }
+    Rcpp::CharacterVector param_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_names[i] = symbol_table.getName(eParameter, i).c_str();
+    }
+
+
     Rcpp::List dynmod = dynamic_model.getDynamicModelR();
     Rcpp::String static_function_body = static_model.getStaticModelR();
-    return Rcpp::List::create(Rcpp::Named("symbols") = symbols,
+
+    Rcpp::NumericVector exos(exo_count);
+    Rcpp::NumericVector endos(endo_count);
+    Rcpp::NumericVector params(param_count);
+
+    // Values of exogenous variables
+    for (int i = 0; i < symbol_table.exo_nbr(); i++) {
+        int id = symbol_table.getID(eExogenous, i);
+        exos[i] = global_eval_context[id];
+    }
+    // Values of endogenous variables
+    for (int i = 0; i < symbol_table.endo_nbr(); i++) {
+        int id = symbol_table.getID(eEndogenous, i);
+        endos[i] = global_eval_context[id];
+    }
+    // Parameter values
+    for (int i = 0; i < symbol_table.param_nbr(); i++) {
+        int id = symbol_table.getID(eParameter, i);
+        params[i] = global_eval_context[id];
+    }
+    exos.names() = exo_names;
+    endos.names() = endo_names;
+    params.names() = param_names;
+    return Rcpp::List::create(Rcpp::Named("exos") = exos,
+                              Rcpp::Named("endos") = endos,
+                              Rcpp::Named("params") = params,
                               Rcpp::Named("dynamic_model") = dynmod,
                               Rcpp::Named("static_function_body") = static_function_body);
 }

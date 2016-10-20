@@ -1,11 +1,9 @@
 library(dynparse)
 
-mod_dir <- system.file("extdata", package = "dynparse")
-mod_file <- file.path(mod_dir, "islm.mod")
+mod_file <- "islm.mod"
 ret <- compile_model(mod_file)
-print(ret$symbols)
-print(ret$dynamic_model$lead_lag_incidence)
-print(ret$dynamic_model$maximum_endo_lag)
+print(ret)
+quit()
 
 f_dynamic <- function(y, x, params, it_, jac = FALSE) {}
 body(f_dynamic) <- parse(text = paste0("{",
