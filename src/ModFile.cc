@@ -1224,7 +1224,9 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
 Rcpp::List ModFile::getModelListR(void)  {
     Rcpp::List symbols = symbol_table.getSymbolListR();
     Rcpp::List dynmod = dynamic_model.getDynamicModelR();
+    Rcpp::String static_function_body = static_model.getStaticModelR();
     return Rcpp::List::create(Rcpp::Named("symbols") = symbols,
-                              Rcpp::Named("dynmod") = dynmod);
+                              Rcpp::Named("dynamic_model") = dynmod,
+                              Rcpp::Named("static_function_body") = static_function_body);
 }
 #endif

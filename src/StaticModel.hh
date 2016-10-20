@@ -23,7 +23,9 @@
 using namespace std;
 
 #include <fstream>
-
+#ifdef USE_R
+#include <Rcpp.h>
+#endif
 #include "ModelTree.hh"
 
 //! Stores a static model, as derived from the "model" block when leads and lags have been removed
@@ -54,7 +56,7 @@ private:
   void writeStaticJuliaFile(const string &basename) const;
 
   //! Writes the static model equations and its derivatives
-  void writeStaticModel(ostream &StaticOutput, bool use_dll, bool julia) const;
+  void writeStaticModel(ostream &DynamicOutput, ExprNodeOutputType output_type = oMatlabStaticModel) const;
 
   //! Writes the static function calling the block to solve (Matlab version)
   void writeStaticBlockMFSFile(const string &basename) const;
@@ -313,6 +315,9 @@ public:
   {
     return -1;
   };
+#ifdef USE_R
+  Rcpp::String getStaticModelR(void);
+#endif
 };
 
 #endif
