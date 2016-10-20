@@ -1,16 +1,27 @@
 library(dynparse)
 
-mod_file <- "islm.mod"
-ret <- compile_model(mod_file)
-print(ret)
-quit()
+mod_dir <- system.file("extdata", package = "dynparse")
+mod_file = file.path(mod_dir, "islm.mod")
 
-f_dynamic <- function(y, x, params, it_, jac = FALSE) {}
-body(f_dynamic) <- parse(text = paste0("{",
-                                       ret$dynamic_model$dynamic_function_body, "}"))
-print(f_dynamic)
+mdl <- compile_model(mod_file)
 
-f_static <- function(y, x, params, jac = FALSE) {}
-body(f_static) <- parse(text = paste0("{",
-                                       ret$static_function_body, "}"))
-print(f_static);
+print(mdl@endos)
+
+system.time(
+    mdl <- solve_steady(mdl = mdl)
+)
+print(mdl@endos)
+
+model_period(mdl) <- regperiod_range("2010Q1", "2011Q4")
+
+# shock for variable g in first solve perod
+mdl@exo_data['2010Q1', 'g'] <- 280
+
+print(system.time(
+    mdl2 <- solve_model(mdl, solver = "nleqslv")
+))
+
+print(mdl2@solve_out$message)
+print(mdl2@solve_out$iter)
+
+plot(mdl2@endo_data[, 'y'])

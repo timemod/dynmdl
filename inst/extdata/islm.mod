@@ -9,7 +9,7 @@ parameters m0 m1 m2 m3;
 parameters t0 t1;
 
 c0 = 100;
-c1 = 0.28;
+c1 = 0.18 + 0.1;
 c2 = 0.32;
 c3 = 0.10;
 c4 = -20;
@@ -19,7 +19,7 @@ i1 = 0.12 ;
 i2 = 0.08;
 
 i3 = 0.04;
-i4 = -40;
+i4 = -1000*i3;
 i5 = -1.5;
 m0 = 75;
 m1 = 0.23;
@@ -38,4 +38,18 @@ c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * r^2;
 i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + i5 * r^2;
 md = m0 + m1 * y + m2 * r + m3 * r^2;
 md = ms;
+end;
+
+initval;
+% exogenous variables
+ms = 232;
+g = 233;
+% endogenous variables
+y = 1300;
+yd = 980;
+t = 254;
+c = 625;
+i = 263;
+md = 252;
+r = 2.82;
 end;

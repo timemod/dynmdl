@@ -2,17 +2,17 @@
 % Please edit documentation in R/compile_model.R
 \name{compile_model}
 \alias{compile_model}
-\title{Compile a model}
+\title{Compile a Dynare model and return a \code{\link{SimModel}}}
 \usage{
 compile_model(mod_file)
 }
 \arguments{
-\item{mod_file}{the name of the model file}
+\item{mod_file}{the name of the model file (including extension .mod)}
 }
 \value{
-an integer
+an \code{SimModel} object
 }
 \description{
-Compile a model
+Compile a Dynare model and return a \code{\link{SimModel}}
 }
 
