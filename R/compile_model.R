@@ -18,7 +18,6 @@ compile_model <- function(mod_file) {
 
     exo_count <- length(model_info$exos)
     endo_count <- length(model_info$endos)
-    print(model_info)
     return (with(model_info, {
         methods::new("SimModel", exo_count = exo_count,
                               endo_count = endo_count,

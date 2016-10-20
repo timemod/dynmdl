@@ -5288,15 +5288,15 @@ DynamicModel::writeCCOutput(ostream &output, const string &basename, bool block_
 Rcpp::List DynamicModel::getDynamicModelR(void) {
 
     // create lead_lag_indicence matrix 
-    Rcpp::IntegerMatrix lead_lag_incidence(max_endo_lead + max_endo_lag + 1, symbol_table.endo_nbr());
+    Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);
     for (int endoID = 0; endoID < symbol_table.endo_nbr(); endoID++) {
-        Rcpp::IntegerMatrix::Column endo_column = lead_lag_incidence(Rcpp::_, endoID);
+        Rcpp::IntegerMatrix::Row endo_row = lead_lag_incidence(endoID, Rcpp::_);
         // Loop on periods
         for (int lag = -max_endo_lag; lag <= max_endo_lead; lag++) {
             // Print variableID if exists with current period, otherwise print 0
             try {
                 int varID = getDerivID(symbol_table.getID(eEndogenous, endoID), lag);
-                endo_column[lag + max_endo_lag] = getDynJacobianCol(varID) + 1;
+                endo_row[lag + max_endo_lag] = getDynJacobianCol(varID) + 1;
             } catch (UnknownDerivIDException &e) {
             }
         }

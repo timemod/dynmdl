@@ -51,7 +51,7 @@ get_residual <- function(x, mdl, lags, leads, exo, nper) {
 get_jac <- function(x, mdl, lags, leads, exo, nper, sparse = TRUE) {
     # TODO: here we transpose the lead/lag incidenced.
     # it is better to calculate it correctly in the C code
-    imat <- t(mdl@lead_lag_incidence)
+    imat <- mdl@lead_lag_incidence
     i_cols <- which(imat != 0)
     i_cols_a0 <- which(imat[, 2] != 0)
     i_cols_a1 <- which(imat[, 2:3] != 0)

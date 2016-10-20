@@ -1,7 +1,6 @@
 library(dynparse)
 
-mod_dir <- system.file("extdata", package = "dynparse")
-mod_file = file.path(mod_dir, "islm.mod")
+mod_file <- system.file("extdata", "islm.mod", package = "dynparse")
 
 mdl <- compile_model(mod_file)
 
