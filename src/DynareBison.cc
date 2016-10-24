@@ -30,7 +30,7 @@
 // This special exception was added by the Free Software Foundation in
 // version 2.2 of Bison.
 // //                    "%code top" blocks.
-#line 24 "DynareBison.yy" // lalr1.cc:392
+#line 24 "lex_yacc/DynareBison.yy" // lalr1.cc:392
 
 class ParsingDriver;
 
@@ -57,7 +57,7 @@ class ParsingDriver;
 
 #line 59 "DynareBison.cc" // lalr1.cc:407
 // Unqualified %code blocks.
-#line 60 "DynareBison.yy" // lalr1.cc:408
+#line 60 "lex_yacc/DynareBison.yy" // lalr1.cc:408
 
 /* Little hack: we redefine the macro which computes the locations, because
    we need to access the location from within the parsing driver for error
@@ -508,7 +508,7 @@ namespace Dynare {
 
 
     // User initialization code.
-    #line 40 "DynareBison.yy" // lalr1.cc:725
+    #line 40 "lex_yacc/DynareBison.yy" // lalr1.cc:725
 {
   // Initialize the locations' filenames to the filename maintained by the lexer
   yyla.location.begin.filename = yyla.location.end.filename = &(driver.lexer->filename);
@@ -626,217 +626,217 @@ namespace Dynare {
           switch (yyn)
             {
   case 97:
-#line 296 "DynareBison.yy" // lalr1.cc:847
+#line 296 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.dsample((yystack_[1].value.string_val)); }
 #line 632 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 98:
-#line 298 "DynareBison.yy" // lalr1.cc:847
+#line 298 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.dsample((yystack_[2].value.string_val), (yystack_[1].value.string_val)); }
 #line 638 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 99:
-#line 301 "DynareBison.yy" // lalr1.cc:847
+#line 301 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.rplot(); }
 #line 644 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 100:
-#line 303 "DynareBison.yy" // lalr1.cc:847
+#line 303 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.begin_trend(); }
 #line 650 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 101:
-#line 304 "DynareBison.yy" // lalr1.cc:847
+#line 304 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_trend_var((yystack_[3].value.node_val)); }
 #line 656 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 102:
-#line 308 "DynareBison.yy" // lalr1.cc:847
+#line 308 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(false, (yystack_[0].value.string_val)); }
 #line 662 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 103:
-#line 310 "DynareBison.yy" // lalr1.cc:847
+#line 310 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(false, (yystack_[0].value.string_val)); }
 #line 668 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 104:
-#line 312 "DynareBison.yy" // lalr1.cc:847
+#line 312 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(false, (yystack_[0].value.string_val)); }
 #line 674 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 105:
-#line 314 "DynareBison.yy" // lalr1.cc:847
+#line 314 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(false, (yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 680 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 106:
-#line 316 "DynareBison.yy" // lalr1.cc:847
+#line 316 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(false, (yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 686 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 107:
-#line 318 "DynareBison.yy" // lalr1.cc:847
+#line 318 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(false, (yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 692 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 108:
-#line 321 "DynareBison.yy" // lalr1.cc:847
+#line 321 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.begin_trend(); }
 #line 698 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 109:
-#line 322 "DynareBison.yy" // lalr1.cc:847
+#line 322 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_trend_var((yystack_[3].value.node_val)); }
 #line 704 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 110:
-#line 326 "DynareBison.yy" // lalr1.cc:847
+#line 326 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(true, (yystack_[0].value.string_val)); }
 #line 710 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 111:
-#line 328 "DynareBison.yy" // lalr1.cc:847
+#line 328 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(true, (yystack_[0].value.string_val)); }
 #line 716 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 112:
-#line 330 "DynareBison.yy" // lalr1.cc:847
+#line 330 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(true, (yystack_[0].value.string_val)); }
 #line 722 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 113:
-#line 332 "DynareBison.yy" // lalr1.cc:847
+#line 332 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(true, (yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 728 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 114:
-#line 334 "DynareBison.yy" // lalr1.cc:847
+#line 334 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(true, (yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 734 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 115:
-#line 336 "DynareBison.yy" // lalr1.cc:847
+#line 336 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_trend_var(true, (yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 740 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 117:
-#line 340 "DynareBison.yy" // lalr1.cc:847
+#line 340 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.begin_trend(); }
 #line 746 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 118:
-#line 341 "DynareBison.yy" // lalr1.cc:847
+#line 341 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_nonstationary_var(false, (yystack_[3].value.node_val)); }
 #line 752 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 119:
-#line 342 "DynareBison.yy" // lalr1.cc:847
+#line 342 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.begin_trend(); }
 #line 758 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 120:
-#line 343 "DynareBison.yy" // lalr1.cc:847
+#line 343 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_nonstationary_var(true, (yystack_[3].value.node_val)); }
 #line 764 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 121:
-#line 347 "DynareBison.yy" // lalr1.cc:847
+#line 347 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[0].value.string_val)); }
 #line 770 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 122:
-#line 349 "DynareBison.yy" // lalr1.cc:847
+#line 349 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[0].value.string_val)); }
 #line 776 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 123:
-#line 351 "DynareBison.yy" // lalr1.cc:847
+#line 351 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[0].value.string_val)); }
 #line 782 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 124:
-#line 353 "DynareBison.yy" // lalr1.cc:847
+#line 353 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 788 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 125:
-#line 355 "DynareBison.yy" // lalr1.cc:847
+#line 355 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 794 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 126:
-#line 357 "DynareBison.yy" // lalr1.cc:847
+#line 357 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 800 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 127:
-#line 359 "DynareBison.yy" // lalr1.cc:847
+#line 359 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 806 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 128:
-#line 361 "DynareBison.yy" // lalr1.cc:847
+#line 361 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 812 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 129:
-#line 363 "DynareBison.yy" // lalr1.cc:847
+#line 363 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 818 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 130:
-#line 365 "DynareBison.yy" // lalr1.cc:847
+#line 365 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 824 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 131:
-#line 367 "DynareBison.yy" // lalr1.cc:847
+#line 367 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 830 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 132:
-#line 369 "DynareBison.yy" // lalr1.cc:847
+#line 369 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_nonstationary_var((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 836 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 137:
-#line 381 "DynareBison.yy" // lalr1.cc:847
+#line 381 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                   pair<string *, string *> *pr = new pair<string *, string *>((yystack_[2].value.string_val), (yystack_[0].value.string_val));
                   (yylhs.value.string_pair_val) = pr;
@@ -845,7 +845,7 @@ namespace Dynare {
     break;
 
   case 138:
-#line 387 "DynareBison.yy" // lalr1.cc:847
+#line 387 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                 (yylhs.value.vector_string_pair_val) = new vector<pair<string *, string *> *>();
                 (yylhs.value.vector_string_pair_val)->push_back((yystack_[0].value.string_pair_val));
@@ -854,7 +854,7 @@ namespace Dynare {
     break;
 
   case 139:
-#line 392 "DynareBison.yy" // lalr1.cc:847
+#line 392 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                 (yylhs.value.vector_string_pair_val) = new vector<pair<string *, string *> *>();
                 (yylhs.value.vector_string_pair_val)->push_back((yystack_[0].value.string_pair_val));
@@ -863,7 +863,7 @@ namespace Dynare {
     break;
 
   case 140:
-#line 397 "DynareBison.yy" // lalr1.cc:847
+#line 397 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                 (yystack_[1].value.vector_string_pair_val)->push_back((yystack_[0].value.string_pair_val));
                 (yylhs.value.vector_string_pair_val) = (yystack_[1].value.vector_string_pair_val);
@@ -872,7 +872,7 @@ namespace Dynare {
     break;
 
   case 141:
-#line 402 "DynareBison.yy" // lalr1.cc:847
+#line 402 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                 (yystack_[2].value.vector_string_pair_val)->push_back((yystack_[0].value.string_pair_val));
                 (yylhs.value.vector_string_pair_val) = (yystack_[2].value.vector_string_pair_val);
@@ -881,1495 +881,1495 @@ namespace Dynare {
     break;
 
   case 142:
-#line 408 "DynareBison.yy" // lalr1.cc:847
+#line 408 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_string_pair_val) = (yystack_[1].value.vector_string_pair_val); }
 #line 887 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 143:
-#line 409 "DynareBison.yy" // lalr1.cc:847
+#line 409 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_string_pair_val) = (yystack_[2].value.vector_string_pair_val); }
 #line 893 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 144:
-#line 413 "DynareBison.yy" // lalr1.cc:847
+#line 413 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[0].value.string_val)); }
 #line 899 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 145:
-#line 415 "DynareBison.yy" // lalr1.cc:847
+#line 415 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[0].value.string_val)); }
 #line 905 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 146:
-#line 417 "DynareBison.yy" // lalr1.cc:847
+#line 417 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[0].value.string_val)); }
 #line 911 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 147:
-#line 419 "DynareBison.yy" // lalr1.cc:847
+#line 419 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 917 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 148:
-#line 421 "DynareBison.yy" // lalr1.cc:847
+#line 421 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 923 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 149:
-#line 423 "DynareBison.yy" // lalr1.cc:847
+#line 423 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 929 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 150:
-#line 425 "DynareBison.yy" // lalr1.cc:847
+#line 425 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 935 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 151:
-#line 427 "DynareBison.yy" // lalr1.cc:847
+#line 427 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 941 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 152:
-#line 429 "DynareBison.yy" // lalr1.cc:847
+#line 429 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 947 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 153:
-#line 431 "DynareBison.yy" // lalr1.cc:847
+#line 431 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 953 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 154:
-#line 433 "DynareBison.yy" // lalr1.cc:847
+#line 433 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 959 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 155:
-#line 435 "DynareBison.yy" // lalr1.cc:847
+#line 435 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_endogenous((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 965 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 156:
-#line 439 "DynareBison.yy" // lalr1.cc:847
+#line 439 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[0].value.string_val)); }
 #line 971 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 157:
-#line 441 "DynareBison.yy" // lalr1.cc:847
+#line 441 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[0].value.string_val)); }
 #line 977 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 158:
-#line 443 "DynareBison.yy" // lalr1.cc:847
+#line 443 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[0].value.string_val)); }
 #line 983 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 159:
-#line 445 "DynareBison.yy" // lalr1.cc:847
+#line 445 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 989 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 160:
-#line 447 "DynareBison.yy" // lalr1.cc:847
+#line 447 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 995 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 161:
-#line 449 "DynareBison.yy" // lalr1.cc:847
+#line 449 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 1001 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 162:
-#line 451 "DynareBison.yy" // lalr1.cc:847
+#line 451 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1007 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 163:
-#line 453 "DynareBison.yy" // lalr1.cc:847
+#line 453 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1013 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 164:
-#line 455 "DynareBison.yy" // lalr1.cc:847
+#line 455 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1019 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 165:
-#line 457 "DynareBison.yy" // lalr1.cc:847
+#line 457 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1025 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 166:
-#line 459 "DynareBison.yy" // lalr1.cc:847
+#line 459 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1031 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 167:
-#line 461 "DynareBison.yy" // lalr1.cc:847
+#line 461 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1037 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 168:
-#line 465 "DynareBison.yy" // lalr1.cc:847
+#line 465 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[0].value.string_val)); }
 #line 1043 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 169:
-#line 467 "DynareBison.yy" // lalr1.cc:847
+#line 467 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[0].value.string_val)); }
 #line 1049 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 170:
-#line 469 "DynareBison.yy" // lalr1.cc:847
+#line 469 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[0].value.string_val)); }
 #line 1055 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 171:
-#line 471 "DynareBison.yy" // lalr1.cc:847
+#line 471 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 1061 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 172:
-#line 473 "DynareBison.yy" // lalr1.cc:847
+#line 473 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 1067 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 173:
-#line 475 "DynareBison.yy" // lalr1.cc:847
+#line 475 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 1073 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 174:
-#line 477 "DynareBison.yy" // lalr1.cc:847
+#line 477 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1079 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 175:
-#line 479 "DynareBison.yy" // lalr1.cc:847
+#line 479 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1085 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 176:
-#line 481 "DynareBison.yy" // lalr1.cc:847
+#line 481 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1091 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 177:
-#line 483 "DynareBison.yy" // lalr1.cc:847
+#line 483 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1097 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 178:
-#line 485 "DynareBison.yy" // lalr1.cc:847
+#line 485 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1103 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 179:
-#line 487 "DynareBison.yy" // lalr1.cc:847
+#line 487 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_exogenous_det((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1109 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 180:
-#line 491 "DynareBison.yy" // lalr1.cc:847
+#line 491 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[0].value.string_val)); }
 #line 1115 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 181:
-#line 493 "DynareBison.yy" // lalr1.cc:847
+#line 493 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[0].value.string_val)); }
 #line 1121 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 182:
-#line 495 "DynareBison.yy" // lalr1.cc:847
+#line 495 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[0].value.string_val)); }
 #line 1127 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 183:
-#line 497 "DynareBison.yy" // lalr1.cc:847
+#line 497 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 1133 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 184:
-#line 499 "DynareBison.yy" // lalr1.cc:847
+#line 499 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 1139 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 185:
-#line 501 "DynareBison.yy" // lalr1.cc:847
+#line 501 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[1].value.string_val), NULL, (yystack_[0].value.vector_string_pair_val)); }
 #line 1145 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 186:
-#line 503 "DynareBison.yy" // lalr1.cc:847
+#line 503 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1151 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 187:
-#line 505 "DynareBison.yy" // lalr1.cc:847
+#line 505 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1157 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 188:
-#line 507 "DynareBison.yy" // lalr1.cc:847
+#line 507 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[1].value.string_val), (yystack_[0].value.string_val)); }
 #line 1163 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 189:
-#line 509 "DynareBison.yy" // lalr1.cc:847
+#line 509 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1169 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 190:
-#line 511 "DynareBison.yy" // lalr1.cc:847
+#line 511 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1175 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 191:
-#line 513 "DynareBison.yy" // lalr1.cc:847
+#line 513 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_parameter((yystack_[2].value.string_val), (yystack_[1].value.string_val), (yystack_[0].value.vector_string_pair_val)); }
 #line 1181 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 192:
-#line 517 "DynareBison.yy" // lalr1.cc:847
+#line 517 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_predetermined_variable((yystack_[0].value.string_val)); }
 #line 1187 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 193:
-#line 519 "DynareBison.yy" // lalr1.cc:847
+#line 519 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_predetermined_variable((yystack_[0].value.string_val)); }
 #line 1193 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 194:
-#line 521 "DynareBison.yy" // lalr1.cc:847
+#line 521 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_predetermined_variable((yystack_[0].value.string_val)); }
 #line 1199 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 195:
-#line 525 "DynareBison.yy" // lalr1.cc:847
+#line 525 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.change_type((yystack_[3].value.symbol_type_val), (yystack_[1].value.vector_string_val)); }
 #line 1205 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 196:
-#line 529 "DynareBison.yy" // lalr1.cc:847
+#line 529 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.symbol_type_val) = eParameter; }
 #line 1211 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 197:
-#line 531 "DynareBison.yy" // lalr1.cc:847
+#line 531 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.symbol_type_val) = eEndogenous; }
 #line 1217 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 198:
-#line 533 "DynareBison.yy" // lalr1.cc:847
+#line 533 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.symbol_type_val) = eExogenous; }
 #line 1223 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 199:
-#line 535 "DynareBison.yy" // lalr1.cc:847
+#line 535 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.symbol_type_val) = eExogenousDet; }
 #line 1229 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 200:
-#line 539 "DynareBison.yy" // lalr1.cc:847
+#line 539 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_string_val) = new vector<string *>(); (yylhs.value.vector_string_val)->push_back((yystack_[0].value.string_val)); }
 #line 1235 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 201:
-#line 541 "DynareBison.yy" // lalr1.cc:847
+#line 541 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_string_val) = (yystack_[1].value.vector_string_val); (yystack_[1].value.vector_string_val)->push_back((yystack_[0].value.string_val)); }
 #line 1241 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 202:
-#line 543 "DynareBison.yy" // lalr1.cc:847
+#line 543 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_string_val) = (yystack_[2].value.vector_string_val); (yystack_[2].value.vector_string_val)->push_back((yystack_[0].value.string_val)); }
 #line 1247 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 203:
-#line 547 "DynareBison.yy" // lalr1.cc:847
+#line 547 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.periods((yystack_[1].value.string_val)); }
 #line 1253 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 204:
-#line 549 "DynareBison.yy" // lalr1.cc:847
+#line 549 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.periods((yystack_[1].value.string_val)); }
 #line 1259 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 205:
-#line 552 "DynareBison.yy" // lalr1.cc:847
+#line 552 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.init_param((yystack_[3].value.string_val), (yystack_[1].value.node_val)); }
 #line 1265 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 206:
-#line 555 "DynareBison.yy" // lalr1.cc:847
+#line 555 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = (yystack_[1].value.node_val);}
 #line 1271 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 207:
-#line 557 "DynareBison.yy" // lalr1.cc:847
+#line 557 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_expression_variable((yystack_[0].value.string_val)); }
 #line 1277 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 208:
-#line 559 "DynareBison.yy" // lalr1.cc:847
+#line 559 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_non_negative_constant((yystack_[0].value.string_val)); }
 #line 1283 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 209:
-#line 561 "DynareBison.yy" // lalr1.cc:847
+#line 561 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_plus((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1289 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 210:
-#line 563 "DynareBison.yy" // lalr1.cc:847
+#line 563 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_minus((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1295 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 211:
-#line 565 "DynareBison.yy" // lalr1.cc:847
+#line 565 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_divide((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1301 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 212:
-#line 567 "DynareBison.yy" // lalr1.cc:847
+#line 567 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_times((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1307 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 213:
-#line 569 "DynareBison.yy" // lalr1.cc:847
+#line 569 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_power((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1313 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 214:
-#line 571 "DynareBison.yy" // lalr1.cc:847
+#line 571 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_less((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1319 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 215:
-#line 573 "DynareBison.yy" // lalr1.cc:847
+#line 573 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_greater((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1325 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 216:
-#line 575 "DynareBison.yy" // lalr1.cc:847
+#line 575 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_less_equal((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1331 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 217:
-#line 577 "DynareBison.yy" // lalr1.cc:847
+#line 577 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_greater_equal((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1337 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 218:
-#line 579 "DynareBison.yy" // lalr1.cc:847
+#line 579 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_equal_equal((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1343 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 219:
-#line 581 "DynareBison.yy" // lalr1.cc:847
+#line 581 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_different((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1349 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 220:
-#line 583 "DynareBison.yy" // lalr1.cc:847
+#line 583 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_uminus((yystack_[0].value.node_val)); }
 #line 1355 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 221:
-#line 585 "DynareBison.yy" // lalr1.cc:847
+#line 585 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = (yystack_[0].value.node_val); }
 #line 1361 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 222:
-#line 587 "DynareBison.yy" // lalr1.cc:847
+#line 587 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_exp((yystack_[1].value.node_val)); }
 #line 1367 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 223:
-#line 589 "DynareBison.yy" // lalr1.cc:847
+#line 589 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_log((yystack_[1].value.node_val)); }
 #line 1373 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 224:
-#line 591 "DynareBison.yy" // lalr1.cc:847
+#line 591 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_log((yystack_[1].value.node_val)); }
 #line 1379 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 225:
-#line 593 "DynareBison.yy" // lalr1.cc:847
+#line 593 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_log10((yystack_[1].value.node_val)); }
 #line 1385 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 226:
-#line 595 "DynareBison.yy" // lalr1.cc:847
+#line 595 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_sin((yystack_[1].value.node_val)); }
 #line 1391 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 227:
-#line 597 "DynareBison.yy" // lalr1.cc:847
+#line 597 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_cos((yystack_[1].value.node_val)); }
 #line 1397 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 228:
-#line 599 "DynareBison.yy" // lalr1.cc:847
+#line 599 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_tan((yystack_[1].value.node_val)); }
 #line 1403 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 229:
-#line 601 "DynareBison.yy" // lalr1.cc:847
+#line 601 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_asin((yystack_[1].value.node_val)); }
 #line 1409 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 230:
-#line 603 "DynareBison.yy" // lalr1.cc:847
+#line 603 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_acos((yystack_[1].value.node_val)); }
 #line 1415 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 231:
-#line 605 "DynareBison.yy" // lalr1.cc:847
+#line 605 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_atan((yystack_[1].value.node_val)); }
 #line 1421 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 232:
-#line 607 "DynareBison.yy" // lalr1.cc:847
+#line 607 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_sqrt((yystack_[1].value.node_val)); }
 #line 1427 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 233:
-#line 609 "DynareBison.yy" // lalr1.cc:847
+#line 609 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_abs((yystack_[1].value.node_val)); }
 #line 1433 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 234:
-#line 611 "DynareBison.yy" // lalr1.cc:847
+#line 611 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_sign((yystack_[1].value.node_val)); }
 #line 1439 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 235:
-#line 613 "DynareBison.yy" // lalr1.cc:847
+#line 613 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_max((yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1445 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 236:
-#line 615 "DynareBison.yy" // lalr1.cc:847
+#line 615 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_min((yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1451 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 237:
-#line 616 "DynareBison.yy" // lalr1.cc:847
+#line 616 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.push_external_function_arg_vector_onto_stack(); }
 #line 1457 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 238:
-#line 617 "DynareBison.yy" // lalr1.cc:847
+#line 617 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_model_var_or_external_function((yystack_[4].value.string_val), false); }
 #line 1463 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 239:
-#line 619 "DynareBison.yy" // lalr1.cc:847
+#line 619 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_normcdf((yystack_[5].value.node_val), (yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1469 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 240:
-#line 621 "DynareBison.yy" // lalr1.cc:847
+#line 621 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_normcdf((yystack_[1].value.node_val)); }
 #line 1475 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 241:
-#line 623 "DynareBison.yy" // lalr1.cc:847
+#line 623 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_normpdf((yystack_[5].value.node_val), (yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1481 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 242:
-#line 625 "DynareBison.yy" // lalr1.cc:847
+#line 625 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_normpdf((yystack_[1].value.node_val)); }
 #line 1487 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 243:
-#line 627 "DynareBison.yy" // lalr1.cc:847
+#line 627 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_erf((yystack_[1].value.node_val)); }
 #line 1493 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 244:
-#line 629 "DynareBison.yy" // lalr1.cc:847
+#line 629 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_nan_constant(); }
 #line 1499 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 245:
-#line 631 "DynareBison.yy" // lalr1.cc:847
+#line 631 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_inf_constant(); }
 #line 1505 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 246:
-#line 635 "DynareBison.yy" // lalr1.cc:847
+#line 635 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_external_function_arg((yystack_[0].value.node_val)); }
 #line 1511 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 247:
-#line 637 "DynareBison.yy" // lalr1.cc:847
+#line 637 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_external_function_arg((yystack_[0].value.node_val)); }
 #line 1517 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 248:
-#line 640 "DynareBison.yy" // lalr1.cc:847
+#line 640 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {(yylhs.value.node_val) = driver.add_nan_constant();}
 #line 1523 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 250:
-#line 645 "DynareBison.yy" // lalr1.cc:847
+#line 645 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_initval(false); }
 #line 1529 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 251:
-#line 647 "DynareBison.yy" // lalr1.cc:847
+#line 647 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_initval(true); }
 #line 1535 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 252:
-#line 651 "DynareBison.yy" // lalr1.cc:847
+#line 651 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.initval_file((yystack_[2].value.string_val)); }
 #line 1541 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 253:
-#line 655 "DynareBison.yy" // lalr1.cc:847
+#line 655 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_endval(false); }
 #line 1547 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 254:
-#line 657 "DynareBison.yy" // lalr1.cc:847
+#line 657 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_endval(true); }
 #line 1553 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 257:
-#line 664 "DynareBison.yy" // lalr1.cc:847
+#line 664 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.init_val((yystack_[3].value.string_val), (yystack_[1].value.node_val)); }
 #line 1559 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 258:
-#line 667 "DynareBison.yy" // lalr1.cc:847
+#line 667 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_histval(false); }
 #line 1565 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 259:
-#line 669 "DynareBison.yy" // lalr1.cc:847
+#line 669 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_histval(true); }
 #line 1571 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 262:
-#line 676 "DynareBison.yy" // lalr1.cc:847
+#line 676 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.hist_val((yystack_[6].value.string_val), (yystack_[4].value.string_val), (yystack_[1].value.node_val)); }
 #line 1577 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 263:
-#line 679 "DynareBison.yy" // lalr1.cc:847
+#line 679 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.histval_file((yystack_[2].value.string_val)); }
 #line 1583 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 264:
-#line 682 "DynareBison.yy" // lalr1.cc:847
+#line 682 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.block(); }
 #line 1589 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 267:
-#line 685 "DynareBison.yy" // lalr1.cc:847
+#line 685 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.byte_code(); }
 #line 1595 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 268:
-#line 686 "DynareBison.yy" // lalr1.cc:847
+#line 686 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.use_dll(); }
 #line 1601 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 269:
-#line 687 "DynareBison.yy" // lalr1.cc:847
+#line 687 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.no_static();}
 #line 1607 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 270:
-#line 688 "DynareBison.yy" // lalr1.cc:847
+#line 688 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.differentiate_forward_vars_all(); }
 #line 1613 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 271:
-#line 689 "DynareBison.yy" // lalr1.cc:847
+#line 689 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.differentiate_forward_vars_some(); }
 #line 1619 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 276:
-#line 698 "DynareBison.yy" // lalr1.cc:847
+#line 698 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.begin_model(); }
 #line 1625 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 277:
-#line 699 "DynareBison.yy" // lalr1.cc:847
+#line 699 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.reset_data_tree(); }
 #line 1631 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 278:
-#line 700 "DynareBison.yy" // lalr1.cc:847
+#line 700 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.begin_model(); }
 #line 1637 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 279:
-#line 701 "DynareBison.yy" // lalr1.cc:847
+#line 701 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.reset_data_tree(); }
 #line 1643 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 284:
-#line 711 "DynareBison.yy" // lalr1.cc:847
+#line 711 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_model_equal((yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1649 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 285:
-#line 713 "DynareBison.yy" // lalr1.cc:847
+#line 713 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_model_equal_with_zero_rhs((yystack_[1].value.node_val)); }
 #line 1655 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 286:
-#line 715 "DynareBison.yy" // lalr1.cc:847
+#line 715 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_model_equal((yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1661 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 287:
-#line 717 "DynareBison.yy" // lalr1.cc:847
+#line 717 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_model_equal_with_zero_rhs((yystack_[1].value.node_val)); }
 #line 1667 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 290:
-#line 725 "DynareBison.yy" // lalr1.cc:847
+#line 725 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_equation_tags((yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 1673 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 291:
-#line 727 "DynareBison.yy" // lalr1.cc:847
+#line 727 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_equation_tags((yystack_[0].value.string_val), new string()); }
 #line 1679 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 292:
-#line 731 "DynareBison.yy" // lalr1.cc:847
+#line 731 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = (yystack_[1].value.node_val);}
 #line 1685 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 293:
-#line 733 "DynareBison.yy" // lalr1.cc:847
+#line 733 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_model_variable((yystack_[0].value.string_val)); }
 #line 1691 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 294:
-#line 735 "DynareBison.yy" // lalr1.cc:847
+#line 735 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_non_negative_constant((yystack_[0].value.string_val)); }
 #line 1697 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 295:
-#line 737 "DynareBison.yy" // lalr1.cc:847
+#line 737 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_plus((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1703 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 296:
-#line 739 "DynareBison.yy" // lalr1.cc:847
+#line 739 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_minus((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1709 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 297:
-#line 741 "DynareBison.yy" // lalr1.cc:847
+#line 741 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_divide((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1715 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 298:
-#line 743 "DynareBison.yy" // lalr1.cc:847
+#line 743 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_times((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1721 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 299:
-#line 745 "DynareBison.yy" // lalr1.cc:847
+#line 745 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_less((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1727 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 300:
-#line 747 "DynareBison.yy" // lalr1.cc:847
+#line 747 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_greater((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1733 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 301:
-#line 749 "DynareBison.yy" // lalr1.cc:847
+#line 749 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_less_equal((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1739 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 302:
-#line 751 "DynareBison.yy" // lalr1.cc:847
+#line 751 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_greater_equal((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1745 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 303:
-#line 753 "DynareBison.yy" // lalr1.cc:847
+#line 753 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_equal_equal((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1751 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 304:
-#line 755 "DynareBison.yy" // lalr1.cc:847
+#line 755 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_different((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1757 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 305:
-#line 757 "DynareBison.yy" // lalr1.cc:847
+#line 757 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_power((yystack_[2].value.node_val), (yystack_[0].value.node_val)); }
 #line 1763 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 306:
-#line 759 "DynareBison.yy" // lalr1.cc:847
+#line 759 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_expectation((yystack_[4].value.string_val), (yystack_[1].value.node_val)); }
 #line 1769 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 307:
-#line 761 "DynareBison.yy" // lalr1.cc:847
+#line 761 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_uminus((yystack_[0].value.node_val)); }
 #line 1775 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 308:
-#line 763 "DynareBison.yy" // lalr1.cc:847
+#line 763 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = (yystack_[0].value.node_val); }
 #line 1781 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 309:
-#line 765 "DynareBison.yy" // lalr1.cc:847
+#line 765 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_exp((yystack_[1].value.node_val)); }
 #line 1787 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 310:
-#line 767 "DynareBison.yy" // lalr1.cc:847
+#line 767 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_log((yystack_[1].value.node_val)); }
 #line 1793 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 311:
-#line 769 "DynareBison.yy" // lalr1.cc:847
+#line 769 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_log((yystack_[1].value.node_val)); }
 #line 1799 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 312:
-#line 771 "DynareBison.yy" // lalr1.cc:847
+#line 771 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_log10((yystack_[1].value.node_val)); }
 #line 1805 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 313:
-#line 773 "DynareBison.yy" // lalr1.cc:847
+#line 773 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_sin((yystack_[1].value.node_val)); }
 #line 1811 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 314:
-#line 775 "DynareBison.yy" // lalr1.cc:847
+#line 775 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_cos((yystack_[1].value.node_val)); }
 #line 1817 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 315:
-#line 777 "DynareBison.yy" // lalr1.cc:847
+#line 777 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_tan((yystack_[1].value.node_val)); }
 #line 1823 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 316:
-#line 779 "DynareBison.yy" // lalr1.cc:847
+#line 779 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_asin((yystack_[1].value.node_val)); }
 #line 1829 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 317:
-#line 781 "DynareBison.yy" // lalr1.cc:847
+#line 781 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_acos((yystack_[1].value.node_val)); }
 #line 1835 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 318:
-#line 783 "DynareBison.yy" // lalr1.cc:847
+#line 783 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_atan((yystack_[1].value.node_val)); }
 #line 1841 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 319:
-#line 785 "DynareBison.yy" // lalr1.cc:847
+#line 785 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_sqrt((yystack_[1].value.node_val)); }
 #line 1847 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 320:
-#line 787 "DynareBison.yy" // lalr1.cc:847
+#line 787 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_abs((yystack_[1].value.node_val)); }
 #line 1853 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 321:
-#line 789 "DynareBison.yy" // lalr1.cc:847
+#line 789 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_sign((yystack_[1].value.node_val)); }
 #line 1859 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 322:
-#line 791 "DynareBison.yy" // lalr1.cc:847
+#line 791 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_max((yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1865 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 323:
-#line 793 "DynareBison.yy" // lalr1.cc:847
+#line 793 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_min((yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1871 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 324:
-#line 794 "DynareBison.yy" // lalr1.cc:847
+#line 794 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.push_external_function_arg_vector_onto_stack(); }
 #line 1877 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 325:
-#line 795 "DynareBison.yy" // lalr1.cc:847
+#line 795 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_model_var_or_external_function((yystack_[4].value.string_val), true); }
 #line 1883 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 326:
-#line 797 "DynareBison.yy" // lalr1.cc:847
+#line 797 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_normcdf((yystack_[5].value.node_val), (yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1889 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 327:
-#line 799 "DynareBison.yy" // lalr1.cc:847
+#line 799 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_normcdf((yystack_[1].value.node_val)); }
 #line 1895 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 328:
-#line 801 "DynareBison.yy" // lalr1.cc:847
+#line 801 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_normpdf((yystack_[5].value.node_val), (yystack_[3].value.node_val), (yystack_[1].value.node_val)); }
 #line 1901 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 329:
-#line 803 "DynareBison.yy" // lalr1.cc:847
+#line 803 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_normpdf((yystack_[1].value.node_val)); }
 #line 1907 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 330:
-#line 805 "DynareBison.yy" // lalr1.cc:847
+#line 805 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_erf((yystack_[1].value.node_val)); }
 #line 1913 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 331:
-#line 807 "DynareBison.yy" // lalr1.cc:847
+#line 807 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.node_val) = driver.add_steady_state((yystack_[1].value.node_val)); }
 #line 1919 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 332:
-#line 811 "DynareBison.yy" // lalr1.cc:847
+#line 811 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_external_function_arg((yystack_[0].value.node_val)); }
 #line 1925 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 333:
-#line 813 "DynareBison.yy" // lalr1.cc:847
+#line 813 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_external_function_arg((yystack_[0].value.node_val)); }
 #line 1931 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 334:
-#line 817 "DynareBison.yy" // lalr1.cc:847
+#line 817 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_and_init_model_local_variable((yystack_[3].value.string_val), (yystack_[1].value.node_val)); }
 #line 1937 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 335:
-#line 819 "DynareBison.yy" // lalr1.cc:847
+#line 819 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_shocks(false); }
 #line 1943 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 336:
-#line 820 "DynareBison.yy" // lalr1.cc:847
+#line 820 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_shocks(true); }
 #line 1949 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 340:
-#line 829 "DynareBison.yy" // lalr1.cc:847
+#line 829 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_stderr_shock((yystack_[4].value.string_val), (yystack_[1].value.node_val)); }
 #line 1955 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 341:
-#line 831 "DynareBison.yy" // lalr1.cc:847
+#line 831 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_var_shock((yystack_[3].value.string_val), (yystack_[1].value.node_val)); }
 #line 1961 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 342:
-#line 833 "DynareBison.yy" // lalr1.cc:847
+#line 833 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_covar_shock((yystack_[5].value.string_val), (yystack_[3].value.string_val), (yystack_[1].value.node_val)); }
 #line 1967 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 343:
-#line 835 "DynareBison.yy" // lalr1.cc:847
+#line 835 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_correl_shock((yystack_[5].value.string_val), (yystack_[3].value.string_val), (yystack_[1].value.node_val)); }
 #line 1973 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 344:
-#line 839 "DynareBison.yy" // lalr1.cc:847
+#line 839 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_det_shock((yystack_[7].value.string_val), false); }
 #line 1979 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 345:
-#line 842 "DynareBison.yy" // lalr1.cc:847
+#line 842 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.begin_svar_identification();}
 #line 1985 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 346:
-#line 843 "DynareBison.yy" // lalr1.cc:847
+#line 843 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_svar_identification(); }
 #line 1991 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 349:
-#line 851 "DynareBison.yy" // lalr1.cc:847
+#line 851 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.combine_lag_and_restriction((yystack_[2].value.string_val)); }
 #line 1997 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 350:
-#line 853 "DynareBison.yy" // lalr1.cc:847
+#line 853 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_constants_exclusion(); }
 #line 2003 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 351:
-#line 855 "DynareBison.yy" // lalr1.cc:847
+#line 855 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_restriction_equation_nbr((yystack_[1].value.string_val));}
 #line 2009 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 352:
-#line 857 "DynareBison.yy" // lalr1.cc:847
+#line 857 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.add_restriction_equal();}
 #line 2015 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 354:
-#line 860 "DynareBison.yy" // lalr1.cc:847
+#line 860 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_upper_cholesky(); }
 #line 2021 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 355:
-#line 862 "DynareBison.yy" // lalr1.cc:847
+#line 862 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_lower_cholesky(); }
 #line 2027 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 356:
-#line 866 "DynareBison.yy" // lalr1.cc:847
+#line 866 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_restriction_in_equation((yystack_[3].value.string_val)); }
 #line 2033 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 357:
-#line 868 "DynareBison.yy" // lalr1.cc:847
+#line 868 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_restriction_in_equation((yystack_[3].value.string_val)); }
 #line 2039 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 358:
-#line 872 "DynareBison.yy" // lalr1.cc:847
+#line 872 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_in_svar_restriction_symbols((yystack_[0].value.string_val)); }
 #line 2045 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 359:
-#line 874 "DynareBison.yy" // lalr1.cc:847
+#line 874 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_in_svar_restriction_symbols((yystack_[0].value.string_val)); }
 #line 2051 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 360:
-#line 877 "DynareBison.yy" // lalr1.cc:847
+#line 877 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.check_restriction_expression_constant((yystack_[0].value.node_val));}
 #line 2057 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 364:
-#line 886 "DynareBison.yy" // lalr1.cc:847
+#line 886 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_positive_restriction_element((yystack_[3].value.string_val),(yystack_[1].value.string_val));}
 #line 2063 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 365:
-#line 888 "DynareBison.yy" // lalr1.cc:847
+#line 888 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_positive_restriction_element((yystack_[3].value.string_val),(yystack_[1].value.string_val));}
 #line 2069 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 366:
-#line 890 "DynareBison.yy" // lalr1.cc:847
+#line 890 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_negative_restriction_element((yystack_[3].value.string_val),(yystack_[1].value.string_val));}
 #line 2075 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 367:
-#line 892 "DynareBison.yy" // lalr1.cc:847
+#line 892 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_positive_restriction_element((yystack_[7].value.node_val),(yystack_[3].value.string_val),(yystack_[1].value.string_val));}
 #line 2081 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 368:
-#line 896 "DynareBison.yy" // lalr1.cc:847
+#line 896 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_svar_global_identification_check(); }
 #line 2087 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 369:
-#line 900 "DynareBison.yy" // lalr1.cc:847
+#line 900 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.markov_switching(); }
 #line 2093 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 378:
-#line 916 "DynareBison.yy" // lalr1.cc:847
+#line 916 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.svar(); }
 #line 2099 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 385:
-#line 929 "DynareBison.yy" // lalr1.cc:847
+#line 929 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_mshocks(false); }
 #line 2105 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 386:
-#line 930 "DynareBison.yy" // lalr1.cc:847
+#line 930 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_mshocks(true); }
 #line 2111 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 389:
-#line 938 "DynareBison.yy" // lalr1.cc:847
+#line 938 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_period((yystack_[0].value.string_val)); }
 #line 2117 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 390:
-#line 940 "DynareBison.yy" // lalr1.cc:847
+#line 940 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_period((yystack_[0].value.string_val)); }
 #line 2123 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 391:
-#line 942 "DynareBison.yy" // lalr1.cc:847
+#line 942 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_period((yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 2129 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 392:
-#line 944 "DynareBison.yy" // lalr1.cc:847
+#line 944 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_period((yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 2135 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 393:
-#line 946 "DynareBison.yy" // lalr1.cc:847
+#line 946 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_period((yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 2141 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 394:
-#line 948 "DynareBison.yy" // lalr1.cc:847
+#line 948 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_period((yystack_[0].value.string_val)); }
 #line 2147 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 395:
-#line 951 "DynareBison.yy" // lalr1.cc:847
+#line 951 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.do_sigma_e(); }
 #line 2153 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 396:
-#line 954 "DynareBison.yy" // lalr1.cc:847
+#line 954 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_value((yystack_[1].value.node_val)); }
 #line 2159 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 397:
-#line 956 "DynareBison.yy" // lalr1.cc:847
+#line 956 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_value((yystack_[1].value.node_val)); }
 #line 2165 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 398:
-#line 958 "DynareBison.yy" // lalr1.cc:847
+#line 958 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_value((yystack_[1].value.node_val)); }
 #line 2171 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 399:
-#line 960 "DynareBison.yy" // lalr1.cc:847
+#line 960 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_value((yystack_[0].value.string_val)); }
 #line 2177 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 400:
-#line 962 "DynareBison.yy" // lalr1.cc:847
+#line 962 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_value((yystack_[0].value.string_val)); }
 #line 2183 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 401:
-#line 964 "DynareBison.yy" // lalr1.cc:847
+#line 964 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_value((yystack_[0].value.string_val)); }
 #line 2189 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 402:
-#line 968 "DynareBison.yy" // lalr1.cc:847
+#line 968 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_of_row(); }
 #line 2195 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 403:
-#line 970 "DynareBison.yy" // lalr1.cc:847
+#line 970 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_of_row(); }
 #line 2201 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 404:
-#line 974 "DynareBison.yy" // lalr1.cc:847
+#line 974 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_to_row((yystack_[1].value.node_val)); }
 #line 2207 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 405:
-#line 976 "DynareBison.yy" // lalr1.cc:847
+#line 976 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_to_row_const((yystack_[0].value.string_val)); }
 #line 2213 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 406:
-#line 978 "DynareBison.yy" // lalr1.cc:847
+#line 978 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_to_row((yystack_[1].value.node_val)); }
 #line 2219 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 407:
-#line 980 "DynareBison.yy" // lalr1.cc:847
+#line 980 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_to_row_const((yystack_[0].value.string_val)); }
 #line 2225 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 408:
-#line 982 "DynareBison.yy" // lalr1.cc:847
+#line 982 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_to_row((yystack_[1].value.node_val)); }
 #line 2231 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 409:
-#line 984 "DynareBison.yy" // lalr1.cc:847
+#line 984 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_to_row_const((yystack_[0].value.string_val)); }
 #line 2237 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 410:
-#line 988 "DynareBison.yy" // lalr1.cc:847
+#line 988 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.steady(); }
 #line 2243 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 411:
-#line 990 "DynareBison.yy" // lalr1.cc:847
+#line 990 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.steady(); }
 #line 2249 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 422:
-#line 1008 "DynareBison.yy" // lalr1.cc:847
+#line 1008 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.check(); }
 #line 2255 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 423:
-#line 1010 "DynareBison.yy" // lalr1.cc:847
+#line 1010 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.check(); }
 #line 2261 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 428:
-#line 1022 "DynareBison.yy" // lalr1.cc:847
+#line 1022 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.model_info(); }
 #line 2267 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 429:
-#line 1024 "DynareBison.yy" // lalr1.cc:847
+#line 1024 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.model_info(); }
 #line 2273 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 433:
-#line 1033 "DynareBison.yy" // lalr1.cc:847
+#line 1033 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.perfect_foresight_setup(); }
 #line 2279 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 434:
-#line 1035 "DynareBison.yy" // lalr1.cc:847
+#line 1035 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.perfect_foresight_setup(); }
 #line 2285 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 439:
-#line 1047 "DynareBison.yy" // lalr1.cc:847
+#line 1047 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.perfect_foresight_solver(); }
 #line 2291 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 440:
-#line 1049 "DynareBison.yy" // lalr1.cc:847
+#line 1049 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.perfect_foresight_solver(); }
 #line 2297 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 455:
-#line 1071 "DynareBison.yy" // lalr1.cc:847
+#line 1071 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.prior_posterior_function(true); }
 #line 2303 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 456:
-#line 1075 "DynareBison.yy" // lalr1.cc:847
+#line 1075 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.prior_posterior_function(false); }
 #line 2309 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 461:
-#line 1087 "DynareBison.yy" // lalr1.cc:847
+#line 1087 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.simul(); }
 #line 2315 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 462:
-#line 1089 "DynareBison.yy" // lalr1.cc:847
+#line 1089 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.simul(); }
 #line 2321 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 467:
-#line 1101 "DynareBison.yy" // lalr1.cc:847
+#line 1101 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.external_function(); }
 #line 2327 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 474:
-#line 1115 "DynareBison.yy" // lalr1.cc:847
+#line 1115 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.stoch_simul(); }
 #line 2333 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 475:
-#line 1117 "DynareBison.yy" // lalr1.cc:847
+#line 1117 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.stoch_simul(); }
 #line 2339 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 476:
-#line 1119 "DynareBison.yy" // lalr1.cc:847
+#line 1119 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.stoch_simul(); }
 #line 2345 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 477:
-#line 1121 "DynareBison.yy" // lalr1.cc:847
+#line 1121 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.stoch_simul(); }
 #line 2351 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 528:
-#line 1181 "DynareBison.yy" // lalr1.cc:847
+#line 1181 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_in_symbol_list((yystack_[0].value.string_val)); }
 #line 2357 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 529:
-#line 1183 "DynareBison.yy" // lalr1.cc:847
+#line 1183 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_in_symbol_list((yystack_[0].value.string_val)); }
 #line 2363 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 530:
-#line 1185 "DynareBison.yy" // lalr1.cc:847
+#line 1185 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_in_symbol_list((yystack_[0].value.string_val)); }
 #line 2369 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 532:
-#line 1190 "DynareBison.yy" // lalr1.cc:847
+#line 1190 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     string *colon = new string(":");
                     driver.add_in_symbol_list(colon);
@@ -2378,67 +2378,67 @@ namespace Dynare {
     break;
 
   case 533:
-#line 1197 "DynareBison.yy" // lalr1.cc:847
+#line 1197 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 2384 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 534:
-#line 1199 "DynareBison.yy" // lalr1.cc:847
+#line 1199 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yystack_[0].value.string_val)->insert(0, "-"); (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 2390 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 538:
-#line 1208 "DynareBison.yy" // lalr1.cc:847
+#line 1208 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 2396 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 539:
-#line 1210 "DynareBison.yy" // lalr1.cc:847
+#line 1210 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yystack_[0].value.string_val)->insert(0, "-"); (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 2402 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 541:
-#line 1215 "DynareBison.yy" // lalr1.cc:847
+#line 1215 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = new string ("Inf"); }
 #line 2408 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 542:
-#line 1217 "DynareBison.yy" // lalr1.cc:847
+#line 1217 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = new string ("-Inf"); }
 #line 2414 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 543:
-#line 1219 "DynareBison.yy" // lalr1.cc:847
+#line 1219 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = new string ("Inf"); }
 #line 2420 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 546:
-#line 1226 "DynareBison.yy" // lalr1.cc:847
+#line 1226 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.estimated_params(); }
 #line 2426 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 547:
-#line 1229 "DynareBison.yy" // lalr1.cc:847
+#line 1229 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_estimated_params_element(); }
 #line 2432 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 548:
-#line 1231 "DynareBison.yy" // lalr1.cc:847
+#line 1231 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_estimated_params_element(); }
 #line 2438 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 551:
-#line 1238 "DynareBison.yy" // lalr1.cc:847
+#line 1238 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.type = 1;
                     driver.estim_params.name = *(yystack_[0].value.string_val);
@@ -2448,7 +2448,7 @@ namespace Dynare {
     break;
 
   case 552:
-#line 1244 "DynareBison.yy" // lalr1.cc:847
+#line 1244 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.type = 2;
                     driver.estim_params.name = *(yystack_[0].value.string_val);
@@ -2458,7 +2458,7 @@ namespace Dynare {
     break;
 
   case 553:
-#line 1250 "DynareBison.yy" // lalr1.cc:847
+#line 1250 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.type = 3;
                     driver.estim_params.name = *(yystack_[2].value.string_val);
@@ -2470,7 +2470,7 @@ namespace Dynare {
     break;
 
   case 554:
-#line 1258 "DynareBison.yy" // lalr1.cc:847
+#line 1258 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.type = 2;
                     driver.estim_params.name = "dsge_prior_weight";
@@ -2479,7 +2479,7 @@ namespace Dynare {
     break;
 
   case 555:
-#line 1265 "DynareBison.yy" // lalr1.cc:847
+#line 1265 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.prior = (yystack_[2].value.prior_distributions_val);
                   }
@@ -2487,7 +2487,7 @@ namespace Dynare {
     break;
 
   case 556:
-#line 1269 "DynareBison.yy" // lalr1.cc:847
+#line 1269 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.init_val = (yystack_[4].value.node_val);
                     driver.estim_params.prior = (yystack_[2].value.prior_distributions_val);
@@ -2496,7 +2496,7 @@ namespace Dynare {
     break;
 
   case 557:
-#line 1274 "DynareBison.yy" // lalr1.cc:847
+#line 1274 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.init_val = (yystack_[8].value.node_val);
                     driver.estim_params.low_bound = (yystack_[6].value.node_val);
@@ -2507,7 +2507,7 @@ namespace Dynare {
     break;
 
   case 558:
-#line 1281 "DynareBison.yy" // lalr1.cc:847
+#line 1281 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.init_val = (yystack_[0].value.node_val);
                   }
@@ -2515,7 +2515,7 @@ namespace Dynare {
     break;
 
   case 559:
-#line 1285 "DynareBison.yy" // lalr1.cc:847
+#line 1285 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.init_val = (yystack_[4].value.node_val);
                     driver.estim_params.low_bound = (yystack_[2].value.node_val);
@@ -2525,7 +2525,7 @@ namespace Dynare {
     break;
 
   case 560:
-#line 1293 "DynareBison.yy" // lalr1.cc:847
+#line 1293 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.mean = (yystack_[2].value.node_val);
                     driver.estim_params.std = (yystack_[0].value.node_val);
@@ -2534,7 +2534,7 @@ namespace Dynare {
     break;
 
   case 561:
-#line 1298 "DynareBison.yy" // lalr1.cc:847
+#line 1298 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.mean = (yystack_[4].value.node_val);
                     driver.estim_params.std = (yystack_[2].value.node_val);
@@ -2544,7 +2544,7 @@ namespace Dynare {
     break;
 
   case 562:
-#line 1304 "DynareBison.yy" // lalr1.cc:847
+#line 1304 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.mean = (yystack_[6].value.node_val);
                     driver.estim_params.std = (yystack_[4].value.node_val);
@@ -2555,7 +2555,7 @@ namespace Dynare {
     break;
 
   case 563:
-#line 1311 "DynareBison.yy" // lalr1.cc:847
+#line 1311 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.estim_params.mean = (yystack_[8].value.node_val);
                     driver.estim_params.std = (yystack_[6].value.node_val);
@@ -2567,37 +2567,37 @@ namespace Dynare {
     break;
 
   case 564:
-#line 1321 "DynareBison.yy" // lalr1.cc:847
+#line 1321 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.estimated_params_init(); }
 #line 2573 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 565:
-#line 1323 "DynareBison.yy" // lalr1.cc:847
+#line 1323 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.estimated_params_init(true); }
 #line 2579 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 566:
-#line 1325 "DynareBison.yy" // lalr1.cc:847
+#line 1325 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.estimated_params_init(true); }
 #line 2585 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 567:
-#line 1329 "DynareBison.yy" // lalr1.cc:847
+#line 1329 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_estimated_params_element(); }
 #line 2591 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 568:
-#line 1331 "DynareBison.yy" // lalr1.cc:847
+#line 1331 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_estimated_params_element(); }
 #line 2597 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 569:
-#line 1335 "DynareBison.yy" // lalr1.cc:847
+#line 1335 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                         driver.estim_params.type = 1;
                         driver.estim_params.name = *(yystack_[3].value.string_val);
@@ -2608,7 +2608,7 @@ namespace Dynare {
     break;
 
   case 570:
-#line 1342 "DynareBison.yy" // lalr1.cc:847
+#line 1342 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                         driver.estim_params.type = 3;
                         driver.estim_params.name = *(yystack_[5].value.string_val);
@@ -2621,7 +2621,7 @@ namespace Dynare {
     break;
 
   case 571:
-#line 1351 "DynareBison.yy" // lalr1.cc:847
+#line 1351 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                         driver.estim_params.type = 2;
                         driver.estim_params.name = *(yystack_[3].value.string_val);
@@ -2632,25 +2632,25 @@ namespace Dynare {
     break;
 
   case 572:
-#line 1360 "DynareBison.yy" // lalr1.cc:847
+#line 1360 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.estimated_params_bounds(); }
 #line 2638 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 573:
-#line 1363 "DynareBison.yy" // lalr1.cc:847
+#line 1363 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_estimated_params_element(); }
 #line 2644 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 574:
-#line 1365 "DynareBison.yy" // lalr1.cc:847
+#line 1365 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_estimated_params_element(); }
 #line 2650 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 575:
-#line 1369 "DynareBison.yy" // lalr1.cc:847
+#line 1369 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                           driver.estim_params.type = 1;
                           driver.estim_params.name = *(yystack_[5].value.string_val);
@@ -2662,7 +2662,7 @@ namespace Dynare {
     break;
 
   case 576:
-#line 1377 "DynareBison.yy" // lalr1.cc:847
+#line 1377 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                           driver.estim_params.type = 3;
                           driver.estim_params.name = *(yystack_[7].value.string_val);
@@ -2676,7 +2676,7 @@ namespace Dynare {
     break;
 
   case 577:
-#line 1387 "DynareBison.yy" // lalr1.cc:847
+#line 1387 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                           driver.estim_params.type = 2;
                           driver.estim_params.name = *(yystack_[5].value.string_val);
@@ -2688,25 +2688,25 @@ namespace Dynare {
     break;
 
   case 578:
-#line 1397 "DynareBison.yy" // lalr1.cc:847
+#line 1397 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.osr_params_bounds(); }
 #line 2694 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 579:
-#line 1400 "DynareBison.yy" // lalr1.cc:847
+#line 1400 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_osr_params_element(); }
 #line 2700 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 580:
-#line 1402 "DynareBison.yy" // lalr1.cc:847
+#line 1402 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_osr_params_element(); }
 #line 2706 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 581:
-#line 1406 "DynareBison.yy" // lalr1.cc:847
+#line 1406 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                     driver.osr_params.name = *(yystack_[5].value.string_val);
                     driver.osr_params.low_bound = (yystack_[3].value.node_val);
@@ -2717,145 +2717,145 @@ namespace Dynare {
     break;
 
   case 582:
-#line 1415 "DynareBison.yy" // lalr1.cc:847
+#line 1415 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eBeta; }
 #line 2723 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 583:
-#line 1417 "DynareBison.yy" // lalr1.cc:847
+#line 1417 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eGamma; }
 #line 2729 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 584:
-#line 1419 "DynareBison.yy" // lalr1.cc:847
+#line 1419 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eNormal; }
 #line 2735 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 585:
-#line 1421 "DynareBison.yy" // lalr1.cc:847
+#line 1421 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eInvGamma; }
 #line 2741 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 586:
-#line 1423 "DynareBison.yy" // lalr1.cc:847
+#line 1423 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eInvGamma1; }
 #line 2747 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 587:
-#line 1425 "DynareBison.yy" // lalr1.cc:847
+#line 1425 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eUniform; }
 #line 2753 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 588:
-#line 1427 "DynareBison.yy" // lalr1.cc:847
+#line 1427 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eInvGamma2; }
 #line 2759 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 589:
-#line 1429 "DynareBison.yy" // lalr1.cc:847
+#line 1429 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eDirichlet; }
 #line 2765 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 590:
-#line 1431 "DynareBison.yy" // lalr1.cc:847
+#line 1431 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eWeibull; }
 #line 2771 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 591:
-#line 1435 "DynareBison.yy" // lalr1.cc:847
+#line 1435 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eBeta; }
 #line 2777 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 592:
-#line 1437 "DynareBison.yy" // lalr1.cc:847
+#line 1437 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eGamma; }
 #line 2783 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 593:
-#line 1439 "DynareBison.yy" // lalr1.cc:847
+#line 1439 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eNormal; }
 #line 2789 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 594:
-#line 1441 "DynareBison.yy" // lalr1.cc:847
+#line 1441 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eInvGamma; }
 #line 2795 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 595:
-#line 1443 "DynareBison.yy" // lalr1.cc:847
+#line 1443 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eInvGamma1; }
 #line 2801 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 596:
-#line 1445 "DynareBison.yy" // lalr1.cc:847
+#line 1445 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eUniform; }
 #line 2807 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 597:
-#line 1447 "DynareBison.yy" // lalr1.cc:847
+#line 1447 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eInvGamma2; }
 #line 2813 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 598:
-#line 1449 "DynareBison.yy" // lalr1.cc:847
+#line 1449 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.prior_distributions_val) = eWeibull; }
 #line 2819 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 599:
-#line 1452 "DynareBison.yy" // lalr1.cc:847
+#line 1452 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 2825 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 600:
-#line 1455 "DynareBison.yy" // lalr1.cc:847
+#line 1455 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 2831 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 601:
-#line 1457 "DynareBison.yy" // lalr1.cc:847
+#line 1457 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[2].value.string_val); (yylhs.value.string_val)->append("+").append(*(yystack_[0].value.string_val)); }
 #line 2837 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 602:
-#line 1461 "DynareBison.yy" // lalr1.cc:847
+#line 1461 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_time((yystack_[2].value.string_val)); }
 #line 2843 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 603:
-#line 1465 "DynareBison.yy" // lalr1.cc:847
+#line 1465 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.estimation_data(); }
 #line 2849 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 613:
-#line 1482 "DynareBison.yy" // lalr1.cc:847
+#line 1482 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_subsamples((yystack_[4].value.vector_string_val)->at(0), (yystack_[4].value.vector_string_val)->at(1)); }
 #line 2855 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 614:
-#line 1486 "DynareBison.yy" // lalr1.cc:847
+#line 1486 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                   driver.copy_subsamples((yystack_[3].value.vector_string_val)->at(0), (yystack_[3].value.vector_string_val)->at(1), (yystack_[1].value.vector_string_val)->at(0), (yystack_[1].value.vector_string_val)->at(1));
                   delete (yystack_[3].value.vector_string_val);
@@ -2865,7 +2865,7 @@ namespace Dynare {
     break;
 
   case 615:
-#line 1494 "DynareBison.yy" // lalr1.cc:847
+#line 1494 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       (yylhs.value.vector_string_val) = new vector<string *>();
                       (yylhs.value.vector_string_val)->push_back((yystack_[2].value.string_val));
@@ -2875,7 +2875,7 @@ namespace Dynare {
     break;
 
   case 616:
-#line 1500 "DynareBison.yy" // lalr1.cc:847
+#line 1500 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       (yylhs.value.vector_string_val) = new vector<string *>();
                       (yylhs.value.vector_string_val)->push_back((yystack_[3].value.string_val));
@@ -2885,7 +2885,7 @@ namespace Dynare {
     break;
 
   case 617:
-#line 1506 "DynareBison.yy" // lalr1.cc:847
+#line 1506 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       (yylhs.value.vector_string_val) = new vector<string *>();
                       (yylhs.value.vector_string_val)->push_back((yystack_[5].value.string_val));
@@ -2895,91 +2895,91 @@ namespace Dynare {
     break;
 
   case 620:
-#line 1517 "DynareBison.yy" // lalr1.cc:847
+#line 1517 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior_variance(); driver.prior_shape = eNoShape; }
 #line 2901 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 621:
-#line 1518 "DynareBison.yy" // lalr1.cc:847
+#line 1518 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior((yystack_[7].value.string_val), new string ("")); }
 #line 2907 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 622:
-#line 1519 "DynareBison.yy" // lalr1.cc:847
+#line 1519 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior_variance(); driver.prior_shape = eNoShape; }
 #line 2913 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 623:
-#line 1520 "DynareBison.yy" // lalr1.cc:847
+#line 1520 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior((yystack_[9].value.string_val), (yystack_[7].value.string_val)); }
 #line 2919 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 624:
-#line 1521 "DynareBison.yy" // lalr1.cc:847
+#line 1521 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior_variance(); driver.prior_shape = eNoShape; }
 #line 2925 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 625:
-#line 1522 "DynareBison.yy" // lalr1.cc:847
+#line 1522 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_joint_prior((yystack_[7].value.vector_string_val)); }
 #line 2931 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 626:
-#line 1523 "DynareBison.yy" // lalr1.cc:847
+#line 1523 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior_variance(); driver.prior_shape = eNoShape; }
 #line 2937 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 627:
-#line 1524 "DynareBison.yy" // lalr1.cc:847
+#line 1524 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_std_prior((yystack_[8].value.string_val), new string ("")); }
 #line 2943 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 628:
-#line 1525 "DynareBison.yy" // lalr1.cc:847
+#line 1525 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior_variance(); driver.prior_shape = eNoShape; }
 #line 2949 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 629:
-#line 1526 "DynareBison.yy" // lalr1.cc:847
+#line 1526 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_std_prior((yystack_[10].value.string_val), (yystack_[7].value.string_val)); }
 #line 2955 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 630:
-#line 1527 "DynareBison.yy" // lalr1.cc:847
+#line 1527 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior_variance(); driver.prior_shape = eNoShape; }
 #line 2961 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 631:
-#line 1528 "DynareBison.yy" // lalr1.cc:847
+#line 1528 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_corr_prior((yystack_[10].value.string_val), (yystack_[8].value.string_val), new string ("")); }
 #line 2967 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 632:
-#line 1529 "DynareBison.yy" // lalr1.cc:847
+#line 1529 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior_variance(); driver.prior_shape = eNoShape; }
 #line 2973 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 633:
-#line 1530 "DynareBison.yy" // lalr1.cc:847
+#line 1530 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_corr_prior((yystack_[12].value.string_val), (yystack_[10].value.string_val), (yystack_[7].value.string_val)); }
 #line 2979 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 658:
-#line 1566 "DynareBison.yy" // lalr1.cc:847
+#line 1566 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
              driver.copy_prior((yystack_[3].value.vector_string_val)->at(0), (yystack_[3].value.vector_string_val)->at(1), (yystack_[3].value.vector_string_val)->at(2), (yystack_[3].value.vector_string_val)->at(3),
                                (yystack_[1].value.vector_string_val)->at(0), (yystack_[1].value.vector_string_val)->at(1), (yystack_[1].value.vector_string_val)->at(2), (yystack_[1].value.vector_string_val)->at(3));
@@ -2990,7 +2990,7 @@ namespace Dynare {
     break;
 
   case 659:
-#line 1575 "DynareBison.yy" // lalr1.cc:847
+#line 1575 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                  (yylhs.value.vector_string_val) = new vector<string *>();
                  (yylhs.value.vector_string_val)->push_back(new string ("par"));
@@ -3002,7 +3002,7 @@ namespace Dynare {
     break;
 
   case 660:
-#line 1583 "DynareBison.yy" // lalr1.cc:847
+#line 1583 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                  (yylhs.value.vector_string_val) = new vector<string *>();
                  (yylhs.value.vector_string_val)->push_back(new string ("par"));
@@ -3014,7 +3014,7 @@ namespace Dynare {
     break;
 
   case 661:
-#line 1591 "DynareBison.yy" // lalr1.cc:847
+#line 1591 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                  (yylhs.value.vector_string_val) = new vector<string *>();
                  (yylhs.value.vector_string_val)->push_back(new string ("std"));
@@ -3026,7 +3026,7 @@ namespace Dynare {
     break;
 
   case 662:
-#line 1599 "DynareBison.yy" // lalr1.cc:847
+#line 1599 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                  (yylhs.value.vector_string_val) = new vector<string *>();
                  (yylhs.value.vector_string_val)->push_back(new string ("std"));
@@ -3038,7 +3038,7 @@ namespace Dynare {
     break;
 
   case 663:
-#line 1607 "DynareBison.yy" // lalr1.cc:847
+#line 1607 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                  (yylhs.value.vector_string_val) = new vector<string *>();
                  (yylhs.value.vector_string_val)->push_back(new string ("corr"));
@@ -3050,7 +3050,7 @@ namespace Dynare {
     break;
 
   case 664:
-#line 1615 "DynareBison.yy" // lalr1.cc:847
+#line 1615 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                  (yylhs.value.vector_string_val) = new vector<string *>();
                  (yylhs.value.vector_string_val)->push_back(new string ("corr"));
@@ -3062,43 +3062,43 @@ namespace Dynare {
     break;
 
   case 665:
-#line 1625 "DynareBison.yy" // lalr1.cc:847
+#line 1625 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_options((yystack_[6].value.string_val), new string ("")); }
 #line 3068 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 666:
-#line 1627 "DynareBison.yy" // lalr1.cc:847
+#line 1627 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_options((yystack_[8].value.string_val), (yystack_[6].value.string_val)); }
 #line 3074 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 667:
-#line 1629 "DynareBison.yy" // lalr1.cc:847
+#line 1629 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_std_options((yystack_[7].value.string_val), new string ("")); }
 #line 3080 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 668:
-#line 1631 "DynareBison.yy" // lalr1.cc:847
+#line 1631 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_std_options((yystack_[9].value.string_val), (yystack_[6].value.string_val)); }
 #line 3086 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 669:
-#line 1633 "DynareBison.yy" // lalr1.cc:847
+#line 1633 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_corr_options((yystack_[9].value.string_val), (yystack_[7].value.string_val), new string ("")); }
 #line 3092 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 670:
-#line 1635 "DynareBison.yy" // lalr1.cc:847
+#line 1635 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_corr_options((yystack_[11].value.string_val), (yystack_[9].value.string_val), (yystack_[6].value.string_val)); }
 #line 3098 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 676:
-#line 1648 "DynareBison.yy" // lalr1.cc:847
+#line 1648 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                driver.copy_options((yystack_[3].value.vector_string_val)->at(0), (yystack_[3].value.vector_string_val)->at(1), (yystack_[3].value.vector_string_val)->at(2), (yystack_[3].value.vector_string_val)->at(3),
                                    (yystack_[1].value.vector_string_val)->at(0), (yystack_[1].value.vector_string_val)->at(1), (yystack_[1].value.vector_string_val)->at(2), (yystack_[1].value.vector_string_val)->at(3));
@@ -3109,7 +3109,7 @@ namespace Dynare {
     break;
 
   case 677:
-#line 1657 "DynareBison.yy" // lalr1.cc:847
+#line 1657 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                    (yylhs.value.vector_string_val) = new vector<string *>();
                    (yylhs.value.vector_string_val)->push_back(new string ("par"));
@@ -3121,7 +3121,7 @@ namespace Dynare {
     break;
 
   case 678:
-#line 1665 "DynareBison.yy" // lalr1.cc:847
+#line 1665 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                    (yylhs.value.vector_string_val) = new vector<string *>();
                    (yylhs.value.vector_string_val)->push_back(new string ("par"));
@@ -3133,7 +3133,7 @@ namespace Dynare {
     break;
 
   case 679:
-#line 1673 "DynareBison.yy" // lalr1.cc:847
+#line 1673 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                    (yylhs.value.vector_string_val) = new vector<string *>();
                    (yylhs.value.vector_string_val)->push_back(new string ("std"));
@@ -3145,7 +3145,7 @@ namespace Dynare {
     break;
 
   case 680:
-#line 1681 "DynareBison.yy" // lalr1.cc:847
+#line 1681 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                    (yylhs.value.vector_string_val) = new vector<string *>();
                    (yylhs.value.vector_string_val)->push_back(new string ("std"));
@@ -3157,7 +3157,7 @@ namespace Dynare {
     break;
 
   case 681:
-#line 1689 "DynareBison.yy" // lalr1.cc:847
+#line 1689 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                    (yylhs.value.vector_string_val) = new vector<string *>();
                    (yylhs.value.vector_string_val)->push_back(new string ("corr"));
@@ -3169,7 +3169,7 @@ namespace Dynare {
     break;
 
   case 682:
-#line 1697 "DynareBison.yy" // lalr1.cc:847
+#line 1697 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                    (yylhs.value.vector_string_val) = new vector<string *>();
                    (yylhs.value.vector_string_val)->push_back(new string ("corr"));
@@ -3181,43 +3181,43 @@ namespace Dynare {
     break;
 
   case 683:
-#line 1707 "DynareBison.yy" // lalr1.cc:847
+#line 1707 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_estimation(); }
 #line 3187 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 684:
-#line 1709 "DynareBison.yy" // lalr1.cc:847
+#line 1709 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_estimation(); }
 #line 3193 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 685:
-#line 1711 "DynareBison.yy" // lalr1.cc:847
+#line 1711 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_estimation(); }
 #line 3199 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 686:
-#line 1713 "DynareBison.yy" // lalr1.cc:847
+#line 1713 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_estimation(); }
 #line 3205 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 790:
-#line 1824 "DynareBison.yy" // lalr1.cc:847
+#line 1824 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.optim_options_string((yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 3211 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 791:
-#line 1826 "DynareBison.yy" // lalr1.cc:847
+#line 1826 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.optim_options_num((yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 3217 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 794:
-#line 1834 "DynareBison.yy" // lalr1.cc:847
+#line 1834 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                              (yystack_[2].value.string_val)->insert(0, "''");
                              (yystack_[2].value.string_val)->append("'', ''");
@@ -3229,7 +3229,7 @@ namespace Dynare {
     break;
 
   case 795:
-#line 1842 "DynareBison.yy" // lalr1.cc:847
+#line 1842 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                              (yystack_[2].value.string_val)->insert(0, "''");
                              (yystack_[2].value.string_val)->append("'',");
@@ -3240,13 +3240,13 @@ namespace Dynare {
     break;
 
   case 796:
-#line 1851 "DynareBison.yy" // lalr1.cc:847
+#line 1851 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 3246 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 797:
-#line 1853 "DynareBison.yy" // lalr1.cc:847
+#line 1853 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                          (yystack_[2].value.string_val)->append(",");
                          (yystack_[2].value.string_val)->append(*(yystack_[0].value.string_val));
@@ -3256,19 +3256,19 @@ namespace Dynare {
     break;
 
   case 798:
-#line 1861 "DynareBison.yy" // lalr1.cc:847
+#line 1861 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.sampling_options_string((yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 3262 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 799:
-#line 1863 "DynareBison.yy" // lalr1.cc:847
+#line 1863 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.sampling_options_num((yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 3268 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 800:
-#line 1865 "DynareBison.yy" // lalr1.cc:847
+#line 1865 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                          (yystack_[1].value.string_val)->insert(0,"(");
                          (yystack_[1].value.string_val)->append(")");
@@ -3278,655 +3278,655 @@ namespace Dynare {
     break;
 
   case 803:
-#line 1876 "DynareBison.yy" // lalr1.cc:847
+#line 1876 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.check_varobs(); }
 #line 3284 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 805:
-#line 1879 "DynareBison.yy" // lalr1.cc:847
+#line 1879 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_varobs((yystack_[0].value.string_val)); }
 #line 3290 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 806:
-#line 1881 "DynareBison.yy" // lalr1.cc:847
+#line 1881 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_varobs((yystack_[0].value.string_val)); }
 #line 3296 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 807:
-#line 1883 "DynareBison.yy" // lalr1.cc:847
+#line 1883 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_varobs((yystack_[0].value.string_val)); }
 #line 3302 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 808:
-#line 1886 "DynareBison.yy" // lalr1.cc:847
+#line 1886 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_trends(); }
 #line 3308 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 811:
-#line 1892 "DynareBison.yy" // lalr1.cc:847
+#line 1892 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_trend_element((yystack_[4].value.string_val), (yystack_[2].value.node_val)); }
 #line 3314 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 812:
-#line 1894 "DynareBison.yy" // lalr1.cc:847
+#line 1894 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_unit_root_vars(); }
 #line 3320 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 813:
-#line 1896 "DynareBison.yy" // lalr1.cc:847
+#line 1896 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.optim_weights(); }
 #line 3326 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 814:
-#line 1899 "DynareBison.yy" // lalr1.cc:847
+#line 1899 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_optim_weights((yystack_[2].value.string_val), (yystack_[1].value.node_val)); }
 #line 3332 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 815:
-#line 1901 "DynareBison.yy" // lalr1.cc:847
+#line 1901 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_optim_weights((yystack_[4].value.string_val), (yystack_[2].value.string_val), (yystack_[1].value.node_val)); }
 #line 3338 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 816:
-#line 1903 "DynareBison.yy" // lalr1.cc:847
+#line 1903 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_optim_weights((yystack_[2].value.string_val), (yystack_[1].value.node_val)); }
 #line 3344 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 817:
-#line 1905 "DynareBison.yy" // lalr1.cc:847
+#line 1905 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_optim_weights((yystack_[4].value.string_val), (yystack_[2].value.string_val), (yystack_[1].value.node_val)); }
 #line 3350 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 818:
-#line 1908 "DynareBison.yy" // lalr1.cc:847
+#line 1908 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_osr_params(); }
 #line 3356 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 828:
-#line 1925 "DynareBison.yy" // lalr1.cc:847
+#line 1925 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_osr(); }
 #line 3362 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 829:
-#line 1927 "DynareBison.yy" // lalr1.cc:847
+#line 1927 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_osr(); }
 #line 3368 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 830:
-#line 1929 "DynareBison.yy" // lalr1.cc:847
+#line 1929 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_osr(); }
 #line 3374 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 831:
-#line 1931 "DynareBison.yy" // lalr1.cc:847
+#line 1931 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.run_osr(); }
 #line 3380 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 832:
-#line 1935 "DynareBison.yy" // lalr1.cc:847
+#line 1935 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_dynatype((yystack_[2].value.string_val)); }
 #line 3386 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 833:
-#line 1937 "DynareBison.yy" // lalr1.cc:847
+#line 1937 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_dynatype((yystack_[3].value.string_val)); }
 #line 3392 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 834:
-#line 1941 "DynareBison.yy" // lalr1.cc:847
+#line 1941 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_dynasave((yystack_[2].value.string_val)); }
 #line 3398 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 835:
-#line 1943 "DynareBison.yy" // lalr1.cc:847
+#line 1943 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_dynasave((yystack_[3].value.string_val)); }
 #line 3404 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 836:
-#line 1947 "DynareBison.yy" // lalr1.cc:847
+#line 1947 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_load_params_and_steady_state((yystack_[2].value.string_val)); }
 #line 3410 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 837:
-#line 1951 "DynareBison.yy" // lalr1.cc:847
+#line 1951 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_save_params_and_steady_state((yystack_[2].value.string_val)); }
 #line 3416 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 838:
-#line 1955 "DynareBison.yy" // lalr1.cc:847
+#line 1955 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_identification(); }
 #line 3422 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 839:
-#line 1957 "DynareBison.yy" // lalr1.cc:847
+#line 1957 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_identification(); }
 #line 3428 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 862:
-#line 1987 "DynareBison.yy" // lalr1.cc:847
+#line 1987 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_model_comparison(); }
 #line 3434 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 863:
-#line 1989 "DynareBison.yy" // lalr1.cc:847
+#line 1989 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.run_model_comparison(); }
 #line 3440 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 866:
-#line 1997 "DynareBison.yy" // lalr1.cc:847
+#line 1997 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_parallel_local_file((yystack_[0].value.string_val)); }
 #line 3446 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 867:
-#line 1999 "DynareBison.yy" // lalr1.cc:847
+#line 1999 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_parallel_local_file((yystack_[0].value.string_val)); }
 #line 3452 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 868:
-#line 2003 "DynareBison.yy" // lalr1.cc:847
+#line 2003 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_mc_filename((yystack_[0].value.string_val)); }
 #line 3458 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 869:
-#line 2005 "DynareBison.yy" // lalr1.cc:847
+#line 2005 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_mc_filename((yystack_[3].value.string_val), (yystack_[1].value.string_val)); }
 #line 3464 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 870:
-#line 2007 "DynareBison.yy" // lalr1.cc:847
+#line 2007 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_mc_filename((yystack_[0].value.string_val)); }
 #line 3470 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 871:
-#line 2009 "DynareBison.yy" // lalr1.cc:847
+#line 2009 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_mc_filename((yystack_[3].value.string_val), (yystack_[1].value.string_val)); }
 #line 3476 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 872:
-#line 2011 "DynareBison.yy" // lalr1.cc:847
+#line 2011 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_mc_filename((yystack_[0].value.string_val)); }
 #line 3482 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 873:
-#line 2013 "DynareBison.yy" // lalr1.cc:847
+#line 2013 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_mc_filename((yystack_[3].value.string_val), (yystack_[1].value.string_val)); }
 #line 3488 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 874:
-#line 2016 "DynareBison.yy" // lalr1.cc:847
+#line 2016 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.begin_planner_objective(); }
 #line 3494 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 875:
-#line 2017 "DynareBison.yy" // lalr1.cc:847
+#line 2017 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_planner_objective((yystack_[0].value.node_val)); }
 #line 3500 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 877:
-#line 2020 "DynareBison.yy" // lalr1.cc:847
+#line 2020 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_model(); }
 #line 3506 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 878:
-#line 2022 "DynareBison.yy" // lalr1.cc:847
+#line 2022 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_model(); }
 #line 3512 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 879:
-#line 2024 "DynareBison.yy" // lalr1.cc:847
+#line 2024 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_model(); }
 #line 3518 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 880:
-#line 2026 "DynareBison.yy" // lalr1.cc:847
+#line 2026 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_model(); }
 #line 3524 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 881:
-#line 2030 "DynareBison.yy" // lalr1.cc:847
+#line 2030 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_policy(); }
 #line 3530 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 882:
-#line 2032 "DynareBison.yy" // lalr1.cc:847
+#line 2032 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_policy(); }
 #line 3536 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 883:
-#line 2034 "DynareBison.yy" // lalr1.cc:847
+#line 2034 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_policy(); }
 #line 3542 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 884:
-#line 2036 "DynareBison.yy" // lalr1.cc:847
+#line 2036 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_policy(); }
 #line 3548 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 885:
-#line 2040 "DynareBison.yy" // lalr1.cc:847
+#line 2040 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_ramsey_constraints_statement(); }
 #line 3554 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 888:
-#line 2048 "DynareBison.yy" // lalr1.cc:847
+#line 2048 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_constraint_add_less((yystack_[3].value.string_val),(yystack_[1].value.node_val)); }
 #line 3560 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 889:
-#line 2050 "DynareBison.yy" // lalr1.cc:847
+#line 2050 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_constraint_add_greater((yystack_[3].value.string_val),(yystack_[1].value.node_val)); }
 #line 3566 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 890:
-#line 2052 "DynareBison.yy" // lalr1.cc:847
+#line 2052 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_constraint_add_less_equal((yystack_[3].value.string_val),(yystack_[1].value.node_val)); }
 #line 3572 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 891:
-#line 2054 "DynareBison.yy" // lalr1.cc:847
+#line 2054 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ramsey_constraint_add_greater_equal((yystack_[3].value.string_val),(yystack_[1].value.node_val)); }
 #line 3578 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 892:
-#line 2058 "DynareBison.yy" // lalr1.cc:847
+#line 2058 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.discretionary_policy(); }
 #line 3584 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 893:
-#line 2060 "DynareBison.yy" // lalr1.cc:847
+#line 2060 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.discretionary_policy(); }
 #line 3590 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 894:
-#line 2062 "DynareBison.yy" // lalr1.cc:847
+#line 2062 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.discretionary_policy(); }
 #line 3596 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 895:
-#line 2064 "DynareBison.yy" // lalr1.cc:847
+#line 2064 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.discretionary_policy(); }
 #line 3602 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 910:
-#line 2094 "DynareBison.yy" // lalr1.cc:847
+#line 2094 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.write_latex_dynamic_model(); }
 #line 3608 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 911:
-#line 2098 "DynareBison.yy" // lalr1.cc:847
+#line 2098 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.write_latex_static_model(); }
 #line 3614 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 912:
-#line 2102 "DynareBison.yy" // lalr1.cc:847
+#line 2102 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.write_latex_original_model(); }
 #line 3620 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 913:
-#line 2106 "DynareBison.yy" // lalr1.cc:847
+#line 2106 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.shock_decomposition(); }
 #line 3626 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 914:
-#line 2108 "DynareBison.yy" // lalr1.cc:847
+#line 2108 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.shock_decomposition(); }
 #line 3632 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 915:
-#line 2110 "DynareBison.yy" // lalr1.cc:847
+#line 2110 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.shock_decomposition(); }
 #line 3638 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 916:
-#line 2112 "DynareBison.yy" // lalr1.cc:847
+#line 2112 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.shock_decomposition(); }
 #line 3644 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 936:
-#line 2141 "DynareBison.yy" // lalr1.cc:847
+#line 2141 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.bvar_density((yystack_[1].value.string_val)); }
 #line 3650 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 937:
-#line 2143 "DynareBison.yy" // lalr1.cc:847
+#line 2143 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.bvar_density((yystack_[1].value.string_val)); }
 #line 3656 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 944:
-#line 2157 "DynareBison.yy" // lalr1.cc:847
+#line 2157 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.bvar_forecast((yystack_[1].value.string_val)); }
 #line 3662 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 945:
-#line 2159 "DynareBison.yy" // lalr1.cc:847
+#line 2159 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.bvar_forecast((yystack_[1].value.string_val)); }
 #line 3668 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 996:
-#line 2217 "DynareBison.yy" // lalr1.cc:847
+#line 2217 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.sbvar(); }
 #line 3674 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 997:
-#line 2219 "DynareBison.yy" // lalr1.cc:847
+#line 2219 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.sbvar(); }
 #line 3680 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1014:
-#line 2243 "DynareBison.yy" // lalr1.cc:847
+#line 2243 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_variance_decomposition(); }
 #line 3686 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1015:
-#line 2245 "DynareBison.yy" // lalr1.cc:847
+#line 2245 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_variance_decomposition(); }
 #line 3692 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1032:
-#line 2269 "DynareBison.yy" // lalr1.cc:847
+#line 2269 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_forecast(); }
 #line 3698 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1033:
-#line 2271 "DynareBison.yy" // lalr1.cc:847
+#line 2271 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_forecast(); }
 #line 3704 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1050:
-#line 2295 "DynareBison.yy" // lalr1.cc:847
+#line 2295 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_irf(); }
 #line 3710 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1051:
-#line 2297 "DynareBison.yy" // lalr1.cc:847
+#line 2297 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_irf(); }
 #line 3716 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1052:
-#line 2299 "DynareBison.yy" // lalr1.cc:847
+#line 2299 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_irf(); }
 #line 3722 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1053:
-#line 2301 "DynareBison.yy" // lalr1.cc:847
+#line 2301 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_irf(); }
 #line 3728 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1060:
-#line 2315 "DynareBison.yy" // lalr1.cc:847
+#line 2315 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_compute_probabilities(); }
 #line 3734 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1061:
-#line 2317 "DynareBison.yy" // lalr1.cc:847
+#line 2317 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_compute_probabilities(); }
 #line 3740 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1072:
-#line 2335 "DynareBison.yy" // lalr1.cc:847
+#line 2335 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_compute_mdd(); }
 #line 3746 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1073:
-#line 2337 "DynareBison.yy" // lalr1.cc:847
+#line 2337 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_compute_mdd(); }
 #line 3752 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1083:
-#line 2354 "DynareBison.yy" // lalr1.cc:847
+#line 2354 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_simulation(); }
 #line 3758 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1084:
-#line 2356 "DynareBison.yy" // lalr1.cc:847
+#line 2356 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_simulation(); }
 #line 3764 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1122:
-#line 2401 "DynareBison.yy" // lalr1.cc:847
+#line 2401 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_estimation(); }
 #line 3770 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1123:
-#line 2403 "DynareBison.yy" // lalr1.cc:847
+#line 2403 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.ms_estimation(); }
 #line 3776 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1124:
-#line 2407 "DynareBison.yy" // lalr1.cc:847
+#line 2407 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.dynare_sensitivity(); }
 #line 3782 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1125:
-#line 2409 "DynareBison.yy" // lalr1.cc:847
+#line 2409 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.dynare_sensitivity(); }
 #line 3788 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1186:
-#line 2481 "DynareBison.yy" // lalr1.cc:847
+#line 2481 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_homotopy();}
 #line 3794 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1189:
-#line 2488 "DynareBison.yy" // lalr1.cc:847
+#line 2488 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.homotopy_val((yystack_[5].value.string_val), (yystack_[3].value.node_val), (yystack_[1].value.node_val));}
 #line 3800 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1190:
-#line 2490 "DynareBison.yy" // lalr1.cc:847
+#line 2490 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.homotopy_val((yystack_[3].value.string_val), NULL, (yystack_[1].value.node_val));}
 #line 3806 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1191:
-#line 2493 "DynareBison.yy" // lalr1.cc:847
+#line 2493 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.forecast();}
 #line 3812 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1192:
-#line 2494 "DynareBison.yy" // lalr1.cc:847
+#line 2494 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.forecast();}
 #line 3818 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1193:
-#line 2495 "DynareBison.yy" // lalr1.cc:847
+#line 2495 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.forecast();}
 #line 3824 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1194:
-#line 2496 "DynareBison.yy" // lalr1.cc:847
+#line 2496 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.forecast();}
 #line 3830 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1202:
-#line 2511 "DynareBison.yy" // lalr1.cc:847
+#line 2511 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.conditional_forecast(); }
 #line 3836 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1210:
-#line 2526 "DynareBison.yy" // lalr1.cc:847
+#line 2526 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.plot_conditional_forecast(); }
 #line 3842 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1211:
-#line 2528 "DynareBison.yy" // lalr1.cc:847
+#line 2528 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.plot_conditional_forecast((yystack_[3].value.string_val)); }
 #line 3848 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1212:
-#line 2532 "DynareBison.yy" // lalr1.cc:847
+#line 2532 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.conditional_forecast_paths(); }
 #line 3854 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1215:
-#line 2540 "DynareBison.yy" // lalr1.cc:847
+#line 2540 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_det_shock((yystack_[7].value.string_val), true); }
 #line 3860 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1216:
-#line 2543 "DynareBison.yy" // lalr1.cc:847
+#line 2543 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.begin_steady_state_model(); }
 #line 3866 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1217:
-#line 2544 "DynareBison.yy" // lalr1.cc:847
+#line 2544 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.reset_data_tree(); }
 #line 3872 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1220:
-#line 2552 "DynareBison.yy" // lalr1.cc:847
+#line 2552 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_steady_state_model_equal((yystack_[3].value.string_val), (yystack_[1].value.node_val)); }
 #line 3878 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1221:
-#line 2554 "DynareBison.yy" // lalr1.cc:847
+#line 2554 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_steady_state_model_equal_multiple((yystack_[1].value.node_val)); }
 #line 3884 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1222:
-#line 2558 "DynareBison.yy" // lalr1.cc:847
+#line 2558 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.calib_smoother(); }
 #line 3890 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1223:
-#line 2560 "DynareBison.yy" // lalr1.cc:847
+#line 2560 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.calib_smoother(); }
 #line 3896 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1224:
-#line 2562 "DynareBison.yy" // lalr1.cc:847
+#line 2562 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.calib_smoother(); }
 #line 3902 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1225:
-#line 2564 "DynareBison.yy" // lalr1.cc:847
+#line 2564 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.calib_smoother(); }
 #line 3908 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1235:
-#line 2581 "DynareBison.yy" // lalr1.cc:847
+#line 2581 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.extended_path(); }
 #line 3914 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1236:
-#line 2583 "DynareBison.yy" // lalr1.cc:847
+#line 2583 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.extended_path(); }
 #line 3920 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1245:
-#line 2599 "DynareBison.yy" // lalr1.cc:847
+#line 2599 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.model_diagnostics(); }
 #line 3926 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1246:
-#line 2603 "DynareBison.yy" // lalr1.cc:847
+#line 2603 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       (yylhs.value.vector_string_val) = new vector<string *>();
                       (yylhs.value.vector_string_val)->push_back((yystack_[2].value.string_val));
@@ -3936,7 +3936,7 @@ namespace Dynare {
     break;
 
   case 1247:
-#line 2609 "DynareBison.yy" // lalr1.cc:847
+#line 2609 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       (yylhs.value.vector_string_val) = new vector<string *>();
                       (yylhs.value.vector_string_val)->push_back((yystack_[3].value.string_val));
@@ -3946,7 +3946,7 @@ namespace Dynare {
     break;
 
   case 1248:
-#line 2615 "DynareBison.yy" // lalr1.cc:847
+#line 2615 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       (yylhs.value.vector_string_val) = new vector<string *>();
                       (yylhs.value.vector_string_val)->push_back(new string("0"));
@@ -3956,7 +3956,7 @@ namespace Dynare {
     break;
 
   case 1249:
-#line 2621 "DynareBison.yy" // lalr1.cc:847
+#line 2621 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       (yylhs.value.vector_string_val) = new vector<string *>();
                       (yylhs.value.vector_string_val)->push_back(new string("-inf"));
@@ -3966,109 +3966,109 @@ namespace Dynare {
     break;
 
   case 1250:
-#line 2629 "DynareBison.yy" // lalr1.cc:847
+#line 2629 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_moment_calibration(); }
 #line 3972 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1253:
-#line 2637 "DynareBison.yy" // lalr1.cc:847
+#line 2637 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_moment_calibration_item((yystack_[5].value.string_val), (yystack_[3].value.string_val), new string("0"), (yystack_[1].value.vector_string_val)); }
 #line 3978 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1254:
-#line 2639 "DynareBison.yy" // lalr1.cc:847
+#line 2639 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_moment_calibration_item((yystack_[8].value.string_val), (yystack_[6].value.string_val), (yystack_[4].value.string_val), (yystack_[1].value.vector_string_val)); }
 #line 3984 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1255:
-#line 2641 "DynareBison.yy" // lalr1.cc:847
+#line 2641 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_moment_calibration_item((yystack_[8].value.string_val), (yystack_[6].value.string_val), (yystack_[4].value.string_val), (yystack_[1].value.vector_string_val)); }
 #line 3990 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1256:
-#line 2645 "DynareBison.yy" // lalr1.cc:847
+#line 2645 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_irf_calibration(); }
 #line 3996 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1257:
-#line 2647 "DynareBison.yy" // lalr1.cc:847
+#line 2647 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.end_irf_calibration(); }
 #line 4002 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1260:
-#line 2655 "DynareBison.yy" // lalr1.cc:847
+#line 2655 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_irf_calibration_item((yystack_[5].value.string_val), new string("1"), (yystack_[3].value.string_val), (yystack_[1].value.vector_string_val)); }
 #line 4008 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1261:
-#line 2657 "DynareBison.yy" // lalr1.cc:847
+#line 2657 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_irf_calibration_item((yystack_[8].value.string_val), (yystack_[6].value.string_val), (yystack_[3].value.string_val), (yystack_[1].value.vector_string_val)); }
 #line 4014 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1262:
-#line 2659 "DynareBison.yy" // lalr1.cc:847
+#line 2659 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_irf_calibration_item((yystack_[8].value.string_val), (yystack_[6].value.string_val), (yystack_[3].value.string_val), (yystack_[1].value.vector_string_val)); }
 #line 4020 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1263:
-#line 2663 "DynareBison.yy" // lalr1.cc:847
+#line 2663 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.smoother2histval(); }
 #line 4026 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1264:
-#line 2665 "DynareBison.yy" // lalr1.cc:847
+#line 2665 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.smoother2histval(); }
 #line 4032 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1272:
-#line 2679 "DynareBison.yy" // lalr1.cc:847
+#line 2679 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.end_shock_groups(new string("default"));}
 #line 4038 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1273:
-#line 2681 "DynareBison.yy" // lalr1.cc:847
+#line 2681 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.end_shock_groups((yystack_[5].value.string_val));}
 #line 4044 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1276:
-#line 2688 "DynareBison.yy" // lalr1.cc:847
+#line 2688 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.add_shock_group((yystack_[3].value.string_val));}
 #line 4050 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1277:
-#line 2691 "DynareBison.yy" // lalr1.cc:847
+#line 2691 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.add_shock_group_element((yystack_[0].value.string_val));}
 #line 4056 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1278:
-#line 2692 "DynareBison.yy" // lalr1.cc:847
+#line 2692 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.add_shock_group_element((yystack_[0].value.string_val));}
 #line 4062 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1279:
-#line 2693 "DynareBison.yy" // lalr1.cc:847
+#line 2693 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.add_shock_group_element((yystack_[0].value.string_val));}
 #line 4068 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1280:
-#line 2696 "DynareBison.yy" // lalr1.cc:847
+#line 2696 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                                        if (*(yystack_[0].value.string_val) == string("0"))
                                          driver.warning("dr_algo option is now deprecated, and may be removed in a future version of Dynare");
@@ -4079,13 +4079,13 @@ namespace Dynare {
     break;
 
   case 1281:
-#line 2702 "DynareBison.yy" // lalr1.cc:847
+#line 2702 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("solve_algo", (yystack_[0].value.string_val)); }
 #line 4085 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1282:
-#line 2703 "DynareBison.yy" // lalr1.cc:847
+#line 2703 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                                              if (*(yystack_[0].value.string_val) == string("0"))
                                                driver.warning("simul_algo option is now deprecated, and may be removed in a future version of Dynare");
@@ -4096,139 +4096,139 @@ namespace Dynare {
     break;
 
   case 1283:
-#line 2709 "DynareBison.yy" // lalr1.cc:847
+#line 2709 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("stack_solve_algo", (yystack_[0].value.string_val)); }
 #line 4102 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1284:
-#line 2710 "DynareBison.yy" // lalr1.cc:847
+#line 2710 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("endogenous_terminal_period", "1"); }
 #line 4108 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1285:
-#line 2711 "DynareBison.yy" // lalr1.cc:847
+#line 2711 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.linear(); }
 #line 4114 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1286:
-#line 2712 "DynareBison.yy" // lalr1.cc:847
+#line 2712 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("order", (yystack_[0].value.string_val)); }
 #line 4120 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1287:
-#line 2713 "DynareBison.yy" // lalr1.cc:847
+#line 2713 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("replic", (yystack_[0].value.string_val)); }
 #line 4126 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1288:
-#line 2714 "DynareBison.yy" // lalr1.cc:847
+#line 2714 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("drop", (yystack_[0].value.string_val)); }
 #line 4132 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1289:
-#line 2715 "DynareBison.yy" // lalr1.cc:847
+#line 2715 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ar", (yystack_[0].value.string_val)); }
 #line 4138 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1290:
-#line 2716 "DynareBison.yy" // lalr1.cc:847
+#line 2716 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nocorr", "1"); }
 #line 4144 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1291:
-#line 2717 "DynareBison.yy" // lalr1.cc:847
+#line 2717 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nofunctions", "1"); }
 #line 4150 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1292:
-#line 2718 "DynareBison.yy" // lalr1.cc:847
+#line 2718 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nomoments", "1"); }
 #line 4156 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1293:
-#line 2719 "DynareBison.yy" // lalr1.cc:847
+#line 2719 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("irf", (yystack_[0].value.string_val)); }
 #line 4162 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1294:
-#line 2720 "DynareBison.yy" // lalr1.cc:847
+#line 2720 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("irf_shocks"); }
 #line 4168 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1295:
-#line 2721 "DynareBison.yy" // lalr1.cc:847
+#line 2721 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("hp_filter", (yystack_[0].value.string_val)); }
 #line 4174 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1296:
-#line 2722 "DynareBison.yy" // lalr1.cc:847
+#line 2722 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("hp_ngrid", (yystack_[0].value.string_val)); }
 #line 4180 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1297:
-#line 2723 "DynareBison.yy" // lalr1.cc:847
+#line 2723 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("one_sided_hp_filter", (yystack_[0].value.string_val)); }
 #line 4186 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1298:
-#line 2724 "DynareBison.yy" // lalr1.cc:847
+#line 2724 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("periods", (yystack_[0].value.string_val)); }
 #line 4192 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1299:
-#line 2725 "DynareBison.yy" // lalr1.cc:847
+#line 2725 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ep.periods", (yystack_[0].value.string_val)); }
 #line 4198 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1300:
-#line 2726 "DynareBison.yy" // lalr1.cc:847
+#line 2726 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ep.stochastic.order", (yystack_[0].value.string_val)); }
 #line 4204 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1301:
-#line 2727 "DynareBison.yy" // lalr1.cc:847
+#line 2727 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ep.stochastic.hybrid_order", "2"); }
 #line 4210 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1302:
-#line 2728 "DynareBison.yy" // lalr1.cc:847
+#line 2728 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("steady.maxit", (yystack_[0].value.string_val)); }
 #line 4216 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1303:
-#line 2729 "DynareBison.yy" // lalr1.cc:847
+#line 2729 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("simul.maxit", (yystack_[0].value.string_val)); }
 #line 4222 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1304:
-#line 2730 "DynareBison.yy" // lalr1.cc:847
+#line 2730 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bandpass.indicator", "1"); }
 #line 4228 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1305:
-#line 2732 "DynareBison.yy" // lalr1.cc:847
+#line 2732 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       driver.option_num("bandpass.indicator", "1");
                       driver.option_vec_int("bandpass.passband", (yystack_[0].value.vector_int_val));
@@ -4237,1351 +4237,1351 @@ namespace Dynare {
     break;
 
   case 1306:
-#line 2737 "DynareBison.yy" // lalr1.cc:847
+#line 2737 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("dp.maxit", (yystack_[0].value.string_val)); }
 #line 4243 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1307:
-#line 2738 "DynareBison.yy" // lalr1.cc:847
+#line 2738 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("osr.maxit", (yystack_[0].value.string_val)); }
 #line 4249 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1308:
-#line 2739 "DynareBison.yy" // lalr1.cc:847
+#line 2739 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("osr.tolf", (yystack_[0].value.string_val)); }
 #line 4255 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1309:
-#line 2740 "DynareBison.yy" // lalr1.cc:847
+#line 2740 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("dynatol.f", (yystack_[0].value.string_val)); }
 #line 4261 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1310:
-#line 2741 "DynareBison.yy" // lalr1.cc:847
+#line 2741 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("dynatol.x", (yystack_[0].value.string_val)); }
 #line 4267 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1311:
-#line 2742 "DynareBison.yy" // lalr1.cc:847
+#line 2742 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("solve_tolf", (yystack_[0].value.string_val)); }
 #line 4273 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1312:
-#line 2743 "DynareBison.yy" // lalr1.cc:847
+#line 2743 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("osr.opt_algo", (yystack_[0].value.string_val)); }
 #line 4279 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1313:
-#line 2744 "DynareBison.yy" // lalr1.cc:847
+#line 2744 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("osr.opt_algo", (yystack_[0].value.string_val)); }
 #line 4285 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1314:
-#line 2746 "DynareBison.yy" // lalr1.cc:847
+#line 2746 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.cutoff((yystack_[0].value.string_val)); }
 #line 4291 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1315:
-#line 2747 "DynareBison.yy" // lalr1.cc:847
+#line 2747 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("markowitz", (yystack_[0].value.string_val)); }
 #line 4297 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1316:
-#line 2748 "DynareBison.yy" // lalr1.cc:847
+#line 2748 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("minimal_solving_periods", (yystack_[0].value.string_val)); }
 #line 4303 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1317:
-#line 2749 "DynareBison.yy" // lalr1.cc:847
+#line 2749 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.mfs((yystack_[0].value.string_val)); }
 #line 4309 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1319:
-#line 2751 "DynareBison.yy" // lalr1.cc:847
+#line 2751 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("simul_replic", (yystack_[0].value.string_val)); }
 #line 4315 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1320:
-#line 2752 "DynareBison.yy" // lalr1.cc:847
+#line 2752 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.error("'simul_seed' option is no longer supported; use 'set_dynare_seed' command instead"); }
 #line 4321 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1321:
-#line 2753 "DynareBison.yy" // lalr1.cc:847
+#line 2753 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("qz_criterium", (yystack_[0].value.string_val)); }
 #line 4327 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1322:
-#line 2754 "DynareBison.yy" // lalr1.cc:847
+#line 2754 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("qz_zero_threshold", (yystack_[0].value.string_val)); }
 #line 4333 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1323:
-#line 2755 "DynareBison.yy" // lalr1.cc:847
+#line 2755 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("file", (yystack_[0].value.string_val)); }
 #line 4339 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1324:
-#line 2756 "DynareBison.yy" // lalr1.cc:847
+#line 2756 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("series", (yystack_[0].value.string_val)); }
 #line 4345 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1325:
-#line 2757 "DynareBison.yy" // lalr1.cc:847
+#line 2757 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("datafile", (yystack_[0].value.string_val)); }
 #line 4351 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1326:
-#line 2758 "DynareBison.yy" // lalr1.cc:847
+#line 2758 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("dirname", (yystack_[0].value.string_val)); }
 #line 4357 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1327:
-#line 2759 "DynareBison.yy" // lalr1.cc:847
+#line 2759 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("huge_number", (yystack_[0].value.string_val)); }
 #line 4363 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1328:
-#line 2761 "DynareBison.yy" // lalr1.cc:847
+#line 2761 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("nobs", (yystack_[0].value.vector_int_val)); }
 #line 4369 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1329:
-#line 2763 "DynareBison.yy" // lalr1.cc:847
+#line 2763 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("nobs", (yystack_[0].value.vector_int_val)); }
 #line 4375 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1330:
-#line 2766 "DynareBison.yy" // lalr1.cc:847
+#line 2766 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("conditional_variance_decomposition", (yystack_[0].value.vector_int_val)); }
 #line 4381 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1331:
-#line 2768 "DynareBison.yy" // lalr1.cc:847
+#line 2768 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("conditional_variance_decomposition", (yystack_[0].value.vector_int_val)); }
 #line 4387 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1332:
-#line 2771 "DynareBison.yy" // lalr1.cc:847
+#line 2771 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("first_obs", (yystack_[0].value.vector_int_val)); }
 #line 4393 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1333:
-#line 2773 "DynareBison.yy" // lalr1.cc:847
+#line 2773 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("first_obs", (yystack_[0].value.vector_int_val)); }
 #line 4399 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1334:
-#line 2776 "DynareBison.yy" // lalr1.cc:847
+#line 2776 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("posterior_sampler_options.posterior_sampling_method", (yystack_[0].value.string_val)); }
 #line 4405 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1335:
-#line 2777 "DynareBison.yy" // lalr1.cc:847
+#line 2777 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("first_obs", (yystack_[0].value.string_val)); }
 #line 4411 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1336:
-#line 2778 "DynareBison.yy" // lalr1.cc:847
+#line 2778 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_date("firstobs", (yystack_[0].value.string_val)); }
 #line 4417 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1337:
-#line 2779 "DynareBison.yy" // lalr1.cc:847
+#line 2779 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_date("lastobs", (yystack_[0].value.string_val)); }
 #line 4423 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1338:
-#line 2780 "DynareBison.yy" // lalr1.cc:847
+#line 2780 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nobs", (yystack_[0].value.string_val)); }
 #line 4429 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1339:
-#line 2781 "DynareBison.yy" // lalr1.cc:847
+#line 2781 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("shift", (yystack_[0].value.string_val)); }
 #line 4435 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1340:
-#line 2782 "DynareBison.yy" // lalr1.cc:847
+#line 2782 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.prior_shape = (yystack_[0].value.prior_distributions_val); }
 #line 4441 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1341:
-#line 2783 "DynareBison.yy" // lalr1.cc:847
+#line 2783 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mode", (yystack_[0].value.string_val)); }
 #line 4447 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1342:
-#line 2784 "DynareBison.yy" // lalr1.cc:847
+#line 2784 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mean", (yystack_[0].value.string_val)); }
 #line 4453 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1343:
-#line 2785 "DynareBison.yy" // lalr1.cc:847
+#line 2785 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mean", (yystack_[0].value.string_val)); }
 #line 4459 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1344:
-#line 2786 "DynareBison.yy" // lalr1.cc:847
+#line 2786 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("truncate", (yystack_[0].value.string_val)); }
 #line 4465 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1345:
-#line 2787 "DynareBison.yy" // lalr1.cc:847
+#line 2787 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("stdev", (yystack_[0].value.string_val)); }
 #line 4471 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1346:
-#line 2788 "DynareBison.yy" // lalr1.cc:847
+#line 2788 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("jscale", (yystack_[0].value.string_val)); }
 #line 4477 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1347:
-#line 2789 "DynareBison.yy" // lalr1.cc:847
+#line 2789 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("init", (yystack_[0].value.string_val)); }
 #line 4483 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1348:
-#line 2790 "DynareBison.yy" // lalr1.cc:847
+#line 2790 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bounds", (yystack_[0].value.string_val)); }
 #line 4489 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1349:
-#line 2791 "DynareBison.yy" // lalr1.cc:847
+#line 2791 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("domain", (yystack_[0].value.string_val)); }
 #line 4495 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1350:
-#line 2792 "DynareBison.yy" // lalr1.cc:847
+#line 2792 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("interval", (yystack_[0].value.string_val)); }
 #line 4501 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1351:
-#line 2793 "DynareBison.yy" // lalr1.cc:847
+#line 2793 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_prior_variance((yystack_[0].value.node_val)); }
 #line 4507 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1352:
-#line 2794 "DynareBison.yy" // lalr1.cc:847
+#line 2794 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("variance",(yystack_[0].value.string_val)); }
 #line 4513 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1353:
-#line 2795 "DynareBison.yy" // lalr1.cc:847
+#line 2795 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("prefilter", (yystack_[0].value.string_val)); }
 #line 4519 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1354:
-#line 2796 "DynareBison.yy" // lalr1.cc:847
+#line 2796 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("presample", (yystack_[0].value.string_val)); }
 #line 4525 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1355:
-#line 2797 "DynareBison.yy" // lalr1.cc:847
+#line 2797 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("lik_algo", (yystack_[0].value.string_val)); }
 #line 4531 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1356:
-#line 2798 "DynareBison.yy" // lalr1.cc:847
+#line 2798 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("lik_init", (yystack_[0].value.string_val)); }
 #line 4537 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1357:
-#line 2800 "DynareBison.yy" // lalr1.cc:847
+#line 2800 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nograph","1"); }
 #line 4543 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1358:
-#line 2802 "DynareBison.yy" // lalr1.cc:847
+#line 2802 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nograph", "0"); }
 #line 4549 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1359:
-#line 2804 "DynareBison.yy" // lalr1.cc:847
+#line 2804 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nodisplay","1"); }
 #line 4555 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1360:
-#line 2806 "DynareBison.yy" // lalr1.cc:847
+#line 2806 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.process_graph_format_option(); }
 #line 4561 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1361:
-#line 2808 "DynareBison.yy" // lalr1.cc:847
+#line 2808 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.process_graph_format_option(); }
 #line 4567 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1362:
-#line 2811 "DynareBison.yy" // lalr1.cc:847
+#line 2811 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_graph_format("eps"); }
 #line 4573 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1363:
-#line 2813 "DynareBison.yy" // lalr1.cc:847
+#line 2813 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_graph_format("fig"); }
 #line 4579 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1364:
-#line 2815 "DynareBison.yy" // lalr1.cc:847
+#line 2815 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_graph_format("pdf"); }
 #line 4585 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1365:
-#line 2817 "DynareBison.yy" // lalr1.cc:847
+#line 2817 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.add_graph_format("none"); }
 #line 4591 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1368:
-#line 2824 "DynareBison.yy" // lalr1.cc:847
+#line 2824 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.set_subsample_name_equal_to_date_range((yystack_[4].value.string_val), (yystack_[2].value.string_val), (yystack_[0].value.string_val)); }
 #line 4597 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1369:
-#line 2826 "DynareBison.yy" // lalr1.cc:847
+#line 2826 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("conf_sig", (yystack_[0].value.string_val)); }
 #line 4603 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1370:
-#line 2827 "DynareBison.yy" // lalr1.cc:847
+#line 2827 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mh_conf_sig", (yystack_[0].value.string_val)); }
 #line 4609 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1371:
-#line 2828 "DynareBison.yy" // lalr1.cc:847
+#line 2828 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mh_replic", (yystack_[0].value.string_val)); }
 #line 4615 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1372:
-#line 2829 "DynareBison.yy" // lalr1.cc:847
+#line 2829 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("posterior_max_subsample_draws", (yystack_[0].value.string_val)); }
 #line 4621 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1373:
-#line 2830 "DynareBison.yy" // lalr1.cc:847
+#line 2830 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mh_drop", (yystack_[0].value.string_val)); }
 #line 4627 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1374:
-#line 2831 "DynareBison.yy" // lalr1.cc:847
+#line 2831 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mh_jscale", (yystack_[0].value.string_val)); }
 #line 4633 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1377:
-#line 2834 "DynareBison.yy" // lalr1.cc:847
+#line 2834 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("posterior_sampler_options.posterior_sampling_method.proposal_distribution", (yystack_[0].value.string_val)); }
 #line 4639 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1378:
-#line 2836 "DynareBison.yy" // lalr1.cc:847
+#line 2836 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("moments_posterior_density.indicator", "0"); }
 #line 4645 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1379:
-#line 2838 "DynareBison.yy" // lalr1.cc:847
+#line 2838 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mh_init_scale", (yystack_[0].value.string_val)); }
 #line 4651 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1380:
-#line 2839 "DynareBison.yy" // lalr1.cc:847
+#line 2839 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("mode_file", (yystack_[0].value.string_val)); }
 #line 4657 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1381:
-#line 2840 "DynareBison.yy" // lalr1.cc:847
+#line 2840 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mode_compute", (yystack_[0].value.string_val)); }
 #line 4663 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1382:
-#line 2841 "DynareBison.yy" // lalr1.cc:847
+#line 2841 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("mode_compute", (yystack_[0].value.string_val)); }
 #line 4669 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1383:
-#line 2842 "DynareBison.yy" // lalr1.cc:847
+#line 2842 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mode_check.status", "1"); }
 #line 4675 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1384:
-#line 2843 "DynareBison.yy" // lalr1.cc:847
+#line 2843 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mode_check.neighbourhood_size", (yystack_[0].value.string_val)); }
 #line 4681 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1385:
-#line 2844 "DynareBison.yy" // lalr1.cc:847
+#line 2844 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mode_check.number_of_points", (yystack_[0].value.string_val)); }
 #line 4687 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1386:
-#line 2845 "DynareBison.yy" // lalr1.cc:847
+#line 2845 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mode_check.symmetric_plots", (yystack_[0].value.string_val)); }
 #line 4693 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1387:
-#line 2846 "DynareBison.yy" // lalr1.cc:847
+#line 2846 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("prior_trunc", (yystack_[0].value.string_val)); }
 #line 4699 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1388:
-#line 2847 "DynareBison.yy" // lalr1.cc:847
+#line 2847 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mh_mode", (yystack_[0].value.string_val)); }
 #line 4705 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1389:
-#line 2848 "DynareBison.yy" // lalr1.cc:847
+#line 2848 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mh_nblck", (yystack_[0].value.string_val)); }
 #line 4711 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1390:
-#line 2849 "DynareBison.yy" // lalr1.cc:847
+#line 2849 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("load_mh_file", "1"); }
 #line 4717 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1391:
-#line 2850 "DynareBison.yy" // lalr1.cc:847
+#line 2850 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("loglinear", "1"); }
 #line 4723 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1392:
-#line 2851 "DynareBison.yy" // lalr1.cc:847
+#line 2851 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("linear_approximation", "1"); }
 #line 4729 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1393:
-#line 2852 "DynareBison.yy" // lalr1.cc:847
+#line 2852 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("logdata", "1"); }
 #line 4735 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1394:
-#line 2853 "DynareBison.yy" // lalr1.cc:847
+#line 2853 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nodiagnostic", "1"); }
 #line 4741 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1395:
-#line 2854 "DynareBison.yy" // lalr1.cc:847
+#line 2854 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bayesian_irf", "1"); }
 #line 4747 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1396:
-#line 2856 "DynareBison.yy" // lalr1.cc:847
+#line 2856 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("dsge_var", (yystack_[0].value.string_val)); }
 #line 4753 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1397:
-#line 2858 "DynareBison.yy" // lalr1.cc:847
+#line 2858 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("dsge_var", "Inf"); }
 #line 4759 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1398:
-#line 2860 "DynareBison.yy" // lalr1.cc:847
+#line 2860 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("dsge_var", "NaN"); }
 #line 4765 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1399:
-#line 2862 "DynareBison.yy" // lalr1.cc:847
+#line 2862 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("dsge_varlag", (yystack_[0].value.string_val)); }
 #line 4771 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1400:
-#line 2863 "DynareBison.yy" // lalr1.cc:847
+#line 2863 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("TeX", "1"); }
 #line 4777 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1401:
-#line 2864 "DynareBison.yy" // lalr1.cc:847
+#line 2864 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("forecast", (yystack_[0].value.string_val)); }
 #line 4783 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1402:
-#line 2865 "DynareBison.yy" // lalr1.cc:847
+#line 2865 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("smoother", "1"); }
 #line 4789 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1403:
-#line 2866 "DynareBison.yy" // lalr1.cc:847
+#line 2866 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("moments_varendo", "1"); }
 #line 4795 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1404:
-#line 2867 "DynareBison.yy" // lalr1.cc:847
+#line 2867 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("contemporaneous_correlation", "1"); }
 #line 4801 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1405:
-#line 2868 "DynareBison.yy" // lalr1.cc:847
+#line 2868 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("filtered_vars", "1"); }
 #line 4807 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1406:
-#line 2869 "DynareBison.yy" // lalr1.cc:847
+#line 2869 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("relative_irf", "1"); }
 #line 4813 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1407:
-#line 2870 "DynareBison.yy" // lalr1.cc:847
+#line 2870 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("fast_kalman_filter", "1"); }
 #line 4819 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1408:
-#line 2871 "DynareBison.yy" // lalr1.cc:847
+#line 2871 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("kalman_algo", (yystack_[0].value.string_val)); }
 #line 4825 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1409:
-#line 2872 "DynareBison.yy" // lalr1.cc:847
+#line 2872 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("kalman_tol", (yystack_[0].value.string_val)); }
 #line 4831 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1410:
-#line 2873 "DynareBison.yy" // lalr1.cc:847
+#line 2873 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("diffuse_kalman_tol", (yystack_[0].value.string_val)); }
 #line 4837 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1411:
-#line 2875 "DynareBison.yy" // lalr1.cc:847
+#line 2875 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("mc_marginal_density", "laplace"); }
 #line 4843 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1412:
-#line 2877 "DynareBison.yy" // lalr1.cc:847
+#line 2877 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("mc_marginal_density", "modifiedharmonicmean"); }
 #line 4849 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1413:
-#line 2879 "DynareBison.yy" // lalr1.cc:847
+#line 2879 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("noprint", "0"); }
 #line 4855 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1414:
-#line 2880 "DynareBison.yy" // lalr1.cc:847
+#line 2880 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("noprint", "1"); }
 #line 4861 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1415:
-#line 2881 "DynareBison.yy" // lalr1.cc:847
+#line 2881 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("xls_sheet", (yystack_[0].value.string_val)); }
 #line 4867 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1416:
-#line 2882 "DynareBison.yy" // lalr1.cc:847
+#line 2882 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("xls_range", (yystack_[0].value.string_val)); }
 #line 4873 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1417:
-#line 2883 "DynareBison.yy" // lalr1.cc:847
+#line 2883 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("filter_step_ahead", (yystack_[0].value.vector_int_val)); }
 #line 4879 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1418:
-#line 2884 "DynareBison.yy" // lalr1.cc:847
+#line 2884 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("taper_steps", (yystack_[0].value.vector_int_val)); }
 #line 4885 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1419:
-#line 2885 "DynareBison.yy" // lalr1.cc:847
+#line 2885 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("geweke_interval",(yystack_[0].value.string_val)); }
 #line 4891 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1420:
-#line 2886 "DynareBison.yy" // lalr1.cc:847
+#line 2886 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("noconstant", "0"); }
 #line 4897 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1421:
-#line 2887 "DynareBison.yy" // lalr1.cc:847
+#line 2887 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("noconstant", "1"); }
 #line 4903 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1422:
-#line 2888 "DynareBison.yy" // lalr1.cc:847
+#line 2888 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("mh_recover", "1"); }
 #line 4909 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1423:
-#line 2889 "DynareBison.yy" // lalr1.cc:847
+#line 2889 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("diffuse_filter", "1"); }
 #line 4915 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1424:
-#line 2890 "DynareBison.yy" // lalr1.cc:847
+#line 2890 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("plot_priors", (yystack_[0].value.string_val)); }
 #line 4921 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1425:
-#line 2891 "DynareBison.yy" // lalr1.cc:847
+#line 2891 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("aim_solver", "1"); }
 #line 4927 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1426:
-#line 2892 "DynareBison.yy" // lalr1.cc:847
+#line 2892 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("partial_information", "1"); }
 #line 4933 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1427:
-#line 2893 "DynareBison.yy" // lalr1.cc:847
+#line 2893 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("sub_draws",(yystack_[0].value.string_val));}
 #line 4939 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1428:
-#line 2894 "DynareBison.yy" // lalr1.cc:847
+#line 2894 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.declare_optimal_policy_discount_factor_parameter((yystack_[0].value.node_val)); }
 #line 4945 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1429:
-#line 2895 "DynareBison.yy" // lalr1.cc:847
+#line 2895 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("sylvester_fp", "1"); }
 #line 4951 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1430:
-#line 2896 "DynareBison.yy" // lalr1.cc:847
+#line 2896 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("sylvester_fp", "0"); }
 #line 4957 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1431:
-#line 2897 "DynareBison.yy" // lalr1.cc:847
+#line 2897 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("sylvester_fixed_point_tol",(yystack_[0].value.string_val));}
 #line 4963 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1432:
-#line 2898 "DynareBison.yy" // lalr1.cc:847
+#line 2898 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("lyapunov_fp", "1"); }
 #line 4969 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1433:
-#line 2899 "DynareBison.yy" // lalr1.cc:847
+#line 2899 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("lyapunov_db", "1"); }
 #line 4975 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1434:
-#line 2900 "DynareBison.yy" // lalr1.cc:847
+#line 2900 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("lyapunov_srs", "1"); }
 #line 4981 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1435:
-#line 2901 "DynareBison.yy" // lalr1.cc:847
+#line 2901 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("lyapunov_fp", "0");driver.option_num("lyapunov_db", "0"); driver.option_num("lyapunov_srs", "0");}
 #line 4987 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1436:
-#line 2902 "DynareBison.yy" // lalr1.cc:847
+#line 2902 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("lyapunov_fixed_point_tol",(yystack_[0].value.string_val));}
 #line 4993 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1437:
-#line 2903 "DynareBison.yy" // lalr1.cc:847
+#line 2903 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("lyapunov_doubling_tol",(yystack_[0].value.string_val));}
 #line 4999 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1438:
-#line 2904 "DynareBison.yy" // lalr1.cc:847
+#line 2904 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("dr_cycle_reduction", "1"); }
 #line 5005 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1439:
-#line 2905 "DynareBison.yy" // lalr1.cc:847
+#line 2905 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("dr_logarithmic_reduction", "1"); }
 #line 5011 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1440:
-#line 2906 "DynareBison.yy" // lalr1.cc:847
+#line 2906 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("dr_cycle_reduction", "0"); driver.option_num("dr_logarithmic_reduction", "0");}
 #line 5017 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1441:
-#line 2907 "DynareBison.yy" // lalr1.cc:847
+#line 2907 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("dr_cycle_reduction_tol",(yystack_[0].value.string_val));}
 #line 5023 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1442:
-#line 2908 "DynareBison.yy" // lalr1.cc:847
+#line 2908 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("dr_logarithmic_reduction_tol",(yystack_[0].value.string_val));}
 #line 5029 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1443:
-#line 2909 "DynareBison.yy" // lalr1.cc:847
+#line 2909 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("dr_logarithmic_reduction_maxiter",(yystack_[0].value.string_val));}
 #line 5035 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1444:
-#line 2911 "DynareBison.yy" // lalr1.cc:847
+#line 2911 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bvar_prior_tau", (yystack_[0].value.string_val)); }
 #line 5041 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1445:
-#line 2912 "DynareBison.yy" // lalr1.cc:847
+#line 2912 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bvar_prior_decay", (yystack_[0].value.string_val)); }
 #line 5047 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1446:
-#line 2913 "DynareBison.yy" // lalr1.cc:847
+#line 2913 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bvar_prior_lambda", (yystack_[0].value.string_val)); }
 #line 5053 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1447:
-#line 2914 "DynareBison.yy" // lalr1.cc:847
+#line 2914 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bvar_prior_mu", (yystack_[0].value.string_val)); }
 #line 5059 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1448:
-#line 2915 "DynareBison.yy" // lalr1.cc:847
+#line 2915 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bvar_prior_omega", (yystack_[0].value.string_val)); }
 #line 5065 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1449:
-#line 2916 "DynareBison.yy" // lalr1.cc:847
+#line 2916 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bvar_prior_flat", "1"); }
 #line 5071 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1450:
-#line 2917 "DynareBison.yy" // lalr1.cc:847
+#line 2917 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bvar_prior_train", (yystack_[0].value.string_val)); }
 #line 5077 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1451:
-#line 2918 "DynareBison.yy" // lalr1.cc:847
+#line 2918 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("bvar_replic", (yystack_[0].value.string_val)); }
 #line 5083 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1452:
-#line 2920 "DynareBison.yy" // lalr1.cc:847
+#line 2920 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("particle.number_of_particles", (yystack_[0].value.string_val)); }
 #line 5089 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1454:
-#line 2922 "DynareBison.yy" // lalr1.cc:847
+#line 2922 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.resampling.status.systematic", "0"); driver.option_num("particle.resampling.status.none", "1"); }
 #line 5095 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1455:
-#line 2923 "DynareBison.yy" // lalr1.cc:847
+#line 2923 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.resampling.status.systematic", "0"); driver.option_num("particle.resampling.status.generic", "1"); }
 #line 5101 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1456:
-#line 2924 "DynareBison.yy" // lalr1.cc:847
+#line 2924 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("particle.resampling.threshold", (yystack_[0].value.string_val)); }
 #line 5107 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1457:
-#line 2925 "DynareBison.yy" // lalr1.cc:847
+#line 2925 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.resampling.method.kitagawa", "1"); driver.option_num("particle.resampling.method.smooth", "0"); driver.option_num("particle.resampling.smethod.stratified", "0"); }
 #line 5113 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1458:
-#line 2926 "DynareBison.yy" // lalr1.cc:847
+#line 2926 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.resampling.method.kitagawa", "0"); driver.option_num("particle.resampling.method.smooth", "1"); driver.option_num("particle.resampling.smethod.stratified", "0"); }
 #line 5119 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1459:
-#line 2927 "DynareBison.yy" // lalr1.cc:847
+#line 2927 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.resampling.method.kitagawa", "0"); driver.option_num("particle.resampling.method.smooth", "0"); driver.option_num("particle.resampling.method.stratified", "1"); }
 #line 5125 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1460:
-#line 2928 "DynareBison.yy" // lalr1.cc:847
+#line 2928 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.cpf_weights_method.amisanotristani", "1"); driver.option_num("particle.cpf_weights_method.murrayjonesparslow", "0"); }
 #line 5131 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1461:
-#line 2929 "DynareBison.yy" // lalr1.cc:847
+#line 2929 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.cpf_weights_method.amisanotristani", "0"); driver.option_num("particle.cpf_weights_method.murrayjonesparslow", "1"); }
 #line 5137 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1462:
-#line 2930 "DynareBison.yy" // lalr1.cc:847
+#line 2930 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("particle.filter_algorithm", (yystack_[0].value.string_val)); }
 #line 5143 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1463:
-#line 2931 "DynareBison.yy" // lalr1.cc:847
+#line 2931 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.proposal_approximation.cubature", "1"); driver.option_num("particle.proposal_approximation.unscented", "0"); driver.option_num("particle.proposal_approximation.montecarlo", "0");}
 #line 5149 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1464:
-#line 2932 "DynareBison.yy" // lalr1.cc:847
+#line 2932 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.proposal_approximation.cubature", "0"); driver.option_num("particle.proposal_approximation.unscented", "1"); driver.option_num("particle.proposal_approximation.montecarlo", "0");}
 #line 5155 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1465:
-#line 2933 "DynareBison.yy" // lalr1.cc:847
+#line 2933 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.proposal_approximation.cubature", "0"); driver.option_num("particle.proposal_approximation.unscented", "0"); driver.option_num("particle.proposal_approximation.montecarlo", "1");}
 #line 5161 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1466:
-#line 2934 "DynareBison.yy" // lalr1.cc:847
+#line 2934 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.distribution_approximation.cubature", "1"); driver.option_num("particle.distribution_approximation.unscented", "0"); driver.option_num("particle.distribution_approximation.montecarlo", "0");}
 #line 5167 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1467:
-#line 2935 "DynareBison.yy" // lalr1.cc:847
+#line 2935 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.distribution_approximation.cubature", "0"); driver.option_num("particle.distribution_approximation.unscented", "1"); driver.option_num("particle.distribution_approximation.montecarlo", "0");}
 #line 5173 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1468:
-#line 2936 "DynareBison.yy" // lalr1.cc:847
+#line 2936 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("particle.distribution_approximation.cubature", "0"); driver.option_num("particle.distribution_approximation.unscented", "0"); driver.option_num("particle.distribution_approximation.montecarlo", "1");}
 #line 5179 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1469:
-#line 2939 "DynareBison.yy" // lalr1.cc:847
+#line 2939 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("identification", (yystack_[0].value.string_val)); }
 #line 5185 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1470:
-#line 2940 "DynareBison.yy" // lalr1.cc:847
+#line 2940 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("morris", (yystack_[0].value.string_val)); }
 #line 5191 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1471:
-#line 2941 "DynareBison.yy" // lalr1.cc:847
+#line 2941 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("stab", (yystack_[0].value.string_val)); }
 #line 5197 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1472:
-#line 2942 "DynareBison.yy" // lalr1.cc:847
+#line 2942 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("redform", (yystack_[0].value.string_val)); }
 #line 5203 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1473:
-#line 2943 "DynareBison.yy" // lalr1.cc:847
+#line 2943 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("pprior", (yystack_[0].value.string_val)); }
 #line 5209 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1474:
-#line 2944 "DynareBison.yy" // lalr1.cc:847
+#line 2944 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("prior_range", (yystack_[0].value.string_val)); }
 #line 5215 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1475:
-#line 2945 "DynareBison.yy" // lalr1.cc:847
+#line 2945 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ppost", (yystack_[0].value.string_val)); }
 #line 5221 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1476:
-#line 2946 "DynareBison.yy" // lalr1.cc:847
+#line 2946 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ilptau", (yystack_[0].value.string_val)); }
 #line 5227 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1477:
-#line 2947 "DynareBison.yy" // lalr1.cc:847
+#line 2947 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("morris_nliv", (yystack_[0].value.string_val)); }
 #line 5233 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1478:
-#line 2948 "DynareBison.yy" // lalr1.cc:847
+#line 2948 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("morris_ntra", (yystack_[0].value.string_val)); }
 #line 5239 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1479:
-#line 2949 "DynareBison.yy" // lalr1.cc:847
+#line 2949 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("Nsam", (yystack_[0].value.string_val)); }
 #line 5245 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1480:
-#line 2950 "DynareBison.yy" // lalr1.cc:847
+#line 2950 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("load_redform", (yystack_[0].value.string_val)); }
 #line 5251 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1481:
-#line 2951 "DynareBison.yy" // lalr1.cc:847
+#line 2951 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("load_rmse", (yystack_[0].value.string_val)); }
 #line 5257 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1482:
-#line 2952 "DynareBison.yy" // lalr1.cc:847
+#line 2952 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("load_stab", (yystack_[0].value.string_val)); }
 #line 5263 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1483:
-#line 2953 "DynareBison.yy" // lalr1.cc:847
+#line 2953 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("alpha2_stab", (yystack_[0].value.string_val)); }
 #line 5269 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1484:
-#line 2954 "DynareBison.yy" // lalr1.cc:847
+#line 2954 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ksstat", (yystack_[0].value.string_val)); }
 #line 5275 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1485:
-#line 2955 "DynareBison.yy" // lalr1.cc:847
+#line 2955 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("logtrans_redform", (yystack_[0].value.string_val)); }
 #line 5281 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1486:
-#line 2956 "DynareBison.yy" // lalr1.cc:847
+#line 2956 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("threshold_redform",(yystack_[0].value.string_val)); }
 #line 5287 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1487:
-#line 2957 "DynareBison.yy" // lalr1.cc:847
+#line 2957 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ksstat_redform", (yystack_[0].value.string_val)); }
 #line 5293 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1488:
-#line 2958 "DynareBison.yy" // lalr1.cc:847
+#line 2958 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("alpha2_redform", (yystack_[0].value.string_val)); }
 #line 5299 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1489:
-#line 2959 "DynareBison.yy" // lalr1.cc:847
+#line 2959 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("namendo"); }
 #line 5305 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1490:
-#line 2960 "DynareBison.yy" // lalr1.cc:847
+#line 2960 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("namlagendo"); }
 #line 5311 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1491:
-#line 2961 "DynareBison.yy" // lalr1.cc:847
+#line 2961 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("namexo"); }
 #line 5317 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1492:
-#line 2962 "DynareBison.yy" // lalr1.cc:847
+#line 2962 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("rmse", (yystack_[0].value.string_val)); }
 #line 5323 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1493:
-#line 2963 "DynareBison.yy" // lalr1.cc:847
+#line 2963 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("lik_only", (yystack_[0].value.string_val)); }
 #line 5329 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1494:
-#line 2964 "DynareBison.yy" // lalr1.cc:847
+#line 2964 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("var_rmse"); }
 #line 5335 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1495:
-#line 2965 "DynareBison.yy" // lalr1.cc:847
+#line 2965 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("pfilt_rmse", (yystack_[0].value.string_val)); }
 #line 5341 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1496:
-#line 2966 "DynareBison.yy" // lalr1.cc:847
+#line 2966 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("istart_rmse", (yystack_[0].value.string_val)); }
 #line 5347 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1497:
-#line 2967 "DynareBison.yy" // lalr1.cc:847
+#line 2967 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("alpha_rmse", (yystack_[0].value.string_val)); }
 #line 5353 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1498:
-#line 2968 "DynareBison.yy" // lalr1.cc:847
+#line 2968 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("alpha2_rmse", (yystack_[0].value.string_val)); }
 #line 5359 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1499:
-#line 2970 "DynareBison.yy" // lalr1.cc:847
+#line 2970 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("gsa_sample_file", (yystack_[0].value.string_val)); }
 #line 5365 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1500:
-#line 2972 "DynareBison.yy" // lalr1.cc:847
+#line 2972 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("gsa_sample_file", (yystack_[0].value.string_val)); }
 #line 5371 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1501:
-#line 2974 "DynareBison.yy" // lalr1.cc:847
+#line 2974 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("neighborhood_width", (yystack_[0].value.string_val)); }
 #line 5377 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1502:
-#line 2975 "DynareBison.yy" // lalr1.cc:847
+#line 2975 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("pvalue_ks", (yystack_[0].value.string_val)); }
 #line 5383 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1503:
-#line 2976 "DynareBison.yy" // lalr1.cc:847
+#line 2976 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("pvalue_corr", (yystack_[0].value.string_val)); }
 #line 5389 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1504:
-#line 2977 "DynareBison.yy" // lalr1.cc:847
+#line 2977 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("load_ident_files", (yystack_[0].value.string_val)); }
 #line 5395 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1505:
-#line 2978 "DynareBison.yy" // lalr1.cc:847
+#line 2978 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("useautocorr", (yystack_[0].value.string_val)); }
 #line 5401 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1506:
-#line 2979 "DynareBison.yy" // lalr1.cc:847
+#line 2979 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("prior_mc", (yystack_[0].value.string_val)); }
 #line 5407 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1507:
-#line 2980 "DynareBison.yy" // lalr1.cc:847
+#line 2980 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("advanced", (yystack_[0].value.string_val)); }
 #line 5413 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1508:
-#line 2981 "DynareBison.yy" // lalr1.cc:847
+#line 2981 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("max_dim_cova_group", (yystack_[0].value.string_val)); }
 #line 5419 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1509:
-#line 2983 "DynareBison.yy" // lalr1.cc:847
+#line 2983 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("homotopy_mode",(yystack_[0].value.string_val)); }
 #line 5425 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1510:
-#line 2984 "DynareBison.yy" // lalr1.cc:847
+#line 2984 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("homotopy_steps",(yystack_[0].value.string_val)); }
 #line 5431 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1511:
-#line 2985 "DynareBison.yy" // lalr1.cc:847
+#line 2985 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("homotopy_force_continue",(yystack_[0].value.string_val)); }
 #line 5437 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1512:
-#line 2986 "DynareBison.yy" // lalr1.cc:847
+#line 2986 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("steadystate.nocheck","1"); }
 #line 5443 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1513:
-#line 2988 "DynareBison.yy" // lalr1.cc:847
+#line 2988 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("controlled_varexo"); }
 #line 5449 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1514:
-#line 2990 "DynareBison.yy" // lalr1.cc:847
+#line 2990 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("parameter_set", "prior_mode"); }
 #line 5455 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1515:
-#line 2992 "DynareBison.yy" // lalr1.cc:847
+#line 2992 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("parameter_set", "prior_mean"); }
 #line 5461 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1516:
-#line 2994 "DynareBison.yy" // lalr1.cc:847
+#line 2994 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("parameter_set", "posterior_mean"); }
 #line 5467 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1517:
-#line 2996 "DynareBison.yy" // lalr1.cc:847
+#line 2996 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("parameter_set", "posterior_mode"); }
 #line 5473 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1518:
-#line 2998 "DynareBison.yy" // lalr1.cc:847
+#line 2998 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("parameter_set", "posterior_median"); }
 #line 5479 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1519:
-#line 3000 "DynareBison.yy" // lalr1.cc:847
+#line 3000 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("parameter_set", "mle_mode"); }
 #line 5485 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1520:
-#line 3002 "DynareBison.yy" // lalr1.cc:847
+#line 3002 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("parameter_set", "calibration"); }
 #line 5491 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1521:
-#line 3004 "DynareBison.yy" // lalr1.cc:847
+#line 3004 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("nodecomposition", "1"); }
 #line 5497 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1522:
-#line 3005 "DynareBison.yy" // lalr1.cc:847
+#line 3005 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("SpectralDensity.trigger", "1"); }
 #line 5503 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1523:
-#line 3006 "DynareBison.yy" // lalr1.cc:847
+#line 3006 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.drop", (yystack_[0].value.string_val)); }
 #line 5509 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1524:
-#line 3007 "DynareBison.yy" // lalr1.cc:847
+#line 3007 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.mh_replic", (yystack_[0].value.string_val)); }
 #line 5515 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1525:
-#line 3009 "DynareBison.yy" // lalr1.cc:847
+#line 3009 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.freq",(yystack_[0].value.string_val)); }
 #line 5521 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1526:
-#line 3011 "DynareBison.yy" // lalr1.cc:847
+#line 3011 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.freq","12"); }
 #line 5527 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1527:
-#line 3013 "DynareBison.yy" // lalr1.cc:847
+#line 3013 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.freq","4"); }
 #line 5533 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1528:
-#line 3015 "DynareBison.yy" // lalr1.cc:847
+#line 3015 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.initial_year",(yystack_[0].value.string_val)); }
 #line 5539 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1529:
-#line 3016 "DynareBison.yy" // lalr1.cc:847
+#line 3016 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.initial_subperiod",(yystack_[0].value.string_val)); }
 #line 5545 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1530:
-#line 3017 "DynareBison.yy" // lalr1.cc:847
+#line 3017 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.final_year",(yystack_[0].value.string_val)); }
 #line 5551 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1531:
-#line 3018 "DynareBison.yy" // lalr1.cc:847
+#line 3018 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.final_subperiod",(yystack_[0].value.string_val)); }
 #line 5557 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1532:
-#line 3019 "DynareBison.yy" // lalr1.cc:847
+#line 3019 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("ms.data", (yystack_[0].value.string_val)); }
 #line 5563 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1533:
-#line 3020 "DynareBison.yy" // lalr1.cc:847
+#line 3020 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.vlist",(yystack_[0].value.string_val)); }
 #line 5569 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1534:
-#line 3021 "DynareBison.yy" // lalr1.cc:847
+#line 3021 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_symbol_list("ms.vlistlog"); }
 #line 5575 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1535:
-#line 3022 "DynareBison.yy" // lalr1.cc:847
+#line 3022 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.vlistper",(yystack_[0].value.string_val)); }
 #line 5581 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1536:
-#line 3024 "DynareBison.yy" // lalr1.cc:847
+#line 3024 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                         driver.warning("restriction_fname is now deprecated, and may be removed in a future version of Dynare. Use svar_identification instead.");
                         driver.option_str("ms.restriction_fname",(yystack_[0].value.string_val));
@@ -5590,7 +5590,7 @@ namespace Dynare {
     break;
 
   case 1537:
-#line 3029 "DynareBison.yy" // lalr1.cc:847
+#line 3029 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                         driver.warning("restriction_fname is now deprecated, and may be removed in a future version of Dynare. Use svar_identification instead.");
                         driver.option_str("ms.restriction_fname","upper_cholesky");
@@ -5599,7 +5599,7 @@ namespace Dynare {
     break;
 
   case 1538:
-#line 3034 "DynareBison.yy" // lalr1.cc:847
+#line 3034 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                         driver.warning("restriction_fname is now deprecated, and may be removed in a future version of Dynare. Use svar_identification instead.");
                         driver.option_str("ms.restriction_fname","lower_cholesky");
@@ -5608,787 +5608,787 @@ namespace Dynare {
     break;
 
   case 1539:
-#line 3039 "DynareBison.yy" // lalr1.cc:847
+#line 3039 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.nlags",(yystack_[0].value.string_val)); }
 #line 5614 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1540:
-#line 3040 "DynareBison.yy" // lalr1.cc:847
+#line 3040 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.cross_restrictions","1"); }
 #line 5620 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1541:
-#line 3041 "DynareBison.yy" // lalr1.cc:847
+#line 3041 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.contemp_reduced_form","1"); }
 #line 5626 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1542:
-#line 3042 "DynareBison.yy" // lalr1.cc:847
+#line 3042 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.real_pseudo_forecast",(yystack_[0].value.string_val)); }
 #line 5632 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1543:
-#line 3043 "DynareBison.yy" // lalr1.cc:847
+#line 3043 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.bayesian_prior","0"); }
 #line 5638 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1544:
-#line 3044 "DynareBison.yy" // lalr1.cc:847
+#line 3044 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.dummy_obs",(yystack_[0].value.string_val)); }
 #line 5644 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1545:
-#line 3045 "DynareBison.yy" // lalr1.cc:847
+#line 3045 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.nstates",(yystack_[0].value.string_val)); }
 #line 5650 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1546:
-#line 3046 "DynareBison.yy" // lalr1.cc:847
+#line 3046 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxscalesstates",(yystack_[0].value.string_val)); }
 #line 5656 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1547:
-#line 3047 "DynareBison.yy" // lalr1.cc:847
+#line 3047 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.alpha",(yystack_[0].value.string_val)); }
 #line 5662 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1548:
-#line 3048 "DynareBison.yy" // lalr1.cc:847
+#line 3048 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.beta",(yystack_[0].value.string_val)); }
 #line 5668 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1549:
-#line 3049 "DynareBison.yy" // lalr1.cc:847
+#line 3049 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.gsig2_lmdm",(yystack_[0].value.string_val)); }
 #line 5674 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1550:
-#line 3051 "DynareBison.yy" // lalr1.cc:847
+#line 3051 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.specification","1"); }
 #line 5680 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1551:
-#line 3053 "DynareBison.yy" // lalr1.cc:847
+#line 3053 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.specification","0"); }
 #line 5686 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1552:
-#line 3055 "DynareBison.yy" // lalr1.cc:847
+#line 3055 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.q_diag",(yystack_[0].value.string_val)); }
 #line 5692 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1553:
-#line 3056 "DynareBison.yy" // lalr1.cc:847
+#line 3056 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.flat_prior",(yystack_[0].value.string_val)); }
 #line 5698 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1554:
-#line 3057 "DynareBison.yy" // lalr1.cc:847
+#line 3057 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.ncsk",(yystack_[0].value.string_val)); }
 #line 5704 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1555:
-#line 3058 "DynareBison.yy" // lalr1.cc:847
+#line 3058 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.nstd",(yystack_[0].value.string_val)); }
 #line 5710 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1556:
-#line 3059 "DynareBison.yy" // lalr1.cc:847
+#line 3059 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.ninv",(yystack_[0].value.string_val)); }
 #line 5716 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1557:
-#line 3060 "DynareBison.yy" // lalr1.cc:847
+#line 3060 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxparr",(yystack_[0].value.string_val)); }
 #line 5722 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1558:
-#line 3061 "DynareBison.yy" // lalr1.cc:847
+#line 3061 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxovr",(yystack_[0].value.string_val)); }
 #line 5728 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1559:
-#line 3062 "DynareBison.yy" // lalr1.cc:847
+#line 3062 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.aband",(yystack_[0].value.string_val)); }
 #line 5734 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1560:
-#line 3063 "DynareBison.yy" // lalr1.cc:847
+#line 3063 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxap",(yystack_[0].value.string_val)); }
 #line 5740 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1561:
-#line 3064 "DynareBison.yy" // lalr1.cc:847
+#line 3064 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.apband",(yystack_[0].value.string_val)); }
 #line 5746 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1562:
-#line 3065 "DynareBison.yy" // lalr1.cc:847
+#line 3065 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indximf",(yystack_[0].value.string_val)); }
 #line 5752 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1563:
-#line 3066 "DynareBison.yy" // lalr1.cc:847
+#line 3066 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxfore",(yystack_[0].value.string_val)); }
 #line 5758 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1564:
-#line 3067 "DynareBison.yy" // lalr1.cc:847
+#line 3067 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.foreband",(yystack_[0].value.string_val)); }
 #line 5764 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1565:
-#line 3068 "DynareBison.yy" // lalr1.cc:847
+#line 3068 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxgforehat",(yystack_[0].value.string_val)); }
 #line 5770 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1566:
-#line 3069 "DynareBison.yy" // lalr1.cc:847
+#line 3069 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxgimfhat",(yystack_[0].value.string_val)); }
 #line 5776 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1567:
-#line 3070 "DynareBison.yy" // lalr1.cc:847
+#line 3070 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxestima",(yystack_[0].value.string_val)); }
 #line 5782 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1568:
-#line 3071 "DynareBison.yy" // lalr1.cc:847
+#line 3071 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.indxgdls",(yystack_[0].value.string_val)); }
 #line 5788 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1569:
-#line 3072 "DynareBison.yy" // lalr1.cc:847
+#line 3072 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.eq_ms",(yystack_[0].value.string_val)); }
 #line 5794 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1570:
-#line 3073 "DynareBison.yy" // lalr1.cc:847
+#line 3073 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.cms",(yystack_[0].value.string_val)); }
 #line 5800 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1571:
-#line 3074 "DynareBison.yy" // lalr1.cc:847
+#line 3074 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.ncms",(yystack_[0].value.string_val)); }
 #line 5806 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1572:
-#line 3075 "DynareBison.yy" // lalr1.cc:847
+#line 3075 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.eq_cms",(yystack_[0].value.string_val)); }
 #line 5812 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1573:
-#line 3076 "DynareBison.yy" // lalr1.cc:847
+#line 3076 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.tlindx",(yystack_[0].value.string_val)); }
 #line 5818 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1574:
-#line 3077 "DynareBison.yy" // lalr1.cc:847
+#line 3077 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.tlnumber",(yystack_[0].value.string_val)); }
 #line 5824 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1575:
-#line 3078 "DynareBison.yy" // lalr1.cc:847
+#line 3078 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("ms.cnum",(yystack_[0].value.string_val)); }
 #line 5830 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1576:
-#line 3079 "DynareBison.yy" // lalr1.cc:847
+#line 3079 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("k_order_solver","1"); }
 #line 5836 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1577:
-#line 3080 "DynareBison.yy" // lalr1.cc:847
+#line 3080 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("pruning", "1"); }
 #line 5842 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1578:
-#line 3081 "DynareBison.yy" // lalr1.cc:847
+#line 3081 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.chain",(yystack_[0].value.string_val)); }
 #line 5848 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1579:
-#line 3083 "DynareBison.yy" // lalr1.cc:847
+#line 3083 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.restrictions",(yystack_[0].value.string_val)); }
 #line 5854 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1580:
-#line 3086 "DynareBison.yy" // lalr1.cc:847
+#line 3086 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.duration",(yystack_[0].value.string_val)); }
 #line 5860 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1581:
-#line 3088 "DynareBison.yy" // lalr1.cc:847
+#line 3088 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.duration",(yystack_[0].value.string_val)); }
 #line 5866 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1582:
-#line 3090 "DynareBison.yy" // lalr1.cc:847
+#line 3090 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.number_of_regimes",(yystack_[0].value.string_val)); }
 #line 5872 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1583:
-#line 3091 "DynareBison.yy" // lalr1.cc:847
+#line 3091 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.number_of_lags",(yystack_[0].value.string_val)); }
 #line 5878 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1584:
-#line 3092 "DynareBison.yy" // lalr1.cc:847
+#line 3092 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("ms.parameters"); }
 #line 5884 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1585:
-#line 3093 "DynareBison.yy" // lalr1.cc:847
+#line 3093 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("ms.coefficients","svar_coefficients"); }
 #line 5890 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1586:
-#line 3094 "DynareBison.yy" // lalr1.cc:847
+#line 3094 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("ms.variances","svar_variances"); }
 #line 5896 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1587:
-#line 3096 "DynareBison.yy" // lalr1.cc:847
+#line 3096 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("ms.equations",(yystack_[0].value.vector_int_val)); }
 #line 5902 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1588:
-#line 3098 "DynareBison.yy" // lalr1.cc:847
+#line 3098 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_vec_int("ms.equations",(yystack_[0].value.vector_int_val)); }
 #line 5908 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1589:
-#line 3100 "DynareBison.yy" // lalr1.cc:847
+#line 3100 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("silent_optimizer", "1"); }
 #line 5914 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1590:
-#line 3101 "DynareBison.yy" // lalr1.cc:847
+#line 3101 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_symbol_list("instruments"); }
 #line 5920 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1591:
-#line 3103 "DynareBison.yy" // lalr1.cc:847
+#line 3103 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.external_function_option("name", (yystack_[0].value.string_val)); }
 #line 5926 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1592:
-#line 3104 "DynareBison.yy" // lalr1.cc:847
+#line 3104 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.external_function_option("nargs",(yystack_[0].value.string_val)); }
 #line 5932 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1593:
-#line 3106 "DynareBison.yy" // lalr1.cc:847
+#line 3106 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.external_function_option("first_deriv_provided", (yystack_[0].value.string_val)); }
 #line 5938 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1594:
-#line 3108 "DynareBison.yy" // lalr1.cc:847
+#line 3108 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.external_function_option("first_deriv_provided", ""); }
 #line 5944 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1595:
-#line 3111 "DynareBison.yy" // lalr1.cc:847
+#line 3111 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.external_function_option("second_deriv_provided", (yystack_[0].value.string_val)); }
 #line 5950 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1596:
-#line 3113 "DynareBison.yy" // lalr1.cc:847
+#line 3113 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.external_function_option("second_deriv_provided", ""); }
 #line 5956 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1597:
-#line 3116 "DynareBison.yy" // lalr1.cc:847
+#line 3116 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("filter_covariance","1");}
 #line 5962 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1598:
-#line 3119 "DynareBison.yy" // lalr1.cc:847
+#line 3119 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("filter_decomposition","1");}
 #line 5968 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1599:
-#line 3122 "DynareBison.yy" // lalr1.cc:847
+#line 3122 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("selected_variables_only","1");}
 #line 5974 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1600:
-#line 3125 "DynareBison.yy" // lalr1.cc:847
+#line 3125 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("cova_compute",(yystack_[0].value.string_val));}
 #line 5980 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1601:
-#line 3127 "DynareBison.yy" // lalr1.cc:847
+#line 3127 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_str("ms.output_file_tag", (yystack_[0].value.string_val)); }
 #line 5986 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1602:
-#line 3128 "DynareBison.yy" // lalr1.cc:847
+#line 3128 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("ms.file_tag", (yystack_[0].value.string_val)); }
 #line 5992 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1603:
-#line 3129 "DynareBison.yy" // lalr1.cc:847
+#line 3129 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.create_init", "0"); }
 #line 5998 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1604:
-#line 3130 "DynareBison.yy" // lalr1.cc:847
+#line 3130 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("ms.simulation_file_tag", (yystack_[0].value.string_val)); }
 #line 6004 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1605:
-#line 3132 "DynareBison.yy" // lalr1.cc:847
+#line 3132 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.coefficients_prior_hyperparameters",(yystack_[0].value.string_val)); }
 #line 6010 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1606:
-#line 3134 "DynareBison.yy" // lalr1.cc:847
+#line 3134 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.convergence_starting_value",(yystack_[0].value.string_val)); }
 #line 6016 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1607:
-#line 3136 "DynareBison.yy" // lalr1.cc:847
+#line 3136 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.convergence_ending_value",(yystack_[0].value.string_val)); }
 #line 6022 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1608:
-#line 3138 "DynareBison.yy" // lalr1.cc:847
+#line 3138 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.convergence_increment_value",(yystack_[0].value.string_val)); }
 #line 6028 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1609:
-#line 3140 "DynareBison.yy" // lalr1.cc:847
+#line 3140 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.max_iterations_starting_value",(yystack_[0].value.string_val)); }
 #line 6034 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1610:
-#line 3142 "DynareBison.yy" // lalr1.cc:847
+#line 3142 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.max_iterations_increment_value",(yystack_[0].value.string_val)); }
 #line 6040 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1611:
-#line 3144 "DynareBison.yy" // lalr1.cc:847
+#line 3144 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.max_block_iterations",(yystack_[0].value.string_val)); }
 #line 6046 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1612:
-#line 3146 "DynareBison.yy" // lalr1.cc:847
+#line 3146 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.max_repeated_optimization_runs",(yystack_[0].value.string_val)); }
 #line 6052 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1613:
-#line 3148 "DynareBison.yy" // lalr1.cc:847
+#line 3148 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.function_convergence_criterion",(yystack_[0].value.string_val)); }
 #line 6058 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1614:
-#line 3150 "DynareBison.yy" // lalr1.cc:847
+#line 3150 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.parameter_convergence_criterion",(yystack_[0].value.string_val)); }
 #line 6064 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1615:
-#line 3152 "DynareBison.yy" // lalr1.cc:847
+#line 3152 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.number_of_large_perturbations",(yystack_[0].value.string_val)); }
 #line 6070 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1616:
-#line 3154 "DynareBison.yy" // lalr1.cc:847
+#line 3154 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.number_of_small_perturbations",(yystack_[0].value.string_val)); }
 #line 6076 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1617:
-#line 3156 "DynareBison.yy" // lalr1.cc:847
+#line 3156 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.number_of_posterior_draws_after_perturbation",(yystack_[0].value.string_val)); }
 #line 6082 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1618:
-#line 3158 "DynareBison.yy" // lalr1.cc:847
+#line 3158 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.max_number_of_stages",(yystack_[0].value.string_val)); }
 #line 6088 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1619:
-#line 3160 "DynareBison.yy" // lalr1.cc:847
+#line 3160 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.random_function_convergence_criterion",(yystack_[0].value.string_val)); }
 #line 6094 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1620:
-#line 3162 "DynareBison.yy" // lalr1.cc:847
+#line 3162 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.random_parameter_convergence_criterion",(yystack_[0].value.string_val)); }
 #line 6100 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1621:
-#line 3163 "DynareBison.yy" // lalr1.cc:847
+#line 3163 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.thinning_factor",(yystack_[0].value.string_val)); }
 #line 6106 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1622:
-#line 3164 "DynareBison.yy" // lalr1.cc:847
+#line 3164 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.adaptive_mh_draws",(yystack_[0].value.string_val)); }
 #line 6112 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1623:
-#line 3165 "DynareBison.yy" // lalr1.cc:847
+#line 3165 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.save_draws","1"); }
 #line 6118 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1624:
-#line 3166 "DynareBison.yy" // lalr1.cc:847
+#line 3166 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.proposal_draws",(yystack_[0].value.string_val)); }
 #line 6124 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1625:
-#line 3167 "DynareBison.yy" // lalr1.cc:847
+#line 3167 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.use_mean_center","1"); }
 #line 6130 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1626:
-#line 3168 "DynareBison.yy" // lalr1.cc:847
+#line 3168 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.proposal_type",(yystack_[0].value.string_val)); }
 #line 6136 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1627:
-#line 3169 "DynareBison.yy" // lalr1.cc:847
+#line 3169 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.proposal_lower_bound",(yystack_[0].value.string_val)); }
 #line 6142 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1628:
-#line 3170 "DynareBison.yy" // lalr1.cc:847
+#line 3170 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.proposal_upper_bound",(yystack_[0].value.string_val)); }
 #line 6148 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1629:
-#line 3171 "DynareBison.yy" // lalr1.cc:847
+#line 3171 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.parameter_uncertainty","1"); }
 #line 6154 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1630:
-#line 3172 "DynareBison.yy" // lalr1.cc:847
+#line 3172 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.horizon",(yystack_[0].value.string_val)); }
 #line 6160 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1631:
-#line 3173 "DynareBison.yy" // lalr1.cc:847
+#line 3173 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.filtered_probabilities","1"); }
 #line 6166 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1632:
-#line 3174 "DynareBison.yy" // lalr1.cc:847
+#line 3174 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.real_time_smoothed_probabilities","1"); }
 #line 6172 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1633:
-#line 3175 "DynareBison.yy" // lalr1.cc:847
+#line 3175 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.error_bands","0"); }
 #line 6178 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1634:
-#line 3176 "DynareBison.yy" // lalr1.cc:847
+#line 3176 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.percentiles",(yystack_[0].value.string_val)); }
 #line 6184 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1635:
-#line 3177 "DynareBison.yy" // lalr1.cc:847
+#line 3177 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.shock_draws",(yystack_[0].value.string_val)); }
 #line 6190 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1636:
-#line 3178 "DynareBison.yy" // lalr1.cc:847
+#line 3178 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.shocks_per_parameter",(yystack_[0].value.string_val)); }
 #line 6196 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1637:
-#line 3179 "DynareBison.yy" // lalr1.cc:847
+#line 3179 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.free_parameters",(yystack_[0].value.string_val)); }
 #line 6202 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1638:
-#line 3180 "DynareBison.yy" // lalr1.cc:847
+#line 3180 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.median","1"); }
 #line 6208 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1639:
-#line 3181 "DynareBison.yy" // lalr1.cc:847
+#line 3181 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("median", (yystack_[0].value.string_val)); }
 #line 6214 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1640:
-#line 3182 "DynareBison.yy" // lalr1.cc:847
+#line 3182 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.regimes","1"); }
 #line 6220 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1641:
-#line 3183 "DynareBison.yy" // lalr1.cc:847
+#line 3183 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.regime",(yystack_[0].value.string_val)); }
 #line 6226 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1642:
-#line 3184 "DynareBison.yy" // lalr1.cc:847
+#line 3184 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("ms.forecast_data_obs",(yystack_[0].value.string_val)); }
 #line 6232 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1643:
-#line 3185 "DynareBison.yy" // lalr1.cc:847
+#line 3185 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("discretionary_tol",(yystack_[0].value.string_val)); }
 #line 6238 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1644:
-#line 3186 "DynareBison.yy" // lalr1.cc:847
+#line 3186 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("analytic_derivation", "1"); }
 #line 6244 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1645:
-#line 3187 "DynareBison.yy" // lalr1.cc:847
+#line 3187 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("analytic_derivation_mode", (yystack_[0].value.string_val)); }
 #line 6250 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1646:
-#line 3188 "DynareBison.yy" // lalr1.cc:847
+#line 3188 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("endogenous_prior", "1"); }
 #line 6256 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1647:
-#line 3189 "DynareBison.yy" // lalr1.cc:847
+#line 3189 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("use_univariate_filters_if_singularity_is_detected", (yystack_[0].value.string_val)); }
 #line 6262 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1648:
-#line 3191 "DynareBison.yy" // lalr1.cc:847
+#line 3191 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("MCMC_jumping_covariance", (yystack_[0].value.string_val)); }
 #line 6268 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1649:
-#line 3192 "DynareBison.yy" // lalr1.cc:847
+#line 3192 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("MCMC_jumping_covariance", (yystack_[0].value.string_val)); }
 #line 6274 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1650:
-#line 3194 "DynareBison.yy" // lalr1.cc:847
+#line 3194 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("MCMC_jumping_covariance", (yystack_[0].value.string_val)); }
 #line 6280 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1651:
-#line 3196 "DynareBison.yy" // lalr1.cc:847
+#line 3196 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("MCMC_jumping_covariance", (yystack_[0].value.string_val)); }
 #line 6286 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1652:
-#line 3198 "DynareBison.yy" // lalr1.cc:847
+#line 3198 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("impulse_responses.plot_threshold", (yystack_[0].value.string_val)); }
 #line 6292 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1653:
-#line 3199 "DynareBison.yy" // lalr1.cc:847
+#line 3199 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("dr_display_tol", (yystack_[0].value.string_val)); }
 #line 6298 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1654:
-#line 3200 "DynareBison.yy" // lalr1.cc:847
+#line 3200 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("endo_vars_for_moment_computations_in_estimation", "all_endogenous_variables"); }
 #line 6304 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1655:
-#line 3201 "DynareBison.yy" // lalr1.cc:847
+#line 3201 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("endo_vars_for_moment_computations_in_estimation", "only_observed_variables"); }
 #line 6310 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1656:
-#line 3202 "DynareBison.yy" // lalr1.cc:847
+#line 3202 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("no_homotopy", "1"); }
 #line 6316 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1657:
-#line 3204 "DynareBison.yy" // lalr1.cc:847
+#line 3204 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("infile", (yystack_[0].value.string_val)); }
 #line 6322 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1658:
-#line 3205 "DynareBison.yy" // lalr1.cc:847
+#line 3205 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("invars"); }
 #line 6328 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1659:
-#line 3206 "DynareBison.yy" // lalr1.cc:847
+#line 3206 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("period", (yystack_[0].value.string_val)); }
 #line 6334 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1660:
-#line 3207 "DynareBison.yy" // lalr1.cc:847
+#line 3207 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("outfile", (yystack_[0].value.string_val)); }
 #line 6340 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1661:
-#line 3208 "DynareBison.yy" // lalr1.cc:847
+#line 3208 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_symbol_list("outvars"); }
 #line 6346 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1662:
-#line 3209 "DynareBison.yy" // lalr1.cc:847
+#line 3209 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("lmmcp.status", "1"); }
 #line 6352 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1663:
-#line 3210 "DynareBison.yy" // lalr1.cc:847
+#line 3210 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {driver.option_num("occbin", "1"); }
 #line 6358 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1664:
-#line 3211 "DynareBison.yy" // lalr1.cc:847
+#line 3211 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("function", (yystack_[0].value.string_val)); }
 #line 6364 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1665:
-#line 3212 "DynareBison.yy" // lalr1.cc:847
+#line 3212 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("sampling_draws",(yystack_[0].value.string_val)); }
 #line 6370 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1666:
-#line 3213 "DynareBison.yy" // lalr1.cc:847
+#line 3213 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("use_shock_groups","default"); }
 #line 6376 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1667:
-#line 3214 "DynareBison.yy" // lalr1.cc:847
+#line 3214 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_str("use_shock_groups", (yystack_[0].value.string_val)); }
 #line 6382 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1668:
-#line 3216 "DynareBison.yy" // lalr1.cc:847
+#line 3216 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { driver.option_num("colormap",(yystack_[0].value.string_val)); }
 #line 6388 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1669:
-#line 3219 "DynareBison.yy" // lalr1.cc:847
+#line 3219 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
           (yystack_[2].value.string_val)->append(":");
           (yystack_[2].value.string_val)->append(*(yystack_[0].value.string_val));
@@ -6399,7 +6399,7 @@ namespace Dynare {
     break;
 
   case 1670:
-#line 3227 "DynareBison.yy" // lalr1.cc:847
+#line 3227 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                   (yystack_[2].value.string_val)->append(":");
                   (yystack_[2].value.string_val)->append(*(yystack_[0].value.string_val));
@@ -6410,7 +6410,7 @@ namespace Dynare {
     break;
 
   case 1671:
-#line 3235 "DynareBison.yy" // lalr1.cc:847
+#line 3235 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                          (yystack_[2].value.string_val)->append(":");
                          (yystack_[2].value.string_val)->append(*(yystack_[0].value.string_val));
@@ -6421,7 +6421,7 @@ namespace Dynare {
     break;
 
   case 1672:
-#line 3242 "DynareBison.yy" // lalr1.cc:847
+#line 3242 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                          (yystack_[3].value.string_val)->insert(0, "-(");
                          (yystack_[3].value.string_val)->append(":");
@@ -6434,13 +6434,13 @@ namespace Dynare {
     break;
 
   case 1673:
-#line 3251 "DynareBison.yy" // lalr1.cc:847
+#line 3251 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_int_val) = new vector<int>(); (yylhs.value.vector_int_val)->push_back(atoi((*(yystack_[0].value.string_val)).c_str())); delete (yystack_[0].value.string_val); }
 #line 6440 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1675:
-#line 3255 "DynareBison.yy" // lalr1.cc:847
+#line 3255 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                  (yylhs.value.vector_int_val) = new vector<int>();
                  for(int i=atoi((*(yystack_[2].value.string_val)).c_str()); i<=atoi((*(yystack_[0].value.string_val)).c_str()); i++)
@@ -6452,19 +6452,19 @@ namespace Dynare {
     break;
 
   case 1676:
-#line 3265 "DynareBison.yy" // lalr1.cc:847
+#line 3265 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_int_val) = (yystack_[0].value.vector_int_val);}
 #line 6458 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1677:
-#line 3267 "DynareBison.yy" // lalr1.cc:847
+#line 3267 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_int_val) = (yystack_[0].value.vector_int_val);}
 #line 6464 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1678:
-#line 3269 "DynareBison.yy" // lalr1.cc:847
+#line 3269 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
               (yylhs.value.vector_int_val) = (yystack_[1].value.vector_int_val);
               for (vector<int>::const_iterator it=(yystack_[0].value.vector_int_val)->begin();
@@ -6476,7 +6476,7 @@ namespace Dynare {
     break;
 
   case 1679:
-#line 3277 "DynareBison.yy" // lalr1.cc:847
+#line 3277 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
               (yylhs.value.vector_int_val) = (yystack_[2].value.vector_int_val);
               for (vector<int>::const_iterator it=(yystack_[0].value.vector_int_val)->begin();
@@ -6488,31 +6488,31 @@ namespace Dynare {
     break;
 
   case 1680:
-#line 3287 "DynareBison.yy" // lalr1.cc:847
+#line 3287 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_int_val) = (yystack_[1].value.vector_int_val); }
 #line 6494 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1681:
-#line 3289 "DynareBison.yy" // lalr1.cc:847
+#line 3289 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.vector_int_val) = (yystack_[2].value.vector_int_val); }
 #line 6500 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1682:
-#line 3292 "DynareBison.yy" // lalr1.cc:847
+#line 3292 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yystack_[0].value.string_val)->insert(0,"["); (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 6506 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1683:
-#line 3293 "DynareBison.yy" // lalr1.cc:847
+#line 3293 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yystack_[0].value.string_val)->insert(0,"["); (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 6512 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1684:
-#line 3295 "DynareBison.yy" // lalr1.cc:847
+#line 3295 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                 (yystack_[1].value.string_val)->append(" ");
                 (yystack_[1].value.string_val)->append(*(yystack_[0].value.string_val));
@@ -6523,7 +6523,7 @@ namespace Dynare {
     break;
 
   case 1685:
-#line 3302 "DynareBison.yy" // lalr1.cc:847
+#line 3302 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                 (yystack_[2].value.string_val)->append(" ");
                 (yystack_[2].value.string_val)->append(*(yystack_[0].value.string_val));
@@ -6534,19 +6534,19 @@ namespace Dynare {
     break;
 
   case 1686:
-#line 3310 "DynareBison.yy" // lalr1.cc:847
+#line 3310 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yystack_[1].value.string_val)->append("]"); (yylhs.value.string_val) = (yystack_[1].value.string_val); }
 #line 6540 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1687:
-#line 3311 "DynareBison.yy" // lalr1.cc:847
+#line 3311 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yystack_[2].value.string_val)->append("]"); (yylhs.value.string_val) = (yystack_[2].value.string_val); }
 #line 6546 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1688:
-#line 3315 "DynareBison.yy" // lalr1.cc:847
+#line 3315 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                    (yystack_[2].value.string_val)->append(",");
                    (yystack_[2].value.string_val)->append(*(yystack_[0].value.string_val));
@@ -6557,31 +6557,31 @@ namespace Dynare {
     break;
 
   case 1689:
-#line 3322 "DynareBison.yy" // lalr1.cc:847
+#line 3322 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 6563 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1690:
-#line 3325 "DynareBison.yy" // lalr1.cc:847
+#line 3325 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[1].value.string_val); }
 #line 6569 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1691:
-#line 3326 "DynareBison.yy" // lalr1.cc:847
+#line 3326 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yylhs.value.string_val) = (yystack_[0].value.string_val); }
 #line 6575 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1692:
-#line 3329 "DynareBison.yy" // lalr1.cc:847
+#line 3329 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yystack_[0].value.string_val)->insert(0, "["); (yylhs.value.string_val) = (yystack_[0].value.string_val);}
 #line 6581 "DynareBison.cc" // lalr1.cc:847
     break;
 
   case 1693:
-#line 3331 "DynareBison.yy" // lalr1.cc:847
+#line 3331 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     {
                       (yystack_[1].value.string_val)->append(" ");
                       (yystack_[1].value.string_val)->append(*(yystack_[0].value.string_val));
@@ -6592,7 +6592,7 @@ namespace Dynare {
     break;
 
   case 1694:
-#line 3339 "DynareBison.yy" // lalr1.cc:847
+#line 3339 "lex_yacc/DynareBison.yy" // lalr1.cc:847
     { (yystack_[1].value.string_val)->append("]"); (yylhs.value.string_val) = (yystack_[1].value.string_val); }
 #line 6598 "DynareBison.cc" // lalr1.cc:847
     break;
@@ -11188,7 +11188,7 @@ namespace Dynare {
 
 } // Dynare
 #line 11191 "DynareBison.cc" // lalr1.cc:1155
-#line 3362 "DynareBison.yy" // lalr1.cc:1156
+#line 3362 "lex_yacc/DynareBison.yy" // lalr1.cc:1156
 
 
 void

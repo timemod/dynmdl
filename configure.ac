@@ -45,6 +45,14 @@ if test "x$YACC" = "x"; then
   unset YACC # AM_MISSING_PROG needs an unset variable: an empty variable won't do
   AC_ERROR("Can't find bison")
 fi
+AC_CHECK_PROG([LEX], [lex], [lex])
+if test "x$LEX" = "x"; then
+  unset YACC # AM_MISSING_PROG needs an unset variable: an empty variable won't do
+  AC_ERROR("Can't find flex")
+fi
+# Hack to get lex include dir. 
+AC_PATH_PROG([LEXPATH], [$LEX])
+AC_SUBST([LEXINC], [`eval "echo $LEXPATH | sed 's|\(.*\)$LEX$|\1../include|'"`])
 
 # We need 1.36 because of unordered_{set,hash} used by Dynare++
 # AX_BOOST_BASE([1.36], [], [AC_ERROR([Can't find Boost >= 1.36])])

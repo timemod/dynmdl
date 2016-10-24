@@ -40,7 +40,7 @@
 #ifndef YY_DYNARE_DYNAREBISON_HH_INCLUDED
 # define YY_DYNARE_DYNAREBISON_HH_INCLUDED
 // //                    "%code requires" blocks.
-#line 28 "DynareBison.yy" // lalr1.cc:372
+#line 28 "lex_yacc/DynareBison.yy" // lalr1.cc:372
 
 #include "ExprNode.hh"
 #include "CodeInterpreter.hh"
@@ -130,7 +130,7 @@ namespace Dynare {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 49 "DynareBison.yy" // lalr1.cc:372
+    #line 49 "lex_yacc/DynareBison.yy" // lalr1.cc:372
 
   string *string_val;
   expr_t node_val;
