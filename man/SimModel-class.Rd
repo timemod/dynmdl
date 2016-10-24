@@ -37,7 +37,7 @@ of the model}
 \item{\code{f_dynamic}}{function for the residuals and Jacobian for the dynamic version
 of the model}
 
-\item{\code{solve_period}}{the solve period as a \code{\link[regts]{regperiod_range}}}
+\item{\code{model_period}}{the model period as a \code{\link[regts]{regperiod_range}}}
 
 \item{\code{endo_period}}{the data period for the endogenous variables}
 

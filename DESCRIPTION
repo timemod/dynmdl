@@ -10,5 +10,5 @@ License: GPL (>= 2)
 LazyData: TRUE
 RoxygenNote: 5.0.1
 LinkingTo: Rcpp
-Imports: Rcpp, nleqslv
+Imports: Rcpp, nleqslv, Matrix, methods, BB
 Depends: regts
