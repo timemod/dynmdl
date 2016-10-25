@@ -1,4 +1,4 @@
-Package: dynparse
+Package: dynr
 Type: Package
 Title: Parse a Dynare model an generate R code
 Version: 0.1.0

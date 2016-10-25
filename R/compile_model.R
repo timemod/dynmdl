@@ -4,7 +4,7 @@
 #' @return an \code{SimModel} object
 #' @export
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib dynparse
+#' @useDynLib dynr
 compile_model <- function(mod_file) {
     model_info <- compile_model_(mod_file)
 

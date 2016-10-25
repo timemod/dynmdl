@@ -1,13 +1,13 @@
-library(dynparse)
+library(dynr)
 
 # read in the analytical solution from Dynare (stochatic simulation, first
 # 250 period). This analytical solution is for a shock in e_g in period 2
 # with value 0.0115.
-solution_csv <-  system.file("extdata", "sa4_solution.csv", package = "dynparse")
+solution_csv <-  system.file("extdata", "sa4_solution.csv", package = "dynr")
 analytical_solution <- as.regts(read.csv(solution_csv), time_column = 1,
                                 fun = function(x) {as.regperiod(x) + 2013})
 
-mod_file <- system.file("extdata", "sa4.mod", package = "dynparse")
+mod_file <- system.file("extdata", "sa4.mod", package = "dynr")
 print(system.time(mdl <- compile_model(mod_file)))
 
 # check steady state. T All steady state values should be zero.

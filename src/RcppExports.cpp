@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // compile_model_
 Rcpp::List compile_model_(std::string modfile);
-RcppExport SEXP dynparse_compile_model_(SEXP modfileSEXP) {
+RcppExport SEXP dynr_compile_model_(SEXP modfileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;

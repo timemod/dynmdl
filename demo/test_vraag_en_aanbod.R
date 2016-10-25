@@ -1,6 +1,6 @@
-library(dynparse)
+library(dynr)
 
-mod_file <- system.file("extdata", "vraag_en_aanbod.mod", package = "dynparse")
+mod_file <- system.file("extdata", "vraag_en_aanbod.mod", package = "dynr")
 
 mdl <- compile_model(mod_file)
 

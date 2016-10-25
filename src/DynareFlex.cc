@@ -4312,7 +4312,7 @@ static yyconst flex_int16_t yy_rule_linenum[606] =
 #define yymore() ((yy_more_flag) = 1)
 #define YY_MORE_ADJ (yy_more_len)
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "DynareFlex.ll"
+#line 1 "lex_yacc/DynareFlex.ll"
 /*
  * Copyright (C) 2003-2016 Dynare Team
  *
@@ -4331,7 +4331,7 @@ static yyconst flex_int16_t yy_rule_linenum[606] =
  * You should have received a copy of the GNU General Public License
  * along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
  */
-#line 22 "DynareFlex.ll"
+#line 22 "lex_yacc/DynareFlex.ll"
 using namespace std;
 
 #include <cstring>
@@ -4369,7 +4369,7 @@ string eofbuff;
 
 
 
-#line 69 "DynareFlex.ll"
+#line 69 "lex_yacc/DynareFlex.ll"
 // Increments location counter for every token read
 #define YY_USER_ACTION location_increment(yylloc, yytext);
 #line 4376 "DynareFlex.cc"
@@ -4547,7 +4547,7 @@ YY_DECL
 	register int yy_act;
     
 /* %% [7.0] user's declarations go here */
-#line 75 "DynareFlex.ll"
+#line 75 "lex_yacc/DynareFlex.ll"
 
  /* Code put at the beginning of yylex() */
 
@@ -4674,13 +4674,13 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 83 "DynareFlex.ll"
+#line 83 "lex_yacc/DynareFlex.ll"
 { line_caller = YYSTATE; BEGIN(LINE1); }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 84 "DynareFlex.ll"
+#line 84 "lex_yacc/DynareFlex.ll"
 {
                   filename = string(yytext);
                   BEGIN(LINE2);
@@ -4688,12 +4688,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 88 "DynareFlex.ll"
+#line 88 "lex_yacc/DynareFlex.ll"
 BEGIN(LINE3);
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 89 "DynareFlex.ll"
+#line 89 "lex_yacc/DynareFlex.ll"
 {
                   yylloc->begin.line = yylloc->end.line = atoi(yytext) - 1;
                   BEGIN(line_caller);
@@ -4702,366 +4702,366 @@ YY_RULE_SETUP
 /* spaces, tabs and carriage returns are ignored */
 case 5:
 YY_RULE_SETUP
-#line 95 "DynareFlex.ll"
+#line 95 "lex_yacc/DynareFlex.ll"
 { yylloc->step(); }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 96 "DynareFlex.ll"
+#line 96 "lex_yacc/DynareFlex.ll"
 { yylloc->step(); }
 	YY_BREAK
 /* Comments */
 case 7:
 YY_RULE_SETUP
-#line 99 "DynareFlex.ll"
+#line 99 "lex_yacc/DynareFlex.ll"
 
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 100 "DynareFlex.ll"
+#line 100 "lex_yacc/DynareFlex.ll"
 
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 101 "DynareFlex.ll"
+#line 101 "lex_yacc/DynareFlex.ll"
 {comment_caller = YY_START; BEGIN COMMENT;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 103 "DynareFlex.ll"
+#line 103 "lex_yacc/DynareFlex.ll"
 {BEGIN comment_caller;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 104 "DynareFlex.ll"
+#line 104 "lex_yacc/DynareFlex.ll"
 
 	YY_BREAK
 /* Begin of a Dynare statement */
 case 12:
 YY_RULE_SETUP
-#line 107 "DynareFlex.ll"
+#line 107 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::VAR;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 108 "DynareFlex.ll"
+#line 108 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::VAREXO;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 109 "DynareFlex.ll"
+#line 109 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::VAREXO_DET;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 110 "DynareFlex.ll"
+#line 110 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::TREND_VAR;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 111 "DynareFlex.ll"
+#line 111 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::LOG_TREND_VAR;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 112 "DynareFlex.ll"
+#line 112 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::PREDETERMINED_VARIABLES;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 113 "DynareFlex.ll"
+#line 113 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::PARAMETERS;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 114 "DynareFlex.ll"
+#line 114 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::PERIODS;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 115 "DynareFlex.ll"
+#line 115 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MODEL_INFO;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 116 "DynareFlex.ll"
+#line 116 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::ESTIMATION;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 117 "DynareFlex.ll"
+#line 117 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::SET_TIME;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 118 "DynareFlex.ll"
+#line 118 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::DATA;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 119 "DynareFlex.ll"
+#line 119 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::VAROBS;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 120 "DynareFlex.ll"
+#line 120 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::UNIT_ROOT_VARS;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 121 "DynareFlex.ll"
+#line 121 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::RPLOT;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 122 "DynareFlex.ll"
+#line 122 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::OSR_PARAMS;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 123 "DynareFlex.ll"
+#line 123 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::OSR;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 124 "DynareFlex.ll"
+#line 124 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::DYNATYPE;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 125 "DynareFlex.ll"
+#line 125 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::DYNASAVE;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 126 "DynareFlex.ll"
+#line 126 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MODEL_COMPARISON;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 127 "DynareFlex.ll"
+#line 127 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::CHANGE_TYPE;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 128 "DynareFlex.ll"
+#line 128 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::LOAD_PARAMS_AND_STEADY_STATE;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 129 "DynareFlex.ll"
+#line 129 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::SAVE_PARAMS_AND_STEADY_STATE;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 130 "DynareFlex.ll"
+#line 130 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::WRITE_LATEX_DYNAMIC_MODEL;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 131 "DynareFlex.ll"
+#line 131 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::WRITE_LATEX_STATIC_MODEL;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 132 "DynareFlex.ll"
+#line 132 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::WRITE_LATEX_ORIGINAL_MODEL;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 134 "DynareFlex.ll"
+#line 134 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::STEADY;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 135 "DynareFlex.ll"
+#line 135 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::CHECK;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 136 "DynareFlex.ll"
+#line 136 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::SIMUL;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 137 "DynareFlex.ll"
+#line 137 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::STOCH_SIMUL;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 138 "DynareFlex.ll"
+#line 138 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::DSAMPLE;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 139 "DynareFlex.ll"
+#line 139 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; sigma_e = 1; return token::SIGMA_E;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 140 "DynareFlex.ll"
+#line 140 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::PLANNER_OBJECTIVE;}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 141 "DynareFlex.ll"
+#line 141 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::RAMSEY_MODEL;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 142 "DynareFlex.ll"
+#line 142 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::RAMSEY_POLICY;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 143 "DynareFlex.ll"
+#line 143 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::DISCRETIONARY_POLICY;}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 144 "DynareFlex.ll"
+#line 144 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::IDENTIFICATION;}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 146 "DynareFlex.ll"
+#line 146 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::BVAR_DENSITY; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 147 "DynareFlex.ll"
+#line 147 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::BVAR_FORECAST; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 148 "DynareFlex.ll"
+#line 148 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::DYNARE_SENSITIVITY;}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 149 "DynareFlex.ll"
+#line 149 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::INITVAL_FILE;}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 150 "DynareFlex.ll"
+#line 150 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::HISTVAL_FILE;}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 151 "DynareFlex.ll"
+#line 151 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::FORECAST;}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 152 "DynareFlex.ll"
+#line 152 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::SHOCK_DECOMPOSITION;}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 153 "DynareFlex.ll"
+#line 153 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::SBVAR;}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 154 "DynareFlex.ll"
+#line 154 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MS_ESTIMATION;}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 155 "DynareFlex.ll"
+#line 155 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MS_SIMULATION;}
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 156 "DynareFlex.ll"
+#line 156 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MS_COMPUTE_MDD;}
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 157 "DynareFlex.ll"
+#line 157 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MS_COMPUTE_PROBABILITIES;}
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 158 "DynareFlex.ll"
+#line 158 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MS_FORECAST;}
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 159 "DynareFlex.ll"
+#line 159 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MS_IRF;}
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 160 "DynareFlex.ll"
+#line 160 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MS_VARIANCE_DECOMPOSITION;}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 161 "DynareFlex.ll"
+#line 161 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::CONDITIONAL_FORECAST;}
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 162 "DynareFlex.ll"
+#line 162 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::PLOT_CONDITIONAL_FORECAST;}
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 164 "DynareFlex.ll"
+#line 164 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MARKOV_SWITCHING;}
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 165 "DynareFlex.ll"
+#line 165 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::SVAR;}
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 166 "DynareFlex.ll"
+#line 166 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::SVAR_GLOBAL_IDENTIFICATION_CHECK;}
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 167 "DynareFlex.ll"
+#line 167 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::EXTERNAL_FUNCTION;}
 	YY_BREAK
 /* End of a Dynare statement */
 case 70:
 YY_RULE_SETUP
-#line 169 "DynareFlex.ll"
+#line 169 "lex_yacc/DynareFlex.ll"
 { BEGIN DYNARE_STATEMENT; return token::CALIB_SMOOTHER; } 
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 170 "DynareFlex.ll"
+#line 170 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::MODEL_DIAGNOSTICS;}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 171 "DynareFlex.ll"
+#line 171 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::EXTENDED_PATH;}
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 172 "DynareFlex.ll"
+#line 172 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::SMOOTHER2HISTVAL;}
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 173 "DynareFlex.ll"
+#line 173 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::PERFECT_FORESIGHT_SETUP;}
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 174 "DynareFlex.ll"
+#line 174 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::PERFECT_FORESIGHT_SOLVER;}
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 176 "DynareFlex.ll"
+#line 176 "lex_yacc/DynareFlex.ll"
 {
   if (!sigma_e)
     BEGIN INITIAL;
@@ -5071,135 +5071,135 @@ YY_RULE_SETUP
 /* Begin of a Dynare block */
 case 77:
 YY_RULE_SETUP
-#line 184 "DynareFlex.ll"
+#line 184 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::MODEL;}
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 185 "DynareFlex.ll"
+#line 185 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::STEADY_STATE_MODEL;}
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 186 "DynareFlex.ll"
+#line 186 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::INITVAL;}
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 187 "DynareFlex.ll"
+#line 187 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::ENDVAL;}
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 188 "DynareFlex.ll"
+#line 188 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::HISTVAL;}
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 189 "DynareFlex.ll"
+#line 189 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::SHOCKS;}
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 190 "DynareFlex.ll"
+#line 190 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::SHOCK_GROUPS;}
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 191 "DynareFlex.ll"
+#line 191 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::MSHOCKS;}
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 192 "DynareFlex.ll"
+#line 192 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::ESTIMATED_PARAMS;}
 	YY_BREAK
 /* priors is an alias for estimated_params */
 case 86:
 YY_RULE_SETUP
-#line 194 "DynareFlex.ll"
+#line 194 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK;return token::ESTIMATED_PARAMS;}
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 195 "DynareFlex.ll"
+#line 195 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::ESTIMATED_PARAMS_INIT;}
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 196 "DynareFlex.ll"
+#line 196 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::ESTIMATED_PARAMS_BOUNDS;}
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 197 "DynareFlex.ll"
+#line 197 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::OSR_PARAMS_BOUNDS;}
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 198 "DynareFlex.ll"
+#line 198 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::OBSERVATION_TRENDS;}
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 199 "DynareFlex.ll"
+#line 199 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::OPTIM_WEIGHTS;}
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 200 "DynareFlex.ll"
+#line 200 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::HOMOTOPY_SETUP;}
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 201 "DynareFlex.ll"
+#line 201 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::CONDITIONAL_FORECAST_PATHS;}
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 202 "DynareFlex.ll"
+#line 202 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::SVAR_IDENTIFICATION;}
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 203 "DynareFlex.ll"
+#line 203 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::MOMENT_CALIBRATION;}
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 204 "DynareFlex.ll"
+#line 204 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::IRF_CALIBRATION;}
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 205 "DynareFlex.ll"
+#line 205 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_BLOCK; return token::RAMSEY_CONSTRAINTS;}
 	YY_BREAK
 /* For the semicolon after an "end" keyword */
 case 98:
 YY_RULE_SETUP
-#line 208 "DynareFlex.ll"
+#line 208 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 /* End of a Dynare block */
 case 99:
 YY_RULE_SETUP
-#line 211 "DynareFlex.ll"
+#line 211 "lex_yacc/DynareFlex.ll"
 {BEGIN INITIAL; return token::END;}
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 213 "DynareFlex.ll"
+#line 213 "lex_yacc/DynareFlex.ll"
 {return token::SUBSAMPLES;}
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 214 "DynareFlex.ll"
+#line 214 "lex_yacc/DynareFlex.ll"
 {return token::OPTIONS;}
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 215 "DynareFlex.ll"
+#line 215 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::PRIOR;
@@ -5207,38 +5207,38 @@ YY_RULE_SETUP
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 219 "DynareFlex.ll"
+#line 219 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::STD;}
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 220 "DynareFlex.ll"
+#line 220 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::CORR;}
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 221 "DynareFlex.ll"
+#line 221 "lex_yacc/DynareFlex.ll"
 {return token::FUNCTION;}
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 222 "DynareFlex.ll"
+#line 222 "lex_yacc/DynareFlex.ll"
 {return token::SAMPLING_DRAWS;}
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 223 "DynareFlex.ll"
+#line 223 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::PRIOR_FUNCTION;}
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 224 "DynareFlex.ll"
+#line 224 "lex_yacc/DynareFlex.ll"
 {BEGIN DYNARE_STATEMENT; return token::POSTERIOR_FUNCTION;}
 	YY_BREAK
 /* Inside  of a Dynare statement */
 case 109:
 YY_RULE_SETUP
-#line 227 "DynareFlex.ll"
+#line 227 "lex_yacc/DynareFlex.ll"
 {
                            char *yycopy = strdup(yytext);
                            char *uput = yycopy + yyleng;
@@ -5258,7 +5258,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 243 "DynareFlex.ll"
+#line 243 "lex_yacc/DynareFlex.ll"
 { yylloc->step();
 #if (YY_FLEX_MAJOR_VERSION > 2) || (YY_FLEX_MAJOR_VERSION == 2 && YY_FLEX_MINOR_VERSION >= 6)
                             yyout << yytext + 1;
@@ -5269,737 +5269,737 @@ YY_RULE_SETUP
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 250 "DynareFlex.ll"
+#line 250 "lex_yacc/DynareFlex.ll"
 {dates_parens_nb=0; BEGIN DATES_STATEMENT; yylval->string_val = new string("dates");}
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 251 "DynareFlex.ll"
+#line 251 "lex_yacc/DynareFlex.ll"
 {return token::FILE;}
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 252 "DynareFlex.ll"
+#line 252 "lex_yacc/DynareFlex.ll"
 {return token::DATAFILE;}
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 253 "DynareFlex.ll"
+#line 253 "lex_yacc/DynareFlex.ll"
 {return token::DIRNAME;}
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 254 "DynareFlex.ll"
+#line 254 "lex_yacc/DynareFlex.ll"
 {return token::NOBS;}
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 255 "DynareFlex.ll"
+#line 255 "lex_yacc/DynareFlex.ll"
 {return token::LAST_OBS;}
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 256 "DynareFlex.ll"
+#line 256 "lex_yacc/DynareFlex.ll"
 {return token::FIRST_OBS;}
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 257 "DynareFlex.ll"
+#line 257 "lex_yacc/DynareFlex.ll"
 {return token::MEAN;}
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 258 "DynareFlex.ll"
+#line 258 "lex_yacc/DynareFlex.ll"
 {return token::STDEV;}
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 259 "DynareFlex.ll"
+#line 259 "lex_yacc/DynareFlex.ll"
 {return token::TRUNCATE;}
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 260 "DynareFlex.ll"
+#line 260 "lex_yacc/DynareFlex.ll"
 {return token::DOMAINN;}
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 261 "DynareFlex.ll"
+#line 261 "lex_yacc/DynareFlex.ll"
 {return token::VARIANCE;}
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 262 "DynareFlex.ll"
+#line 262 "lex_yacc/DynareFlex.ll"
 {return token::MODE;}
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 263 "DynareFlex.ll"
+#line 263 "lex_yacc/DynareFlex.ll"
 {return token::INTERVAL;}
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 264 "DynareFlex.ll"
+#line 264 "lex_yacc/DynareFlex.ll"
 {return token::SHAPE;}
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 265 "DynareFlex.ll"
+#line 265 "lex_yacc/DynareFlex.ll"
 {return token::SHIFT;}
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 266 "DynareFlex.ll"
+#line 266 "lex_yacc/DynareFlex.ll"
 {return token::BOUNDS;}
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 267 "DynareFlex.ll"
+#line 267 "lex_yacc/DynareFlex.ll"
 {return token::INIT;}
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 268 "DynareFlex.ll"
+#line 268 "lex_yacc/DynareFlex.ll"
 {return token::JSCALE;}
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 269 "DynareFlex.ll"
+#line 269 "lex_yacc/DynareFlex.ll"
 {return token::PREFILTER;}
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
-#line 270 "DynareFlex.ll"
+#line 270 "lex_yacc/DynareFlex.ll"
 {return token::PRESAMPLE;}
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
-#line 271 "DynareFlex.ll"
+#line 271 "lex_yacc/DynareFlex.ll"
 {return token::LIK_ALGO;}
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 272 "DynareFlex.ll"
+#line 272 "lex_yacc/DynareFlex.ll"
 {return token::LIK_INIT;}
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
-#line 273 "DynareFlex.ll"
+#line 273 "lex_yacc/DynareFlex.ll"
 {return token::TAPER_STEPS;}
 	YY_BREAK
 case 135:
 YY_RULE_SETUP
-#line 274 "DynareFlex.ll"
+#line 274 "lex_yacc/DynareFlex.ll"
 {return token::GEWEKE_INTERVAL;}
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 275 "DynareFlex.ll"
+#line 275 "lex_yacc/DynareFlex.ll"
 {return token::GRAPH;}
 	YY_BREAK
 case 137:
 YY_RULE_SETUP
-#line 276 "DynareFlex.ll"
+#line 276 "lex_yacc/DynareFlex.ll"
 {return token::NOGRAPH;}
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 277 "DynareFlex.ll"
+#line 277 "lex_yacc/DynareFlex.ll"
 {return token::NODISPLAY;}
 	YY_BREAK
 case 139:
 YY_RULE_SETUP
-#line 278 "DynareFlex.ll"
+#line 278 "lex_yacc/DynareFlex.ll"
 {return token::GRAPH_FORMAT;}
 	YY_BREAK
 case 140:
 YY_RULE_SETUP
-#line 279 "DynareFlex.ll"
+#line 279 "lex_yacc/DynareFlex.ll"
 {yylval->string_val = new string(yytext); return token::EPS;}
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 280 "DynareFlex.ll"
+#line 280 "lex_yacc/DynareFlex.ll"
 {yylval->string_val = new string(yytext); return token::PDF;}
 	YY_BREAK
 case 142:
 YY_RULE_SETUP
-#line 281 "DynareFlex.ll"
+#line 281 "lex_yacc/DynareFlex.ll"
 {yylval->string_val = new string(yytext); return token::FIG;}
 	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 282 "DynareFlex.ll"
+#line 282 "lex_yacc/DynareFlex.ll"
 {yylval->string_val = new string(yytext); return token::NONE;}
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 283 "DynareFlex.ll"
+#line 283 "lex_yacc/DynareFlex.ll"
 {return token::PRINT;}
 	YY_BREAK
 case 145:
 YY_RULE_SETUP
-#line 284 "DynareFlex.ll"
+#line 284 "lex_yacc/DynareFlex.ll"
 {return token::NOPRINT;}
 	YY_BREAK
 case 146:
 YY_RULE_SETUP
-#line 285 "DynareFlex.ll"
+#line 285 "lex_yacc/DynareFlex.ll"
 {return token::CONF_SIG;}
 	YY_BREAK
 case 147:
 YY_RULE_SETUP
-#line 286 "DynareFlex.ll"
+#line 286 "lex_yacc/DynareFlex.ll"
 {return token::MH_CONF_SIG;}
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 287 "DynareFlex.ll"
+#line 287 "lex_yacc/DynareFlex.ll"
 {return token::MH_REPLIC;}
 	YY_BREAK
 case 149:
 YY_RULE_SETUP
-#line 288 "DynareFlex.ll"
+#line 288 "lex_yacc/DynareFlex.ll"
 {return token::MH_DROP;}
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
-#line 289 "DynareFlex.ll"
+#line 289 "lex_yacc/DynareFlex.ll"
 {return token::MH_JSCALE;}
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
-#line 290 "DynareFlex.ll"
+#line 290 "lex_yacc/DynareFlex.ll"
 {return token::MH_INIT_SCALE;}
 	YY_BREAK
 case 152:
 YY_RULE_SETUP
-#line 291 "DynareFlex.ll"
+#line 291 "lex_yacc/DynareFlex.ll"
 {return token::MODE_FILE;}
 	YY_BREAK
 case 153:
 YY_RULE_SETUP
-#line 292 "DynareFlex.ll"
+#line 292 "lex_yacc/DynareFlex.ll"
 {return token::MODE_COMPUTE;}
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
-#line 293 "DynareFlex.ll"
+#line 293 "lex_yacc/DynareFlex.ll"
 {return token::MODE_CHECK;}
 	YY_BREAK
 case 155:
 YY_RULE_SETUP
-#line 294 "DynareFlex.ll"
+#line 294 "lex_yacc/DynareFlex.ll"
 {return token::MODE_CHECK_NEIGHBOURHOOD_SIZE;}
 	YY_BREAK
 case 156:
 YY_RULE_SETUP
-#line 295 "DynareFlex.ll"
+#line 295 "lex_yacc/DynareFlex.ll"
 {return token::MODE_CHECK_SYMMETRIC_PLOTS;}
 	YY_BREAK
 case 157:
 YY_RULE_SETUP
-#line 296 "DynareFlex.ll"
+#line 296 "lex_yacc/DynareFlex.ll"
 {return token::MODE_CHECK_NUMBER_OF_POINTS;}
 	YY_BREAK
 case 158:
 YY_RULE_SETUP
-#line 297 "DynareFlex.ll"
+#line 297 "lex_yacc/DynareFlex.ll"
 {return token::PRIOR_TRUNC;}
 	YY_BREAK
 case 159:
 YY_RULE_SETUP
-#line 298 "DynareFlex.ll"
+#line 298 "lex_yacc/DynareFlex.ll"
 {return token::MH_MODE;}
 	YY_BREAK
 case 160:
 YY_RULE_SETUP
-#line 299 "DynareFlex.ll"
+#line 299 "lex_yacc/DynareFlex.ll"
 {return token::MH_NBLOCKS;}
 	YY_BREAK
 case 161:
 YY_RULE_SETUP
-#line 300 "DynareFlex.ll"
+#line 300 "lex_yacc/DynareFlex.ll"
 {return token::LOAD_MH_FILE;}
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
-#line 301 "DynareFlex.ll"
+#line 301 "lex_yacc/DynareFlex.ll"
 {return token::LOGLINEAR;}
 	YY_BREAK
 case 163:
 YY_RULE_SETUP
-#line 302 "DynareFlex.ll"
+#line 302 "lex_yacc/DynareFlex.ll"
 {return token::LINEAR_APPROXIMATION;}
 	YY_BREAK
 case 164:
 YY_RULE_SETUP
-#line 303 "DynareFlex.ll"
+#line 303 "lex_yacc/DynareFlex.ll"
 {return token::LOGDATA;}
 	YY_BREAK
 case 165:
 YY_RULE_SETUP
-#line 304 "DynareFlex.ll"
+#line 304 "lex_yacc/DynareFlex.ll"
 {return token::NODIAGNOSTIC;}
 	YY_BREAK
 case 166:
 YY_RULE_SETUP
-#line 305 "DynareFlex.ll"
+#line 305 "lex_yacc/DynareFlex.ll"
 {return token::KALMAN_ALGO;}
 	YY_BREAK
 case 167:
 YY_RULE_SETUP
-#line 306 "DynareFlex.ll"
+#line 306 "lex_yacc/DynareFlex.ll"
 {return token::FAST_KALMAN_FILTER;}
 	YY_BREAK
 case 168:
 YY_RULE_SETUP
-#line 307 "DynareFlex.ll"
+#line 307 "lex_yacc/DynareFlex.ll"
 {return token::KALMAN_TOL;}
 	YY_BREAK
 case 169:
 YY_RULE_SETUP
-#line 308 "DynareFlex.ll"
+#line 308 "lex_yacc/DynareFlex.ll"
 {return token::DIFFUSE_KALMAN_TOL;}
 	YY_BREAK
 case 170:
 YY_RULE_SETUP
-#line 309 "DynareFlex.ll"
+#line 309 "lex_yacc/DynareFlex.ll"
 {return token::FORECAST;}
 	YY_BREAK
 case 171:
 YY_RULE_SETUP
-#line 310 "DynareFlex.ll"
+#line 310 "lex_yacc/DynareFlex.ll"
 {return token::SMOOTHER;}
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 311 "DynareFlex.ll"
+#line 311 "lex_yacc/DynareFlex.ll"
 {return token::BAYESIAN_IRF;}
 	YY_BREAK
 case 173:
 YY_RULE_SETUP
-#line 312 "DynareFlex.ll"
+#line 312 "lex_yacc/DynareFlex.ll"
 {return token::DSGE_VAR;}
 	YY_BREAK
 case 174:
 YY_RULE_SETUP
-#line 313 "DynareFlex.ll"
+#line 313 "lex_yacc/DynareFlex.ll"
 {return token::DSGE_VARLAG;}
 	YY_BREAK
 case 175:
 YY_RULE_SETUP
-#line 314 "DynareFlex.ll"
+#line 314 "lex_yacc/DynareFlex.ll"
 {return token::MOMENTS_VARENDO;}
 	YY_BREAK
 case 176:
 YY_RULE_SETUP
-#line 315 "DynareFlex.ll"
+#line 315 "lex_yacc/DynareFlex.ll"
 {return token::CONTEMPORANEOUS_CORRELATION;}
 	YY_BREAK
 case 177:
 YY_RULE_SETUP
-#line 316 "DynareFlex.ll"
+#line 316 "lex_yacc/DynareFlex.ll"
 {return token::POSTERIOR_MAX_SUBSAMPLE_DRAWS;}
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
-#line 317 "DynareFlex.ll"
+#line 317 "lex_yacc/DynareFlex.ll"
 {return token::FILTERED_VARS;}
 	YY_BREAK
 case 179:
 YY_RULE_SETUP
-#line 318 "DynareFlex.ll"
+#line 318 "lex_yacc/DynareFlex.ll"
 {return token::FILTER_STEP_AHEAD;}
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
-#line 319 "DynareFlex.ll"
+#line 319 "lex_yacc/DynareFlex.ll"
 {return token::RELATIVE_IRF;}
 	YY_BREAK
 case 181:
 YY_RULE_SETUP
-#line 320 "DynareFlex.ll"
+#line 320 "lex_yacc/DynareFlex.ll"
 {return token::TEX;}
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
-#line 321 "DynareFlex.ll"
+#line 321 "lex_yacc/DynareFlex.ll"
 {return token::NOMOMENTS;}
 	YY_BREAK
 case 183:
 YY_RULE_SETUP
-#line 322 "DynareFlex.ll"
+#line 322 "lex_yacc/DynareFlex.ll"
 {return token::STD;}
 	YY_BREAK
 case 184:
 YY_RULE_SETUP
-#line 323 "DynareFlex.ll"
+#line 323 "lex_yacc/DynareFlex.ll"
 {return token::CORR;}
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
-#line 324 "DynareFlex.ll"
+#line 324 "lex_yacc/DynareFlex.ll"
 {return token::NOCORR;}
 	YY_BREAK
 case 186:
 YY_RULE_SETUP
-#line 325 "DynareFlex.ll"
+#line 325 "lex_yacc/DynareFlex.ll"
 {return token::OPTIM;}
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
-#line 326 "DynareFlex.ll"
+#line 326 "lex_yacc/DynareFlex.ll"
 {return token::PERIODS;}
 	YY_BREAK
 case 188:
 YY_RULE_SETUP
-#line 327 "DynareFlex.ll"
+#line 327 "lex_yacc/DynareFlex.ll"
 {return token::ENDOGENOUS_TERMINAL_PERIOD;}
 	YY_BREAK
 case 189:
 YY_RULE_SETUP
-#line 328 "DynareFlex.ll"
+#line 328 "lex_yacc/DynareFlex.ll"
 {return token::SUB_DRAWS;}
 	YY_BREAK
 case 190:
 YY_RULE_SETUP
-#line 329 "DynareFlex.ll"
+#line 329 "lex_yacc/DynareFlex.ll"
 {return token::MINIMAL_SOLVING_PERIODS;}
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
-#line 330 "DynareFlex.ll"
+#line 330 "lex_yacc/DynareFlex.ll"
 {return token::MARKOWITZ;}
 	YY_BREAK
 case 192:
 YY_RULE_SETUP
-#line 331 "DynareFlex.ll"
+#line 331 "lex_yacc/DynareFlex.ll"
 {return token::MARGINAL_DENSITY;}
 	YY_BREAK
 case 193:
 YY_RULE_SETUP
-#line 332 "DynareFlex.ll"
+#line 332 "lex_yacc/DynareFlex.ll"
 {return token::LAPLACE;}
 	YY_BREAK
 case 194:
 YY_RULE_SETUP
-#line 333 "DynareFlex.ll"
+#line 333 "lex_yacc/DynareFlex.ll"
 {return token::MODIFIEDHARMONICMEAN;}
 	YY_BREAK
 case 195:
 YY_RULE_SETUP
-#line 334 "DynareFlex.ll"
+#line 334 "lex_yacc/DynareFlex.ll"
 {return token::CONSTANT;}
 	YY_BREAK
 case 196:
 YY_RULE_SETUP
-#line 335 "DynareFlex.ll"
+#line 335 "lex_yacc/DynareFlex.ll"
 {return token::NOCONSTANT;}
 	YY_BREAK
 case 197:
 YY_RULE_SETUP
-#line 336 "DynareFlex.ll"
+#line 336 "lex_yacc/DynareFlex.ll"
 {return token::COVAR;}
 	YY_BREAK
 case 198:
 YY_RULE_SETUP
-#line 337 "DynareFlex.ll"
+#line 337 "lex_yacc/DynareFlex.ll"
 {return token::FILENAME;}
 	YY_BREAK
 case 199:
 YY_RULE_SETUP
-#line 338 "DynareFlex.ll"
+#line 338 "lex_yacc/DynareFlex.ll"
 {return token::DIFFUSE_FILTER;}
 	YY_BREAK
 case 200:
 YY_RULE_SETUP
-#line 339 "DynareFlex.ll"
+#line 339 "lex_yacc/DynareFlex.ll"
 {return token::PLOT_PRIORS;}
 	YY_BREAK
 case 201:
 YY_RULE_SETUP
-#line 340 "DynareFlex.ll"
+#line 340 "lex_yacc/DynareFlex.ll"
 {return token::AIM_SOLVER;}
 	YY_BREAK
 case 202:
 YY_RULE_SETUP
-#line 341 "DynareFlex.ll"
+#line 341 "lex_yacc/DynareFlex.ll"
 {return token::PARTIAL_INFORMATION;}
 	YY_BREAK
 case 203:
 YY_RULE_SETUP
-#line 342 "DynareFlex.ll"
+#line 342 "lex_yacc/DynareFlex.ll"
 {return token::CONDITIONAL_VARIANCE_DECOMPOSITION;}
 	YY_BREAK
 case 204:
 YY_RULE_SETUP
-#line 343 "DynareFlex.ll"
+#line 343 "lex_yacc/DynareFlex.ll"
 {return token::EXT_FUNC_NAME;}
 	YY_BREAK
 case 205:
 YY_RULE_SETUP
-#line 344 "DynareFlex.ll"
+#line 344 "lex_yacc/DynareFlex.ll"
 {return token::EXT_FUNC_NARGS;}
 	YY_BREAK
 case 206:
 YY_RULE_SETUP
-#line 345 "DynareFlex.ll"
+#line 345 "lex_yacc/DynareFlex.ll"
 {return token::FIRST_DERIV_PROVIDED;}
 	YY_BREAK
 case 207:
 YY_RULE_SETUP
-#line 346 "DynareFlex.ll"
+#line 346 "lex_yacc/DynareFlex.ll"
 {return token::SECOND_DERIV_PROVIDED;}
 	YY_BREAK
 case 208:
 YY_RULE_SETUP
-#line 347 "DynareFlex.ll"
+#line 347 "lex_yacc/DynareFlex.ll"
 {return token::FREQ;}
 	YY_BREAK
 case 209:
 YY_RULE_SETUP
-#line 348 "DynareFlex.ll"
+#line 348 "lex_yacc/DynareFlex.ll"
 {return token::MONTHLY; }
 	YY_BREAK
 case 210:
 YY_RULE_SETUP
-#line 349 "DynareFlex.ll"
+#line 349 "lex_yacc/DynareFlex.ll"
 {return token::QUARTERLY; }
 	YY_BREAK
 case 211:
 YY_RULE_SETUP
-#line 350 "DynareFlex.ll"
+#line 350 "lex_yacc/DynareFlex.ll"
 {return token::INITIAL_YEAR;}
 	YY_BREAK
 case 212:
 YY_RULE_SETUP
-#line 351 "DynareFlex.ll"
+#line 351 "lex_yacc/DynareFlex.ll"
 {return token::INITIAL_SUBPERIOD;}
 	YY_BREAK
 case 213:
 YY_RULE_SETUP
-#line 352 "DynareFlex.ll"
+#line 352 "lex_yacc/DynareFlex.ll"
 {return token::FINAL_YEAR;}
 	YY_BREAK
 case 214:
 YY_RULE_SETUP
-#line 353 "DynareFlex.ll"
+#line 353 "lex_yacc/DynareFlex.ll"
 {return token::FINAL_SUBPERIOD;}
 	YY_BREAK
 case 215:
 YY_RULE_SETUP
-#line 354 "DynareFlex.ll"
+#line 354 "lex_yacc/DynareFlex.ll"
 {return token::VLIST;}
 	YY_BREAK
 case 216:
 YY_RULE_SETUP
-#line 355 "DynareFlex.ll"
+#line 355 "lex_yacc/DynareFlex.ll"
 {return token::VLISTLOG;}
 	YY_BREAK
 case 217:
 YY_RULE_SETUP
-#line 356 "DynareFlex.ll"
+#line 356 "lex_yacc/DynareFlex.ll"
 {return token::VLISTPER;}
 	YY_BREAK
 case 218:
 YY_RULE_SETUP
-#line 357 "DynareFlex.ll"
+#line 357 "lex_yacc/DynareFlex.ll"
 {return token::RESTRICTION_FNAME;}
 	YY_BREAK
 case 219:
 YY_RULE_SETUP
-#line 358 "DynareFlex.ll"
+#line 358 "lex_yacc/DynareFlex.ll"
 {return token::NLAGS;}
 	YY_BREAK
 case 220:
 YY_RULE_SETUP
-#line 359 "DynareFlex.ll"
+#line 359 "lex_yacc/DynareFlex.ll"
 {return token::RESTRICTIONS;}
 	YY_BREAK
 case 221:
 YY_RULE_SETUP
-#line 360 "DynareFlex.ll"
+#line 360 "lex_yacc/DynareFlex.ll"
 {return token::CROSS_RESTRICTIONS;}
 	YY_BREAK
 case 222:
 YY_RULE_SETUP
-#line 361 "DynareFlex.ll"
+#line 361 "lex_yacc/DynareFlex.ll"
 {return token::CONTEMP_REDUCED_FORM;}
 	YY_BREAK
 case 223:
 YY_RULE_SETUP
-#line 362 "DynareFlex.ll"
+#line 362 "lex_yacc/DynareFlex.ll"
 {return token::REAL_PSEUDO_FORECAST;}
 	YY_BREAK
 case 224:
 YY_RULE_SETUP
-#line 363 "DynareFlex.ll"
+#line 363 "lex_yacc/DynareFlex.ll"
 {return token::NO_BAYESIAN_PRIOR;}
 	YY_BREAK
 case 225:
 YY_RULE_SETUP
-#line 364 "DynareFlex.ll"
+#line 364 "lex_yacc/DynareFlex.ll"
 {return token::DUMMY_OBS;}
 	YY_BREAK
 case 226:
 YY_RULE_SETUP
-#line 365 "DynareFlex.ll"
+#line 365 "lex_yacc/DynareFlex.ll"
 {return token::SPECTRAL_DENSITY;}
 	YY_BREAK
 case 227:
 YY_RULE_SETUP
-#line 366 "DynareFlex.ll"
+#line 366 "lex_yacc/DynareFlex.ll"
 {return token::NSTATES;}
 	YY_BREAK
 case 228:
 YY_RULE_SETUP
-#line 367 "DynareFlex.ll"
+#line 367 "lex_yacc/DynareFlex.ll"
 {return token::INDXSCALESSTATES;}
 	YY_BREAK
 case 229:
 YY_RULE_SETUP
-#line 368 "DynareFlex.ll"
+#line 368 "lex_yacc/DynareFlex.ll"
 {return token::FIXED_POINT;}
 	YY_BREAK
 case 230:
 YY_RULE_SETUP
-#line 369 "DynareFlex.ll"
+#line 369 "lex_yacc/DynareFlex.ll"
 {return token::DOUBLING;}
 	YY_BREAK
 case 231:
 YY_RULE_SETUP
-#line 370 "DynareFlex.ll"
+#line 370 "lex_yacc/DynareFlex.ll"
 {return token::SQUARE_ROOT_SOLVER;}
 	YY_BREAK
 case 232:
 YY_RULE_SETUP
-#line 371 "DynareFlex.ll"
+#line 371 "lex_yacc/DynareFlex.ll"
 {return token::CYCLE_REDUCTION;}
 	YY_BREAK
 case 233:
 YY_RULE_SETUP
-#line 372 "DynareFlex.ll"
+#line 372 "lex_yacc/DynareFlex.ll"
 {return token::LOGARITHMIC_REDUCTION;}
 	YY_BREAK
 case 234:
 YY_RULE_SETUP
-#line 373 "DynareFlex.ll"
+#line 373 "lex_yacc/DynareFlex.ll"
 {return token::USE_UNIVARIATE_FILTERS_IF_SINGULARITY_IS_DETECTED;}
 	YY_BREAK
 case 235:
 YY_RULE_SETUP
-#line 374 "DynareFlex.ll"
+#line 374 "lex_yacc/DynareFlex.ll"
 {return token::HYBRID;}
 	YY_BREAK
 case 236:
 YY_RULE_SETUP
-#line 375 "DynareFlex.ll"
+#line 375 "lex_yacc/DynareFlex.ll"
 {return token::DEFAULT;}
 	YY_BREAK
 case 237:
 YY_RULE_SETUP
-#line 377 "DynareFlex.ll"
+#line 377 "lex_yacc/DynareFlex.ll"
 {return token::NUMBER_OF_PARTICLES;}
 	YY_BREAK
 case 238:
 YY_RULE_SETUP
-#line 378 "DynareFlex.ll"
+#line 378 "lex_yacc/DynareFlex.ll"
 {return token::RESAMPLING;}
 	YY_BREAK
 case 239:
 YY_RULE_SETUP
-#line 379 "DynareFlex.ll"
+#line 379 "lex_yacc/DynareFlex.ll"
 {return token::SYSTEMATIC;}
 	YY_BREAK
 case 240:
 YY_RULE_SETUP
-#line 380 "DynareFlex.ll"
+#line 380 "lex_yacc/DynareFlex.ll"
 {return token::GENERIC;}
 	YY_BREAK
 case 241:
 YY_RULE_SETUP
-#line 381 "DynareFlex.ll"
+#line 381 "lex_yacc/DynareFlex.ll"
 {return token::RESAMPLING_THRESHOLD;}
 	YY_BREAK
 case 242:
 YY_RULE_SETUP
-#line 382 "DynareFlex.ll"
+#line 382 "lex_yacc/DynareFlex.ll"
 {return token::RESAMPLING_METHOD;}
 	YY_BREAK
 case 243:
 YY_RULE_SETUP
-#line 383 "DynareFlex.ll"
+#line 383 "lex_yacc/DynareFlex.ll"
 {return token::KITAGAWA;}
 	YY_BREAK
 case 244:
 YY_RULE_SETUP
-#line 384 "DynareFlex.ll"
+#line 384 "lex_yacc/DynareFlex.ll"
 {return token::SMOOTH;}
 	YY_BREAK
 case 245:
 YY_RULE_SETUP
-#line 385 "DynareFlex.ll"
+#line 385 "lex_yacc/DynareFlex.ll"
 {return token::STRATIFIED;}
 	YY_BREAK
 case 246:
 YY_RULE_SETUP
-#line 386 "DynareFlex.ll"
+#line 386 "lex_yacc/DynareFlex.ll"
 {return token::CPF_WEIGHTS;}
 	YY_BREAK
 case 247:
 YY_RULE_SETUP
-#line 387 "DynareFlex.ll"
+#line 387 "lex_yacc/DynareFlex.ll"
 {return token::AMISANOTRISTANI;}
 	YY_BREAK
 case 248:
 YY_RULE_SETUP
-#line 388 "DynareFlex.ll"
+#line 388 "lex_yacc/DynareFlex.ll"
 {return token::MURRAYJONESPARSLOW;}
 	YY_BREAK
 case 249:
 YY_RULE_SETUP
-#line 389 "DynareFlex.ll"
+#line 389 "lex_yacc/DynareFlex.ll"
 {return token::FILTER_ALGORITHM;}
 	YY_BREAK
 case 250:
 YY_RULE_SETUP
-#line 390 "DynareFlex.ll"
+#line 390 "lex_yacc/DynareFlex.ll"
 {return token::PROPOSAL_APPROXIMATION;}
 	YY_BREAK
 case 251:
 YY_RULE_SETUP
-#line 391 "DynareFlex.ll"
+#line 391 "lex_yacc/DynareFlex.ll"
 {return token::CUBATURE;}
 	YY_BREAK
 case 252:
 YY_RULE_SETUP
-#line 392 "DynareFlex.ll"
+#line 392 "lex_yacc/DynareFlex.ll"
 {return token::UNSCENTED;}
 	YY_BREAK
 case 253:
 YY_RULE_SETUP
-#line 393 "DynareFlex.ll"
+#line 393 "lex_yacc/DynareFlex.ll"
 {return token::MONTECARLO;}
 	YY_BREAK
 case 254:
 YY_RULE_SETUP
-#line 394 "DynareFlex.ll"
+#line 394 "lex_yacc/DynareFlex.ll"
 {return token::DISTRIBUTION_APPROXIMATION;}
 	YY_BREAK
 case 255:
 YY_RULE_SETUP
-#line 395 "DynareFlex.ll"
+#line 395 "lex_yacc/DynareFlex.ll"
 {return token::PROPOSAL_DISTRIBUTION;}
 	YY_BREAK
 case 256:
 YY_RULE_SETUP
-#line 396 "DynareFlex.ll"
+#line 396 "lex_yacc/DynareFlex.ll"
 {return token::NO_POSTERIOR_KERNEL_DENSITY;}
 	YY_BREAK
 case 257:
 YY_RULE_SETUP
-#line 398 "DynareFlex.ll"
+#line 398 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::ALPHA;
@@ -6007,7 +6007,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 258:
 YY_RULE_SETUP
-#line 402 "DynareFlex.ll"
+#line 402 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::BETA;
@@ -6015,7 +6015,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 259:
 YY_RULE_SETUP
-#line 406 "DynareFlex.ll"
+#line 406 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::GAMMA;
@@ -6023,7 +6023,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 260:
 YY_RULE_SETUP
-#line 410 "DynareFlex.ll"
+#line 410 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::INV_GAMMA;
@@ -6031,7 +6031,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 261:
 YY_RULE_SETUP
-#line 414 "DynareFlex.ll"
+#line 414 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::INV_GAMMA1;
@@ -6039,7 +6039,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 262:
 YY_RULE_SETUP
-#line 418 "DynareFlex.ll"
+#line 418 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::INV_GAMMA2;
@@ -6047,7 +6047,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 263:
 YY_RULE_SETUP
-#line 422 "DynareFlex.ll"
+#line 422 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::DIRICHLET;
@@ -6055,7 +6055,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 264:
 YY_RULE_SETUP
-#line 426 "DynareFlex.ll"
+#line 426 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::WEIBULL;
@@ -6063,7 +6063,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 265:
 YY_RULE_SETUP
-#line 430 "DynareFlex.ll"
+#line 430 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::NORMAL;
@@ -6071,7 +6071,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 266:
 YY_RULE_SETUP
-#line 434 "DynareFlex.ll"
+#line 434 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::UNIFORM;
@@ -6079,42 +6079,42 @@ YY_RULE_SETUP
 	YY_BREAK
 case 267:
 YY_RULE_SETUP
-#line 438 "DynareFlex.ll"
+#line 438 "lex_yacc/DynareFlex.ll"
 {return token::GSIG2_LMDM;}
 	YY_BREAK
 case 268:
 YY_RULE_SETUP
-#line 439 "DynareFlex.ll"
+#line 439 "lex_yacc/DynareFlex.ll"
 {return token::SPECIFICATION;}
 	YY_BREAK
 case 269:
 YY_RULE_SETUP
-#line 440 "DynareFlex.ll"
+#line 440 "lex_yacc/DynareFlex.ll"
 {return token::SIMS_ZHA;}
 	YY_BREAK
 case 270:
 YY_RULE_SETUP
-#line 441 "DynareFlex.ll"
+#line 441 "lex_yacc/DynareFlex.ll"
 {return token::Q_DIAG;}
 	YY_BREAK
 case 271:
 YY_RULE_SETUP
-#line 442 "DynareFlex.ll"
+#line 442 "lex_yacc/DynareFlex.ll"
 {return token::FLAT_PRIOR;}
 	YY_BREAK
 case 272:
 YY_RULE_SETUP
-#line 443 "DynareFlex.ll"
+#line 443 "lex_yacc/DynareFlex.ll"
 {return token::NCSK;}
 	YY_BREAK
 case 273:
 YY_RULE_SETUP
-#line 444 "DynareFlex.ll"
+#line 444 "lex_yacc/DynareFlex.ll"
 {return token::NSTD;}
 	YY_BREAK
 case 274:
 YY_RULE_SETUP
-#line 445 "DynareFlex.ll"
+#line 445 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::NINV;
@@ -6122,17 +6122,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 275:
 YY_RULE_SETUP
-#line 449 "DynareFlex.ll"
+#line 449 "lex_yacc/DynareFlex.ll"
 {return token::INDXPARR;}
 	YY_BREAK
 case 276:
 YY_RULE_SETUP
-#line 450 "DynareFlex.ll"
+#line 450 "lex_yacc/DynareFlex.ll"
 {return token::INDXOVR;}
 	YY_BREAK
 case 277:
 YY_RULE_SETUP
-#line 451 "DynareFlex.ll"
+#line 451 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::ABAND;
@@ -6140,62 +6140,62 @@ YY_RULE_SETUP
 	YY_BREAK
 case 278:
 YY_RULE_SETUP
-#line 455 "DynareFlex.ll"
+#line 455 "lex_yacc/DynareFlex.ll"
 {return token::INDXAP;}
 	YY_BREAK
 case 279:
 YY_RULE_SETUP
-#line 456 "DynareFlex.ll"
+#line 456 "lex_yacc/DynareFlex.ll"
 {return token::APBAND;}
 	YY_BREAK
 case 280:
 YY_RULE_SETUP
-#line 457 "DynareFlex.ll"
+#line 457 "lex_yacc/DynareFlex.ll"
 {return token::INDXIMF;}
 	YY_BREAK
 case 281:
 YY_RULE_SETUP
-#line 458 "DynareFlex.ll"
+#line 458 "lex_yacc/DynareFlex.ll"
 {return token::IMFBAND;}
 	YY_BREAK
 case 282:
 YY_RULE_SETUP
-#line 459 "DynareFlex.ll"
+#line 459 "lex_yacc/DynareFlex.ll"
 {return token::INDXFORE;}
 	YY_BREAK
 case 283:
 YY_RULE_SETUP
-#line 460 "DynareFlex.ll"
+#line 460 "lex_yacc/DynareFlex.ll"
 {return token::FOREBAND;}
 	YY_BREAK
 case 284:
 YY_RULE_SETUP
-#line 461 "DynareFlex.ll"
+#line 461 "lex_yacc/DynareFlex.ll"
 {return token::INDXGFOREHAT;}
 	YY_BREAK
 case 285:
 YY_RULE_SETUP
-#line 462 "DynareFlex.ll"
+#line 462 "lex_yacc/DynareFlex.ll"
 {return token::INDXGIMFHAT;}
 	YY_BREAK
 case 286:
 YY_RULE_SETUP
-#line 463 "DynareFlex.ll"
+#line 463 "lex_yacc/DynareFlex.ll"
 {return token::INDXESTIMA;}
 	YY_BREAK
 case 287:
 YY_RULE_SETUP
-#line 464 "DynareFlex.ll"
+#line 464 "lex_yacc/DynareFlex.ll"
 {return token::INDXGDLS;}
 	YY_BREAK
 case 288:
 YY_RULE_SETUP
-#line 465 "DynareFlex.ll"
+#line 465 "lex_yacc/DynareFlex.ll"
 {return token::EQ_MS;}
 	YY_BREAK
 case 289:
 YY_RULE_SETUP
-#line 466 "DynareFlex.ll"
+#line 466 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::CMS;
@@ -6203,7 +6203,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 290:
 YY_RULE_SETUP
-#line 470 "DynareFlex.ll"
+#line 470 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::NCMS;
@@ -6211,22 +6211,22 @@ YY_RULE_SETUP
 	YY_BREAK
 case 291:
 YY_RULE_SETUP
-#line 474 "DynareFlex.ll"
+#line 474 "lex_yacc/DynareFlex.ll"
 {return token::EQ_CMS;}
 	YY_BREAK
 case 292:
 YY_RULE_SETUP
-#line 475 "DynareFlex.ll"
+#line 475 "lex_yacc/DynareFlex.ll"
 {return token::TLINDX;}
 	YY_BREAK
 case 293:
 YY_RULE_SETUP
-#line 476 "DynareFlex.ll"
+#line 476 "lex_yacc/DynareFlex.ll"
 {return token::TLNUMBER;}
 	YY_BREAK
 case 294:
 YY_RULE_SETUP
-#line 477 "DynareFlex.ll"
+#line 477 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::CNUM;
@@ -6234,247 +6234,247 @@ YY_RULE_SETUP
 	YY_BREAK
 case 295:
 YY_RULE_SETUP
-#line 481 "DynareFlex.ll"
+#line 481 "lex_yacc/DynareFlex.ll"
 {return token::NODECOMPOSITION;};
 	YY_BREAK
 case 296:
 YY_RULE_SETUP
-#line 482 "DynareFlex.ll"
+#line 482 "lex_yacc/DynareFlex.ll"
 {return token::BANACT;}
 	YY_BREAK
 case 297:
 YY_RULE_SETUP
-#line 483 "DynareFlex.ll"
+#line 483 "lex_yacc/DynareFlex.ll"
 {return token::USE_CALIBRATION;}
 	YY_BREAK
 case 298:
 YY_RULE_SETUP
-#line 484 "DynareFlex.ll"
+#line 484 "lex_yacc/DynareFlex.ll"
 {return token::OUTPUT_FILE_TAG;}
 	YY_BREAK
 case 299:
 YY_RULE_SETUP
-#line 485 "DynareFlex.ll"
+#line 485 "lex_yacc/DynareFlex.ll"
 {return token::FILE_TAG;};
 	YY_BREAK
 case 300:
 YY_RULE_SETUP
-#line 486 "DynareFlex.ll"
+#line 486 "lex_yacc/DynareFlex.ll"
 {return token::NO_CREATE_INIT;};
 	YY_BREAK
 case 301:
 YY_RULE_SETUP
-#line 487 "DynareFlex.ll"
+#line 487 "lex_yacc/DynareFlex.ll"
 {return token::SIMULATION_FILE_TAG;};
 	YY_BREAK
 case 302:
 YY_RULE_SETUP
-#line 488 "DynareFlex.ll"
+#line 488 "lex_yacc/DynareFlex.ll"
 {return token::HORIZON;}
 	YY_BREAK
 case 303:
 YY_RULE_SETUP
-#line 489 "DynareFlex.ll"
+#line 489 "lex_yacc/DynareFlex.ll"
 {return token::PARAMETER_UNCERTAINTY;}
 	YY_BREAK
 case 304:
 YY_RULE_SETUP
-#line 490 "DynareFlex.ll"
+#line 490 "lex_yacc/DynareFlex.ll"
 {return token::NO_ERROR_BANDS;}
 	YY_BREAK
 case 305:
 YY_RULE_SETUP
-#line 491 "DynareFlex.ll"
+#line 491 "lex_yacc/DynareFlex.ll"
 {return token::ERROR_BAND_PERCENTILES;}
 	YY_BREAK
 case 306:
 YY_RULE_SETUP
-#line 492 "DynareFlex.ll"
+#line 492 "lex_yacc/DynareFlex.ll"
 {return token::SHOCK_DRAWS;}
 	YY_BREAK
 case 307:
 YY_RULE_SETUP
-#line 493 "DynareFlex.ll"
+#line 493 "lex_yacc/DynareFlex.ll"
 {return token::SHOCKS_PER_PARAMETER;}
 	YY_BREAK
 case 308:
 YY_RULE_SETUP
-#line 494 "DynareFlex.ll"
+#line 494 "lex_yacc/DynareFlex.ll"
 {return token::THINNING_FACTOR;}
 	YY_BREAK
 case 309:
 YY_RULE_SETUP
-#line 495 "DynareFlex.ll"
+#line 495 "lex_yacc/DynareFlex.ll"
 {return token::FREE_PARAMETERS;}
 	YY_BREAK
 case 310:
 YY_RULE_SETUP
-#line 496 "DynareFlex.ll"
+#line 496 "lex_yacc/DynareFlex.ll"
 {return token::MEDIAN;}
 	YY_BREAK
 case 311:
 YY_RULE_SETUP
-#line 497 "DynareFlex.ll"
+#line 497 "lex_yacc/DynareFlex.ll"
 {return token::REGIME;}
 	YY_BREAK
 case 312:
 YY_RULE_SETUP
-#line 498 "DynareFlex.ll"
+#line 498 "lex_yacc/DynareFlex.ll"
 {return token::REGIMES;}
 	YY_BREAK
 case 313:
 YY_RULE_SETUP
-#line 499 "DynareFlex.ll"
+#line 499 "lex_yacc/DynareFlex.ll"
 {return token::DATA_OBS_NBR;}
 	YY_BREAK
 case 314:
 YY_RULE_SETUP
-#line 500 "DynareFlex.ll"
+#line 500 "lex_yacc/DynareFlex.ll"
 {return token::FILTERED_PROBABILITIES;}
 	YY_BREAK
 case 315:
 YY_RULE_SETUP
-#line 501 "DynareFlex.ll"
+#line 501 "lex_yacc/DynareFlex.ll"
 {return token::REAL_TIME_SMOOTHED;}
 	YY_BREAK
 case 316:
 YY_RULE_SETUP
-#line 502 "DynareFlex.ll"
+#line 502 "lex_yacc/DynareFlex.ll"
 {return token::PROPOSAL_TYPE;}
 	YY_BREAK
 case 317:
 YY_RULE_SETUP
-#line 503 "DynareFlex.ll"
+#line 503 "lex_yacc/DynareFlex.ll"
 {return token::PROPOSAL_LOWER_BOUND;}
 	YY_BREAK
 case 318:
 YY_RULE_SETUP
-#line 504 "DynareFlex.ll"
+#line 504 "lex_yacc/DynareFlex.ll"
 {return token::PROPOSAL_UPPER_BOUND;}
 	YY_BREAK
 case 319:
 YY_RULE_SETUP
-#line 505 "DynareFlex.ll"
+#line 505 "lex_yacc/DynareFlex.ll"
 {return token::PROPOSAL_DRAWS;}
 	YY_BREAK
 case 320:
 YY_RULE_SETUP
-#line 506 "DynareFlex.ll"
+#line 506 "lex_yacc/DynareFlex.ll"
 {return token::USE_MEAN_CENTER;}
 	YY_BREAK
 case 321:
 YY_RULE_SETUP
-#line 507 "DynareFlex.ll"
+#line 507 "lex_yacc/DynareFlex.ll"
 {return token::ADAPTIVE_MH_DRAWS;}
 	YY_BREAK
 case 322:
 YY_RULE_SETUP
-#line 508 "DynareFlex.ll"
+#line 508 "lex_yacc/DynareFlex.ll"
 {return token::COEFFICIENTS_PRIOR_HYPERPARAMETERS;}
 	YY_BREAK
 case 323:
 YY_RULE_SETUP
-#line 509 "DynareFlex.ll"
+#line 509 "lex_yacc/DynareFlex.ll"
 {return token::CONVERGENCE_STARTING_VALUE;}
 	YY_BREAK
 case 324:
 YY_RULE_SETUP
-#line 510 "DynareFlex.ll"
+#line 510 "lex_yacc/DynareFlex.ll"
 {return token::CONVERGENCE_ENDING_VALUE;}
 	YY_BREAK
 case 325:
 YY_RULE_SETUP
-#line 511 "DynareFlex.ll"
+#line 511 "lex_yacc/DynareFlex.ll"
 {return token::CONVERGENCE_INCREMENT_VALUE;}
 	YY_BREAK
 case 326:
 YY_RULE_SETUP
-#line 512 "DynareFlex.ll"
+#line 512 "lex_yacc/DynareFlex.ll"
 {return token::MAX_ITERATIONS_STARTING_VALUE;}
 	YY_BREAK
 case 327:
 YY_RULE_SETUP
-#line 513 "DynareFlex.ll"
+#line 513 "lex_yacc/DynareFlex.ll"
 {return token::MAX_ITERATIONS_INCREMENT_VALUE;}
 	YY_BREAK
 case 328:
 YY_RULE_SETUP
-#line 514 "DynareFlex.ll"
+#line 514 "lex_yacc/DynareFlex.ll"
 {return token::MAX_BLOCK_ITERATIONS;}
 	YY_BREAK
 case 329:
 YY_RULE_SETUP
-#line 515 "DynareFlex.ll"
+#line 515 "lex_yacc/DynareFlex.ll"
 {return token::MAX_REPEATED_OPTIMIZATION_RUNS;}
 	YY_BREAK
 case 330:
 YY_RULE_SETUP
-#line 516 "DynareFlex.ll"
+#line 516 "lex_yacc/DynareFlex.ll"
 {return token::MAXIT;}
 	YY_BREAK
 case 331:
 YY_RULE_SETUP
-#line 517 "DynareFlex.ll"
+#line 517 "lex_yacc/DynareFlex.ll"
 {return token::FUNCTION_CONVERGENCE_CRITERION;}
 	YY_BREAK
 case 332:
 YY_RULE_SETUP
-#line 518 "DynareFlex.ll"
+#line 518 "lex_yacc/DynareFlex.ll"
 {return token::PARAMETER_CONVERGENCE_CRITERION;}
 	YY_BREAK
 case 333:
 YY_RULE_SETUP
-#line 519 "DynareFlex.ll"
+#line 519 "lex_yacc/DynareFlex.ll"
 {return token::NUMBER_OF_LARGE_PERTURBATIONS;}
 	YY_BREAK
 case 334:
 YY_RULE_SETUP
-#line 520 "DynareFlex.ll"
+#line 520 "lex_yacc/DynareFlex.ll"
 {return token::NUMBER_OF_SMALL_PERTURBATIONS;}
 	YY_BREAK
 case 335:
 YY_RULE_SETUP
-#line 521 "DynareFlex.ll"
+#line 521 "lex_yacc/DynareFlex.ll"
 {return token::NUMBER_OF_POSTERIOR_DRAWS_AFTER_PERTURBATION;}
 	YY_BREAK
 case 336:
 YY_RULE_SETUP
-#line 522 "DynareFlex.ll"
+#line 522 "lex_yacc/DynareFlex.ll"
 {return token::MAX_NUMBER_OF_STAGES;}
 	YY_BREAK
 case 337:
 YY_RULE_SETUP
-#line 523 "DynareFlex.ll"
+#line 523 "lex_yacc/DynareFlex.ll"
 {return token::RANDOM_FUNCTION_CONVERGENCE_CRITERION;}
 	YY_BREAK
 case 338:
 YY_RULE_SETUP
-#line 524 "DynareFlex.ll"
+#line 524 "lex_yacc/DynareFlex.ll"
 {return token::RANDOM_PARAMETER_CONVERGENCE_CRITERION;}
 	YY_BREAK
 case 339:
 YY_RULE_SETUP
-#line 525 "DynareFlex.ll"
+#line 525 "lex_yacc/DynareFlex.ll"
 {return token::TOLF;}
 	YY_BREAK
 case 340:
 YY_RULE_SETUP
-#line 526 "DynareFlex.ll"
+#line 526 "lex_yacc/DynareFlex.ll"
 {return token::TOLX;}
 	YY_BREAK
 case 341:
 YY_RULE_SETUP
-#line 527 "DynareFlex.ll"
+#line 527 "lex_yacc/DynareFlex.ll"
 {return token::OPT_ALGO;}
 	YY_BREAK
 case 342:
 YY_RULE_SETUP
-#line 528 "DynareFlex.ll"
+#line 528 "lex_yacc/DynareFlex.ll"
 {return token::INSTRUMENTS;}
 	YY_BREAK
 case 343:
 YY_RULE_SETUP
-#line 529 "DynareFlex.ll"
+#line 529 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::HESSIAN;
@@ -6482,7 +6482,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 344:
 YY_RULE_SETUP
-#line 533 "DynareFlex.ll"
+#line 533 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::PRIOR_VARIANCE;
@@ -6490,7 +6490,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 345:
 YY_RULE_SETUP
-#line 537 "DynareFlex.ll"
+#line 537 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::IDENTITY_MATRIX;
@@ -6498,289 +6498,289 @@ YY_RULE_SETUP
 	YY_BREAK
 case 346:
 YY_RULE_SETUP
-#line 541 "DynareFlex.ll"
+#line 541 "lex_yacc/DynareFlex.ll"
 {return token::MCMC_JUMPING_COVARIANCE;}
 	YY_BREAK
 /* These four (var, varexo, varexo_det, parameters) are for change_type */
 case 347:
 YY_RULE_SETUP
-#line 544 "DynareFlex.ll"
+#line 544 "lex_yacc/DynareFlex.ll"
 { return token::VAR; }
 	YY_BREAK
 case 348:
 YY_RULE_SETUP
-#line 545 "DynareFlex.ll"
+#line 545 "lex_yacc/DynareFlex.ll"
 { return token::VAREXO; }
 	YY_BREAK
 case 349:
 YY_RULE_SETUP
-#line 546 "DynareFlex.ll"
+#line 546 "lex_yacc/DynareFlex.ll"
 { return token::VAREXO_DET; }
 	YY_BREAK
 case 350:
 YY_RULE_SETUP
-#line 547 "DynareFlex.ll"
+#line 547 "lex_yacc/DynareFlex.ll"
 { return token::PARAMETERS; }
 	YY_BREAK
 case 351:
 YY_RULE_SETUP
-#line 548 "DynareFlex.ll"
+#line 548 "lex_yacc/DynareFlex.ll"
 { return token::PREDETERMINED_VARIABLES; }
 	YY_BREAK
 case 352:
 YY_RULE_SETUP
-#line 550 "DynareFlex.ll"
+#line 550 "lex_yacc/DynareFlex.ll"
 { return token::BVAR_PRIOR_TAU; }
 	YY_BREAK
 case 353:
 YY_RULE_SETUP
-#line 551 "DynareFlex.ll"
+#line 551 "lex_yacc/DynareFlex.ll"
 { return token::BVAR_PRIOR_DECAY; }
 	YY_BREAK
 case 354:
 YY_RULE_SETUP
-#line 552 "DynareFlex.ll"
+#line 552 "lex_yacc/DynareFlex.ll"
 { return token::BVAR_PRIOR_LAMBDA; }
 	YY_BREAK
 case 355:
 YY_RULE_SETUP
-#line 553 "DynareFlex.ll"
+#line 553 "lex_yacc/DynareFlex.ll"
 { return token::BVAR_PRIOR_MU; }
 	YY_BREAK
 case 356:
 YY_RULE_SETUP
-#line 554 "DynareFlex.ll"
+#line 554 "lex_yacc/DynareFlex.ll"
 { return token::BVAR_PRIOR_OMEGA; }
 	YY_BREAK
 case 357:
 YY_RULE_SETUP
-#line 555 "DynareFlex.ll"
+#line 555 "lex_yacc/DynareFlex.ll"
 { return token::BVAR_PRIOR_FLAT; }
 	YY_BREAK
 case 358:
 YY_RULE_SETUP
-#line 556 "DynareFlex.ll"
+#line 556 "lex_yacc/DynareFlex.ll"
 { return token::BVAR_PRIOR_TRAIN; }
 	YY_BREAK
 case 359:
 YY_RULE_SETUP
-#line 557 "DynareFlex.ll"
+#line 557 "lex_yacc/DynareFlex.ll"
 { return token::BVAR_REPLIC; }
 	YY_BREAK
 case 360:
 YY_RULE_SETUP
-#line 559 "DynareFlex.ll"
+#line 559 "lex_yacc/DynareFlex.ll"
 {return token::HOMOTOPY_MODE; }
 	YY_BREAK
 case 361:
 YY_RULE_SETUP
-#line 560 "DynareFlex.ll"
+#line 560 "lex_yacc/DynareFlex.ll"
 {return token::HOMOTOPY_STEPS; }
 	YY_BREAK
 case 362:
 YY_RULE_SETUP
-#line 561 "DynareFlex.ll"
+#line 561 "lex_yacc/DynareFlex.ll"
 {return token::HOMOTOPY_FORCE_CONTINUE;}
 	YY_BREAK
 case 363:
 YY_RULE_SETUP
-#line 562 "DynareFlex.ll"
+#line 562 "lex_yacc/DynareFlex.ll"
 {return token::NOCHECK; }
 	YY_BREAK
 case 364:
 YY_RULE_SETUP
-#line 564 "DynareFlex.ll"
+#line 564 "lex_yacc/DynareFlex.ll"
 {return token::CONTROLLED_VAREXO; }
 	YY_BREAK
 case 365:
 YY_RULE_SETUP
-#line 565 "DynareFlex.ll"
+#line 565 "lex_yacc/DynareFlex.ll"
 {return token::PARAMETER_SET; }
 	YY_BREAK
 case 366:
 YY_RULE_SETUP
-#line 566 "DynareFlex.ll"
+#line 566 "lex_yacc/DynareFlex.ll"
 {return token::PRIOR_MODE; }
 	YY_BREAK
 case 367:
 YY_RULE_SETUP
-#line 567 "DynareFlex.ll"
+#line 567 "lex_yacc/DynareFlex.ll"
 {return token::PRIOR_MEAN; }
 	YY_BREAK
 case 368:
 YY_RULE_SETUP
-#line 568 "DynareFlex.ll"
+#line 568 "lex_yacc/DynareFlex.ll"
 {return token::POSTERIOR_MODE; }
 	YY_BREAK
 case 369:
 YY_RULE_SETUP
-#line 569 "DynareFlex.ll"
+#line 569 "lex_yacc/DynareFlex.ll"
 {return token::POSTERIOR_MEAN; }
 	YY_BREAK
 case 370:
 YY_RULE_SETUP
-#line 570 "DynareFlex.ll"
+#line 570 "lex_yacc/DynareFlex.ll"
 {return token::POSTERIOR_MEDIAN; }
 	YY_BREAK
 case 371:
 YY_RULE_SETUP
-#line 571 "DynareFlex.ll"
+#line 571 "lex_yacc/DynareFlex.ll"
 {return token::MLE_MODE; }
 	YY_BREAK
 case 372:
 YY_RULE_SETUP
-#line 572 "DynareFlex.ll"
+#line 572 "lex_yacc/DynareFlex.ll"
 {return token::K_ORDER_SOLVER; }
 	YY_BREAK
 case 373:
 YY_RULE_SETUP
-#line 573 "DynareFlex.ll"
+#line 573 "lex_yacc/DynareFlex.ll"
 {return token::FILTER_COVARIANCE; }
 	YY_BREAK
 case 374:
 YY_RULE_SETUP
-#line 574 "DynareFlex.ll"
+#line 574 "lex_yacc/DynareFlex.ll"
 {return token::FILTER_DECOMPOSITION; }
 	YY_BREAK
 case 375:
 YY_RULE_SETUP
-#line 575 "DynareFlex.ll"
+#line 575 "lex_yacc/DynareFlex.ll"
 {return token::SELECTED_VARIABLES_ONLY; }
 	YY_BREAK
 case 376:
 YY_RULE_SETUP
-#line 576 "DynareFlex.ll"
+#line 576 "lex_yacc/DynareFlex.ll"
 {return token::PRUNING; }
 	YY_BREAK
 case 377:
 YY_RULE_SETUP
-#line 577 "DynareFlex.ll"
+#line 577 "lex_yacc/DynareFlex.ll"
 {return token::SAVE_DRAWS; }
 	YY_BREAK
 case 378:
 YY_RULE_SETUP
-#line 578 "DynareFlex.ll"
+#line 578 "lex_yacc/DynareFlex.ll"
 {return token::DEFLATOR;}
 	YY_BREAK
 case 379:
 YY_RULE_SETUP
-#line 579 "DynareFlex.ll"
+#line 579 "lex_yacc/DynareFlex.ll"
 {return token::LOG_DEFLATOR;}
 	YY_BREAK
 case 380:
 YY_RULE_SETUP
-#line 580 "DynareFlex.ll"
+#line 580 "lex_yacc/DynareFlex.ll"
 {return token::GROWTH_FACTOR;}
 	YY_BREAK
 case 381:
 YY_RULE_SETUP
-#line 581 "DynareFlex.ll"
+#line 581 "lex_yacc/DynareFlex.ll"
 {return token::LOG_GROWTH_FACTOR;}
 	YY_BREAK
 case 382:
 YY_RULE_SETUP
-#line 582 "DynareFlex.ll"
+#line 582 "lex_yacc/DynareFlex.ll"
 {return token::COVA_COMPUTE;}
 	YY_BREAK
 case 383:
 YY_RULE_SETUP
-#line 583 "DynareFlex.ll"
+#line 583 "lex_yacc/DynareFlex.ll"
 {return token::DISCRETIONARY_TOL;}
 	YY_BREAK
 case 384:
 YY_RULE_SETUP
-#line 584 "DynareFlex.ll"
+#line 584 "lex_yacc/DynareFlex.ll"
 {return token::ANALYTIC_DERIVATION;}
 	YY_BREAK
 case 385:
 YY_RULE_SETUP
-#line 585 "DynareFlex.ll"
+#line 585 "lex_yacc/DynareFlex.ll"
 {return token::ANALYTIC_DERIVATION_MODE;}
 	YY_BREAK
 case 386:
 YY_RULE_SETUP
-#line 586 "DynareFlex.ll"
+#line 586 "lex_yacc/DynareFlex.ll"
 {return token::SOLVER_PERIODS;}
 	YY_BREAK
 case 387:
 YY_RULE_SETUP
-#line 587 "DynareFlex.ll"
+#line 587 "lex_yacc/DynareFlex.ll"
 {return token::ENDOGENOUS_PRIOR;}
 	YY_BREAK
 case 388:
 YY_RULE_SETUP
-#line 588 "DynareFlex.ll"
+#line 588 "lex_yacc/DynareFlex.ll"
 {return token::CONSIDER_ALL_ENDOGENOUS;}
 	YY_BREAK
 case 389:
 YY_RULE_SETUP
-#line 589 "DynareFlex.ll"
+#line 589 "lex_yacc/DynareFlex.ll"
 {return token::CONSIDER_ONLY_OBSERVED;}
 	YY_BREAK
 case 390:
 YY_RULE_SETUP
-#line 590 "DynareFlex.ll"
+#line 590 "lex_yacc/DynareFlex.ll"
 {return token::INFILE;}
 	YY_BREAK
 case 391:
 YY_RULE_SETUP
-#line 591 "DynareFlex.ll"
+#line 591 "lex_yacc/DynareFlex.ll"
 {return token::INVARS;}
 	YY_BREAK
 case 392:
 YY_RULE_SETUP
-#line 592 "DynareFlex.ll"
+#line 592 "lex_yacc/DynareFlex.ll"
 {return token::PERIOD;}
 	YY_BREAK
 case 393:
 YY_RULE_SETUP
-#line 593 "DynareFlex.ll"
+#line 593 "lex_yacc/DynareFlex.ll"
 {return token::OUTFILE;}
 	YY_BREAK
 case 394:
 YY_RULE_SETUP
-#line 594 "DynareFlex.ll"
+#line 594 "lex_yacc/DynareFlex.ll"
 {return token::OUTVARS;}
 	YY_BREAK
 case 395:
 YY_RULE_SETUP
-#line 595 "DynareFlex.ll"
+#line 595 "lex_yacc/DynareFlex.ll"
 {return token::HUGE_NUMBER;}
 	YY_BREAK
 case 396:
 YY_RULE_SETUP
-#line 596 "DynareFlex.ll"
+#line 596 "lex_yacc/DynareFlex.ll"
 {return token::DR_DISPLAY_TOL;}
 	YY_BREAK
 case 397:
 YY_RULE_SETUP
-#line 597 "DynareFlex.ll"
+#line 597 "lex_yacc/DynareFlex.ll"
 {return token::POSTERIOR_SAMPLING_METHOD;}
 	YY_BREAK
 case 398:
 YY_RULE_SETUP
-#line 598 "DynareFlex.ll"
+#line 598 "lex_yacc/DynareFlex.ll"
 {return token::POSTERIOR_SAMPLER_OPTIONS;}
 	YY_BREAK
 case 399:
 YY_RULE_SETUP
-#line 599 "DynareFlex.ll"
+#line 599 "lex_yacc/DynareFlex.ll"
 {return token::SILENT_OPTIMIZER;}
 	YY_BREAK
 case 400:
 YY_RULE_SETUP
-#line 600 "DynareFlex.ll"
+#line 600 "lex_yacc/DynareFlex.ll"
 {return token::LMMCP;}
 	YY_BREAK
 case 401:
 YY_RULE_SETUP
-#line 601 "DynareFlex.ll"
+#line 601 "lex_yacc/DynareFlex.ll"
 {return token::OCCBIN;}
 	YY_BREAK
 case 402:
 /* rule 402 can match eol */
 YY_RULE_SETUP
-#line 603 "DynareFlex.ll"
+#line 603 "lex_yacc/DynareFlex.ll"
 {
   strtok(yytext+1, "$");
   yylval->string_val = new string(yytext + 1);
@@ -6790,148 +6790,148 @@ YY_RULE_SETUP
 /* Inside a Dynare block */
 case 403:
 YY_RULE_SETUP
-#line 610 "DynareFlex.ll"
+#line 610 "lex_yacc/DynareFlex.ll"
 {return token::VAR;}
 	YY_BREAK
 case 404:
 YY_RULE_SETUP
-#line 611 "DynareFlex.ll"
+#line 611 "lex_yacc/DynareFlex.ll"
 {return token::STDERR;}
 	YY_BREAK
 case 405:
 YY_RULE_SETUP
-#line 612 "DynareFlex.ll"
+#line 612 "lex_yacc/DynareFlex.ll"
 {return token::VALUES;}
 	YY_BREAK
 case 406:
 YY_RULE_SETUP
-#line 613 "DynareFlex.ll"
+#line 613 "lex_yacc/DynareFlex.ll"
 {return token::CORR;}
 	YY_BREAK
 case 407:
 YY_RULE_SETUP
-#line 614 "DynareFlex.ll"
+#line 614 "lex_yacc/DynareFlex.ll"
 {return token::PERIODS;}
 	YY_BREAK
 case 408:
 YY_RULE_SETUP
-#line 615 "DynareFlex.ll"
+#line 615 "lex_yacc/DynareFlex.ll"
 {return token::CUTOFF;}
 	YY_BREAK
 case 409:
 YY_RULE_SETUP
-#line 616 "DynareFlex.ll"
+#line 616 "lex_yacc/DynareFlex.ll"
 {return token::MFS;}
 	YY_BREAK
 case 410:
 YY_RULE_SETUP
-#line 617 "DynareFlex.ll"
+#line 617 "lex_yacc/DynareFlex.ll"
 {return token::GAMMA_PDF;}
 	YY_BREAK
 case 411:
 YY_RULE_SETUP
-#line 618 "DynareFlex.ll"
+#line 618 "lex_yacc/DynareFlex.ll"
 {return token::BETA_PDF;}
 	YY_BREAK
 case 412:
 YY_RULE_SETUP
-#line 619 "DynareFlex.ll"
+#line 619 "lex_yacc/DynareFlex.ll"
 {return token::NORMAL_PDF;}
 	YY_BREAK
 case 413:
 YY_RULE_SETUP
-#line 620 "DynareFlex.ll"
+#line 620 "lex_yacc/DynareFlex.ll"
 {return token::INV_GAMMA_PDF;}
 	YY_BREAK
 case 414:
 YY_RULE_SETUP
-#line 621 "DynareFlex.ll"
+#line 621 "lex_yacc/DynareFlex.ll"
 {return token::INV_GAMMA1_PDF;}
 	YY_BREAK
 case 415:
 YY_RULE_SETUP
-#line 622 "DynareFlex.ll"
+#line 622 "lex_yacc/DynareFlex.ll"
 {return token::INV_GAMMA2_PDF;}
 	YY_BREAK
 case 416:
 YY_RULE_SETUP
-#line 623 "DynareFlex.ll"
+#line 623 "lex_yacc/DynareFlex.ll"
 {return token::UNIFORM_PDF;}
 	YY_BREAK
 case 417:
 YY_RULE_SETUP
-#line 624 "DynareFlex.ll"
+#line 624 "lex_yacc/DynareFlex.ll"
 {return token::WEIBULL_PDF;}
 	YY_BREAK
 case 418:
 YY_RULE_SETUP
-#line 625 "DynareFlex.ll"
+#line 625 "lex_yacc/DynareFlex.ll"
 {return token::DSGE_PRIOR_WEIGHT;}
 	YY_BREAK
 case 419:
 YY_RULE_SETUP
-#line 627 "DynareFlex.ll"
+#line 627 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 case 420:
 YY_RULE_SETUP
-#line 628 "DynareFlex.ll"
+#line 628 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 case 421:
 YY_RULE_SETUP
-#line 630 "DynareFlex.ll"
+#line 630 "lex_yacc/DynareFlex.ll"
 {return token::AUTOCORR;}
 	YY_BREAK
 case 422:
 YY_RULE_SETUP
-#line 631 "DynareFlex.ll"
+#line 631 "lex_yacc/DynareFlex.ll"
 {return token::RESTRICTION;}
 	YY_BREAK
 /* Inside Dynare statement */
 case 423:
 YY_RULE_SETUP
-#line 634 "DynareFlex.ll"
+#line 634 "lex_yacc/DynareFlex.ll"
 {return token::SOLVE_ALGO;}
 	YY_BREAK
 case 424:
 YY_RULE_SETUP
-#line 635 "DynareFlex.ll"
+#line 635 "lex_yacc/DynareFlex.ll"
 {return token::DR_ALGO;}
 	YY_BREAK
 case 425:
 YY_RULE_SETUP
-#line 636 "DynareFlex.ll"
+#line 636 "lex_yacc/DynareFlex.ll"
 {return token::SIMUL_ALGO;}
 	YY_BREAK
 case 426:
 YY_RULE_SETUP
-#line 637 "DynareFlex.ll"
+#line 637 "lex_yacc/DynareFlex.ll"
 {return token::STACK_SOLVE_ALGO;}
 	YY_BREAK
 case 427:
 YY_RULE_SETUP
-#line 638 "DynareFlex.ll"
+#line 638 "lex_yacc/DynareFlex.ll"
 {return token::DROP;}
 	YY_BREAK
 case 428:
 YY_RULE_SETUP
-#line 639 "DynareFlex.ll"
+#line 639 "lex_yacc/DynareFlex.ll"
 {return token::ORDER;}
 	YY_BREAK
 case 429:
 YY_RULE_SETUP
-#line 640 "DynareFlex.ll"
+#line 640 "lex_yacc/DynareFlex.ll"
 {return token::SYLVESTER;}
 	YY_BREAK
 case 430:
 YY_RULE_SETUP
-#line 641 "DynareFlex.ll"
+#line 641 "lex_yacc/DynareFlex.ll"
 {return token::LYAPUNOV;}
 	YY_BREAK
 case 431:
 YY_RULE_SETUP
-#line 642 "DynareFlex.ll"
+#line 642 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::DR;
@@ -6939,292 +6939,292 @@ YY_RULE_SETUP
 	YY_BREAK
 case 432:
 YY_RULE_SETUP
-#line 646 "DynareFlex.ll"
+#line 646 "lex_yacc/DynareFlex.ll"
 {return token::SYLVESTER_FIXED_POINT_TOL;}
 	YY_BREAK
 case 433:
 YY_RULE_SETUP
-#line 647 "DynareFlex.ll"
+#line 647 "lex_yacc/DynareFlex.ll"
 {return token::LYAPUNOV_FIXED_POINT_TOL;}
 	YY_BREAK
 case 434:
 YY_RULE_SETUP
-#line 648 "DynareFlex.ll"
+#line 648 "lex_yacc/DynareFlex.ll"
 {return token::LYAPUNOV_DOUBLING_TOL;}
 	YY_BREAK
 case 435:
 YY_RULE_SETUP
-#line 649 "DynareFlex.ll"
+#line 649 "lex_yacc/DynareFlex.ll"
 {return token::DR_CYCLE_REDUCTION_TOL;}
 	YY_BREAK
 case 436:
 YY_RULE_SETUP
-#line 650 "DynareFlex.ll"
+#line 650 "lex_yacc/DynareFlex.ll"
 {return token::DR_LOGARITHMIC_REDUCTION_TOL;}
 	YY_BREAK
 case 437:
 YY_RULE_SETUP
-#line 651 "DynareFlex.ll"
+#line 651 "lex_yacc/DynareFlex.ll"
 {return token::DR_LOGARITHMIC_REDUCTION_MAXITER;}
 	YY_BREAK
 case 438:
 YY_RULE_SETUP
-#line 652 "DynareFlex.ll"
+#line 652 "lex_yacc/DynareFlex.ll"
 {return token::REPLIC;}
 	YY_BREAK
 case 439:
 YY_RULE_SETUP
-#line 653 "DynareFlex.ll"
+#line 653 "lex_yacc/DynareFlex.ll"
 {return token::AR;}
 	YY_BREAK
 case 440:
 YY_RULE_SETUP
-#line 654 "DynareFlex.ll"
+#line 654 "lex_yacc/DynareFlex.ll"
 {return token::NOFUNCTIONS;}
 	YY_BREAK
 case 441:
 YY_RULE_SETUP
-#line 655 "DynareFlex.ll"
+#line 655 "lex_yacc/DynareFlex.ll"
 {return token::IRF;}
 	YY_BREAK
 case 442:
 YY_RULE_SETUP
-#line 656 "DynareFlex.ll"
+#line 656 "lex_yacc/DynareFlex.ll"
 {return token::IRF_SHOCKS;}
 	YY_BREAK
 case 443:
 YY_RULE_SETUP
-#line 657 "DynareFlex.ll"
+#line 657 "lex_yacc/DynareFlex.ll"
 {return token::HP_FILTER;}
 	YY_BREAK
 case 444:
 YY_RULE_SETUP
-#line 658 "DynareFlex.ll"
+#line 658 "lex_yacc/DynareFlex.ll"
 {return token::ONE_SIDED_HP_FILTER;}
 	YY_BREAK
 case 445:
 YY_RULE_SETUP
-#line 659 "DynareFlex.ll"
+#line 659 "lex_yacc/DynareFlex.ll"
 {return token::BANDPASS_FILTER;}
 	YY_BREAK
 case 446:
 YY_RULE_SETUP
-#line 660 "DynareFlex.ll"
+#line 660 "lex_yacc/DynareFlex.ll"
 {return token::HP_NGRID;}
 	YY_BREAK
 case 447:
 YY_RULE_SETUP
-#line 661 "DynareFlex.ll"
+#line 661 "lex_yacc/DynareFlex.ll"
 {return token::SIMUL_SEED;}
 	YY_BREAK
 case 448:
 YY_RULE_SETUP
-#line 662 "DynareFlex.ll"
+#line 662 "lex_yacc/DynareFlex.ll"
 {return token::QZ_CRITERIUM;}
 	YY_BREAK
 case 449:
 YY_RULE_SETUP
-#line 663 "DynareFlex.ll"
+#line 663 "lex_yacc/DynareFlex.ll"
 {return token::QZ_ZERO_THRESHOLD;}
 	YY_BREAK
 case 450:
 YY_RULE_SETUP
-#line 664 "DynareFlex.ll"
+#line 664 "lex_yacc/DynareFlex.ll"
 {return token::SIMUL;}
 	YY_BREAK
 case 451:
 YY_RULE_SETUP
-#line 665 "DynareFlex.ll"
+#line 665 "lex_yacc/DynareFlex.ll"
 {return token::SIMUL_REPLIC;}
 	YY_BREAK
 case 452:
 YY_RULE_SETUP
-#line 666 "DynareFlex.ll"
+#line 666 "lex_yacc/DynareFlex.ll"
 {return token::XLS_SHEET;}
 	YY_BREAK
 case 453:
 YY_RULE_SETUP
-#line 667 "DynareFlex.ll"
+#line 667 "lex_yacc/DynareFlex.ll"
 {return token::XLS_RANGE;}
 	YY_BREAK
 case 454:
 YY_RULE_SETUP
-#line 668 "DynareFlex.ll"
+#line 668 "lex_yacc/DynareFlex.ll"
 {return token::SERIES;}
 	YY_BREAK
 case 455:
 YY_RULE_SETUP
-#line 669 "DynareFlex.ll"
+#line 669 "lex_yacc/DynareFlex.ll"
 {return token::MH_RECOVER;}
 	YY_BREAK
 case 456:
 YY_RULE_SETUP
-#line 670 "DynareFlex.ll"
+#line 670 "lex_yacc/DynareFlex.ll"
 {return token::PLANNER_DISCOUNT;}
 	YY_BREAK
 case 457:
 YY_RULE_SETUP
-#line 671 "DynareFlex.ll"
+#line 671 "lex_yacc/DynareFlex.ll"
 {return token::CALIBRATION;}
 	YY_BREAK
 case 458:
 YY_RULE_SETUP
-#line 672 "DynareFlex.ll"
+#line 672 "lex_yacc/DynareFlex.ll"
 {return token::IRF_PLOT_THRESHOLD;}
 	YY_BREAK
 case 459:
 YY_RULE_SETUP
-#line 673 "DynareFlex.ll"
+#line 673 "lex_yacc/DynareFlex.ll"
 {return token::NO_HOMOTOPY;}
 	YY_BREAK
 case 460:
 YY_RULE_SETUP
-#line 675 "DynareFlex.ll"
+#line 675 "lex_yacc/DynareFlex.ll"
 {return token::EQUATION;}
 	YY_BREAK
 case 461:
 YY_RULE_SETUP
-#line 676 "DynareFlex.ll"
+#line 676 "lex_yacc/DynareFlex.ll"
 {return token::EXCLUSION;}
 	YY_BREAK
 case 462:
 YY_RULE_SETUP
-#line 677 "DynareFlex.ll"
+#line 677 "lex_yacc/DynareFlex.ll"
 {return token::LAG;}
 	YY_BREAK
 case 463:
 YY_RULE_SETUP
-#line 678 "DynareFlex.ll"
+#line 678 "lex_yacc/DynareFlex.ll"
 {return token::COEFF;}
 	YY_BREAK
 case 464:
 YY_RULE_SETUP
-#line 679 "DynareFlex.ll"
+#line 679 "lex_yacc/DynareFlex.ll"
 {return token::OVERWRITE;}
 	YY_BREAK
 case 465:
 YY_RULE_SETUP
-#line 680 "DynareFlex.ll"
+#line 680 "lex_yacc/DynareFlex.ll"
 {return token::UPPER_CHOLESKY;}
 	YY_BREAK
 case 466:
 YY_RULE_SETUP
-#line 681 "DynareFlex.ll"
+#line 681 "lex_yacc/DynareFlex.ll"
 {return token::LOWER_CHOLESKY;}
 	YY_BREAK
 case 467:
 YY_RULE_SETUP
-#line 682 "DynareFlex.ll"
+#line 682 "lex_yacc/DynareFlex.ll"
 {return token::CHAIN;}
 	YY_BREAK
 case 468:
 YY_RULE_SETUP
-#line 683 "DynareFlex.ll"
+#line 683 "lex_yacc/DynareFlex.ll"
 {return token::NUMBER_OF_LAGS;}
 	YY_BREAK
 case 469:
 YY_RULE_SETUP
-#line 684 "DynareFlex.ll"
+#line 684 "lex_yacc/DynareFlex.ll"
 {return token::NUMBER_OF_REGIMES;}
 	YY_BREAK
 case 470:
 YY_RULE_SETUP
-#line 685 "DynareFlex.ll"
+#line 685 "lex_yacc/DynareFlex.ll"
 {return token::DURATION;}
 	YY_BREAK
 case 471:
 YY_RULE_SETUP
-#line 686 "DynareFlex.ll"
+#line 686 "lex_yacc/DynareFlex.ll"
 {return token::COEFFICIENTS;}
 	YY_BREAK
 case 472:
 YY_RULE_SETUP
-#line 687 "DynareFlex.ll"
+#line 687 "lex_yacc/DynareFlex.ll"
 {return token::VARIANCES;}
 	YY_BREAK
 case 473:
 YY_RULE_SETUP
-#line 688 "DynareFlex.ll"
+#line 688 "lex_yacc/DynareFlex.ll"
 {return token::EQUATIONS;}
 	YY_BREAK
 case 474:
 YY_RULE_SETUP
-#line 690 "DynareFlex.ll"
+#line 690 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 case 475:
 YY_RULE_SETUP
-#line 691 "DynareFlex.ll"
+#line 691 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 case 476:
 YY_RULE_SETUP
-#line 692 "DynareFlex.ll"
+#line 692 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 case 477:
 YY_RULE_SETUP
-#line 694 "DynareFlex.ll"
+#line 694 "lex_yacc/DynareFlex.ll"
 {return token::USE_DLL;}
 	YY_BREAK
 case 478:
 YY_RULE_SETUP
-#line 695 "DynareFlex.ll"
+#line 695 "lex_yacc/DynareFlex.ll"
 {return token::BLOCK;}
 	YY_BREAK
 case 479:
 YY_RULE_SETUP
-#line 696 "DynareFlex.ll"
+#line 696 "lex_yacc/DynareFlex.ll"
 {return token::BYTECODE;}
 	YY_BREAK
 case 480:
 YY_RULE_SETUP
-#line 697 "DynareFlex.ll"
+#line 697 "lex_yacc/DynareFlex.ll"
 {return token::ALL_VALUES_REQUIRED;}
 	YY_BREAK
 case 481:
 YY_RULE_SETUP
-#line 698 "DynareFlex.ll"
+#line 698 "lex_yacc/DynareFlex.ll"
 {return token::NO_STATIC;}
 	YY_BREAK
 case 482:
 YY_RULE_SETUP
-#line 699 "DynareFlex.ll"
+#line 699 "lex_yacc/DynareFlex.ll"
 {return token::DIFFERENTIATE_FORWARD_VARS;}
 	YY_BREAK
 case 483:
 YY_RULE_SETUP
-#line 700 "DynareFlex.ll"
+#line 700 "lex_yacc/DynareFlex.ll"
 {return token::PARALLEL_LOCAL_FILES;}
 	YY_BREAK
 case 484:
 YY_RULE_SETUP
-#line 702 "DynareFlex.ll"
+#line 702 "lex_yacc/DynareFlex.ll"
 {return token::LINEAR;}
 	YY_BREAK
 case 485:
 YY_RULE_SETUP
-#line 704 "DynareFlex.ll"
+#line 704 "lex_yacc/DynareFlex.ll"
 {return token::COMMA;}
 	YY_BREAK
 case 486:
 YY_RULE_SETUP
-#line 705 "DynareFlex.ll"
+#line 705 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 case 487:
 YY_RULE_SETUP
-#line 706 "DynareFlex.ll"
+#line 706 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 case 488:
 YY_RULE_SETUP
-#line 707 "DynareFlex.ll"
+#line 707 "lex_yacc/DynareFlex.ll"
 {return Dynare::parser::token_type (yytext[0]);}
 	YY_BREAK
 case 489:
 YY_RULE_SETUP
-#line 708 "DynareFlex.ll"
+#line 708 "lex_yacc/DynareFlex.ll"
 {
   if (sigma_e)
     sigma_e = 0;
@@ -7233,430 +7233,430 @@ YY_RULE_SETUP
 	YY_BREAK
 case 490:
 YY_RULE_SETUP
-#line 713 "DynareFlex.ll"
+#line 713 "lex_yacc/DynareFlex.ll"
 {return token::PLUS;}
 	YY_BREAK
 case 491:
 YY_RULE_SETUP
-#line 714 "DynareFlex.ll"
+#line 714 "lex_yacc/DynareFlex.ll"
 {return token::MINUS;}
 	YY_BREAK
 case 492:
 YY_RULE_SETUP
-#line 715 "DynareFlex.ll"
+#line 715 "lex_yacc/DynareFlex.ll"
 {return token::TIMES;}
 	YY_BREAK
 case 493:
 YY_RULE_SETUP
-#line 716 "DynareFlex.ll"
+#line 716 "lex_yacc/DynareFlex.ll"
 {return token::DIVIDE;}
 	YY_BREAK
 case 494:
 YY_RULE_SETUP
-#line 717 "DynareFlex.ll"
+#line 717 "lex_yacc/DynareFlex.ll"
 {return token::EQUAL;}
 	YY_BREAK
 case 495:
 YY_RULE_SETUP
-#line 718 "DynareFlex.ll"
+#line 718 "lex_yacc/DynareFlex.ll"
 {return token::LESS;}
 	YY_BREAK
 case 496:
 YY_RULE_SETUP
-#line 719 "DynareFlex.ll"
+#line 719 "lex_yacc/DynareFlex.ll"
 {return token::GREATER;}
 	YY_BREAK
 case 497:
 YY_RULE_SETUP
-#line 720 "DynareFlex.ll"
+#line 720 "lex_yacc/DynareFlex.ll"
 {return token::GREATER_EQUAL;}
 	YY_BREAK
 case 498:
 YY_RULE_SETUP
-#line 721 "DynareFlex.ll"
+#line 721 "lex_yacc/DynareFlex.ll"
 {return token::LESS_EQUAL;}
 	YY_BREAK
 case 499:
 YY_RULE_SETUP
-#line 722 "DynareFlex.ll"
+#line 722 "lex_yacc/DynareFlex.ll"
 {return token::EQUAL_EQUAL;}
 	YY_BREAK
 case 500:
 YY_RULE_SETUP
-#line 723 "DynareFlex.ll"
+#line 723 "lex_yacc/DynareFlex.ll"
 {return token::EXCLAMATION_EQUAL;}
 	YY_BREAK
 case 501:
 YY_RULE_SETUP
-#line 724 "DynareFlex.ll"
+#line 724 "lex_yacc/DynareFlex.ll"
 {return token::POWER;}
 	YY_BREAK
 case 502:
 YY_RULE_SETUP
-#line 725 "DynareFlex.ll"
+#line 725 "lex_yacc/DynareFlex.ll"
 {return token::EXP;}
 	YY_BREAK
 case 503:
 YY_RULE_SETUP
-#line 726 "DynareFlex.ll"
+#line 726 "lex_yacc/DynareFlex.ll"
 {return token::LOG;}
 	YY_BREAK
 case 504:
 YY_RULE_SETUP
-#line 727 "DynareFlex.ll"
+#line 727 "lex_yacc/DynareFlex.ll"
 {return token::LOG10;}
 	YY_BREAK
 case 505:
 YY_RULE_SETUP
-#line 728 "DynareFlex.ll"
+#line 728 "lex_yacc/DynareFlex.ll"
 {return token::LN;}
 	YY_BREAK
 case 506:
 YY_RULE_SETUP
-#line 729 "DynareFlex.ll"
+#line 729 "lex_yacc/DynareFlex.ll"
 {return token::SIN;}
 	YY_BREAK
 case 507:
 YY_RULE_SETUP
-#line 730 "DynareFlex.ll"
+#line 730 "lex_yacc/DynareFlex.ll"
 {return token::COS;}
 	YY_BREAK
 case 508:
 YY_RULE_SETUP
-#line 731 "DynareFlex.ll"
+#line 731 "lex_yacc/DynareFlex.ll"
 {return token::TAN;}
 	YY_BREAK
 case 509:
 YY_RULE_SETUP
-#line 732 "DynareFlex.ll"
+#line 732 "lex_yacc/DynareFlex.ll"
 {return token::ASIN;}
 	YY_BREAK
 case 510:
 YY_RULE_SETUP
-#line 733 "DynareFlex.ll"
+#line 733 "lex_yacc/DynareFlex.ll"
 {return token::ACOS;}
 	YY_BREAK
 case 511:
 YY_RULE_SETUP
-#line 734 "DynareFlex.ll"
+#line 734 "lex_yacc/DynareFlex.ll"
 {return token::ATAN;}
 	YY_BREAK
 case 512:
 YY_RULE_SETUP
-#line 735 "DynareFlex.ll"
+#line 735 "lex_yacc/DynareFlex.ll"
 {return token::SINH;}
 	YY_BREAK
 case 513:
 YY_RULE_SETUP
-#line 736 "DynareFlex.ll"
+#line 736 "lex_yacc/DynareFlex.ll"
 {return token::COSH;}
 	YY_BREAK
 case 514:
 YY_RULE_SETUP
-#line 737 "DynareFlex.ll"
+#line 737 "lex_yacc/DynareFlex.ll"
 {return token::TANH;}
 	YY_BREAK
 case 515:
 YY_RULE_SETUP
-#line 738 "DynareFlex.ll"
+#line 738 "lex_yacc/DynareFlex.ll"
 {return token::ASINH;}
 	YY_BREAK
 case 516:
 YY_RULE_SETUP
-#line 739 "DynareFlex.ll"
+#line 739 "lex_yacc/DynareFlex.ll"
 {return token::ACOSH;}
 	YY_BREAK
 case 517:
 YY_RULE_SETUP
-#line 740 "DynareFlex.ll"
+#line 740 "lex_yacc/DynareFlex.ll"
 {return token::ATANH;}
 	YY_BREAK
 case 518:
 YY_RULE_SETUP
-#line 741 "DynareFlex.ll"
+#line 741 "lex_yacc/DynareFlex.ll"
 {return token::SQRT;}
 	YY_BREAK
 case 519:
 YY_RULE_SETUP
-#line 742 "DynareFlex.ll"
+#line 742 "lex_yacc/DynareFlex.ll"
 {return token::MAX;}
 	YY_BREAK
 case 520:
 YY_RULE_SETUP
-#line 743 "DynareFlex.ll"
+#line 743 "lex_yacc/DynareFlex.ll"
 {return token::MIN;}
 	YY_BREAK
 case 521:
 YY_RULE_SETUP
-#line 744 "DynareFlex.ll"
+#line 744 "lex_yacc/DynareFlex.ll"
 {return token::ABS;}
 	YY_BREAK
 case 522:
 YY_RULE_SETUP
-#line 745 "DynareFlex.ll"
+#line 745 "lex_yacc/DynareFlex.ll"
 {return token::SIGN;}
 	YY_BREAK
 case 523:
 YY_RULE_SETUP
-#line 746 "DynareFlex.ll"
+#line 746 "lex_yacc/DynareFlex.ll"
 {return token::NORMCDF;}
 	YY_BREAK
 case 524:
 YY_RULE_SETUP
-#line 747 "DynareFlex.ll"
+#line 747 "lex_yacc/DynareFlex.ll"
 {return token::NORMPDF;}
 	YY_BREAK
 case 525:
 YY_RULE_SETUP
-#line 748 "DynareFlex.ll"
+#line 748 "lex_yacc/DynareFlex.ll"
 {return token::ERF;}
 	YY_BREAK
 case 526:
 YY_RULE_SETUP
-#line 749 "DynareFlex.ll"
+#line 749 "lex_yacc/DynareFlex.ll"
 {return token::STEADY_STATE;}
 	YY_BREAK
 case 527:
 YY_RULE_SETUP
-#line 750 "DynareFlex.ll"
+#line 750 "lex_yacc/DynareFlex.ll"
 {return token::EXPECTATION;}
 	YY_BREAK
 case 528:
 YY_RULE_SETUP
-#line 751 "DynareFlex.ll"
+#line 751 "lex_yacc/DynareFlex.ll"
 {return token::VAROBS;}
 	YY_BREAK
 case 529:
 YY_RULE_SETUP
-#line 752 "DynareFlex.ll"
+#line 752 "lex_yacc/DynareFlex.ll"
 {return token::FULL;}
 	YY_BREAK
 case 530:
 YY_RULE_SETUP
-#line 753 "DynareFlex.ll"
+#line 753 "lex_yacc/DynareFlex.ll"
 {return token::NAN_CONSTANT;}
 	YY_BREAK
 case 531:
 YY_RULE_SETUP
-#line 754 "DynareFlex.ll"
+#line 754 "lex_yacc/DynareFlex.ll"
 {return token::INF_CONSTANT;}
 	YY_BREAK
 case 532:
 YY_RULE_SETUP
-#line 755 "DynareFlex.ll"
+#line 755 "lex_yacc/DynareFlex.ll"
 {return token::CONSTANTS;}
 	YY_BREAK
 /* options for GSA module by Marco Ratto */
 case 533:
 YY_RULE_SETUP
-#line 758 "DynareFlex.ll"
+#line 758 "lex_yacc/DynareFlex.ll"
 {return token::IDENTIFICATION;}
 	YY_BREAK
 case 534:
 YY_RULE_SETUP
-#line 759 "DynareFlex.ll"
+#line 759 "lex_yacc/DynareFlex.ll"
 {return token::MORRIS;}
 	YY_BREAK
 case 535:
 YY_RULE_SETUP
-#line 760 "DynareFlex.ll"
+#line 760 "lex_yacc/DynareFlex.ll"
 {return token::STAB;}
 	YY_BREAK
 case 536:
 YY_RULE_SETUP
-#line 761 "DynareFlex.ll"
+#line 761 "lex_yacc/DynareFlex.ll"
 {return token::REDFORM;}
 	YY_BREAK
 case 537:
 YY_RULE_SETUP
-#line 762 "DynareFlex.ll"
+#line 762 "lex_yacc/DynareFlex.ll"
 {return token::PPRIOR;}
 	YY_BREAK
 case 538:
 YY_RULE_SETUP
-#line 763 "DynareFlex.ll"
+#line 763 "lex_yacc/DynareFlex.ll"
 {return token::PRIOR_RANGE;}
 	YY_BREAK
 case 539:
 YY_RULE_SETUP
-#line 764 "DynareFlex.ll"
+#line 764 "lex_yacc/DynareFlex.ll"
 {return token::PPOST;}
 	YY_BREAK
 case 540:
 YY_RULE_SETUP
-#line 765 "DynareFlex.ll"
+#line 765 "lex_yacc/DynareFlex.ll"
 {return token::ILPTAU;}
 	YY_BREAK
 case 541:
 YY_RULE_SETUP
-#line 766 "DynareFlex.ll"
+#line 766 "lex_yacc/DynareFlex.ll"
 {return token::MORRIS_NLIV;}
 	YY_BREAK
 case 542:
 YY_RULE_SETUP
-#line 767 "DynareFlex.ll"
+#line 767 "lex_yacc/DynareFlex.ll"
 {return token::MORRIS_NTRA;}
 	YY_BREAK
 case 543:
 YY_RULE_SETUP
-#line 768 "DynareFlex.ll"
+#line 768 "lex_yacc/DynareFlex.ll"
 {return token::NSAM;}
 	YY_BREAK
 case 544:
 YY_RULE_SETUP
-#line 769 "DynareFlex.ll"
+#line 769 "lex_yacc/DynareFlex.ll"
 {return token::LOAD_REDFORM;}
 	YY_BREAK
 case 545:
 YY_RULE_SETUP
-#line 770 "DynareFlex.ll"
+#line 770 "lex_yacc/DynareFlex.ll"
 {return token::LOAD_RMSE;}
 	YY_BREAK
 case 546:
 YY_RULE_SETUP
-#line 771 "DynareFlex.ll"
+#line 771 "lex_yacc/DynareFlex.ll"
 {return token::LOAD_STAB;}
 	YY_BREAK
 case 547:
 YY_RULE_SETUP
-#line 772 "DynareFlex.ll"
+#line 772 "lex_yacc/DynareFlex.ll"
 {return token::ALPHA2_STAB;}
 	YY_BREAK
 case 548:
 YY_RULE_SETUP
-#line 773 "DynareFlex.ll"
+#line 773 "lex_yacc/DynareFlex.ll"
 {return token::KSSTAT;}
 	YY_BREAK
 case 549:
 YY_RULE_SETUP
-#line 774 "DynareFlex.ll"
+#line 774 "lex_yacc/DynareFlex.ll"
 {return token::LOGTRANS_REDFORM;}
 	YY_BREAK
 case 550:
 YY_RULE_SETUP
-#line 775 "DynareFlex.ll"
+#line 775 "lex_yacc/DynareFlex.ll"
 {return token::THRESHOLD_REDFORM;}
 	YY_BREAK
 case 551:
 YY_RULE_SETUP
-#line 776 "DynareFlex.ll"
+#line 776 "lex_yacc/DynareFlex.ll"
 {return token::KSSTAT_REDFORM;}
 	YY_BREAK
 case 552:
 YY_RULE_SETUP
-#line 777 "DynareFlex.ll"
+#line 777 "lex_yacc/DynareFlex.ll"
 {return token::ALPHA2_REDFORM;}
 	YY_BREAK
 case 553:
 YY_RULE_SETUP
-#line 778 "DynareFlex.ll"
+#line 778 "lex_yacc/DynareFlex.ll"
 {return token::NAMENDO;}
 	YY_BREAK
 case 554:
 YY_RULE_SETUP
-#line 779 "DynareFlex.ll"
+#line 779 "lex_yacc/DynareFlex.ll"
 {return token::NAMLAGENDO;}
 	YY_BREAK
 case 555:
 YY_RULE_SETUP
-#line 780 "DynareFlex.ll"
+#line 780 "lex_yacc/DynareFlex.ll"
 {return token::NAMEXO;}
 	YY_BREAK
 case 556:
 YY_RULE_SETUP
-#line 781 "DynareFlex.ll"
+#line 781 "lex_yacc/DynareFlex.ll"
 {return token::RMSE;}
 	YY_BREAK
 case 557:
 YY_RULE_SETUP
-#line 782 "DynareFlex.ll"
+#line 782 "lex_yacc/DynareFlex.ll"
 {return token::LIK_ONLY;}
 	YY_BREAK
 case 558:
 YY_RULE_SETUP
-#line 783 "DynareFlex.ll"
+#line 783 "lex_yacc/DynareFlex.ll"
 {return token::VAR_RMSE;}
 	YY_BREAK
 case 559:
 YY_RULE_SETUP
-#line 784 "DynareFlex.ll"
+#line 784 "lex_yacc/DynareFlex.ll"
 {return token::PFILT_RMSE;}
 	YY_BREAK
 case 560:
 YY_RULE_SETUP
-#line 785 "DynareFlex.ll"
+#line 785 "lex_yacc/DynareFlex.ll"
 {return token::ISTART_RMSE;}
 	YY_BREAK
 case 561:
 YY_RULE_SETUP
-#line 786 "DynareFlex.ll"
+#line 786 "lex_yacc/DynareFlex.ll"
 {return token::ALPHA_RMSE;}
 	YY_BREAK
 case 562:
 YY_RULE_SETUP
-#line 787 "DynareFlex.ll"
+#line 787 "lex_yacc/DynareFlex.ll"
 {return token::ALPHA2_RMSE;}
 	YY_BREAK
 case 563:
 YY_RULE_SETUP
-#line 788 "DynareFlex.ll"
+#line 788 "lex_yacc/DynareFlex.ll"
 {return token::LOAD_IDENT_FILES;}
 	YY_BREAK
 case 564:
 YY_RULE_SETUP
-#line 789 "DynareFlex.ll"
+#line 789 "lex_yacc/DynareFlex.ll"
 {return token::USEAUTOCORR;}
 	YY_BREAK
 case 565:
 YY_RULE_SETUP
-#line 790 "DynareFlex.ll"
+#line 790 "lex_yacc/DynareFlex.ll"
 {return token::NEIGHBORHOOD_WIDTH;}
 	YY_BREAK
 case 566:
 YY_RULE_SETUP
-#line 791 "DynareFlex.ll"
+#line 791 "lex_yacc/DynareFlex.ll"
 {return token::PVALUE_KS;}
 	YY_BREAK
 case 567:
 YY_RULE_SETUP
-#line 792 "DynareFlex.ll"
+#line 792 "lex_yacc/DynareFlex.ll"
 {return token::PVALUE_CORR;}
 	YY_BREAK
 /* end of GSA options */
 /* For identification() statement */
 case 568:
 YY_RULE_SETUP
-#line 796 "DynareFlex.ll"
+#line 796 "lex_yacc/DynareFlex.ll"
 {return token::PRIOR_MC;}
 	YY_BREAK
 case 569:
 YY_RULE_SETUP
-#line 797 "DynareFlex.ll"
+#line 797 "lex_yacc/DynareFlex.ll"
 {return token::ADVANCED;}
 	YY_BREAK
 case 570:
 YY_RULE_SETUP
-#line 798 "DynareFlex.ll"
+#line 798 "lex_yacc/DynareFlex.ll"
 {return token::MAX_DIM_COVA_GROUP;}
 	YY_BREAK
 case 571:
 YY_RULE_SETUP
-#line 799 "DynareFlex.ll"
+#line 799 "lex_yacc/DynareFlex.ll"
 {return token::GSA_SAMPLE_FILE;}
 	YY_BREAK
 case 572:
 YY_RULE_SETUP
-#line 801 "DynareFlex.ll"
+#line 801 "lex_yacc/DynareFlex.ll"
 {return token::USE_SHOCK_GROUPS;}
 	YY_BREAK
 case 573:
 YY_RULE_SETUP
-#line 802 "DynareFlex.ll"
+#line 802 "lex_yacc/DynareFlex.ll"
 {return token::COLORMAP;}
 	YY_BREAK
 case 574:
 YY_RULE_SETUP
-#line 804 "DynareFlex.ll"
+#line 804 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::NAME;
@@ -7664,7 +7664,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 575:
 YY_RULE_SETUP
-#line 809 "DynareFlex.ll"
+#line 809 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::FLOAT_NUMBER;
@@ -7672,7 +7672,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 576:
 YY_RULE_SETUP
-#line 814 "DynareFlex.ll"
+#line 814 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext);
   return token::INT_NUMBER;
@@ -7680,12 +7680,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 577:
 YY_RULE_SETUP
-#line 819 "DynareFlex.ll"
+#line 819 "lex_yacc/DynareFlex.ll"
 { yylval->string_val->append(yytext); dates_parens_nb++; }
 	YY_BREAK
 case 578:
 YY_RULE_SETUP
-#line 820 "DynareFlex.ll"
+#line 820 "lex_yacc/DynareFlex.ll"
 {
                       yylval->string_val->append(yytext);
                       if (--dates_parens_nb == 0)
@@ -7697,13 +7697,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 579:
 YY_RULE_SETUP
-#line 828 "DynareFlex.ll"
+#line 828 "lex_yacc/DynareFlex.ll"
 { yylval->string_val->append(yytext); }
 	YY_BREAK
 case 580:
 /* rule 580 can match eol */
 YY_RULE_SETUP
-#line 830 "DynareFlex.ll"
+#line 830 "lex_yacc/DynareFlex.ll"
 {
   yylval->string_val = new string(yytext + 1);
   yylval->string_val->resize(yylval->string_val->length() - 1);
@@ -7714,7 +7714,7 @@ YY_RULE_SETUP
 case 581:
 /* rule 581 can match eol */
 YY_RULE_SETUP
-#line 838 "DynareFlex.ll"
+#line 838 "lex_yacc/DynareFlex.ll"
 {
                                    BEGIN VERBATIM_BLOCK;
                                    yylval->string_val = new string();
@@ -7723,7 +7723,7 @@ YY_RULE_SETUP
 case 582:
 /* rule 582 can match eol */
 YY_RULE_SETUP
-#line 842 "DynareFlex.ll"
+#line 842 "lex_yacc/DynareFlex.ll"
 {
                                    BEGIN INITIAL;
                                    yylval->string_val = new string();
@@ -7732,7 +7732,7 @@ YY_RULE_SETUP
 case 583:
 /* rule 583 can match eol */
 YY_RULE_SETUP
-#line 846 "DynareFlex.ll"
+#line 846 "lex_yacc/DynareFlex.ll"
 {
                           if (strlen(yytext) > 1)
                              driver.add_verbatim_remove_charset(yytext, "\n");
@@ -7740,11 +7740,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 584:
 YY_RULE_SETUP
-#line 850 "DynareFlex.ll"
+#line 850 "lex_yacc/DynareFlex.ll"
 { yymore(); }
 	YY_BREAK
 case YY_STATE_EOF(VERBATIM_BLOCK):
-#line 851 "DynareFlex.ll"
+#line 851 "lex_yacc/DynareFlex.ll"
 {
                           driver.add_verbatim(eofbuff);
                           yyterminate();
@@ -7761,7 +7761,7 @@ case YY_STATE_EOF(VERBATIM_BLOCK):
  */
 case 585:
 YY_RULE_SETUP
-#line 866 "DynareFlex.ll"
+#line 866 "lex_yacc/DynareFlex.ll"
 {
   if (driver.symbol_exists_and_is_not_modfile_local_or_external_function(yytext))
     {
@@ -7783,7 +7783,7 @@ YY_RULE_SETUP
 case 586:
 /* rule 586 can match eol */
 YY_RULE_SETUP
-#line 884 "DynareFlex.ll"
+#line 884 "lex_yacc/DynareFlex.ll"
 {
   string yytextcpy = string(yytext);
   yytextcpy.erase(remove(yytextcpy.begin(), yytextcpy.end(), '['), yytextcpy.end());
@@ -7819,38 +7819,38 @@ YY_RULE_SETUP
 /* Enter a native block */
 case 587:
 YY_RULE_SETUP
-#line 917 "DynareFlex.ll"
+#line 917 "lex_yacc/DynareFlex.ll"
 { BEGIN NATIVE; yyless(0); }
 	YY_BREAK
 /* Add the native statement */
 
 case 588:
-#line 922 "DynareFlex.ll"
+#line 922 "lex_yacc/DynareFlex.ll"
 case 589:
-#line 923 "DynareFlex.ll"
+#line 923 "lex_yacc/DynareFlex.ll"
 case 590:
-#line 924 "DynareFlex.ll"
+#line 924 "lex_yacc/DynareFlex.ll"
 case 591:
-#line 925 "DynareFlex.ll"
+#line 925 "lex_yacc/DynareFlex.ll"
 case 592:
-#line 926 "DynareFlex.ll"
+#line 926 "lex_yacc/DynareFlex.ll"
 case 593:
-#line 927 "DynareFlex.ll"
+#line 927 "lex_yacc/DynareFlex.ll"
 case 594:
 YY_RULE_SETUP
-#line 927 "DynareFlex.ll"
+#line 927 "lex_yacc/DynareFlex.ll"
 { yymore(); eofbuff = string(yytext); }
 	YY_BREAK
 case 595:
 /* rule 595 can match eol */
 YY_RULE_SETUP
-#line 928 "DynareFlex.ll"
+#line 928 "lex_yacc/DynareFlex.ll"
 { driver.add_native_remove_charset(yytext, "\n"); }
 	YY_BREAK
 case 596:
 /* rule 596 can match eol */
 YY_RULE_SETUP
-#line 929 "DynareFlex.ll"
+#line 929 "lex_yacc/DynareFlex.ll"
 {
                                 if (strlen(yytext) > 1)
                                   driver.add_native_remove_charset(yytext, "\n");
@@ -7858,7 +7858,7 @@ YY_RULE_SETUP
                               }
 	YY_BREAK
 case YY_STATE_EOF(NATIVE):
-#line 934 "DynareFlex.ll"
+#line 934 "lex_yacc/DynareFlex.ll"
 {
                                 driver.add_native(eofbuff);
                                 yyterminate();
@@ -7866,26 +7866,26 @@ case YY_STATE_EOF(NATIVE):
 	YY_BREAK
 case 597:
 /* rule 597 can match eol */
-#line 939 "DynareFlex.ll"
+#line 939 "lex_yacc/DynareFlex.ll"
 case 598:
 /* rule 598 can match eol */
 YY_RULE_SETUP
-#line 939 "DynareFlex.ll"
+#line 939 "lex_yacc/DynareFlex.ll"
 { driver.add_native_remove_charset(yytext, "%"); }
 	YY_BREAK
 case 599:
 /* rule 599 can match eol */
-#line 941 "DynareFlex.ll"
+#line 941 "lex_yacc/DynareFlex.ll"
 case 600:
 /* rule 600 can match eol */
 YY_RULE_SETUP
-#line 941 "DynareFlex.ll"
+#line 941 "lex_yacc/DynareFlex.ll"
 { driver.add_native_remove_charset(yytext, "//"); }
 	YY_BREAK
 case 601:
 /* rule 601 can match eol */
 YY_RULE_SETUP
-#line 942 "DynareFlex.ll"
+#line 942 "lex_yacc/DynareFlex.ll"
 {
                                 driver.add_native_remove_charset(yytext, "/*");
                                 BEGIN NATIVE_COMMENT;
@@ -7893,7 +7893,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 602:
 YY_RULE_SETUP
-#line 946 "DynareFlex.ll"
+#line 946 "lex_yacc/DynareFlex.ll"
 {
                                 driver.add_native_remove_charset(yytext, "/*");
                                 comment_caller = NATIVE;
@@ -7904,12 +7904,12 @@ YY_RULE_SETUP
 case 603:
 /* rule 603 can match eol */
 YY_RULE_SETUP
-#line 953 "DynareFlex.ll"
+#line 953 "lex_yacc/DynareFlex.ll"
 { BEGIN NATIVE; }
 	YY_BREAK
 case 604:
 YY_RULE_SETUP
-#line 954 "DynareFlex.ll"
+#line 954 "lex_yacc/DynareFlex.ll"
 
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -7921,17 +7921,17 @@ case YY_STATE_EOF(LINE1):
 case YY_STATE_EOF(LINE2):
 case YY_STATE_EOF(LINE3):
 case YY_STATE_EOF(NATIVE_COMMENT):
-#line 956 "DynareFlex.ll"
+#line 956 "lex_yacc/DynareFlex.ll"
 { yyterminate(); }
 	YY_BREAK
 case 605:
 YY_RULE_SETUP
-#line 958 "DynareFlex.ll"
+#line 958 "lex_yacc/DynareFlex.ll"
 { driver.error(*yylloc, "character unrecognized by lexer"); }
 	YY_BREAK
 case 606:
 YY_RULE_SETUP
-#line 959 "DynareFlex.ll"
+#line 959 "lex_yacc/DynareFlex.ll"
 ECHO;
 	YY_BREAK
 #line 7938 "DynareFlex.cc"
@@ -8981,7 +8981,7 @@ void Dynarefree (void * ptr )
 
 /* %ok-for-header */
 
-#line 959 "DynareFlex.ll"
+#line 959 "lex_yacc/DynareFlex.ll"
 
 
 

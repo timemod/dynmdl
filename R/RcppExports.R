@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 compile_model_ <- function(modfile) {
-    .Call('dynparse_compile_model_', PACKAGE = 'dynparse', modfile)
+    .Call('dynr_compile_model_', PACKAGE = 'dynr', modfile)
 }
 

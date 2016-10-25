@@ -54,7 +54,7 @@ DynareFlex.o : DynareFlex.cc FlexLexer.h
 DynareBison.o : DynareBison.cc
 
 DynareFlex.cc FlexLexer.h : $(LEX_YACC_DIR)/DynareFlex.ll
-	$(LEX) -o DynareFlex.cc DynareFlex.ll
+	$(LEX) -o DynareFlex.cc $<
         # Copy FlexLexer.h from $LEXINC. Otherwise the code cannot
         # be compiled on systems where lex is not available, or where
         # the version of lex is incompatible with the version used
@@ -62,4 +62,4 @@ DynareFlex.cc FlexLexer.h : $(LEX_YACC_DIR)/DynareFlex.ll
 	cp $(LEXINC)/FlexLexer.h .
 
 DynareBison.cc DynareBison.hh location.hh stack.hh position.hh: $(LEX_YACC_DIR)/DynareBison.yy
-	$(YACC) -o DynareBison.cc $(LEX_YACC_DIR)/DynareBison.yy
+	$(YACC) -o DynareBison.cc $<
