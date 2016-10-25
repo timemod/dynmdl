@@ -4,16 +4,11 @@ SUBDIR = macro
 SUBLIB = lib$(SUBDIR).a
 PKG_LIBS = $(SUBDIR)/$(SUBLIB)
 
-## For the final version of the package, we have to clean the sublib here, 
-## to clean up between architectures:
-## INSTALL only cleans src/*.o src/*$(SHLIB_EXT) for each arch
-#all : subclean sublib $(SHLIB) DynareFlex.o DynareBison.o
+# Clean sublib here, to clean up between architectures:
+# INSTALL only cleans src/*.o src/*$(SHLIB_EXT) for each arch
+all : subclean sublib $(SHLIB)
 
-# While developping on the same architecture is not not necessary
-# to clean sublib
-all : sublib $(SHLIB)
-
-$(SHLIB) : check_source_files $(OBJECTS) $(SUBDIR)/$(SUBLIB)
+$(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 subclean:
 	@(cd $(SUBDIR) && $(MAKE) $(SUBLIB) clean)
@@ -21,25 +16,12 @@ subclean:
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 sublib:
-	@(cd $(SUBDIR) && $(MAKE) $(SUBLIB) AR="$(AR)")
+	 @(cd $(SUBDIR)&& $(MAKE) \
+	  CXX="$(CXX)" \
+	  CXXFLAGS="$(CXXFLAGS) $(PKG_CXXFLAGS) $(CPICFLAGS) $(CLINK_CPPFLAGS)" \
+	  AR="$(AR)" RANLIB="$(RANLIB)")
 
-# TODO: for the time being we are not using Flex/Bison
-
-DEPS_DIR = deps
-DEP_FILE = $(DEPS_DIR)/makedeps
-DEP_PKL = $(DEPS_DIR)/deps.pkl
-SRC_C = $(wildcard *.c*)
-SRC_H =  $(wildcard *.h*)
-PYTHON = python
-
-check_source_files:
-	@$(PYTHON) $(DEPS_DIR)/check_srcfiles.py
-
-$(DEP_FILE) : $(DEP_PKL)
-	@$(PYTHON) $(DEPS_DIR)/write_makedeps.py $(DEP_PKL) $@
-
-$(DEP_PKL) : $(SRC_C) $(SRC_H)
-	@$(PYTHON) $(DEPS_DIR)/gendepend.py $@ $(?F)
-
-# dependencies C files
-include $(DEP_FILE)
+# TODO: flex/bison and python do not work on Windows within the Rtools
+# environment. Therefore, for the moment the package should only be developped
+# in a Linux environent. In a later stage we have to check if there is an 
+# alternative solution for Windows.

@@ -26,7 +26,10 @@ subclean:
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 sublib:
-	@(cd $(SUBDIR) && $(MAKE) $(SUBLIB) AR="$(AR)")
+	 @(cd $(SUBDIR)&& $(MAKE) \
+	  CXX="$(CXX)" \
+          CXXFLAGS="$(CXXFLAGS) $(PKG_CXXFLAGS) $(CPICFLAGS) $(CLINK_CPPFLAGS)" \
+	  AR="$(AR)" RANLIB="$(RANLIB)")
 
 DEPS_DIR = deps
 DEP_FILE = $(DEPS_DIR)/makedeps
