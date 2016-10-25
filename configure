@@ -3816,7 +3816,7 @@ case ${host_os} in
 esac
 #AX_PTHREAD
 
-ac_config_files="$ac_config_files src/Makevars src/macro/Makefile"
+ac_config_files="$ac_config_files src/Makevars"
 
 
 
@@ -4545,7 +4545,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "src/Makevars") CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
-    "src/macro/Makefile") CONFIG_FILES="$CONFIG_FILES src/macro/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

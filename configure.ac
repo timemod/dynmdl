@@ -76,9 +76,7 @@ case ${host_os} in
 esac
 #AX_PTHREAD
 
-AC_CONFIG_FILES([src/Makevars 
-		 src/macro/Makefile
-])
+AC_CONFIG_FILES([src/Makevars])
  
 
 # Construct final output message
