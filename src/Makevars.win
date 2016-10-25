@@ -11,12 +11,12 @@ all : subclean sublib $(SHLIB)
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 subclean:
-	@(cd $(SUBDIR) && $(MAKE) $(SUBLIB) clean)
+	(cd $(SUBDIR) && $(MAKE) clean)
 
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 sublib:
-	 @(cd $(SUBDIR)&& $(MAKE) \
+	 (cd $(SUBDIR)&& $(MAKE) \
 	  CXX="$(CXX)" \
 	  CXXFLAGS="$(CXXFLAGS) $(PKG_CXXFLAGS) $(CPICFLAGS) $(CLINK_CPPFLAGS)" \
 	  AR="$(AR)" RANLIB="$(RANLIB)")
