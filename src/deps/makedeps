@@ -90,8 +90,8 @@ parse_macro.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
                ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
                NumericalConstants.hh NumericalInitialization.hh Statement.hh \
                StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
-               WarningConsolidation.hh location.hh macro/MacroDriver.hh \
-               macro\MacroBison.hh macro\MacroValue.hh parse.hh
+               WarningConsolidation.hh location.hh macro/MacroBison.hh \
+               macro/MacroDriver.hh macro/MacroValue.hh parse.hh
 parse_post_macro.o : CodeInterpreter.hh ComputingTasks.hh \
                     ConfigFile.hh DataTree.hh DynamicModel.hh DynareBison.hh ExprNode.hh \
                     ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModFile.hh \
