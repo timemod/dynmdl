@@ -9,6 +9,6 @@ SystemRequirements: GNU make
 License: GPL (>= 2)
 LazyData: TRUE
 RoxygenNote: 5.0.1
-LinkingTo: Rcpp
+LinkingTo: Rcpp, BH
 Imports: Rcpp, nleqslv, Matrix, methods, BB
 Depends: regts
