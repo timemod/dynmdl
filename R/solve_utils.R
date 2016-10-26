@@ -15,13 +15,13 @@ get_leads <- function(mdl) {
     return (as.numeric(t(mdl@endo_data[lead_per, ])))
 }
 
-# returns a vector with exogenous variables, including lagged exogenous
+# returns a matrix with exogenous variables, including lagged exogenous
 # variables
 get_exo <- function(mdl) {
     if (mdl@exo_count > 0) {
         exo  <- mdl@exo_data
     } else {
-        exo <- numeric(0)
+        exo <- matrix(nrow = 0, ncol = 0)
     }
 }
 
@@ -49,8 +49,6 @@ get_residual <- function(x, mdl, lags, leads, exo, nper) {
 
 #' @importFrom Matrix Matrix
 get_jac <- function(x, mdl, lags, leads, exo, nper, sparse = TRUE) {
-    # TODO: here we transpose the lead/lag incidenced.
-    # it is better to calculate it correctly in the C code
     imat <- mdl@lead_lag_incidence
     i_cols <- which(imat != 0)
     i_cols_a0 <- which(imat[, 2] != 0)
