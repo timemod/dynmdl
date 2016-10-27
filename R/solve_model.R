@@ -35,10 +35,6 @@ setMethod("solve_model", signature = "SimModel",
               } else if (solver == "nleqslv") {
                   return (solve_nleqslv(mdl, x, lags, leads, nper,
                                         numjac, ...))
-              } else if (solver == "dfsane") {
-                  return (solve_dfsane(mdl, x, lags, leads, nper, ...))
-              } else if (solver == "BBsolve") {
-                  return (solve_BBsolve(mdl, x, lags, leads, nper, ...))
               }
           }
 )

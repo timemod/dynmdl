@@ -16,3 +16,10 @@
 #define dynexit(...) std::fprintf(stderr, __VA_ARGS__); \
                      exit(EXIT_FAILURE)
 #endif
+
+// dynwarn:  print a warning
+#ifdef USE_R
+#define dynwarn(...) Rf_warning(__VA_ARGS__)
+#else
+#define dynexit(...) std::fprintf(stderr, __VA_ARGS__)
+#endif

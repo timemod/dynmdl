@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 
 #include "ConfigFile.hh"
 #include <boost/algorithm/string/trim.hpp>
@@ -28,14 +29,15 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
+#include "dynout.hh"
+
 using namespace std;
 
 Hook::Hook(string &global_init_file_arg)
 {
   if (global_init_file_arg.empty())
     {
-      cerr << "ERROR: The Hook must have a Global Initialization File argument." << endl;
-      exit(EXIT_FAILURE);
+      dynexit("ERROR: The Hook must have a Global Initialization File argument.\n");
     }
   hooks["global_init_file"] = global_init_file_arg;
 }
@@ -44,8 +46,7 @@ Path::Path(vector<string> &includepath_arg)
 {
   if (includepath_arg.empty())
     {
-      cerr << "ERROR: The Path must have an Include argument." << endl;
-      exit(EXIT_FAILURE);
+      dynexit("ERROR: The Path must have an Include argument.\n");
     }
   paths["include"] = includepath_arg;
 }
@@ -60,15 +61,13 @@ SlaveNode::SlaveNode(string &computerName_arg, string port_arg, int minCpuNbr_ar
 {
   if (computerName.empty())
     {
-      cerr << "ERROR: The node must have a ComputerName." << endl;
-      exit(EXIT_FAILURE);
+      dynexit("ERROR: The node must have a ComputerName.\n");
     }
 
   if (!operatingSystem.empty())
     if (operatingSystem.compare("windows") != 0 && operatingSystem.compare("unix") != 0)
       {
-        cerr << "ERROR: The OperatingSystem must be either 'unix' or 'windows' (Case Sensitive)." << endl;
-        exit(EXIT_FAILURE);
+        dynexit("ERROR: The OperatingSystem must be either 'unix' or 'windows' (Case Sensitive).\n");
       }
 }
 
@@ -77,7 +76,7 @@ Cluster::Cluster(member_nodes_t  member_nodes_arg) :
 {
   if (member_nodes.empty())
     {
-      cerr << "ERROR: The cluster must have at least one member node." << endl;
+      dynexit("ERROR: The cluster must have at least one member node.\n");
       exit(EXIT_FAILURE);
     }
 }
@@ -106,14 +105,18 @@ ConfigFile::getConfigFileInfo(const string &config_file)
 #if defined(_WIN32) || defined(__CYGWIN32__)
       if (getenv("APPDATA") == NULL)
         {
+          std::string msg;
           if (parallel || parallel_test)
-            cerr << "ERROR: ";
+            msg = "ERROR: ";
           else
-            cerr << "WARNING: ";
-          cerr << "APPDATA environment variable not found." << endl;
+            msg = "WARNING: ";
+          msg = msg +  "APPDATA environment variable not found.\n";
 
           if (parallel || parallel_test)
-            exit(EXIT_FAILURE);
+              dynexit(msg.c_str());
+          else {
+              dynwarn(msg.c_str());
+           }
         }
       else
         {
@@ -123,13 +126,17 @@ ConfigFile::getConfigFileInfo(const string &config_file)
 #else
         if (getenv("HOME") == NULL)
           {
+            std::string msg;
             if (parallel || parallel_test)
-              cerr << "ERROR: ";
+              msg = "ERROR: ";
             else
-              cerr << "WARNING: ";
-            cerr << "HOME environment variable not found." << endl;
-            if (parallel || parallel_test)
-              exit(EXIT_FAILURE);
+              msg = "WARNING: ";
+            msg = msg +  "HOME environment variable not found.\n";
+            if (parallel || parallel_test) {
+                dynexit(msg.c_str());
+            } else {
+                dynwarn(msg.c_str());
+            }
           }
         else
           {
@@ -141,8 +148,8 @@ ConfigFile::getConfigFileInfo(const string &config_file)
         if (!configFile->is_open())
           if (parallel || parallel_test)
             {
-              cerr << "ERROR: Could not open the default config file (" << defaultConfigFile << ")" << endl;
-              exit(EXIT_FAILURE);
+                std::string msg = "ERROR: Could not open the default config file (" + defaultConfigFile + ")\n";
+                 dynexit(msg.c_str());
             }
           else
             return;
@@ -152,8 +159,8 @@ ConfigFile::getConfigFileInfo(const string &config_file)
         configFile = new ifstream(config_file.c_str(), fstream::in);
         if (!configFile->is_open())
           {
-            cerr << "ERROR: Couldn't open file " << config_file << endl;;
-            exit(EXIT_FAILURE);
+            std::string msg = "ERROR: Couldn't open file " + config_file + "\n";
+            dynexit(msg.c_str());
           }
       }
 
@@ -241,8 +248,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
           split(tokenizedLine, line, is_any_of("="));
           if (tokenizedLine.size() != 2)
             {
-              cerr << "ERROR (in config file): Options should be formatted as 'option = value'." << endl;
-              exit(EXIT_FAILURE);
+              dynexit("ERROR (in config file): Options should be formatted as 'option = value'.\n");
             }
           trim(tokenizedLine.front());
           trim(tokenizedLine.back());
@@ -253,13 +259,12 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                 global_init_file = tokenizedLine.back();
               else
                 {
-                  cerr << "ERROR: May not have more than one GlobalInitFile option in [hooks] block." << endl;
-                  exit(EXIT_FAILURE);
+                  dynexit("ERROR: May not have more than one GlobalInitFile option in [hooks] block.)\n");
                 }
             else
               {
-                cerr << "ERROR: Unrecognized option " << tokenizedLine.front() << " in [hooks] block." << endl;
-                exit(EXIT_FAILURE);
+                std::string msg = "ERROR: Unrecognized option " + tokenizedLine.front() + " in [hooks] block.\n";
+                dynexit(msg.c_str());
               }
           else if (inPaths)
             if (!tokenizedLine.front().compare("Include"))
@@ -277,13 +282,13 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                 }
               else
                 {
-                  cerr << "ERROR: May not have more than one Include option in [paths] block." << endl;
-                  exit(EXIT_FAILURE);
+                  dynexit("ERROR: May not have more than one Include option in [paths] block.\n");
                 }
             else
               {
-                cerr << "ERROR: Unrecognized option " << tokenizedLine.front() << " in [paths] block." << endl;
-                exit(EXIT_FAILURE);
+                std::string msg = "ERROR: Unrecognized option " + tokenizedLine.front() + " in [paths] block.\n";
+                //std::ostringstream msg = "ERROR: Unrecognized option " << tokenizedLine.front() << " in [paths] block.\n";
+                dynexit(msg.c_str());
               }
           else
             if (!tokenizedLine.front().compare("Name"))
@@ -311,17 +316,15 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                   }
                 catch (const bad_lexical_cast &)
                   {
-                    cerr << "ERROR: Could not convert value to integer for CPUnbr." << endl;
-                    exit(EXIT_FAILURE);
+                    dynexit("ERROR: Could not convert value to integer for CPUnbr.\n");
                   }
 
                 if (minCpuNbr <= 0 || maxCpuNbr <= 0)
                   {
-                    cerr << "ERROR: Syntax for the CPUnbr option is as follows:" << endl
-                         << "       1) CPUnbr = <int>" << endl
-                         << "    or 2) CPUnbr = [<int>:<int>]" << endl
-                         << "       where <int> is an Integer > 0." << endl;
-                    exit(EXIT_FAILURE);
+                      dynexit("ERROR: Syntax for the CPUnbr option is as follows:\n"
+                         "       1) CPUnbr = <int>\n"
+                         "    or 2) CPUnbr = [<int>:<int>]\n"
+                         "       where <int> is an Integer > 0.\n");
                   }
 
                 minCpuNbr--;
@@ -356,8 +359,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                 singleCompThread = false;
               else
                 {
-                  cerr << "ERROR (in config file): The value passed to SingleCompThread may only be 'true' or 'false'." << endl;
-                  exit(EXIT_FAILURE);
+                  dynexit("ERROR (in config file): The value passed to SingleCompThread may only be 'true' or 'false'.\n");
                 }
             else if (!tokenizedLine.front().compare("OperatingSystem"))
               operatingSystem = tokenizedLine.back();
@@ -388,8 +390,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                         if (!node_name.empty())
                           if (member_nodes.find(node_name) != member_nodes.end())
                             {
-                              cerr << "ERROR (in config file): Node entered twice in specification of cluster." << endl;
-                              exit(EXIT_FAILURE);
+                              dynexit("ERROR (in config file): Node entered twice in specification of cluster.\n");
                             }
                           else
                             member_nodes[node_name] = 1.0;
@@ -401,15 +402,13 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                           double weight = lexical_cast<double>(token.c_str());
                           if (weight <= 0)
                             {
-                              cerr << "ERROR (in config file): Misspecification of weights passed to Members option." << endl;
-                              exit(EXIT_FAILURE);
+                              dynexit("ERROR (in config file): Misspecification of weights passed to Members option.\n");
                             }
                           member_nodes[node_name] = weight;
                         }
                       catch (bad_lexical_cast &)
                         {
-                          cerr << "ERROR (in config file): Misspecification of weights passed to Members option." << endl;
-                          exit(EXIT_FAILURE);
+                          dynexit("ERROR (in config file): Misspecification of weights passed to Members option.\n");
                         }
                   }
                 if (!node_name.empty())
@@ -417,7 +416,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                     member_nodes[node_name] = 1.0;
                   else
                     {
-                      cerr << "ERROR (in config file): Node entered twice in specification of cluster." << endl;
+                      dynexit("ERROR (in config file): Node entered twice in specification of cluster.\n");
                       exit(EXIT_FAILURE);
                     }
               }

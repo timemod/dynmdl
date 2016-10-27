@@ -3,7 +3,8 @@ ComputingTasks.o : CodeInterpreter.hh ComputingTasks.hh DataTree.hh \
                   ExternalFunctionsTable.hh ModelTree.hh NumericalConstants.hh \
                   Statement.hh StaticModel.hh SymbolList.hh SymbolTable.hh \
                   WarningConsolidation.hh dynout.hh location.hh
-ConfigFile.o : ConfigFile.hh WarningConsolidation.hh location.hh
+ConfigFile.o : ConfigFile.hh WarningConsolidation.hh dynout.hh \
+              location.hh
 DataTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
             ExternalFunctionsTable.hh NumericalConstants.hh SymbolTable.hh
 DynamicModel.o : CodeInterpreter.hh DataTree.hh DynamicModel.hh \
