@@ -17,8 +17,7 @@ public:
 };
 
 // [[Rcpp::export]]
-List get_triplet_jac(SEXP mdl_, NumericVector endos, Function jacfun) {
-    Rcpp::S4 mdl(mdl_);
+List get_triplet_jac(S4 mdl, NumericVector endos, Function jacfun) {
     int max_exo_lag = mdl.slot("max_exo_lag");
     int max_endo_lag = mdl.slot("max_endo_lag");
     int max_endo_lead = mdl.slot("max_endo_lead");
@@ -50,7 +49,7 @@ List get_triplet_jac(SEXP mdl_, NumericVector endos, Function jacfun) {
 
     for (int it = 0; it < nper; it++) {
         for (int i = 0; i < icols.size(); i++) {
-            x(i) = endos(icols[i]);
+            x(i) = endos(icols[i] + it * n_endo);
         }
         NumericMatrix jt = jacfun(x, it + 1 + max_exo_lag);
         for (int ieq = 0; ieq < n_endo; ieq++) {
@@ -65,9 +64,6 @@ List get_triplet_jac(SEXP mdl_, NumericVector endos, Function jacfun) {
                     values.push_back(value);
                 }
             }
-        }
-        for (int i = 0; i < icols.size(); i++) {
-            icols[i] += n_endo;
         }
     }
 

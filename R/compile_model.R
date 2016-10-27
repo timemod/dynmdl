@@ -1,11 +1,13 @@
 #' Compile a Dynare model and return a \code{\link{SimModel}}
 #'
 #' @param mod_file the name of the model file (including extension .mod)
+#' @param bytecode If \code{TRUE}, then the functions used to calculate the
+#' residuals and jacobian are compiled.
 #' @return an \code{SimModel} object
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @useDynLib dynr
-compile_model <- function(mod_file) {
+compile_model <- function(mod_file, bytecode = TRUE) {
     model_info <- compile_model_(mod_file)
 
     f_static <- function(y, x, params, jac = FALSE) {}
@@ -16,6 +18,10 @@ compile_model <- function(mod_file) {
     body(f_dynamic) <- parse(text = paste0("{",
                     model_info$dynamic_model$dynamic_function_body, "}"))
 
+    if (bytecode) {
+        f_static <- compiler::cmpfun(f_static)
+        f_dynamic <- compiler::cmpfun(f_dynamic)
+    }
     exo_count <- length(model_info$exos)
     endo_count <- length(model_info$endos)
     return (with(model_info, {
