@@ -17,7 +17,8 @@ public:
 };
 
 // [[Rcpp::export]]
-NumericVector get_residuals_(S4 mdl, NumericVector endos) {
+NumericVector get_residuals_(S4 mdl, NumericVector endos,
+                             NumericVector icols) {
     int max_exo_lag = mdl.slot("max_exo_lag");
     int max_endo_lag = mdl.slot("max_endo_lag");
     int max_endo_lead = mdl.slot("max_endo_lead");
@@ -25,29 +26,16 @@ NumericVector get_residuals_(S4 mdl, NumericVector endos) {
     int nper_data = endos.size() / n_endo;
     int nper = nper_data - max_endo_lag - max_endo_lead;
 
-    IntegerMatrix lead_lag_incidence = mdl.slot("lead_lag_incidence");
-    std::vector<int> icols;
-    int cnt = 0;
-    for (int c = 0; c < lead_lag_incidence.ncol(); c++) {
-        for (int r = 0; r < lead_lag_incidence.nrow(); r++) {
-            int i = lead_lag_incidence(r, c);
-            if (i) {
-                icols.push_back(cnt);
-            }
-            cnt++;
-        }
-    }
-    
     SEXP exo_data = mdl.slot("exo_data");
     SEXP params = mdl.slot("params");
     Function f_dynamic = mdl.slot("f_dynamic");
-    
+
     NumericVector res(nper * n_endo);
     NumericVector x(icols.size());
 
     for (int it = 0; it < nper; it++) {
         for (int i = 0; i < icols.size(); i++) {
-            x(i) = endos(icols[i] + it * n_endo);
+            x(i) = endos(icols(i) +  it * n_endo);
         }
         NumericVector res_t = f_dynamic(x, exo_data, params, 
                                         it + 1 + max_exo_lag, false);          

@@ -23,7 +23,7 @@ get_solve_endo <- function(mdl) {
 # x is vector of endogenous variables in the solution period
 get_residuals <- function(x, mdl, lags, leads, nper) {
     endos <- c(lags, x, leads)
-    return (get_residuals_(mdl, endos))
+    return (get_residuals_(mdl, endos, which(mdl@lead_lag_incidence != 0) - 1))
 }
 
 #' @importFrom methods new

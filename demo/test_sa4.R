@@ -36,3 +36,7 @@ print(mdl2@solve_out$iter)
 # compare analytical solution with calculated result
 plot(mdl2@endo_data[mdl@model_period, 'E'])
 lines(analytical_solution[mdl@model_period, 'E'], col = "red")
+
+print(system.time(
+    icols <- which(mdl@lead_lag_incidence != 0)
+))

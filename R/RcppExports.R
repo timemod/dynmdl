@@ -5,8 +5,8 @@ compile_model_ <- function(modfile) {
     .Call('dynr_compile_model_', PACKAGE = 'dynr', modfile)
 }
 
-get_residuals_ <- function(mdl, endos) {
-    .Call('dynr_get_residuals_', PACKAGE = 'dynr', mdl, endos)
+get_residuals_ <- function(mdl, endos, icols) {
+    .Call('dynr_get_residuals_', PACKAGE = 'dynr', mdl, endos, icols)
 }
 
 get_triplet_jac <- function(mdl, endos) {

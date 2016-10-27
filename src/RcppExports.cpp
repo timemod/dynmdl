@@ -17,14 +17,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_residuals_
-NumericVector get_residuals_(S4 mdl, NumericVector endos);
-RcppExport SEXP dynr_get_residuals_(SEXP mdlSEXP, SEXP endosSEXP) {
+NumericVector get_residuals_(S4 mdl, NumericVector endos, NumericVector icols);
+RcppExport SEXP dynr_get_residuals_(SEXP mdlSEXP, SEXP endosSEXP, SEXP icolsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< S4 >::type mdl(mdlSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
-    __result = Rcpp::wrap(get_residuals_(mdl, endos));
+    Rcpp::traits::input_parameter< NumericVector >::type icols(icolsSEXP);
+    __result = Rcpp::wrap(get_residuals_(mdl, endos, icols));
     return __result;
 END_RCPP
 }
