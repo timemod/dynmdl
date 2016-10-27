@@ -14,6 +14,7 @@ print(system.time(mdl <- compile_model(mod_file)))
 print(system.time(
     mdl <- solve_steady(mdl = mdl)
 ))
+
 # should be very small
 print(sum(abs(mdl@endos)))
 

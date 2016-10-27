@@ -1450,26 +1450,18 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
    } else if  (output_type == oRStaticModel) {
 
-      StaticOutput << "#" << endl
-                    << "# Model equations" <<  endl
-                    << "#" <<  endl
-                    << endl
-                    << "residual <- numeric(" <<  equations.size() << ")" <<  endl
-                    << model_local_vars_output.str()
-                    << model_output.str()
+      StaticOutput << model_local_vars_output.str()
                     << "if (!jac) {" << endl 
-                    <<  INDENT(1) <<  "return (residual)" << endl
-                    << "}" << endl << endl
-                    << endl
-                    << "#" << endl
-                    << "# Jacobian matrix" << endl
-                    << "#" << endl
-                     // Writing initialization instruction for matrix g1
-                    << "g1 <- matrix(0, " << equations.size()  << ", "
+                    << INDENT(1) << "residual <- numeric(" <<  equations.size() << ")" <<  endl
+                    << model_output.str()
+                    << INDENT(1) <<  "return (residual)" << endl
+                    << "} else {" << endl << endl
+                    << INDENT(1) << "g1 <- matrix(0, " << equations.size()  << ", "
                     << symbol_table.endo_nbr() << ")" << endl << endl
                     << jacobian_output.str()
                     << endl
-                    << "return (list(residual, g1))"  << endl;
+                    << "return (g1)"  << endl
+                    << "}" << endl;
 
    } else if (output_type == oCStaticModel)
     {

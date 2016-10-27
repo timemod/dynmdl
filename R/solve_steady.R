@@ -18,7 +18,7 @@ setMethod("solve_steady", signature = c("SimModel"),
                   return (mdl@f_static(x, mdl@exos, mdl@params))
               }
               jac <- function(x) {
-                  return (mdl@f_static(x, mdl@exos, mdl@params, jac = TRUE)[[2]])
+                  return (mdl@f_static(x, mdl@exos, mdl@params, jac = TRUE))
               }
               # todo: print output / give error if the commamd was not
               # succesfuill

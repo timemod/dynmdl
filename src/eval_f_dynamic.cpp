@@ -83,9 +83,8 @@ List get_triplet_jac(S4 mdl, NumericVector endos) {
         for (int i = 0; i < icols.size(); i++) {
             x(i) = endos(icols[i] + it * n_endo);
         }
-        List ret = f_dynamic(x, exo_data, params, it + 1 + max_exo_lag,
-                             true);          
-        NumericMatrix jt = ret[1];
+        NumericMatrix jt  = f_dynamic(x, exo_data, params, it + 1 + max_exo_lag,
+                                      true);
         for (int ieq = 0; ieq < n_endo; ieq++) {
             for (int ideriv = 0; ideriv < jacmap.size(); ideriv++) {
                 VarInfo var_info = jacmap[ideriv];
