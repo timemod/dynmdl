@@ -47,54 +47,23 @@ get_residual <- function(x, mdl, lags, leads, exo, nper) {
     return (residual)
 }
 
+#' @importFrom methods new
+#' @importFrom methods as
 #' @importFrom Matrix Matrix
 get_jac <- function(x, mdl, lags, leads, exo, nper, sparse = TRUE) {
-    imat <- mdl@lead_lag_incidence
-    i_cols <- which(imat != 0)
-    i_cols_a0 <- which(imat[, 2] != 0)
-    i_cols_a1 <- which(imat[, 2:3] != 0)
-    i_cols_a  <- i_cols
-    i_cols_0  <- imat[, 2][imat[, 2] != 0]
-    i_cols_1  <- imat[, 2:3][imat[, 2:3] != 0]
-    i_cols_t  <- imat[, 1:2][imat[, 1:2] != 0]
+    endos <- c(get_lags(mdl), x, get_leads(mdl))
+    jacfun <- function(y, exos, params, it) {
+        return (mdl@f_dynamic(y, exos, params, it, jac = TRUE)[[2]])
+    }
+    mat_info <- get_triplet_jac(mdl, endos, exo, jacfun)
+    n <- lensub(mdl@model_period) * mdl@endo_count
+    jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
+                        x = mat_info$values, Dim = as.integer(rep(n, 2)))
 
-    # the Jacobian returned by mdl@f_dynamics also
-    # contains the derivatives of the exogenous variables
-    # in the colums last. The first length(i_cols)
-    # columns contains the derivatives to the
-    # endogenous variables, lags and leads
-    # TODO: in this package we do'nt need derivatives
-    # of the equations to exogenous variables, therfore
-    # modify the preprocessor.
-    i_cols_j  <- 1 : length(i_cols)
-    i_rows <- 1:mdl@endo_count
-    data <- c(lags, x, leads)
-    dim <- nper * mdl@endo_count
     if (sparse) {
-        # sparse matrix from the Matrix package
-        a <- Matrix(0, nrow = dim, ncol = dim)
+        jac <- as(jac, "dgCMatrix")
     } else {
-        # a normal R matrix
-        a <- matrix(0, nrow = dim, ncol = dim)
+        jac <- as(jac, "matrix")
     }
-    for (it in 1 : nper) {
-        y <- data[i_cols]
-        jac <- mdl@f_dynamic(y, exo, mdl@params,
-                             it + mdl@max_exo_lag, jac = TRUE)[[2]]
-        if (nper == 1) {
-            a[i_rows, i_cols_a0] <- jac[ , i_cols_0]
-        } else if (it == 1) {
-            a[i_rows, i_cols_a1] <- jac[ , i_cols_1]
-        } else if (it == nper) {
-            a[i_rows, i_cols_a[i_cols_t]] <- jac[ , i_cols_t]
-        } else {
-            a[i_rows, i_cols_a] <- jac[ , i_cols_j]
-        }
-        i_cols <- i_cols + mdl@endo_count
-        i_rows <- i_rows + mdl@endo_count
-        if (it > 1) {
-            i_cols_a <- i_cols_a + mdl@endo_count
-        }
-    }
-    return (a)
+    return (jac)
 }
