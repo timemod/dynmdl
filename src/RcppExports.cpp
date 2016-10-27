@@ -16,16 +16,27 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// get_triplet_jac
-List get_triplet_jac(S4 mdl, NumericVector endos, Function jacfun);
-RcppExport SEXP dynr_get_triplet_jac(SEXP mdlSEXP, SEXP endosSEXP, SEXP jacfunSEXP) {
+// get_residuals_
+NumericVector get_residuals_(S4 mdl, NumericVector endos);
+RcppExport SEXP dynr_get_residuals_(SEXP mdlSEXP, SEXP endosSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< S4 >::type mdl(mdlSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
-    Rcpp::traits::input_parameter< Function >::type jacfun(jacfunSEXP);
-    __result = Rcpp::wrap(get_triplet_jac(mdl, endos, jacfun));
+    __result = Rcpp::wrap(get_residuals_(mdl, endos));
+    return __result;
+END_RCPP
+}
+// get_triplet_jac
+List get_triplet_jac(S4 mdl, NumericVector endos);
+RcppExport SEXP dynr_get_triplet_jac(SEXP mdlSEXP, SEXP endosSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< S4 >::type mdl(mdlSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
+    __result = Rcpp::wrap(get_triplet_jac(mdl, endos));
     return __result;
 END_RCPP
 }

@@ -6,8 +6,7 @@
 \alias{solve_model,SimModel-method}
 \title{Solve a \code{\link{SimModel}} object using the dense linear algebra.}
 \usage{
-solve_model(mdl, solver = c("sparse_newton", "nleqslv", "dfsane", "BBsolve"),
-  ...)
+solve_model(mdl, solver = c("sparse_newton", "nleqslv"), ...)
 
 \S4method{solve_model}{SimModel}(mdl, solver = c("sparse_newton", "nleqslv",
   "dfsane", "BBsolve"), numjac = FALSE, ...)

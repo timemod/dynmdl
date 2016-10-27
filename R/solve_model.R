@@ -9,8 +9,7 @@
 #' arguments, in particular for the sparse newton solver)
 #' @return a new \code{SimModel} with the solved model
 #' @export
-setGeneric("solve_model", function(mdl, solver = c("sparse_newton", "nleqslv",
-                                                   "dfsane", "BBsolve"),
+setGeneric("solve_model", function(mdl, solver = c("sparse_newton", "nleqslv"),
                                    ...) {
     standardGeneric("solve_model")
 }, signature = "mdl")
@@ -52,8 +51,8 @@ solve_sparse_newton <- function(mdl, x, lags, leads, nper, numjac,
     control_[names(control)] <- control
 
     solved <- FALSE
-    res <- get_residual(x, mdl, lags, leads, nper)
     for (iter in 0:control_$maxiter) {
+        res <- get_residuals(x, mdl, lags, leads, nper)
         err <- max(abs(res))
         if (control_$trace) {
             cat(sprintf("Iteration: %d Largest |f| %g\n", iter, err))
@@ -61,11 +60,11 @@ solve_sparse_newton <- function(mdl, x, lags, leads, nper, numjac,
         if (err < control_$ftol) {
             solved <- TRUE
             break
+        } else {
+            jac <- get_jac(x, mdl, lags, leads, nper)
+            ret <- Matrix::solve(jac, res)
+            x <- x - as.numeric(ret)
         }
-        a <- get_jac(x, mdl, lags, leads, nper)
-        ret <- Matrix::solve(a, res)
-        x <- x - as.numeric(ret)
-        res <- get_residual(x, mdl, lags, leads, nper)
     }
 
     # TODO: line searching?
@@ -83,31 +82,11 @@ solve_nleqslv <- function(mdl, x, lags, leads, nper, numjac, ...) {
     } else {
         jacfun <- NULL
     }
-    mdl@solve_out <- nleqslv::nleqslv(x, fn = get_residual,
+    mdl@solve_out <- nleqslv::nleqslv(x, fn = get_residuals,
                                       jac = jacfun, mdl = mdl,
                                       lags = lags, leads = leads, nper = nper,
                                       ...)
     mdl@endo_data[mdl@model_period, ] <- t(matrix(mdl@solve_out$x,
-                                                  nrow = mdl@endo_count))
-    return (invisible(mdl))
-}
-
-solve_dfsane <- function(mdl, x, lags, leads, nper, numjac, ...) {
-    mdl@solve_out <- BB::dfsane(x, fn = get_residual,
-                                mdl = mdl, lags = lags,
-                                leads = leads, nper = nper,
-                                      ...)
-    mdl@endo_data[mdl@model_period, ] <- t(matrix(mdl@solve_out$par,
-                                                  nrow = mdl@endo_count))
-    return (invisible(mdl))
-}
-
-solve_BBsolve <- function(mdl, x, lags, leads, nper, numjac, ...) {
-    mdl@solve_out <- BB::BBsolve(x, fn = get_residual,
-                                mdl = mdl, lags = lags,
-                                leads = leads, nper = nper,
-                                ...)
-    mdl@endo_data[mdl@model_period, ] <- t(matrix(mdl@solve_out$par,
                                                   nrow = mdl@endo_count))
     return (invisible(mdl))
 }

@@ -17,7 +17,49 @@ public:
 };
 
 // [[Rcpp::export]]
-List get_triplet_jac(S4 mdl, NumericVector endos, Function jacfun) {
+NumericVector get_residuals_(S4 mdl, NumericVector endos) {
+    int max_exo_lag = mdl.slot("max_exo_lag");
+    int max_endo_lag = mdl.slot("max_endo_lag");
+    int max_endo_lead = mdl.slot("max_endo_lead");
+    int n_endo = mdl.slot("endo_count");
+    int nper_data = endos.size() / n_endo;
+    int nper = nper_data - max_endo_lag - max_endo_lead;
+
+    IntegerMatrix lead_lag_incidence = mdl.slot("lead_lag_incidence");
+    std::vector<int> icols;
+    int cnt = 0;
+    for (int c = 0; c < lead_lag_incidence.ncol(); c++) {
+        for (int r = 0; r < lead_lag_incidence.nrow(); r++) {
+            int i = lead_lag_incidence(r, c);
+            if (i) {
+                icols.push_back(cnt);
+            }
+            cnt++;
+        }
+    }
+    
+    SEXP exo_data = mdl.slot("exo_data");
+    SEXP params = mdl.slot("params");
+    Function f_dynamic = mdl.slot("f_dynamic");
+    
+    NumericVector res(nper * n_endo);
+    NumericVector x(icols.size());
+
+    for (int it = 0; it < nper; it++) {
+        for (int i = 0; i < icols.size(); i++) {
+            x(i) = endos(icols[i] + it * n_endo);
+        }
+        NumericVector res_t = f_dynamic(x, exo_data, params, 
+                                        it + 1 + max_exo_lag, false);          
+        for (int id = 0; id < n_endo; id++) {
+            res(id + it * n_endo) = res_t[id];
+        }
+    }
+    return res;
+}
+
+// [[Rcpp::export]]
+List get_triplet_jac(S4 mdl, NumericVector endos) {
     int max_exo_lag = mdl.slot("max_exo_lag");
     int max_endo_lag = mdl.slot("max_endo_lag");
     int max_endo_lead = mdl.slot("max_endo_lead");
@@ -39,10 +81,12 @@ List get_triplet_jac(S4 mdl, NumericVector endos, Function jacfun) {
             cnt++;
         }
     }
-
-    //NumericVector params = mdl.slot("params");
+    
+    SEXP exo_data = mdl.slot("exo_data");
+    SEXP params = mdl.slot("params");
+    Function f_dynamic = mdl.slot("f_dynamic");
     NumericVector x(icols.size());
-
+    
     vector<int> rows;
     vector<int> columns;
     vector<double> values;
@@ -51,7 +95,9 @@ List get_triplet_jac(S4 mdl, NumericVector endos, Function jacfun) {
         for (int i = 0; i < icols.size(); i++) {
             x(i) = endos(icols[i] + it * n_endo);
         }
-        NumericMatrix jt = jacfun(x, it + 1 + max_exo_lag);
+        List ret = f_dynamic(x, exo_data, params, it + 1 + max_exo_lag,
+                             true);          
+        NumericMatrix jt = ret[1];
         for (int ieq = 0; ieq < n_endo; ieq++) {
             for (int ideriv = 0; ideriv < jacmap.size(); ideriv++) {
                 VarInfo var_info = jacmap[ideriv];
@@ -73,4 +119,4 @@ List get_triplet_jac(S4 mdl, NumericVector endos, Function jacfun) {
     return List::create(Rcpp::Named("rows") = rows_r,
                         Rcpp::Named("columns") = columns_r,
                         Rcpp::Named("values") = values_r);
-}
+    }
