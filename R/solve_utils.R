@@ -15,30 +15,20 @@ get_leads <- function(mdl) {
     return (as.numeric(t(mdl@endo_data[lead_per, ])))
 }
 
-# returns a matrix with exogenous variables, including lagged exogenous
-# variables
-get_exo <- function(mdl) {
-    if (mdl@exo_count > 0) {
-        exo  <- mdl@exo_data
-    } else {
-        exo <- matrix(nrow = 0, ncol = 0)
-    }
-}
-
 # returns a vector with endogenous variables in the solution period
 get_solve_endo <- function(mdl) {
     return (as.numeric(t(mdl@endo_data[mdl@model_period, ])))
 }
 # returns the residual of the stacked-time system
 # x is vector of endogenous variables in the solution period
-get_residual <- function(x, mdl, lags, leads, exo, nper) {
+get_residual <- function(x, mdl, lags, leads, nper) {
     i_cols <- which(mdl@lead_lag_incidence != 0)
     i_rows <- 1:mdl@endo_count
     residual <- numeric(nper * mdl@endo_count)
     data <- c(lags, x, leads)
     for (it in 1 : nper) {
         y <- data[i_cols]
-        d <- mdl@f_dynamic(y, exo, mdl@params,
+        d <- mdl@f_dynamic(y, mdl@exo_data, mdl@params,
                            it + mdl@max_exo_lag)
         residual[i_rows] <- d
         i_cols <- i_cols + mdl@endo_count
@@ -50,12 +40,12 @@ get_residual <- function(x, mdl, lags, leads, exo, nper) {
 #' @importFrom methods new
 #' @importFrom methods as
 #' @importFrom Matrix Matrix
-get_jac <- function(x, mdl, lags, leads, exo, nper, sparse = TRUE) {
+get_jac <- function(x, mdl, lags, leads, nper, sparse = TRUE) {
     endos <- c(get_lags(mdl), x, get_leads(mdl))
-    jacfun <- function(y, exos, params, it) {
-        return (mdl@f_dynamic(y, exos, params, it, jac = TRUE)[[2]])
+    jacfun <- function(y, it) {
+        return (mdl@f_dynamic(y, mdl@exo_data, mdl@params, it, jac = TRUE)[[2]])
     }
-    mat_info <- get_triplet_jac(mdl, endos, exo, jacfun)
+    mat_info <- get_triplet_jac(mdl, endos, jacfun)
     n <- lensub(mdl@model_period) * mdl@endo_count
     jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
                         x = mat_info$values, Dim = as.integer(rep(n, 2)))

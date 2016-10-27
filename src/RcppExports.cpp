@@ -17,16 +17,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_triplet_jac
-List get_triplet_jac(SEXP mdl_, NumericVector endos, NumericMatrix exos, Function jacfun);
-RcppExport SEXP dynr_get_triplet_jac(SEXP mdl_SEXP, SEXP endosSEXP, SEXP exosSEXP, SEXP jacfunSEXP) {
+List get_triplet_jac(SEXP mdl_, NumericVector endos, Function jacfun);
+RcppExport SEXP dynr_get_triplet_jac(SEXP mdl_SEXP, SEXP endosSEXP, SEXP jacfunSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< SEXP >::type mdl_(mdl_SEXP);
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type exos(exosSEXP);
     Rcpp::traits::input_parameter< Function >::type jacfun(jacfunSEXP);
-    __result = Rcpp::wrap(get_triplet_jac(mdl_, endos, exos, jacfun));
+    __result = Rcpp::wrap(get_triplet_jac(mdl_, endos, jacfun));
     return __result;
 END_RCPP
 }
