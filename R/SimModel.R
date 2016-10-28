@@ -10,21 +10,24 @@ setOldClass("regperiod_range")
 setOldClass("regts")
 
 #' @importFrom methods setClassUnion
-setClassUnion("regperiod_range_or_null", c("regperiod_range", "NULL"))
-setClassUnion("regts_or_null", c("regts", "NULL"))
-setClassUnion("list_or_null", c("list", "NULL"))
+#' @exportClass regperiod_range_or_NULL
+#' @exportClass regts_or_NULL
+#' @exportClass list_or_NULL
+setClassUnion("regperiod_range_or_NULL", c("NULL", "regperiod_range"))
+setClassUnion("regts_or_NULL", c("NULL", "regts"))
+setClassUnion("list_or_NULL", c("NULL", "list"))
 
 #' An S4 class for running simulations with the stacked-time Newton method
 #'
 #' @export
-#' @slot exo_count the number of exoogeneous variables
+#' @slot exo_count the number of exogeneous variables
 #' @slot endo_count the number of endogenous variables
 #' @slot exos the names and initial values of the exogenous variables
 #' @slot endos the names and initial values of the endogenous variables
 #' @slot params the names and values of the parameters
 #' @slot max_endo_lag   maximum lag for endogenous variables
 #' @slot max_endo_lead   maximum lead for endogenous variables
-#' @slot max_exo_lag   maximum lag for exoogenous variables
+#' @slot max_exo_lag   maximum lag for exogenous variables
 #' @slot max_exo_lead   maximum lead for exogenous variables
 #' @slot lead_lag_incidence see documentation Dynare
 #' @slot f_static function for the residuals and Jacobian for the static version
@@ -54,12 +57,12 @@ SimModel <- setClass("SimModel",
                                     lead_lag_incidence = "matrix",
                                     f_static = "function",
                                     f_dynamic = "function",
-                                    model_period = "regperiod_range_or_null",
-                                    endo_period = "regperiod_range_or_null",
-                                    exo_period = "regperiod_range_or_null",
-                                    endo_data = "regts_or_null",
-                                    exo_data = "regts_or_null",
-                                    solve_out = "list_or_null"),
+                                    model_period = "regperiod_range_or_NULL",
+                                    endo_period = "regperiod_range_or_NULL",
+                                    exo_period = "regperiod_range_or_NULL",
+                                    endo_data = "regts_or_NULL",
+                                    exo_data = "regts_or_NULL",
+                                    solve_out = "list_or_NULL"),
 
     # Set the default values for the slots. (optional)
     prototype=list(

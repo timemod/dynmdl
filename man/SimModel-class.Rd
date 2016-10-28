@@ -11,7 +11,7 @@ An S4 class for running simulations with the stacked-time Newton method
 \section{Slots}{
 
 \describe{
-\item{\code{exo_count}}{the number of exoogeneous variables}
+\item{\code{exo_count}}{the number of exogeneous variables}
 
 \item{\code{endo_count}}{the number of endogenous variables}
 
@@ -25,7 +25,7 @@ An S4 class for running simulations with the stacked-time Newton method
 
 \item{\code{max_endo_lead}}{maximum lead for endogenous variables}
 
-\item{\code{max_exo_lag}}{maximum lag for exoogenous variables}
+\item{\code{max_exo_lag}}{maximum lag for exogenous variables}
 
 \item{\code{max_exo_lead}}{maximum lead for exogenous variables}
 
