@@ -12,32 +12,28 @@ print(system.time(mdl <- compile_model(mod_file)))
 
 # check steady state. T All steady state values should be zero.
 print(system.time(
-    mdl <- solve_steady(mdl = mdl)
+    mdl$solve_steady()
 ))
 
 # should be very small
-print(sum(abs(mdl@endos)))
+print(sum(abs(mdl$endos)))
 
-model_period(mdl) <- regperiod_range("2015", "2263")
+mdl$set_period(regperiod_range("2015", "2263"))
 
 # analytical solution for lead period
-per <- end_period(mdl@endo_period)
-mdl@endo_data[per, names(mdl@endos)] <- analytical_solution[per, names(mdl@endos)]
+per <- end_period(mdl$endo_period)
+mdl$endo_data[per, names(mdl$endos)] <- analytical_solution[per, names(mdl$endos)]
 
 # use same shock as analytical solution
-mdl@exo_data["2015", 'e_g'] <- 0.0115
+mdl$exo_data["2015", 'e_g'] <- 0.0115
 
 print(system.time(
-    mdl2 <- solve_model(mdl)
+    mdl$solve()
 ))
 
-print(mdl2@solve_out$solved)
-print(mdl2@solve_out$iter)
+print(mdl$solve_out$solved)
+print(mdl$solve_out$iter)
 
 # compare analytical solution with calculated result
-plot(mdl2@endo_data[mdl@model_period, 'E'])
-lines(analytical_solution[mdl@model_period, 'E'], col = "red")
-
-print(system.time(
-    icols <- which(mdl@lead_lag_incidence != 0)
-))
+plot(mdl$endo_data[mdl$model_period, 'E'])
+lines(analytical_solution[mdl$model_period, 'E'], col = "red")

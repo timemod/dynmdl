@@ -17,18 +17,9 @@ public:
 };
 
 // [[Rcpp::export]]
-NumericVector get_residuals_(S4 mdl, NumericVector endos,
-                             NumericVector icols) {
-    int max_exo_lag = mdl.slot("max_exo_lag");
-    int max_endo_lag = mdl.slot("max_endo_lag");
-    int max_endo_lead = mdl.slot("max_endo_lead");
-    int n_endo = mdl.slot("endo_count");
-    int nper_data = endos.size() / n_endo;
-    int nper = nper_data - max_endo_lag - max_endo_lead;
-
-    SEXP exo_data = mdl.slot("exo_data");
-    SEXP params = mdl.slot("params");
-    Function f_dynamic = mdl.slot("f_dynamic");
+NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_data,
+                             SEXP params, Function f_dynamic, int n_endo, int nper,
+                             int max_exo_lag) {
 
     NumericVector res(nper * n_endo);
     NumericVector x(icols.size());
@@ -47,15 +38,10 @@ NumericVector get_residuals_(S4 mdl, NumericVector endos,
 }
 
 // [[Rcpp::export]]
-List get_triplet_jac(S4 mdl, NumericVector endos) {
-    int max_exo_lag = mdl.slot("max_exo_lag");
-    int max_endo_lag = mdl.slot("max_endo_lag");
-    int max_endo_lead = mdl.slot("max_endo_lead");
-    int n_endo = mdl.slot("endo_count");
-    int nper_data = endos.size() / n_endo;
-    int nper = nper_data - max_endo_lag - max_endo_lead;
+List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, SEXP exo_data,
+                     SEXP params, Function f_dynamic, int n_endo,
+                     int nper, int max_exo_lag) {
 
-    IntegerMatrix lead_lag_incidence = mdl.slot("lead_lag_incidence");
     std::map<int, VarInfo> jacmap;
     std::vector<int> icols;
     int cnt = 0;
@@ -70,9 +56,6 @@ List get_triplet_jac(S4 mdl, NumericVector endos) {
         }
     }
     
-    SEXP exo_data = mdl.slot("exo_data");
-    SEXP params = mdl.slot("params");
-    Function f_dynamic = mdl.slot("f_dynamic");
     NumericVector x(icols.size());
     
     vector<int> rows;
