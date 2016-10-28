@@ -7,33 +7,32 @@ solution_csv <-  system.file("extdata", "sa4_solution.csv", package = "dynr")
 analytical_solution <- as.regts(read.csv(solution_csv), time_column = 1,
                                 fun = function(x) {as.regperiod(x) + 2013})
 
-mod_file <- system.file("extdata", "sa4.mod", package = "dynr")
-print(system.time(mdl <- compile_model(mod_file)))
+sa4 <- sa4_mdl
 
 # check steady state. T All steady state values should be zero.
 print(system.time(
-    mdl$solve_steady()
+    sa4$solve_steady()
 ))
 
 # should be very small
-print(sum(abs(mdl$endos)))
+print(sum(abs(sa4$endos)))
 
-mdl$set_period(regperiod_range("2015", "2263"))
+sa4$set_period(regperiod_range("2015", "2263"))
 
 # analytical solution for lead period
-per <- end_period(mdl$endo_period)
-mdl$endo_data[per, names(mdl$endos)] <- analytical_solution[per, names(mdl$endos)]
+per <- end_period(sa4$endo_period)
+sa4$endo_data[per, names(sa4$endos)] <- analytical_solution[per,
+                                                        names(sa4$endos)]
 
 # use same shock as analytical solution
-mdl$exo_data["2015", 'e_g'] <- 0.0115
+sa4$exo_data["2015", 'e_g'] <- 0.0115
 
 print(system.time(
-    mdl$solve()
+    sa4$solve()
 ))
-
-print(mdl$solve_out$solved)
-print(mdl$solve_out$iter)
+print(sa4$solve_out$solved)
+print(sa4$solve_out$iter)
 
 # compare analytical solution with calculated result
-plot(mdl$endo_data[mdl$model_period, 'E'])
-lines(analytical_solution[mdl$model_period, 'E'], col = "red")
+plot(sa4$endo_data[sa4$model_period, 'E'])
+lines(analytical_solution[sa4$model_period, 'E'], col = "red")

@@ -175,7 +175,7 @@ SimModel <- R6Class("SimModel",
             return (get_residuals_(endos,
                                    which(self$lead_lag_incidence != 0) - 1,
                                    self$exo_data, self$params,
-                                   self$f_dynamic, mdl$endo_count,
+                                   self$f_dynamic, self$endo_count,
                                    nper, self$max_exo_lag))
         },
         get_jac = function(x, lags, leads, nper, sparse = TRUE) {
@@ -183,7 +183,7 @@ SimModel <- R6Class("SimModel",
             nper <- lensub(self$model_period)
             mat_info <- get_triplet_jac(endos, self$lead_lag_incidence,
                                         self$exo_data, self$params,
-                                        self$f_dynamic, mdl$endo_count,
+                                        self$f_dynamic, self$endo_count,
                                         nper, self$max_exo_lag)
             n <- nper * self$endo_count
             jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
