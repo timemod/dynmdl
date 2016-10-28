@@ -9,11 +9,12 @@ mdl$solve_steady()
 print(mdl$endos)
 
 mdl$set_period("2015/2030")
+mdl$set_period("2015/2016")
 
 mdl$endo_data[start_period(mdl$endo_period), "p"] <- 1.3
 
 
-#View(get_jacob(mdl, sparse = FALSE))
+View(mdl$get_jacob(sparse = FALSE))
 
 print(system.time(
     mdl$solve(control = list(trace = TRUE))

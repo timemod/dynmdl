@@ -13,10 +13,42 @@ setOldClass("regts")
 #'
 #' @docType class
 #' @importFrom R6 R6Class
+#' @importFrom Rcpp sourceCpp
+#' @useDynLib dynr
+#' @importFrom regts start_period
+#' @importFrom regts end_period
+#' @importFrom regts as.regperiod_range
+#' @importFrom regts lensub
+#' @importFrom regts regts
+#' @importFrom methods new
+#' @importFrom methods as
+#' @importFrom Matrix Matrix
 #' @export
+#' @keywords data
+#' @return Object of \code{\link{R6Class}} containing a macro-economic model,
+#' @format \code{\link{R6Class}} object.
+#' @examples
+#' #use an example model file from directory extdata of the dynr package
+#' mod_file <- system.file("extdata", "islm.mod", package = "dynr")
+#'
+#' mdl <- compile_model(mod_file)
+#'
+#' mdl$solve_steady()
+#' mdl$set_period(regperiod_range("2010Q1", "2011Q4"))
+# shock for variable g in first solve perod
+#' mdl$exo_data['2010Q1', 'g'] <- 280
+#' mdl$solve(solver = "nleqslv")
+#' print(mdl$solve_out$message)
+#' plot(mdl$endo_data[, 'y'])
+
 #' @field endo_count the number of endogenous variables
-#' @field endos the names and initial values of the endogenous variables
-#' @field params the names and values of the parameters
+#' @field endos the names and steady values of the endogenous variables. These
+#' values are initialised with the values from the \code{initval} block of the
+#' mod-file and may be computed with the \code{steady} method
+#' @field exos the names and steady values of the exogenous variables. These
+#' values are initialised with the values from the \code{initval} block of the
+#' mod-file
+#' @field params the names and steady values of the parameters
 #' @field max_endo_lag   maximum lag for endogenous variables
 #' @field max_endo_lead   maximum lead for endogenous variables
 #' @field max_exo_lag   maximum lag for exogenous variables
@@ -32,18 +64,37 @@ setOldClass("regts")
 #' endogenous variables
 #' @field exo_data a \code{\link[regts]{regts}} with the values of the
 #' exogenous variables
-#' @field solve_out the output of the solver (e.g. \code{\link[nleqslv]{nleqslv}}
+#' @field solve_out the output of the solver (e.g. \code{\link[nleqslv]{nleqslv}})
 #' used to solve the model
-#' @importFrom Rcpp sourceCpp
-#' @useDynLib dynr
-#' @importFrom regts start_period
-#' @importFrom regts end_period
-#' @importFrom regts as.regperiod_range
-#' @importFrom regts lensub
-#' @importFrom regts regts
-#' @importFrom methods new
-#' @importFrom methods as
-#' @importFrom Matrix Matrix
+#' @section Methods:
+#' \describe{
+#'
+#' \item{\code{set_period(period)}}{Sets the model period. \code{period}
+#' is a \code{\link{regperiod_range}} object or an object that can be coerced
+#' to a \code{regperiod_range}. The model period is the longest period for which
+#' the model may be solved. This method also allocates storage for
+#' all model timeseries.  Model timeseries are
+#' available for the so called 'model data period', which is
+#' the model period extended with a lag and lead period. This method
+#' also initialises all model timeseries with steady state values stored in the
+#' \code{endos} and \code{exos} fields.}
+#'
+#' \item{\code{solve_steady()}}{Solve the steady state of the model.
+#' This methods solves the steady state problem. The data in field \code{endos}
+#' is used as initial values for the endogenous variables.
+#' This field is overwritten with the computed steady state values}
+#'
+#' \item{\code{solve(control = list())}}{Solves the model using a stacked-time
+#' Newton method for the whole model period.
+#' Argument \code{control} is a list with solve options (TODO: describe these
+#' options somewhere).}
+#'
+#' \item{\code{get_jacob(sparse = TRUE)}}{Returns the Jacobian for the
+#' stacked-time Newton problem either as a sparse matrix
+#' (a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
+#'
+#' }
+
 SimModel <- R6Class("SimModel",
     public = list(
         exo_count = NA_integer_,
@@ -133,22 +184,51 @@ SimModel <- R6Class("SimModel",
             }
             return (invisible(self))
         },
+        solve = function(control = list()) {
 
-        solve = function(solver = c("sparse_newton", "nleqslv"), numjac = FALSE,
-                         ...) {
-            solver <- match.arg(solver)
+            control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE)
+            control_[names(control)] <- control
+
+            # preparations
             lags <- private$get_lags()
             leads <- private$get_leads()
             nper <- lensub(self$model_period)
             x <- private$get_solve_endo()
-            if (solver == "sparse_newton") {
-                return (private$solve_sparse_newton(x, lags, leads, nper,
-                                                    numjac, ...))
-            } else if (solver == "nleqslv") {
-                return (private$solve_nleqslv(x, lags, leads, nper,
-                                              numjac, ...))
+
+            solved <- FALSE
+            for (iter in 0:control_$maxiter) {
+                res <- private$get_residuals(x, lags, leads, nper)
+                err <- max(abs(res))
+                if (control_$trace) {
+                    cat(sprintf("Iteration: %d Largest |f| %g\n", iter, err))
+                }
+                if (err < control_$ftol) {
+                    solved <- TRUE
+                    break
+                } else {
+                    jac <- private$get_jac(x, lags, leads, nper)
+                    ret <- Matrix::solve(jac, res)
+                    x <- x - as.numeric(ret)
+                }
             }
 
+            # TODO: line searching?
+
+            self$solve_out <- list(solved = solved, iter = iter, residual = res)
+            self$endo_data[self$model_period, ] <- t(matrix(x, nrow = self$endo_count))
+
+            return (invisible(self))
+        },
+        get_jacob = function(sparse = TRUE) {
+            lags  <- private$get_lags()
+            leads <- private$get_leads()
+            nper <-lensub(mdl$model_period)
+            x <- private$get_solve_endo()
+            jac <- private$get_jac(x, lags, leads, nper)
+            if (!sparse) {
+                jac <- as(jac, "matrix")
+            }
+            return (jac)
         }
     ),
 
@@ -178,7 +258,7 @@ SimModel <- R6Class("SimModel",
                                    self$f_dynamic, self$endo_count,
                                    nper, self$max_exo_lag))
         },
-        get_jac = function(x, lags, leads, nper, sparse = TRUE) {
+        get_jac = function(x, lags, leads, nper) {
             endos <- c(private$get_lags(), x, private$get_leads())
             nper <- lensub(self$model_period)
             mat_info <- get_triplet_jac(endos, self$lead_lag_incidence,
@@ -188,60 +268,7 @@ SimModel <- R6Class("SimModel",
             n <- nper * self$endo_count
             jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
                        x = mat_info$values, Dim = as.integer(rep(n, 2)))
-
-            if (sparse) {
-                jac <- as(jac, "dgCMatrix")
-            } else {
-                jac <- as(jac, "matrix")
-            }
-            return (jac)
-        },
-        solve_sparse_newton = function(x, lags, leads, nper, numjac,
-                                        control = list()) {
-
-            control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE)
-            control_[names(control)] <- control
-
-            solved <- FALSE
-            for (iter in 0:control_$maxiter) {
-                res <- private$get_residuals(x, lags, leads, nper)
-                err <- max(abs(res))
-                if (control_$trace) {
-                    cat(sprintf("Iteration: %d Largest |f| %g\n", iter, err))
-                }
-                if (err < control_$ftol) {
-                    solved <- TRUE
-                    break
-                } else {
-                    jac <- private$get_jac(x, lags, leads, nper)
-                    ret <- Matrix::solve(jac, res)
-                    x <- x - as.numeric(ret)
-                }
-            }
-
-            # TODO: line searching?
-
-            self$solve_out <- list(solved = solved, iter = iter, residual = res)
-            self$endo_data[self$model_period, ] <- t(matrix(x, nrow = self$endo_count))
-
-            return (invisible(self))
-        },
-        solve_nleqslv = function(x, lags, leads, nper, numjac, ...) {
-            if (!numjac) {
-                jacfun <- function(...) {
-                    return (private$get_jac(...,  sparse = FALSE))
-                }
-            } else {
-                jacfun <- NULL
-            }
-            self$solve_out <- nleqslv::nleqslv(x, fn = private$get_residuals,
-                                              jac = jacfun, lags = lags,
-                                              leads = leads, nper = nper,
-                                              ...)
-            self$endo_data[self$model_period, ] <- t(matrix(self$solve_out$x,
-                                                          nrow = self$endo_count))
-            return (invisible(self))
+            return (as(jac, "dgCMatrix"))
         }
     )
-
 )

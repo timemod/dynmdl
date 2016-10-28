@@ -4,9 +4,12 @@
 \name{SimModel}
 \alias{SimModel}
 \title{An R6 class for running simulations with the stacked-time Newton method}
-\format{An object of class \code{R6ClassGenerator} of length 24.}
+\format{\code{\link{R6Class}} object.}
 \usage{
 SimModel
+}
+\value{
+Object of \code{\link{R6Class}} containing a macro-economic model,
 }
 \description{
 An R6 class for running simulations with the stacked-time Newton method
@@ -16,9 +19,15 @@ An R6 class for running simulations with the stacked-time Newton method
 \describe{
 \item{\code{endo_count}}{the number of endogenous variables}
 
-\item{\code{endos}}{the names and initial values of the endogenous variables}
+\item{\code{endos}}{the names and steady values of the endogenous variables. These
+values are initialised with the values from the \code{initval} block of the
+mod-file and may be computed with the \code{steady} method}
 
-\item{\code{params}}{the names and values of the parameters}
+\item{\code{exos}}{the names and steady values of the exogenous variables. These
+values are initialised with the values from the \code{initval} block of the
+mod-file}
+
+\item{\code{params}}{the names and steady values of the parameters}
 
 \item{\code{max_endo_lag}}{maximum lag for endogenous variables}
 
@@ -46,8 +55,51 @@ endogenous variables}
 \item{\code{exo_data}}{a \code{\link[regts]{regts}} with the values of the
 exogenous variables}
 
-\item{\code{solve_out}}{the output of the solver (e.g. \code{\link[nleqslv]{nleqslv}}
+\item{\code{solve_out}}{the output of the solver (e.g. \code{\link[nleqslv]{nleqslv}})
 used to solve the model}
 }}
-\keyword{datasets}
+\section{Methods}{
+
+\describe{
+
+\item{\code{set_period(period)}}{Sets the model period. \code{period}
+is a \code{\link{regperiod_range}} object or an object that can be coerced
+to a \code{regperiod_range}. The model period is the longest period for which
+the model may be solved. This method also allocates storage for
+all model timeseries.  Model timeseries are
+available for the so called 'model data period', which is
+the model period extended with a lag and lead period. This method
+also initialises all model timeseries with steady state values stored in the
+\code{endos} and \code{exos} fields.}
+
+\item{\code{solve_steady()}}{Solve the steady state of the model.
+This methods solves the steady state problem. The data in field \code{endos}
+is used as initial values for the endogenous variables.
+This field is overwritten with the computed steady state values}
+
+\item{\code{solve(control = list())}}{Solves the model using a stacked-time
+Newton method for the whole model period.
+Argument \code{control} is a list with solve options (TODO: describe these
+options somewhere).}
+
+\item{\code{get_jacob(sparse = TRUE)}}{Returns the Jacobian for the
+stacked-time Newton problem either as a sparse matrix
+(a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
+
+}
+}
+\examples{
+#use an example model file from directory extdata of the dynr package
+mod_file <- system.file("extdata", "islm.mod", package = "dynr")
+
+mdl <- compile_model(mod_file)
+
+mdl$solve_steady()
+mdl$set_period(regperiod_range("2010Q1", "2011Q4"))
+mdl$exo_data['2010Q1', 'g'] <- 280
+mdl$solve(solver = "nleqslv")
+print(mdl$solve_out$message)
+plot(mdl$endo_data[, 'y'])
+}
+\keyword{data}
 

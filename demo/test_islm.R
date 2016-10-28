@@ -18,7 +18,7 @@ mdl$set_period(regperiod_range("2010Q1", "2011Q4"))
 mdl$exo_data['2010Q1', 'g'] <- 280
 
 print(system.time(
-    mdl$solve(solver = "nleqslv")
+    mdl$solve()
 ))
 
 print(mdl$solve_out$message)
