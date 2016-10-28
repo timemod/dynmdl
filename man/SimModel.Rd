@@ -14,11 +14,7 @@ An R6 class for running simulations with the stacked-time Newton method
 \section{Fields}{
 
 \describe{
-\item{\code{exo_count}}{the number of exogeneous variables}
-
 \item{\code{endo_count}}{the number of endogenous variables}
-
-\item{\code{exos}}{the names and initial values of the exogenous variables}
 
 \item{\code{endos}}{the names and initial values of the endogenous variables}
 

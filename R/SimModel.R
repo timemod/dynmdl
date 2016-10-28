@@ -1,12 +1,12 @@
 #' "regperiod_range" class
-#' $name regperiod_range-class
-#' $exportClass regperiod_range
-#' $importFrom methods setOldClass
+#' @name regperiod_range-class
+#' @exportClass regperiod_range
+#' @importFrom methods setOldClass
 setOldClass("regperiod_range")
 
 #' "regts" class
-#' $name regts-class
-#' $exportClass regts
+#' @name regts-class
+#' @exportClass regts
 setOldClass("regts")
 
 #' An R6 class for running simulations with the stacked-time Newton method
