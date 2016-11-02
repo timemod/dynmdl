@@ -24,6 +24,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "MacroDriver.hh"
+#include "dyn_error.hh"
 
 MacroDriver::MacroDriver()
 {
@@ -45,8 +46,7 @@ MacroDriver::parse(const string &f, ostream &out, bool debug, bool no_line_macro
   ifstream in(f.c_str(), ios::binary);
   if (in.fail())
     {
-      cerr << "ERROR: Could not open file: " << f << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Could not open file: " +  f + "\n");
     }
 
   /*
@@ -87,8 +87,9 @@ MacroDriver::parse(const string &f, ostream &out, bool debug, bool no_line_macro
 void
 MacroDriver::error(const Macro::parser::location_type &l, const string &m) const
 {
-  cerr << "ERROR in macro-processor: " << l << ": " << m << endl;
-  exit(EXIT_FAILURE);
+  std::ostringstream msg;
+  msg << "ERROR in macro-processor: " << l <<  ": " << m << endl;
+  dyn_error(msg);
 }
 
 void

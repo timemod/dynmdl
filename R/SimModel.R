@@ -18,7 +18,7 @@ setOldClass("regts")
 #' @importFrom regts start_period
 #' @importFrom regts end_period
 #' @importFrom regts as.regperiod_range
-#' @importFrom regts lensub
+#' @importFrom regts length_range
 #' @importFrom regts regts
 #' @importFrom methods new
 #' @importFrom methods as
@@ -172,12 +172,12 @@ SimModel <- R6Class("SimModel",
                 start_period(period) - self$max_exo_lag,
                 end_period(period) + self$max_exo_lead)
 
-            nper <- lensub(self$endo_period)
+            nper <- length_range(self$endo_period)
             endo_mat <- matrix(rep(self$endos, each = nper), nrow = nper)
             self$endo_data <- regts(endo_mat, start = start_period(self$endo_period),
                                    names = names(self$endos))
             if (self$exo_count > 0) {
-                nper <- lensub(self$exo_period)
+                nper <- length_range(self$exo_period)
                 exo_mat <- matrix(rep(self$exos, each = nper), nrow = nper)
                 self$exo_data <- regts(exo_mat, start = start_period(self$exo_period),
                                       names = names(self$exos))
@@ -192,7 +192,7 @@ SimModel <- R6Class("SimModel",
             # preparations
             lags <- private$get_lags()
             leads <- private$get_leads()
-            nper <- lensub(self$model_period)
+            nper <- length_range(self$model_period)
             x <- private$get_solve_endo()
 
             solved <- FALSE
@@ -222,7 +222,7 @@ SimModel <- R6Class("SimModel",
         get_jacob = function(sparse = TRUE) {
             lags  <- private$get_lags()
             leads <- private$get_leads()
-            nper <-lensub(mdl$model_period)
+            nper <-length_range(mdl$model_period)
             x <- private$get_solve_endo()
             jac <- private$get_jac(x, lags, leads, nper)
             if (!sparse) {
@@ -251,7 +251,7 @@ SimModel <- R6Class("SimModel",
         # x is vector of endogenous variables in the solution period
         get_residuals = function(x, lags, leads, nper) {
             endos <- c(lags, x, leads)
-            nper <- lensub(self$model_period)
+            nper <- length_range(self$model_period)
             return (get_residuals_(endos,
                                    which(self$lead_lag_incidence != 0) - 1,
                                    self$exo_data, self$params,
@@ -260,7 +260,7 @@ SimModel <- R6Class("SimModel",
         },
         get_jac = function(x, lags, leads, nper) {
             endos <- c(private$get_lags(), x, private$get_leads())
-            nper <- lensub(self$model_period)
+            nper <- length_range(self$model_period)
             mat_info <- get_triplet_jac(endos, self$lead_lag_incidence,
                                         self$exo_data, self$params,
                                         self$f_dynamic, self$endo_count,

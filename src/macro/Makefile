@@ -14,7 +14,7 @@ $(LIB) : $(OBJS)
 
 # dependencies on headers
 MacroBison.o : MacroBison.hh MacroDriver.hh
-MacroDriver.o : MacroDriver.hh
+MacroDriver.o : MacroDriver.hh ../dyn_error.hh
 MacroFlex.o : MacroDriver.hh ../FlexLexer.h
 MacroValue.o : MacroDriver.hh
 
