@@ -25,6 +25,7 @@
 #include <cerrno>
 #include <algorithm>
 #include "StaticModel.hh"
+#include "dyn_error.hh"
 
 // For mkdir() and chdir()
 #ifdef _WIN32
@@ -340,9 +341,10 @@ StaticModel::writeModelEquationsOrdered_M(const string &static_basename) const
                     }
                 }
               else
-                {
-                  cerr << "Type missmatch for equation " << equation_ID+1  << "\n";
-                  exit(EXIT_FAILURE);
+                {   
+                  std::ostringstream msg;
+                  msg << "Type missmatch for equation " << equation_ID+1  << "\n";
+                  dyn_error(msg);
                 }
               output << ";\n";
               break;
@@ -412,8 +414,9 @@ StaticModel::writeModelEquationsCode(const string file_name, const string bin_ba
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
   if (!code_file.is_open())
     {
-      cout << "Error : Can't open file \"" << main_name << "\" for writing\n";
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "Error : Can't open file \"" << main_name << "\" for writing\n";
+      dyn_error(msg);
     }
   int count_u;
   int u_count_int = 0;
@@ -596,8 +599,9 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
   if (!code_file.is_open())
     {
-      cout << "Error : Can't open file \"" << main_name << "\" for writing\n";
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "Error : Can't open file \"" << main_name << "\" for writing\n";
+      dyn_error(msg);
     }
   //Temporary variables declaration
 
@@ -990,8 +994,9 @@ StaticModel::Write_Inf_To_Bin_File_Block(const string &static_basename, const st
     SaveCode.open((bin_basename + "_static.bin").c_str(), ios::out | ios::binary);
   if (!SaveCode.is_open())
     {
-      cout << "Error : Can't open file \"" << bin_basename << "_static.bin\" for writing\n";
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "Error : Can't open file \"" << bin_basename << "_static.bin\" for writing\n";
+      dyn_error(msg);
     }
   u_count_int = 0;
   unsigned int block_size = getBlockSize(num);
@@ -1163,8 +1168,9 @@ StaticModel::writeStaticMFile(const string &func_name) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
+      dyn_error(msg);
     }
 
   output << "function [residual, g1, g2, g3] = " << func_name + "_static(y, x, params)" << endl
@@ -1604,8 +1610,9 @@ StaticModel::writeStaticCFile(const string &func_name) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
+      dyn_error(msg);
     }
 
   output << "/*" << endl
@@ -1639,8 +1646,9 @@ StaticModel::writeStaticCFile(const string &func_name) const
   output.open(filename_mex.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename_mex << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: Can't open file " << filename_mex << " for writing" << endl;
+      dyn_error(msg);
     }
 
   // Writing the gateway routine
@@ -1712,8 +1720,9 @@ StaticModel::writeStaticJuliaFile(const string &basename) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
+      dyn_error(msg);
     }
 
   output << "module " << basename << "Static" << endl
@@ -1741,8 +1750,9 @@ StaticModel::writeStaticFile(const string &basename, bool block, bool bytecode, 
 #endif
   if (r < 0 && errno != EEXIST)
     {
-      perror("ERROR");
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: " << std::strerror(errno) << endl;
+      dyn_error(msg);
     }
   if (block && bytecode)
     writeModelEquationsCode_Block(basename + "_static", basename, map_idx, map_idx2);
@@ -1773,8 +1783,9 @@ StaticModel::writeStaticBlockMFSFile(const string &basename) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
+      dyn_error(msg);
     }
 
   string func_name = basename + "_static";
@@ -2132,8 +2143,9 @@ void StaticModel::writeSetAuxiliaryVariables(const string &basename, const bool 
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
+      dyn_error(msg);
     }
 
   output << "function y = " << func_name + "(y, x, params)" << endl
@@ -2178,8 +2190,9 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
   paramsDerivsFile.open(filename.c_str(), ios::out | ios::binary);
   if (!paramsDerivsFile.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
+      dyn_error(msg);
     }
 
   ExprNodeOutputType output_type = (julia ? oJuliaStaticModel : oMatlabStaticModel);

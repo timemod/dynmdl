@@ -2,14 +2,15 @@ ComputingTasks.o : CodeInterpreter.hh ComputingTasks.hh DataTree.hh \
                   DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
                   ExternalFunctionsTable.hh ModelTree.hh NumericalConstants.hh \
                   Statement.hh StaticModel.hh SymbolList.hh SymbolTable.hh \
-                  WarningConsolidation.hh dynout.hh location.hh
-ConfigFile.o : ConfigFile.hh WarningConsolidation.hh dynout.hh \
+                  WarningConsolidation.hh dyn_error.hh location.hh
+ConfigFile.o : ConfigFile.hh WarningConsolidation.hh dyn_error.hh \
               location.hh
 DataTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
             ExternalFunctionsTable.hh NumericalConstants.hh SymbolTable.hh
 DynamicModel.o : CodeInterpreter.hh DataTree.hh DynamicModel.hh \
                 ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
-                ModelTree.hh NumericalConstants.hh StaticModel.hh SymbolTable.hh
+                ModelTree.hh NumericalConstants.hh StaticModel.hh SymbolTable.hh \
+                dyn_error.hh
 DynareBison.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
                DataTree.hh DynamicModel.hh DynareBison.hh ExprNode.hh \
                ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModFile.hh \
@@ -66,7 +67,7 @@ Statement.o : Statement.hh SymbolList.hh WarningConsolidation.hh \
              location.hh
 StaticModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
-               NumericalConstants.hh StaticModel.hh SymbolTable.hh
+               NumericalConstants.hh StaticModel.hh SymbolTable.hh dyn_error.hh
 SteadyStateModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                     ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
                     NumericalConstants.hh StaticModel.hh SteadyStateModel.hh \
@@ -81,6 +82,7 @@ compile_model.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
                  NumericalConstants.hh NumericalInitialization.hh Statement.hh \
                  StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
                  WarningConsolidation.hh location.hh parse.hh
+dyn_error.o : dyn_error.hh
 parse.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
          DataTree.hh DynamicModel.hh DynareBison.hh ExprNode.hh \
          ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModFile.hh \
