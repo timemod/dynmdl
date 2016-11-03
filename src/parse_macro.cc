@@ -22,6 +22,7 @@
 
 #include "macro/MacroDriver.hh"
 #include "parse.hh"
+#include "dyn_error.hh"
 
 void
 parse_macro(char *modfile, string &basename, bool debug, bool save_macro, string &save_macro_file, bool no_line_macro,
@@ -38,8 +39,7 @@ parse_macro(char *modfile, string &basename, bool debug, bool save_macro, string
       ofstream macro_output_file(save_macro_file.c_str());
       if (macro_output_file.fail())
         {
-          cerr << "Cannot open " << save_macro_file << " for macro output" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("Cannot open " + save_macro_file + " for macro output");
         }
       macro_output_file << macro_output.str();
       macro_output_file.close();

@@ -29,6 +29,7 @@
 #include "ModFile.hh"
 #include "ConfigFile.hh"
 #include "ComputingTasks.hh"
+#include "dyn_error.hh"
 
 ModFile::ModFile(WarningConsolidation &warnings_arg)
   : expressions_tree(symbol_table, num_constants, external_functions_table),
@@ -136,15 +137,13 @@ ModFile::checkPass()
           || mod_file_struct.perfect_foresight_solver_present
           || stochastic_statement_present))
     {
-      cerr << "ERROR: At least one model equation must be declared!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: At least one model equation must be declared!");
     }
 
   if ((mod_file_struct.ramsey_model_present || mod_file_struct.ramsey_policy_present)
       && mod_file_struct.discretionary_policy_present)
     {
-      cerr << "ERROR: You cannot use the discretionary_policy command when you use either rasmey_model or ramsey_policy and vice versa" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You cannot use the discretionary_policy command when you use either rasmey_model or ramsey_policy and vice versa");
     }
 
   if (((mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present) 
@@ -152,63 +151,54 @@ ModFile::checkPass()
       || (!(mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present)
 	  && mod_file_struct.planner_objective_present))
     {
-      cerr << "ERROR: A planner_objective statement must be used with a ramsey_model, a ramsey_policy or a discretionary_policy statement and vice versa." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: A planner_objective statement must be used with a ramsey_model, a ramsey_policy or a discretionary_policy statement and vice versa.");
     }
 
   if ((mod_file_struct.osr_present && (!mod_file_struct.osr_params_present || !mod_file_struct.optim_weights_present))
       || ((!mod_file_struct.osr_present || !mod_file_struct.osr_params_present) && mod_file_struct.optim_weights_present)
       || ((!mod_file_struct.osr_present || !mod_file_struct.optim_weights_present) && mod_file_struct.osr_params_present))
     {
-      cerr << "ERROR: The osr statement must be used with osr_params and optim_weights." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: The osr statement must be used with osr_params and optim_weights.");
     }
 
   if (mod_file_struct.perfect_foresight_solver_present && stochastic_statement_present)
     {
-      cerr << "ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul} and one of {stoch_simul, estimation, osr, ramsey_policy, discretionary_policy}. This is not possible: one cannot mix perfect foresight context with stochastic context in the same file." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul} and one of {stoch_simul, estimation, osr, ramsey_policy, discretionary_policy}. This is not possible: one cannot mix perfect foresight context with stochastic context in the same file.");
     }
 
   if (mod_file_struct.k_order_solver && byte_code)
     {
-      cerr << "ERROR: 'k_order_solver' (which is implicit if order >= 3), is not yet compatible with 'bytecode'." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: 'k_order_solver' (which is implicit if order >= 3), is not yet compatible with 'bytecode'.");
     }
 
   if (use_dll && (block || byte_code))
     {
-      cerr << "ERROR: In 'model' block, 'use_dll' option is not compatible with 'block' or 'bytecode'" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: In 'model' block, 'use_dll' option is not compatible with 'block' or 'bytecode'");
     }
 
   if (block || byte_code)
     if (dynamic_model.isModelLocalVariableUsed())
       {
-        cerr << "ERROR: In 'model' block, 'block' or 'bytecode' options are not yet compatible with pound expressions" << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: In 'model' block, 'block' or 'bytecode' options are not yet compatible with pound expressions");
       }
 
   if ((stochastic_statement_present || mod_file_struct.check_present || mod_file_struct.steady_present) && no_static)
     {
-      cerr << "ERROR: no_static option is incompatible with stoch_simul, estimation, osr, ramsey_policy, discretionary_policy, steady and check commands" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: no_static option is incompatible with stoch_simul, estimation, osr, ramsey_policy, discretionary_policy, steady and check commands");
     }
 
   if (mod_file_struct.dsge_var_estimated)
     if (!mod_file_struct.dsge_prior_weight_in_estimated_params)
       {
-        cerr << "ERROR: When estimating a DSGE-VAR model and estimating the weight of the prior, dsge_prior_weight must "
-             << "be referenced in the estimated_params block." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: When estimating a DSGE-VAR model and estimating the weight of the prior, dsge_prior_weight must "
+                  "be referenced in the estimated_params block.");
       }
 
   if (symbol_table.exists("dsge_prior_weight"))
     {
       if (symbol_table.getType("dsge_prior_weight") != eParameter)
         {
-          cerr << "ERROR: dsge_prior_weight may only be used as a parameter." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: dsge_prior_weight may only be used as a parameter.");
         }
       else
         warnings << "WARNING: When estimating a DSGE-Var, declaring dsge_prior_weight as a "
@@ -217,50 +207,43 @@ ModFile::checkPass()
 
       if (mod_file_struct.dsge_var_estimated || !mod_file_struct.dsge_var_calibrated.empty())
         {
-          cerr << "ERROR: dsge_prior_weight can either be declared as a parameter (deprecated) or via the dsge_var option "
-               << "to the estimation statement (preferred), but not both." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: dsge_prior_weight can either be declared as a parameter (deprecated) or via the dsge_var option "
+                    "to the estimation statement (preferred), but not both.");
         }
 
       if (!mod_file_struct.dsge_prior_weight_initialized && !mod_file_struct.dsge_prior_weight_in_estimated_params)
         {
-          cerr << "ERROR: If dsge_prior_weight is declared as a parameter, it must either be initialized or placed in the "
-               << "estimated_params block." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: If dsge_prior_weight is declared as a parameter, it must either be initialized or placed in the "
+                    "estimated_params block.");
         }
 
       if (mod_file_struct.dsge_prior_weight_initialized && mod_file_struct.dsge_prior_weight_in_estimated_params)
         {
-          cerr << "ERROR: dsge_prior_weight cannot be both initalized and estimated." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: dsge_prior_weight cannot be both initalized and estimated.");
         }
     }
 
   if (mod_file_struct.dsge_prior_weight_in_estimated_params)
     if (!mod_file_struct.dsge_var_estimated && !mod_file_struct.dsge_var_calibrated.empty())
       {
-        cerr << "ERROR: If dsge_prior_weight is in the estimated_params block, the prior weight cannot be calibrated "
-             << "via the dsge_var option in the estimation statement." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: If dsge_prior_weight is in the estimated_params block, the prior weight cannot be calibrated "
+                  "via the dsge_var option in the estimation statement.");
       }
     else if (!mod_file_struct.dsge_var_estimated && !symbol_table.exists("dsge_prior_weight"))
       {
-        cerr << "ERROR: If dsge_prior_weight is in the estimated_params block, it must either be declared as a parameter "
-             << "(deprecated) or the dsge_var option must be passed to the estimation statement (preferred)." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: If dsge_prior_weight is in the estimated_params block, it must either be declared as a parameter "
+                  "(deprecated) or the dsge_var option must be passed to the estimation statement (preferred).");
       }
 
   if (dynamic_model.staticOnlyEquationsNbr() != dynamic_model.dynamicOnlyEquationsNbr())
     {
-      cerr << "ERROR: the number of equations marked [static] must be equal to the number of equations marked [dynamic]" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: the number of equations marked [static] must be equal to the number of equations marked [dynamic]");
     }
   
   if (dynamic_model.staticOnlyEquationsNbr() > 0 &&
       (mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present))
     {
-      cerr << "ERROR: marking equations as [static] or [dynamic] is not possible with ramsey_model, ramsey_policy or discretionary_policy" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: marking equations as [static] or [dynamic] is not possible with ramsey_model, ramsey_policy or discretionary_policy");
     }
 
   if (stochastic_statement_present &&
@@ -294,8 +277,7 @@ ModFile::checkPass()
           if (++it != parameters_intersect.end())
             cerr << ", ";
         }
-      cerr << ") also appear in the expressions defining the variance/covariance matrix of shocks; this is not allowed." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error(") also appear in the expressions defining the variance/covariance matrix of shocks; this is not allowed.");
     }
 
   // Check if some exogenous is not used in the model block
@@ -400,9 +382,8 @@ ModFile::transformPass(bool nostrict)
       }
     catch (SymbolTable::AlreadyDeclaredException &e)
       {
-        cerr << "ERROR: dsge_prior_weight should not be declared as a model variable / parameter "
-             << "when the dsge_var option is passed to the estimation statement." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: dsge_prior_weight should not be declared as a model variable / parameter "
+                  "when the dsge_var option is passed to the estimation statement.");
       }
 
   // Freeze the symbol table
@@ -419,26 +400,24 @@ ModFile::transformPass(bool nostrict)
       && !(mod_file_struct.occbin_option)
       && (dynamic_model.equation_number() != symbol_table.endo_nbr()))
     {
-      cerr << "ERROR: There are " << dynamic_model.equation_number() << " equations but " << symbol_table.endo_nbr() << " endogenous variables!" << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: There are " << dynamic_model.equation_number() << " equations but " << symbol_table.endo_nbr() << " endogenous variables!";
+      dyn_error(msg);
     }
 
   if (symbol_table.exo_det_nbr() > 0 && mod_file_struct.perfect_foresight_solver_present)
     {
-      cerr << "ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul}  and varexo_det declaration (all exogenous variables are deterministic in this case)" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul}  and varexo_det declaration (all exogenous variables are deterministic in this case)");
     }
 
   if (mod_file_struct.ramsey_policy_present && symbol_table.exo_det_nbr() > 0)
     {
-      cerr << "ERROR: ramsey_policy is incompatible with deterministic exogenous variables" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: ramsey_policy is incompatible with deterministic exogenous variables");
     }
 
   if (mod_file_struct.identification_present && symbol_table.exo_det_nbr() > 0)
     {
-      cerr << "ERROR: identification is incompatible with deterministic exogenous variables" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: identification is incompatible with deterministic exogenous variables");
     }
 
   if (!mod_file_struct.ramsey_model_present)
@@ -454,17 +433,15 @@ ModFile::transformPass(bool nostrict)
       {
         if (symbol_table.exo_nbr() != symbol_table.observedVariablesNbr())
           {
-            cerr << "ERROR: When estimating a DSGE-Var and the bayesian_irf option is passed to the estimation "
-                 << "statement, the number of shocks must equal the number of observed variables." << endl;
-            exit(EXIT_FAILURE);
+            dyn_error("When estimating a DSGE-Var and the bayesian_irf option is passed to the estimation "
+                      "statement, the number of shocks must equal the number of observed variables.");
           }
       }
     else
       if (symbol_table.exo_nbr() < symbol_table.observedVariablesNbr())
         {
-          cerr << "ERROR: When estimating a DSGE-Var, the number of shocks must be "
-               << "greater than or equal to the number of observed variables." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: When estimating a DSGE-Var, the number of shocks must be "
+                    "greater than or equal to the number of observed variables.");
         }
 }
 
@@ -513,8 +490,7 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output, bool compute_xr
 		    dynamic_model.set_cutoff_to_zero();
 		  if (mod_file_struct.order_option < 1 || mod_file_struct.order_option > 3)
 		    {
-		      cerr << "ERROR: Incorrect order option..." << endl;
-		      exit(EXIT_FAILURE);
+		      dyn_error("ERROR: Incorrect order option...");
 		    }
 		  bool hessian = mod_file_struct.order_option >= 2 
 		    || mod_file_struct.identification_present 
@@ -538,16 +514,17 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output, bool compute_xr
         {
           map<int, string> eqs;
           dynamic_model.getNonZeroHessianEquations(eqs);
-          cerr << "ERROR: If the model is declared linear the second derivatives must be equal to zero." << endl
+          std::ostringstream msg;
+          msg  << "ERROR: If the model is declared linear the second derivatives must be equal to zero." << endl
                << "       The following equations had non-zero second derivatives:" << endl;
           for (map<int, string >::const_iterator it = eqs.begin(); it != eqs.end(); it++)
             {
-              cerr << "       * Eq # " << it->first+1;
+              msg << "       * Eq # " << it->first+1;
               if (!it->second.empty())
-                cerr << " [" << it->second << "]";
-              cerr << endl;
+                msg << " [" << it->second << "]";
+              msg << endl;
             }
-          exit(EXIT_FAILURE);
+          dyn_error(msg);
         }
     }
 
@@ -574,14 +551,12 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
       mOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!mOutputFile.is_open())
         {
-          cerr << "ERROR: Can't open file " << fname << " for writing" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: Can't open file " + fname + " for writing");
         }
     }
   else
     {
-      cerr << "ERROR: Missing file name" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Missing file name");
     }
 
   mOutputFile << "%" << endl
@@ -723,23 +698,19 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
     {
       if (dynamic_model.isUnaryOpUsed(oAcosh))
         {
-          cerr << "ERROR: acosh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: acosh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead.");
         }
       if (dynamic_model.isUnaryOpUsed(oAsinh))
         {
-          cerr << "ERROR: asinh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: asinh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead.");
         }
       if (dynamic_model.isUnaryOpUsed(oAtanh))
         {
-          cerr << "ERROR: atanh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: atanh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead.");
         }
       if (dynamic_model.isTrinaryOpUsed(oNormcdf))
         {
-          cerr << "ERROR: normcdf() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: normcdf() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead.");
         }
     }
 #endif
@@ -880,8 +851,7 @@ ModFile::writeExternalFiles(const string &basename, FileOutputType output, Langu
       writeExternalFilesJulia(basename, output);
       break;
     default:
-      cerr << "This case shouldn't happen. Contact the authors of Dynare" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("This case shouldn't happen. Contact the authors of Dynare");
     }
 }
 
@@ -923,8 +893,7 @@ ModFile::writeModelC(const string &basename) const
   mDriverCFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDriverCFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error: Can't open file " + filename + " for writing");
     }
 
   mDriverCFile << "/*" << endl
@@ -969,15 +938,12 @@ ModFile::writeModelC(const string &basename) const
       mOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!mOutputFile.is_open())
         {
-          cerr << "ERROR: Can't open file " << fname
-               << " for writing" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: Can't open file " + fname + " for writing");
         }
     }
   else
     {
-      cerr << "ERROR: Missing file name" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Missing file name");
     }
 
   mOutputFile << "%" << endl
@@ -1028,8 +994,7 @@ ModFile::writeModelCC(const string &basename) const
   mDriverCFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDriverCFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error: Can't open file " + filename + " for writing");
     }
 
   mDriverCFile << "/*" << endl
@@ -1074,15 +1039,12 @@ ModFile::writeModelCC(const string &basename) const
       mOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!mOutputFile.is_open())
         {
-          cerr << "ERROR: Can't open file " << fname
-               << " for writing" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: Can't open file " + fname + " for writing");
         }
     }
   else
     {
-      cerr << "ERROR: Missing file name" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Missing file name");
     }
 
   mOutputFile << "%" << endl
@@ -1106,15 +1068,12 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
       jlOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!jlOutputFile.is_open())
         {
-          cerr << "ERROR: Can't open file " << fname
-               << " for writing" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: Can't open file " + fname + " for writing");
         }
     }
   else
     {
-      cerr << "ERROR: Missing file name" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Missing file name");
     }
 
   jlOutputFile << "module " << basename << endl

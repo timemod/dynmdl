@@ -28,6 +28,7 @@
 #include "Statement.hh"
 #include "ExprNode.hh"
 #include "WarningConsolidation.hh"
+#include "dyn_error.hh"
 
 bool
 ParsingDriver::symbol_exists_and_is_not_modfile_local_or_external_function(const char *s)
@@ -106,17 +107,18 @@ ParsingDriver::parse(istream &in, bool debug)
 void
 ParsingDriver::error(const Dynare::parser::location_type &l, const string &m)
 {
-  cerr << "ERROR: " << *l.begin.filename << ": line " << l.begin.line;
+  std::ostringstream msg;
+  msg << "ERROR: " << *l.begin.filename << ": line " << l.begin.line;
   if (l.begin.line == l.end.line)
     if (l.begin.column == l.end.column - 1)
-      cerr << ", col " << l.begin.column;
+      msg << ", col " << l.begin.column;
     else
-      cerr << ", cols " << l.begin.column << "-" << l.end.column - 1;
+      msg << ", cols " << l.begin.column << "-" << l.end.column - 1;
   else
-    cerr << ", col " << l.begin.column << " -"
+    msg << ", col " << l.begin.column << " -"
          << " line " << l.end.line << ", col " << l.end.column - 1;
-  cerr << ": " << m << endl;
-  exit(EXIT_FAILURE);
+  msg << ": " << m;
+  dyn_error(msg);
 }
 
 void
@@ -2240,8 +2242,7 @@ ParsingDriver::add_divide(expr_t arg1, expr_t arg2)
     }
   catch (DataTree::DivisionByZeroException)
     {
-      cerr << "...division by zero error encountred when reading model from .mod file" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("...division by zero error encountred when reading model from .mod file");
     }
 }
 

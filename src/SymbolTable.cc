@@ -23,6 +23,7 @@
 #include <cassert>
 
 #include "SymbolTable.hh"
+#include "dyn_error.hh"
 
 AuxVarInfo::AuxVarInfo(int symb_id_arg, aux_var_t type_arg, int orig_symb_id_arg, int orig_lead_lag_arg,
                        int equation_number_for_multiplier_arg, int information_set_arg,
@@ -603,8 +604,7 @@ SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int index, expr_t expr_arg) 
     }
   catch (AlreadyDeclaredException &e)
     {
-      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
     }
 
   aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLead : avExoLead), 0, 0, 0, 0, expr_arg));
@@ -629,8 +629,7 @@ SymbolTable::addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_le
     }
   catch (AlreadyDeclaredException &e)
     {
-      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
     }
 
   aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLag : avExoLag), orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
@@ -677,8 +676,7 @@ SymbolTable::addExpectationAuxiliaryVar(int information_set, int index, expr_t e
     }
   catch (AlreadyDeclaredException &e)
     {
-      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
     }
 
   aux_vars.push_back(AuxVarInfo(symb_id, avExpectation, 0, 0, 0, information_set, expr_arg));
@@ -699,8 +697,7 @@ SymbolTable::addMultiplierAuxiliaryVar(int index) throw (FrozenException)
     }
   catch (AlreadyDeclaredException &e)
     {
-      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
     }
 
   aux_vars.push_back(AuxVarInfo(symb_id, avMultiplier, 0, 0, index, 0, NULL));
@@ -720,8 +717,7 @@ SymbolTable::addDiffForwardAuxiliaryVar(int orig_symb_id, expr_t expr_arg) throw
     }
   catch (AlreadyDeclaredException &e)
     {
-      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
     }
 
   aux_vars.push_back(AuxVarInfo(symb_id, avDiffForward, orig_symb_id, 0, 0, 0, expr_arg));
