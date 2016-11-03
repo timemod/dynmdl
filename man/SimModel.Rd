@@ -37,6 +37,14 @@ mod-file}
 
 \item{\code{max_exo_lead}}{maximum lead for exogenous variables}
 
+\item{\code{nstatic}}{the number of static variables (variables without lag or}
+
+\item{\code{nfwrd}}{the number of forward looking variables (variables with}
+
+\item{\code{npred}}{the number of backward looking variables (variables with}
+
+\item{\code{nboth}}{the number of variables with both a lag and a lead}
+
 \item{\code{lead_lag_incidence}}{see documentation Dynare
 of the model}
 

@@ -40,6 +40,14 @@ setOldClass("regts")
 #' @field max_endo_lead   maximum lead for endogenous variables
 #' @field max_exo_lag   maximum lag for exogenous variables
 #' @field max_exo_lead   maximum lead for exogenous variables
+#' @field nstatic   the number of static variables (variables without lag or
+#  lead)
+#' @field nfwrd  the number of forward looking variables (variables with
+#  leads but no lags)
+#' @field npred  the number of backward looking variables (variables with
+#  lag but no lead)
+#' @field nboth  the number of variables with both a lag and a lead
+#  lead)
 #' @field lead_lag_incidence see documentation Dynare
 #' of the model
 #' @field f_dynamic function for the residuals and Jacobian for the dynamic version
@@ -93,6 +101,10 @@ SimModel <- R6Class("SimModel",
         max_endo_lead = NA_integer_,
         max_exo_lag =  NA_integer_,
         max_exo_lead =  NA_integer_,
+        nstatic =  NA_integer_,
+        nfwrd =  NA_integer_,
+        npred =  NA_integer_,
+        nboth =  NA_integer_,
         lead_lag_incidence = NULL,
         f_static = NULL,
         f_dynamic = NULL,
@@ -132,6 +144,10 @@ SimModel <- R6Class("SimModel",
                 self$max_exo_lag        <- dynamic_model$max_exo_lag
                 self$max_exo_lead       <- dynamic_model$max_exo_lead
                 self$lead_lag_incidence <- dynamic_model$lead_lag_incidence
+                self$nstatic            <- dynamic_model$nstatic
+                self$nfwrd              <- dynamic_model$nfwrd
+                self$npred              <- dynamic_model$npred
+                self$nboth              <- dynamic_model$nboth
             })
         },
 

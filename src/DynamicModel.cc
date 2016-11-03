@@ -5297,7 +5297,9 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
 
     // create lead_lag_indicence matrix 
     Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);
+    int nstatic = 0, nfwrd   = 0, npred   = 0, nboth   = 0;
     for (int endoID = 0; endoID < symbol_table.endo_nbr(); endoID++) {
+        int sstatic = 1, sfwrd = 0, spred = 0, sboth = 0;
         Rcpp::IntegerMatrix::Row endo_row = lead_lag_incidence(endoID, Rcpp::_);
         // Loop on periods
         for (int lag = -max_endo_lag; lag <= max_endo_lead; lag++) {
@@ -5305,9 +5307,25 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
             try {
                 int varID = getDerivID(symbol_table.getID(eEndogenous, endoID), lag);
                 endo_row[lag + max_endo_lag] = getDynJacobianCol(varID) + 1;
+                if (lag == -1) {
+                    sstatic = 0;
+                    spred   = 1;
+                } else if (lag == 1) {
+                    if (spred == 1) {
+                        sboth = 1;
+                        spred = 0;
+                    } else {
+                        sstatic = 0;
+                        sfwrd = 1;
+                    }
+                }
             } catch (UnknownDerivIDException &e) {
             }
         }
+        nstatic += sstatic;
+        nfwrd   += sfwrd;
+        npred   += spred;
+        nboth   += sboth;
     }
 
     // function body
@@ -5316,10 +5334,14 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
 
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
                               Rcpp::Named("dynamic_function_body") = Rcpp::String(dynout.str()),
-                              Rcpp::Named("max_endo_lag") = max_endo_lag,
+                              Rcpp::Named("max_endo_lag")  = max_endo_lag,
                               Rcpp::Named("max_endo_lead") = max_endo_lead,
-                              Rcpp::Named("max_exo_lag") = max_exo_lag,
-                              Rcpp::Named("max_exo_lead") = max_exo_lead
+                              Rcpp::Named("max_exo_lag")   = max_exo_lag,
+                              Rcpp::Named("max_exo_lead")  = max_exo_lead,
+                              Rcpp::Named("nstatic")       = nstatic,
+                              Rcpp::Named("nfwrd")         = nfwrd,
+                              Rcpp::Named("npred")         = npred,
+                              Rcpp::Named("nboth")         = nboth
                              );
 }
 #endif
