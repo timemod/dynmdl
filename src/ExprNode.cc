@@ -29,6 +29,7 @@
 #include "ExprNode.hh"
 #include "DataTree.hh"
 #include "ModFile.hh"
+#include "dyn_error.hh"
 
 ExprNode::ExprNode(DataTree &datatree_arg) : datatree(datatree_arg), preparedForDerivation(false)
 {
@@ -554,8 +555,7 @@ VariableNode::prepareForDerivation()
       // Such a variable is never derived
       break;
     case eExternalFunction:
-      cerr << "VariableNode::prepareForDerivation: impossible case" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("VariableNode::prepareForDerivation: impossible case");
     }
 }
 
@@ -577,20 +577,16 @@ VariableNode::computeDerivative(int deriv_id)
     case eModelLocalVariable:
       return datatree.local_variables_table[symb_id]->getDerivative(deriv_id);
     case eModFileLocalVariable:
-      cerr << "ModFileLocalVariable is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ModFileLocalVariable is not derivable");
     case eStatementDeclaredVariable:
-      cerr << "eStatementDeclaredVariable is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("eStatementDeclaredVariable is not derivable");
     case eUnusedEndogenous:
-      cerr << "eUnusedEndogenous is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("eUnusedEndogenous is not derivable");
     case eExternalFunction:
-      cerr << "Impossible case!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Impossible case!");
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 void
@@ -727,8 +723,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "ys_[" << tsid << "]";
           break;
         default:
-          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("VariableNode::writeOutput: should not reach this point");
         }
       break;
 
@@ -781,8 +776,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "exo_[" << i - 1 << "]";
           break;
         default:
-          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("VariableNode::writeOutput: should not reach this point");
         }
       break;
 
@@ -833,8 +827,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "exo_[" << i - 1 << "]";
           break;
         default:
-          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("VariableNode::writeOutput: should not reach this point");
         }
       break;
 
@@ -843,8 +836,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case eLogTrend:
     case eStatementDeclaredVariable:
     case eUnusedEndogenous:
-      cerr << "Impossible case" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Impossible case");
     }
 }
 
@@ -922,8 +914,7 @@ VariableNode::compile(ostream &CompileCode, unsigned int &instruction_number,
             {
               if (steady_dynamic)  // steady state values in a dynamic model
                 {
-                  cerr << "Impossible case: steady_state in rhs of equation" << endl;
-                  exit(EXIT_FAILURE);
+                  dyn_error("Impossible case: steady_state in rhs of equation");
                 }
               else
                 {
@@ -1040,20 +1031,16 @@ VariableNode::getChainRuleDerivative(int deriv_id, const map<int, expr_t> &recur
     case eModelLocalVariable:
       return datatree.local_variables_table[symb_id]->getChainRuleDerivative(deriv_id, recursive_variables);
     case eModFileLocalVariable:
-      cerr << "ModFileLocalVariable is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ModFileLocalVariable is not derivable");
     case eStatementDeclaredVariable:
-      cerr << "eStatementDeclaredVariable is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("eStatementDeclaredVariable is not derivable");
     case eUnusedEndogenous:
-      cerr << "eUnusedEndogenous is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("eUnusedEndogenous is not derivable");
     case eExternalFunction:
-      cerr << "Impossible case!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Impossible case!");
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 expr_t
@@ -1602,9 +1589,8 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
               VariableNode *varg = dynamic_cast<VariableNode *>(arg);
               if (varg == NULL)
                 {
-                  cerr << "UnaryOpNode::composeDerivatives: STEADY_STATE() should only be used on "
-                       << "standalone variables (like STEADY_STATE(y)) to be derivable w.r.t. parameters" << endl;
-                  exit(EXIT_FAILURE);
+                  dyn_error("UnaryOpNode::composeDerivatives: STEADY_STATE() should only be used on "
+                            "standalone variables (like STEADY_STATE(y)) to be derivable w.r.t. parameters");
                 }
               if (datatree.symbol_table.getType(varg->symb_id) == eEndogenous)
                 return datatree.AddSteadyStateParamDeriv(arg, datatree.getSymbIDByDerivID(deriv_id));
@@ -1631,14 +1617,12 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
       assert(datatree.isDynamic());
       if (datatree.getTypeByDerivID(deriv_id) == eParameter)
         {
-          cerr << "3rd derivative of STEADY_STATE node w.r.t. three parameters not implemented" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("3rd derivative of STEADY_STATE node w.r.t. three parameters not implemented");
         }
       else
         return datatree.Zero;
     case oExpectation:
-      cerr << "UnaryOpNode::composeDerivatives: not implemented on oExpectation" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("UnaryOpNode::composeDerivatives: not implemented on oExpectation");
     case oErf:
       // x^2
       t11 = datatree.AddPower(arg, datatree.Two);
@@ -1654,7 +1638,7 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
       return datatree.AddTimes(t14, darg);
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 expr_t
@@ -1776,7 +1760,7 @@ UnaryOpNode::cost(int cost, bool is_matlab) const
       case oExpectation:
         return cost;
       }
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 void
@@ -1985,8 +1969,7 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case oExpectation:
       if (!IS_LATEX(output_type))
         {
-          cerr << "UnaryOpNode::writeOutput: not implemented on oExpectation" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("UnaryOpNode::writeOutput: not implemented on oExpectation");
         }
       output << "\\mathbb{E}_{t";
       if (expectation_information_set != 0)
@@ -2100,7 +2083,7 @@ UnaryOpNode::eval_opcode(UnaryOpcode op_code, double v) throw (EvalException, Ev
       return (erf(v));
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 double
@@ -2281,8 +2264,7 @@ UnaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_
           return (make_pair(2, (expr_t) NULL)); // Could not be normalized
         }
     }
-  cerr << "UnaryOpNode::normalizeEquation: impossible case" << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("UnaryOpNode::normalizeEquation: impossible case");
 }
 
 expr_t
@@ -2338,18 +2320,16 @@ UnaryOpNode::buildSimilarUnaryOpNode(expr_t alt_arg, DataTree &alt_datatree) con
     case oSteadyState:
       return alt_datatree.AddSteadyState(alt_arg);
     case oSteadyStateParamDeriv:
-      cerr << "UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParamDeriv can't be translated" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParamDeriv can't be translated");
     case oSteadyStateParam2ndDeriv:
-      cerr << "UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParam2ndDeriv can't be translated" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParam2ndDeriv can't be translated");
     case oExpectation:
       return alt_datatree.AddExpectation(expectation_information_set, alt_arg);
     case oErf:
       return alt_datatree.AddErf(alt_arg);
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 expr_t
@@ -2482,9 +2462,8 @@ UnaryOpNode::substituteExpectation(subst_table_t &subst_table, vector<BinaryOpNo
       if (partial_information_model && expectation_information_set == 0)
         if (dynamic_cast<VariableNode *>(arg) == NULL)
           {
-            cerr << "ERROR: In Partial Information models, EXPECTATION(0)(X) "
-                 << "can only be used when X is a single variable." << endl;
-            exit(EXIT_FAILURE);
+            dyn_error("ERROR: In Partial Information models, EXPECTATION(0)(X) "
+                      "can only be used when X is a single variable.");
           }
 
       //take care of any nested expectation operators by calling arg->substituteExpectation(.), then decreaseLeadsLags for this oExpectation operator
@@ -2728,7 +2707,7 @@ BinaryOpNode::composeDerivatives(expr_t darg1, expr_t darg2)
       return datatree.AddMinus(darg1, darg2);
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 expr_t
@@ -2794,7 +2773,7 @@ BinaryOpNode::precedence(ExprNodeOutputType output_type, const temporary_terms_t
       return 100;
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 int
@@ -2880,7 +2859,7 @@ BinaryOpNode::cost(int cost, bool is_matlab) const
         return cost;
       }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 void
@@ -2992,7 +2971,7 @@ BinaryOpNode::eval_opcode(double v1, BinaryOpcode op_code, double v2, int derivO
       throw EvalException();
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 double
@@ -3289,8 +3268,7 @@ BinaryOpNode::Compute_RHS(expr_t arg1, expr_t arg2, int op, int op_type) const
           return (datatree.AddLog10(arg1));
           break;
         default:
-          cerr << "BinaryOpNode::Compute_RHS: case not handled";
-          exit(EXIT_FAILURE);
+          dyn_error("BinaryOpNode::Compute_RHS: case not handled");
         }
       break;
     case 1: /*Binary Operator*/
@@ -3312,8 +3290,7 @@ BinaryOpNode::Compute_RHS(expr_t arg1, expr_t arg2, int op, int op_type) const
           return (datatree.AddPower(arg1, arg2));
           break;
         default:
-          cerr << "BinaryOpNode::Compute_RHS: case not handled";
-          exit(EXIT_FAILURE);
+          dyn_error("BinaryOpNode::Compute_RHS: case not handled");
         }
       break;
     }
@@ -3561,8 +3538,7 @@ BinaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr
       return (make_pair(2, (expr_t) NULL)); // Could not be normalized
     }
   // Suppress GCC warning
-  cerr << "BinaryOpNode::normalizeEquation: impossible case" << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("BinaryOpNode::normalizeEquation: impossible case");
 }
 
 expr_t
@@ -3610,7 +3586,7 @@ BinaryOpNode::buildSimilarBinaryOpNode(expr_t alt_arg1, expr_t alt_arg2, DataTre
       return alt_datatree.AddPowerDeriv(alt_arg1, alt_arg2, powerDerivOrder);
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 expr_t
@@ -3977,7 +3953,7 @@ TrinaryOpNode::composeDerivatives(expr_t darg1, expr_t darg2, expr_t darg3)
       return datatree.AddTimes(t11, t12);
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 expr_t
@@ -4004,7 +3980,7 @@ TrinaryOpNode::precedence(ExprNodeOutputType output_type, const temporary_terms_
       return 100;
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 int
@@ -4057,7 +4033,7 @@ TrinaryOpNode::cost(int cost, bool is_matlab) const
         return cost+1000;
       }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 void
@@ -4126,7 +4102,7 @@ TrinaryOpNode::eval_opcode(double v1, TrinaryOpcode op_code, double v2, double v
       return (1/(v3*sqrt(2*M_PI)*exp(pow((v1-v2)/v3, 2)/2)));
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 double
@@ -4328,7 +4304,7 @@ TrinaryOpNode::buildSimilarTrinaryOpNode(expr_t alt_arg1, expr_t alt_arg2, expr_
       return alt_datatree.AddNormpdf(alt_arg1, alt_arg2, alt_arg3);
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 expr_t
@@ -5517,8 +5493,7 @@ expr_t
 SecondDerivExternalFunctionNode::composeDerivatives(const vector<expr_t> &dargs)
 
 {
-  cerr << "ERROR: third order derivatives of external functions are not implemented" << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("ERROR: third order derivatives of external functions are not implemented");
 }
 
 void
@@ -5728,8 +5703,7 @@ SecondDerivExternalFunctionNode::compile(ostream &CompileCode, unsigned int &ins
                                          const map_idx_t &map_idx, bool dynamic, bool steady_dynamic,
                                          deriv_node_temp_terms_t &tef_terms) const
 {
-  cerr << "SecondDerivExternalFunctionNode::compile: not implemented." << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("SecondDerivExternalFunctionNode::compile: not implemented.");
 }
 
 void
@@ -5738,6 +5712,5 @@ SecondDerivExternalFunctionNode::compileExternalFunctionOutput(ostream &CompileC
                                                                const map_idx_t &map_idx, bool dynamic, bool steady_dynamic,
                                                                deriv_node_temp_terms_t &tef_terms) const
 {
-  cerr << "SecondDerivExternalFunctionNode::compileExternalFunctionOutput: not implemented." << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("SecondDerivExternalFunctionNode::compileExternalFunctionOutput: not implemented.");
 }

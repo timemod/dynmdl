@@ -22,6 +22,7 @@
 #include <iostream>
 
 #include "DataTree.hh"
+#include "dyn_error.hh"
 
 DataTree::DataTree(SymbolTable &symbol_table_arg,
                    NumericalConstants &num_constants_arg,
@@ -275,8 +276,7 @@ DataTree::AddLog(expr_t iArg1)
     return Zero;
   else
     {
-      cerr << "ERROR: log(0) not defined!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: log(0) not defined!\n");
     }
 }
 
@@ -289,8 +289,7 @@ DataTree::AddLog10(expr_t iArg1)
     return Zero;
   else
     {
-      cerr << "ERROR: log10(0) not defined!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: log10(0) not defined!\n");
     }
 }
 

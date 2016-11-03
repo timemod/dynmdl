@@ -6,7 +6,8 @@ ComputingTasks.o : CodeInterpreter.hh ComputingTasks.hh DataTree.hh \
 ConfigFile.o : ConfigFile.hh WarningConsolidation.hh dyn_error.hh \
               location.hh
 DataTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
-            ExternalFunctionsTable.hh NumericalConstants.hh SymbolTable.hh
+            ExternalFunctionsTable.hh NumericalConstants.hh SymbolTable.hh \
+            dyn_error.hh
 DynamicModel.o : CodeInterpreter.hh DataTree.hh DynamicModel.hh \
                 ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
                 ModelTree.hh NumericalConstants.hh StaticModel.hh SymbolTable.hh \
@@ -32,9 +33,21 @@ ExprNode.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
             ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
             NumericalConstants.hh NumericalInitialization.hh Statement.hh \
             StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
-            WarningConsolidation.hh location.hh
+            WarningConsolidation.hh dyn_error.hh location.hh
+ExprNode.cc.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
+               DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
+               ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
+               NumericalConstants.hh NumericalInitialization.hh Statement.hh \
+               StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+               WarningConsolidation.hh dyn_error.hh location.hh
+ExprNode.cc.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
+               DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
+               ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
+               NumericalConstants.hh NumericalInitialization.hh Statement.hh \
+               StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+               WarningConsolidation.hh dyn_error.hh location.hh
 ExternalFunctionsTable.o : CodeInterpreter.hh ExprNode.hh \
-                          ExternalFunctionsTable.hh SymbolTable.hh
+                          ExternalFunctionsTable.hh SymbolTable.hh dyn_error.hh
 MinimumFeedbackSet.o : MinimumFeedbackSet.hh
 ModFile.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
            DataTree.hh DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
