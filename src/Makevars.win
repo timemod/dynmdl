@@ -30,3 +30,6 @@ sublib:
 # environment. Therefore, for the moment the package should only be developped
 # in a Linux environent. In a later stage we have to check if there is an 
 # alternative solution for Windows.
+
+# dependencies C files
+include $(DEP_FILE)

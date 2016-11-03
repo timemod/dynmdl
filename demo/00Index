@@ -1,4 +1,2 @@
 test_simple          The simple model y(t) = a * y(t+1) + b * y(t - 1)
 test_vraag_en_aanbod A simple demand and supply model
-test_islm            A version of the ISLM model with 1 lead for the interest rate
-test_sa4             The prototype of the new Saffiermodel.

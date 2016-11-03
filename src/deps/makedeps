@@ -60,9 +60,6 @@ ParsingDriver.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
 Shocks.o : CodeInterpreter.hh ExprNode.hh ExternalFunctionsTable.hh \
           Shocks.hh Statement.hh SymbolList.hh SymbolTable.hh \
           WarningConsolidation.hh dyn_error.hh location.hh
-Shocks.cc.o : CodeInterpreter.hh ExprNode.hh ExternalFunctionsTable.hh \
-             Shocks.hh Statement.hh SymbolList.hh SymbolTable.hh \
-             WarningConsolidation.hh dyn_error.hh location.hh
 SigmaeInitialization.o : CodeInterpreter.hh ExprNode.hh \
                         ExternalFunctionsTable.hh SigmaeInitialization.hh Statement.hh \
                         SymbolList.hh SymbolTable.hh WarningConsolidation.hh location.hh
@@ -75,15 +72,9 @@ SteadyStateModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                     ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
                     NumericalConstants.hh StaticModel.hh SteadyStateModel.hh \
                     SymbolTable.hh WarningConsolidation.hh dyn_error.hh location.hh
-SteadyStateModel.cc.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
-                       ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
-                       NumericalConstants.hh StaticModel.hh SteadyStateModel.hh \
-                       SymbolTable.hh WarningConsolidation.hh dyn_error.hh location.hh
 SymbolList.o : SymbolList.hh
 SymbolTable.o : CodeInterpreter.hh ExprNode.hh \
                ExternalFunctionsTable.hh SymbolTable.hh dyn_error.hh
-SymbolTable.cc.o : CodeInterpreter.hh ExprNode.hh \
-                  ExternalFunctionsTable.hh SymbolTable.hh dyn_error.hh
 WarningConsolidation.o : WarningConsolidation.hh location.hh
 compile_model.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
                  DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \

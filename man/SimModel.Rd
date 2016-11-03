@@ -88,18 +88,5 @@ stacked-time Newton problem either as a sparse matrix
 
 }
 }
-\examples{
-#use an example model file from directory extdata of the dynr package
-mod_file <- system.file("extdata", "islm.mod", package = "dynr")
-
-mdl <- compile_model(mod_file)
-
-mdl$solve_steady()
-mdl$set_period(regperiod_range("2010Q1", "2011Q4"))
-mdl$exo_data['2010Q1', 'g'] <- 280
-mdl$solve(solver = "nleqslv")
-print(mdl$solve_out$message)
-plot(mdl$endo_data[, 'y'])
-}
 \keyword{data}
 

@@ -27,20 +27,7 @@ setOldClass("regts")
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
 #' @format \code{\link{R6Class}} object.
-#' @examples
-#' #use an example model file from directory extdata of the dynr package
-#' mod_file <- system.file("extdata", "islm.mod", package = "dynr")
 #'
-#' mdl <- compile_model(mod_file)
-#'
-#' mdl$solve_steady()
-#' mdl$set_period(regperiod_range("2010Q1", "2011Q4"))
-# shock for variable g in first solve perod
-#' mdl$exo_data['2010Q1', 'g'] <- 280
-#' mdl$solve(solver = "nleqslv")
-#' print(mdl$solve_out$message)
-#' plot(mdl$endo_data[, 'y'])
-
 #' @field endo_count the number of endogenous variables
 #' @field endos the names and steady values of the endogenous variables. These
 #' values are initialised with the values from the \code{initval} block of the
