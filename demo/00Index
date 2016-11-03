@@ -1,2 +1,3 @@
 test_simple          The simple model y(t) = a * y(t+1) + b * y(t - 1)
 test_vraag_en_aanbod A simple demand and supply model
+foutje.R             An R script with an error (the mod file does not exist).

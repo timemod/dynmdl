@@ -46,7 +46,7 @@ MacroDriver::parse(const string &f, ostream &out, bool debug, bool no_line_macro
   ifstream in(f.c_str(), ios::binary);
   if (in.fail())
     {
-      dyn_error("ERROR: Could not open file: " +  f + "\n");
+      dyn_error("ERROR: Could not open file: " +  f);
     }
 
   /*
