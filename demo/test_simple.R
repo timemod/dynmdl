@@ -20,6 +20,8 @@ with(as.list(mdl$params), {
     cat(sprintf("mu_2 = %g\n", mu_2))
 })
 
+mdl$check()
+
 mdl$endo_data["2014", 'y'] <- 1
 
 get_analytical_solution = function(period, mu) {

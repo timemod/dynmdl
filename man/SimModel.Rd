@@ -85,6 +85,9 @@ This methods solves the steady state problem. The data in field \code{endos}
 is used as initial values for the endogenous variables.
 This field is overwritten with the computed steady state values}
 
+\item{\code{check()}}{Compute the eigenvalues of the linear
+system and check if the Blachard and Kahn conditions are satisfied.}
+
 \item{\code{solve(control = list())}}{Solves the model using a stacked-time
 Newton method for the whole model period.
 Argument \code{control} is a list with solve options (TODO: describe these

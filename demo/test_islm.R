@@ -9,6 +9,7 @@ system.time(
     mdl$solve_steady()
 )
 print(mdl$endos)
+mdl$check()
 
 
 mdl$set_period(regperiod_range("2010Q1", "2011Q4"))

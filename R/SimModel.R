@@ -79,6 +79,9 @@ setOldClass("regts")
 #' is used as initial values for the endogenous variables.
 #' This field is overwritten with the computed steady state values}
 #'
+#' \item{\code{check()}}{Compute the eigenvalues of the linear
+#' system and check if the Blachard and Kahn conditions are satisfied.}
+#'
 #' \item{\code{solve(control = list())}}{Solves the model using a stacked-time
 #' Newton method for the whole model period.
 #' Argument \code{control} is a list with solve options (TODO: describe these
@@ -164,7 +167,15 @@ SimModel <- R6Class("SimModel",
             self$endos <- out$x
             return (invisible(self))
         },
-
+        check = function() {
+            eigvalues <- solve_first_order(self)
+            cat("EIGENVALUES:\n")
+            for (eigval in eigvalues) {
+                cat(sprintf("%g\n", eigval))
+            }
+            cat("\n")
+            return (invisible(self))
+        },
         set_period = function(period) {
             period <- as.regperiod_range(period)
             self$model_period <-  period
