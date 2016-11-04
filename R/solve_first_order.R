@@ -1,29 +1,16 @@
 solve_first_order <- function(mdl) {
 
+    state_space <- StateSpace$new(mdl)
+    order_var <- state_space$order_var
+
     npred <- mdl$npred
     nboth <- mdl$nboth
     nfwrd <- mdl$nfwrd
     nstatic <- mdl$nstatic
     ndynamic <- npred + nboth + nfwrd
-    nsfwrd <- mdl$nfwrd + nboth
+    nsfwrd <- nfwrd + nboth
 
-    # variable administration
     max_lag <- mdl$max_endo_lag
-    max_lead <- mdl$max_endol_lead
-    lead_var <- which(mdl$lead_lag_incidence[, max_lag + 2] != 0)
-    if (max_lag > 0) {
-        lag_var <- which(mdl$lead_lag_incidence[, 1] != 0)
-        stat_var <- setdiff(1:mdl$endo_count, union(lag_var, lead_var))
-        both_var <- intersect(lead_var, lag_var)
-        pred_var <- setdiff(lag_var, both_var)
-        fwrd_var <- setdiff(lead_var, both_var)
-    } else {
-        pred_var <- numeric(0)
-        both_var <- numeric(0)
-        stat_var <- setdiff(1:mdl$endo_count, lead_var)
-        fwrd_var <- lead_var;
-    }
-    order_var <- c(stat_var, pred_var, both_var, fwrd_var)
 
     nz <- nnz(mdl$lead_lag_incidence)
     lead_id <- which(mdl$lead_lag_incidence[, max_lag + 2] != 0)
@@ -56,8 +43,7 @@ solve_first_order <- function(mdl) {
     nfwrd0 <- nnz(mdl$lead_lag_incidence[lead_id, 2])
     index_0p <- indexi_0 + nstatic + npred0 + seq_len(nfwrd0)
     index_m <- seq_len(npred + nboth)
-    index_p <- npred + nboth + n_current +
-        seq_len(mdl$nfwrd + nboth)
+    index_p <- npred + nboth + n_current + seq_len(nfwrd + nboth)
     row_indx_de_1 <- seq_len(ndynamic)
     row_indx_de_2 <- ndynamic + seq_len(nboth)
     row_indx <- nstatic + row_indx_de_1
@@ -101,5 +87,14 @@ solve_first_order <- function(mdl) {
     e[row_indx_de_2, index_e2] <- diag(mdl$nboth)
     ret <- QZ::geigen(e, d, only.values = TRUE)
     eigval <- ret$ALPHA / ret$BETA
+
+    sdim <- sum(abs(eigval) <= 1)
+    nba <- nrow(state_space$kstate) - sdim
+    if (nba > nsfwrd) {
+        warning("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
+    } else if (nba < nsfwrd) {
+        warning("Blanchard & Kahn conditions are not satisfied: indeterminacy")
+    }
+
     return (eigval)
 }
