@@ -1,6 +1,10 @@
-solve_first_order <- function(mdl) {
+library(geigen)
+nnz <- dynr:::nnz
+nonzeros <- dynr:::nonzeros
 
-    state_space <- StateSpace$new(mdl)
+solve_first_order2 <- function(mdl, solve = TRUE) {
+
+    state_space <- dynr:::StateSpace$new(mdl)
     order_var <- state_space$order_var
 
     npred <- mdl$npred
@@ -9,6 +13,9 @@ solve_first_order <- function(mdl) {
     nstatic <- mdl$nstatic
     ndynamic <- npred + nboth + nfwrd
     nsfwrd <- nfwrd + nboth
+
+    k1 <- seq_len(npred + nboth)
+    k2 <- seq_len(nfwrd + nboth)
 
     max_lag <- mdl$max_endo_lag
 
@@ -55,7 +62,7 @@ solve_first_order <- function(mdl) {
     index_e <- c(index_m, index_0p);
     index_e1 <- c(seq_len(npred + nboth),
                   npred + nboth +
-              which(llx[nstatic + npred + seq_len(nsfwrd), max_lag + 1] != 0)
+                      which(llx[nstatic + npred + seq_len(nsfwrd), max_lag + 1] != 0)
     )
     index_e2 <- npred + nboth + seq_len(nboth)
 
@@ -67,6 +74,7 @@ solve_first_order <- function(mdl) {
     y <- endos[which(mdl$lead_lag_incidence != 0)]
     it <- mdl$max_exo_lag + 1
     jac <- mdl$f_dynamic(y, exo, mdl$params, it, jac = TRUE)
+    #print(jac)
 
     vec <- llx[llx != 0]
     reorder_jacobian_columns <- c(vec, nz + seq_len(mdl$exo_count))
@@ -84,16 +92,73 @@ solve_first_order <- function(mdl) {
     d[row_indx_de_1, index_d1] <- jac[row_indx, index_d]
     d[row_indx_de_2, index_d2] <- diag(nboth)
     e[row_indx_de_1, index_e1] <- -jac[row_indx, index_e]
-    e[row_indx_de_2, index_e2] <- diag(nboth)
+    e[row_indx_de_2, index_e2] <- diag(mdl$nboth)
 
-    eigval <- sort(geigen::geigen(e, d, only.values = TRUE)$values)
+    cat("d:")
+    print(d)
+    cat("e:")
+    print(e)
+
+    cat("aanroep van geigen:\n")
+    print(geigen::geigen(e, d, only.values = TRUE))
+    cat("return value van gqz:\n")
+    ret <- geigen::gqz(e, d, sort = "S")
+    print(ret)
+    cat("eigenwaarden:\n")
+    print(geigen::gevalues(ret))
+    quit()
+
+
+    if (solve) {
+        qz_ret <- geigen::qz(e, d, select = rep(TRUE, n))
+    } else {
+        qz_ret <-  geigen::geigen(e, d, only.values = TRUE)
+    }
+
     sdim <- sum(abs(eigval) <= 1)
-    nba <- nrow(state_space$kstate) - sdim
+    nd <- nrow(state_space$kstate)
+    nba <- nd - sdim
     if (nba > nsfwrd) {
         warning("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
     } else if (nba < nsfwrd) {
         warning("Blanchard & Kahn conditions are not satisfied: indeterminacy")
     }
 
-    return (eigval)
+    if (!solve) {
+        return (eigval)
+    }
+    cat("eigval:")
+    print(eigval)
+
+    indx_stable_root <- 1: (nd - nsfwrd)             # %=> index of stable roots
+    indx_explosive_root <- (npred + nboth + 1) : nd  # => index of explosive roots
+    #derivatives with respect to dynamic state variables
+    #forward variables
+
+    # TODO: what to do if there are no explosive roots or no stable roots?
+
+    print(indx_stable_root)
+    print(indx_explosive_root)
+    cat("qz_ret:")
+    print(qz_ret)
+    Z11 <- qz_ret$Z[indx_stable_root,    indx_stable_root, drop = FALSE]
+    Z21 <- qz_ret$Z[indx_explosive_root, indx_stable_root, drop = FALSE]
+    Z22 <- qz_ret$Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
+    gx <- -solve(Z22, Z21)
+    cat("gx:")
+    print(gx)
+    # TODO: error if Z22 is new singular (see Matlab code)
+    hx1 <- solve(qz_ret$T[indx_stable_root, indx_stable_root, drop = FALSE], Z11)
+    cat("hx1:")
+    print(hx1)
+    hx2 <- solve(Z11, qz_ret$S[indx_stable_root, indx_stable_root, drop = FALSE])
+    cat("hx2:")
+    print(hx2)
+    hx <- hx1 * hx2
+    ghx <- hx[k1, , drop = FALSE]
+    if (nboth + 1 <= length(k2)) {
+        ghx <- cbind(ghx, gx[k2[(nboth + 1) : length(k2)] , drop = FALSE])
+    }
+    cat("ghx:")
+    print(ghx)
 }
