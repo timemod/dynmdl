@@ -1,4 +1,3 @@
-library(geigen)
 nnz <- dynr:::nnz
 nonzeros <- dynr:::nonzeros
 
@@ -73,25 +72,34 @@ solve_first_order2 <- function(mdl, solve = TRUE) {
     endos <- rep(mdl$endos, nper_endo)
     y <- endos[which(mdl$lead_lag_incidence != 0)]
     it <- mdl$max_exo_lag + 1
-    jac <- mdl$f_dynamic(y, exo, mdl$params, it, jac = TRUE)
-    #print(jac)
+    jacobia <- mdl$f_dynamic(y, exo, mdl$params, it, jac = TRUE)
 
     vec <- llx[llx != 0]
     reorder_jacobian_columns <- c(vec, nz + seq_len(mdl$exo_count))
-    jac <- jac[, reorder_jacobian_columns, drop = FALSE]
+    jacobia <- jacobia[, reorder_jacobian_columns, drop = FALSE]
 
-    if (nstatic > 0) {
-        ret <- qr(jac[, index_s])
-        qmat <- qr.Q(ret, complete = TRUE)
-        jac <- t(qmat) %*% jac
+    if (nstatic) {
+        ret <- qr(jacobia[, index_s, drop = FALSE])
+        Q <- qr.Q(ret, complete = TRUE)
+        aa <- t(Q) %*% jacobia
+    } else {
+        aa <- jacobia
     }
+
+    cols_b <- which(mdl$lead_lag_incidence[, max_lag + 1, drop = FALSE] != 0,
+                    arr.in = TRUE)[, 1]
+    A <- aa[, index_m]  # Jacobian matirx for lagged endogeneous variables
+    B <- matrix(NA, nrow = nrow(aa), ncol = length(index_c))
+    B[, cols_b] <- aa[, index_c] # Jacobian matrix for contemporaneous
+                                  # endogenous variables
+    C <- aa[, index_p] # Jacobian matrix for lead endogeneous variables.
 
     n <- nboth + ndynamic
     d <- matrix(0, nrow = n, ncol = n)
     e <- matrix(0, nrow = n, ncol = n)
-    d[row_indx_de_1, index_d1] <- jac[row_indx, index_d]
+    d[row_indx_de_1, index_d1] <- aa[row_indx, index_d]
     d[row_indx_de_2, index_d2] <- diag(nboth)
-    e[row_indx_de_1, index_e1] <- -jac[row_indx, index_e]
+    e[row_indx_de_1, index_e1] <- -aa[row_indx, index_e]
     e[row_indx_de_2, index_e2] <- diag(mdl$nboth)
 
     cat("d:")
@@ -99,20 +107,11 @@ solve_first_order2 <- function(mdl, solve = TRUE) {
     cat("e:")
     print(e)
 
-    cat("aanroep van geigen:\n")
-    print(geigen::geigen(e, d, only.values = TRUE))
-    cat("return value van gqz:\n")
-    ret <- geigen::gqz(e, d, sort = "S")
-    print(ret)
-    cat("eigenwaarden:\n")
-    print(geigen::gevalues(ret))
-    quit()
-
-
     if (solve) {
-        qz_ret <- geigen::qz(e, d, select = rep(TRUE, n))
+        qz_result <- geigen::gqz(e, d, sort = 'S')
+        eigval <- geigen::gevalues(qz_result)
     } else {
-        qz_ret <-  geigen::geigen(e, d, only.values = TRUE)
+        eigval <- sort(geigen::geigen(e, d, only.values = TRUE)$values)
     }
 
     sdim <- sum(abs(eigval) <= 1)
@@ -139,26 +138,84 @@ solve_first_order2 <- function(mdl, solve = TRUE) {
 
     print(indx_stable_root)
     print(indx_explosive_root)
-    cat("qz_ret:")
-    print(qz_ret)
-    Z11 <- qz_ret$Z[indx_stable_root,    indx_stable_root, drop = FALSE]
-    Z21 <- qz_ret$Z[indx_explosive_root, indx_stable_root, drop = FALSE]
-    Z22 <- qz_ret$Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
+    cat("qz_result:")
+    print(qz_result)
+    Z <- t(qz_result$Z)
+    Z11 <- Z[indx_stable_root,    indx_stable_root, drop = FALSE]
+    Z21 <- Z[indx_explosive_root, indx_stable_root, drop = FALSE]
+    Z22 <- Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
+    cat("Z21:\n")
+    print(Z21)
+    cat("Z22:\n")
+    print(Z22)
     gx <- -solve(Z22, Z21)
-    cat("gx:")
+    cat("gx:\n")
     print(gx)
     # TODO: error if Z22 is new singular (see Matlab code)
-    hx1 <- solve(qz_ret$T[indx_stable_root, indx_stable_root, drop = FALSE], Z11)
+    hx1 <- t(backsolve(t(qz_result$T[indx_stable_root, indx_stable_root, drop =
+                   FALSE]), Z11))
     cat("hx1:")
     print(hx1)
-    hx2 <- solve(Z11, qz_ret$S[indx_stable_root, indx_stable_root, drop = FALSE])
+    hx2 <- t(solve(Z11, t(qz_result$S[indx_stable_root, indx_stable_root, drop =
+                   FALSE])))
     cat("hx2:")
     print(hx2)
-    hx <- hx1 * hx2
+    hx <- hx1 %*% hx2
+    cat("hx:")
+    print(hx)
     ghx <- hx[k1, , drop = FALSE]
+    print(nboth)
     if (nboth + 1 <= length(k2)) {
         ghx <- cbind(ghx, gx[k2[(nboth + 1) : length(k2)] , drop = FALSE])
     }
     cat("ghx:")
     print(ghx)
+
+   if (nstatic > 0) {
+      B_static <- B[, 1:nstatic]
+   } else {
+      B_static <- matrix(nrow = nrow(B), ncol = 0)
+   }
+
+  # static variables, backward variables, mixed variables and forward variables
+  B_pred <- B[, (nstatic + 1) : (nstatic + npred + nboth)]
+  if (nstatic + npred + nboth + 1 <= ncol(B)) {
+      B_fyd <- B[, (nstatic + npred + nboth + 1) : ncol(B)]
+  } else  {
+      B_fyd <- matrix(nrow = nrow(B), ncol = 0)
+  }
+  cat("B_pred:\n") 
+  print(B_pred)
+  cat("B_fyd:\n") 
+  print(B_fyd)
+
+  if (nstatic) {
+        temp <- - C[1:nstatic, ] %*% gx %*% hx
+        b <- matrix(nrow = nrow(aa), ncol = length(index_c))
+        b[, cols_b] <- aa[, index_c]
+        b10 <- b[1:nstatic, 1:nstatic]
+        b11 <- b[1:nstatic, (nstatic + 1) : ncol(b)]
+        temp[, index_m] <- temp[, index_m] - A[1:nstatic, ]
+        temp <- solve(b10, temp - b11 %*% ghx)
+        ghx <- rbind(temp, ghx)
+  }
+  cat("ghx=\n")
+  print(ghx)
+
+  A_ <- cbind(B_static, C %*% gx + B_pred, B_fyd)
+  cat("A_:\n")
+  print(A_);
+
+  if (mdl$exo_count) {
+      if (nstatic) {
+          fu <- t(Q) %*% jacobia[,  innovations_idx, drop = FALSE]
+      } else {
+          fu <- jacobia[, innovations_idx, drop = FALSE]
+      }
+      ghu <- - solve(A_, fu)
+  } else {
+      ghu <- matrix(nrow = 0, ncol = 0)
+  }
+  cat("ghu:\n")
+  print(ghu)
 }
