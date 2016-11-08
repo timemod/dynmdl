@@ -9,7 +9,7 @@ mdl <- compile_model(mod_file)
 mdl$solve_steady()
 print(mdl$endos)
 
-mdl$set_period("2015/2060")
+mdl$set_period("2015/2017")
 
 #mdl$params['a'] <- 1
 #mdl$params['b'] <- 0.2
@@ -24,3 +24,5 @@ with(as.list(mdl$params), {
 mdl$check()
 
 mdl$stoch_simul()
+print(mdl$endo_data)
+

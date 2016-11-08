@@ -186,13 +186,6 @@ SimModel <- R6Class("SimModel",
             cat("\n")
             return (invisible(self))
         },
-        stoch_simul = function() {
-            if (is.null(self$rules)) {
-                self$rules = Rules$new(self)
-            }
-            ret <- self$rules$solve_first_order(self)
-            return (invisible(self))
-        },
         set_period = function(period) {
             period <- as.regperiod_range(period)
             self$model_period <-  period
@@ -249,6 +242,13 @@ SimModel <- R6Class("SimModel",
             self$endo_data[self$model_period, ] <- t(matrix(x, nrow = self$endo_count))
 
             return (invisible(self))
+        },
+        stoch_simul = function() {
+            if (is.null(self$rules)) {
+                self$rules = Rules$new(self)
+            }
+            ret <- self$rules$solve_first_order(self)
+            return (stoch_simul(self))
         },
         get_jacob = function(sparse = TRUE) {
             lags  <- private$get_lags()
