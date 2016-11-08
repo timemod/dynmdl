@@ -48,6 +48,8 @@ setOldClass("regts")
 #  lag but no lead)
 #' @field nboth  the number of variables with both a lag and a lead
 #  lead)
+#' @field ndynamic  the number of variables with a lag or lead
+#' @field nsfwrd the number of variables with leads
 #' @field lead_lag_incidence see documentation Dynare
 #' of the model
 #' @field f_dynamic function for the residuals and Jacobian for the dynamic version
@@ -108,6 +110,9 @@ SimModel <- R6Class("SimModel",
         nfwrd =  NA_integer_,
         npred =  NA_integer_,
         nboth =  NA_integer_,
+        ndynamic = NA_integer_,
+        nsfwrd = NA_integer_,
+
         lead_lag_incidence = NULL,
         f_static = NULL,
         f_dynamic = NULL,
@@ -117,6 +122,7 @@ SimModel <- R6Class("SimModel",
         endo_data = NULL,
         exo_data = NULL,
         solve_out = NULL,
+        rules = NULL,
 
         # functions
 
@@ -152,8 +158,9 @@ SimModel <- R6Class("SimModel",
                 self$npred              <- dynamic_model$npred
                 self$nboth              <- dynamic_model$nboth
             })
+            self$ndynamic               <- self$npred + self$nboth + self$nfwrd
+            self$nsfwrd                 <- self$nfwrd + self$nboth
         },
-
         solve_steady = function() {
             f <- function(x) {
                 return (self$f_static(x, self$exos, self$params))
@@ -168,12 +175,22 @@ SimModel <- R6Class("SimModel",
             return (invisible(self))
         },
         check = function() {
-            eigvalues <- solve_first_order(self)
+            if (is.null(self$rules)) {
+                self$rules = Rules$new(self)
+            }
+            eigvalues <- self$rules$solve_first_order(self, only_eigval = TRUE)
             cat("EIGENVALUES:\n")
             for (eigval in eigvalues) {
                 cat(sprintf("%g\n", eigval))
             }
             cat("\n")
+            return (invisible(self))
+        },
+        stoch_simul = function() {
+            if (is.null(self$rules)) {
+                self$rules = Rules$new(self)
+            }
+            ret <- self$rules$solve_first_order(self)
             return (invisible(self))
         },
         set_period = function(period) {
