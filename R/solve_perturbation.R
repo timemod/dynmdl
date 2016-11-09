@@ -1,5 +1,6 @@
-# perform a stochastic simulation to first order
-stoch_simul <- function(mdl) {
+# Solve the model using the perturbation approach used in the Dynare function
+# stoch_simul. This approach only allows for shocks in  the first solution period.
+solve_perturbation <- function(mdl) {
     rules <- mdl$rules
     sel <-  which(rules$kstate[, 2, drop = FALSE] <= mdl$max_endo_lag + 1)
     k2 <- rules$kstate[sel, c(1,2), drop = FALSE]
@@ -13,19 +14,25 @@ stoch_simul <- function(mdl) {
 
     exo_names <- names(mdl$exos)
     ex_ <- mdl$exo_data[, exo_names] - rep(mdl$exos, each = nrow(mdl$exo_data))
-    cat("ex_\n")
-    print(ex_)
+
+    check_per <- regperiod_range(start_period(mdl$model_period) + 1,
+                                 end_period(mdl$exo_period))
+    if (sum(abs(ex_[check_per])) > .Machine$double.eps) {
+        # The dynare command stoch_simul only allows for shocks in the first
+        # period. An analytical solution in a Taylor approximation requires
+        # so called deterministic exogenoeous variables. I do not known
+        # yet how this works.
+        stop(paste("The perturbation approach currently only allows shocks",
+                   "in the first period"))
+    }
+
     if (mdl$max_exo_lead == 0 && mdl$max_endo_lead > 0) {
-        # add an extra row to ex_, so that we can simulate the last period
+        # add an extra row to ex_, so that we can simulate up to the last period
+        # in mdl$endo_period
         ex_[end_period(mdl$endo_period)] <- 0
     }
-    cat("ex_\n")
-    print(ex_)
 
-    cat("ghu\n")
-    print(rules$ghu)
-
-    iter <- nrow(ex_)
+    iter <- NROW(ex_)
     if (length(rules$ghu) == 0) {
         # purely backward?
         stop("Situation where length(ghu) == 0 not yet supported")
@@ -40,7 +47,8 @@ stoch_simul <- function(mdl) {
                                      epsilon[ , i - 1, drop = FALSE]
         }
         n <- iter + mdl$max_endo_lag
-        mdl$endo_data[1:n, ] <- mdl$endo_data[1 : n] + rep(mdl$endos, each = n)
+        mdl$endo_data[1:n, ] <- mdl$endo_data[1 : n, ]  +
+                                rep(mdl$endos, each = n)
     }
-    return (mdl)
+    return (invisible(mdl))
 }

@@ -89,6 +89,10 @@ setOldClass("regts")
 #' Argument \code{control} is a list with solve options (TODO: describe these
 #' options somewhere).}
 #'
+#' \item{\code{solve_perturbation()}}{Solves the model using the perturbation
+#' theory used in the Dynare function stoch_simul. Only shocks in the first
+#' solution period are allowed.}
+#'
 #' \item{\code{get_jacob(sparse = TRUE)}}{Returns the Jacobian for the
 #' stacked-time Newton problem either as a sparse matrix
 #' (a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
@@ -243,12 +247,12 @@ SimModel <- R6Class("SimModel",
 
             return (invisible(self))
         },
-        stoch_simul = function() {
+        solve_perturbation = function() {
             if (is.null(self$rules)) {
                 self$rules = Rules$new(self)
             }
             ret <- self$rules$solve_first_order(self)
-            return (stoch_simul(self))
+            return (solve_perturbation(self))
         },
         get_jacob = function(sparse = TRUE) {
             lags  <- private$get_lags()

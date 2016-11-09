@@ -1,6 +1,6 @@
 # An R6 class with information about Decision and Transition Rules,
 # used for stochastic simulations
-#' @importFrom R6 R6Classu
+#' @importFrom R6 R6Class
 Rules <- R6Class("Rules",
     private = list(
         reorder_jacobian_columns = NULL,
@@ -203,7 +203,6 @@ Rules <- R6Class("Rules",
             D[private$row_indx_de_1, private$index_d1] <- aa[private$row_indx,
                                                              private$index_d]
             D[private$row_indx_de_2, private$index_d2] <- diag(mdl$nboth)
-            print(private$index_e1)
             E[private$row_indx_de_1, private$index_e1] <- -aa[private$row_indx,
                                                               private$index_e]
             E[private$row_indx_de_2, private$index_e2] <- diag(mdl$nboth)
@@ -239,43 +238,23 @@ Rules <- R6Class("Rules",
             #forward variables
 
             # TODO: what to do if there are no explosive roots or no stable roots?
-
-            print(indx_stable_root)
-            print(indx_explosive_root)
-            cat("qz_result:")
-            print(qz_result)
             Z <- t(qz_result$Z)
             Z11 <- Z[indx_stable_root,    indx_stable_root, drop = FALSE]
             Z21 <- Z[indx_explosive_root, indx_stable_root, drop = FALSE]
             Z22 <- Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
-            cat("Z21:\n")
-            print(Z21)
-            cat("Z22:\n")
-            print(Z22)
             self$gx <- -solve(Z22, Z21)
-            cat("gx:\n")
-            print(self$gx)
             # TODO: error if Z22 is new singular (see Matlab code)
             hx1 <- t(backsolve(t(qz_result$T[indx_stable_root, indx_stable_root, drop =
                                                  FALSE]), Z11))
-            cat("hx1:")
-            print(hx1)
             hx2 <- t(solve(Z11, t(qz_result$S[indx_stable_root, indx_stable_root, drop =
                                                   FALSE])))
-            cat("hx2:")
-            print(hx2)
             hx <- hx1 %*% hx2
-            cat("hx:")
-            print(hx)
             self$ghx <- hx[private$k1, , drop = FALSE]
             if (mdl$nboth + 1 <= length(private$k2)) {
                 self$ghx <- cbind(self$ghx,
                                   self$gx[private$k2[(nboth + 1) :
                                         length(private$k2)] , drop = FALSE])
             }
-            cat("ghx:")
-            print(self$ghx)
-
             if (mdl$nstatic) {
                 B_static <- B[, 1:mdl$nstatic]
             } else {
@@ -289,11 +268,6 @@ Rules <- R6Class("Rules",
             } else  {
                 B_fyd <- matrix(nrow = nrow(B), ncol = 0)
             }
-            cat("B_pred:\n")
-            print(B_pred)
-            cat("B_fyd:\n")
-            print(B_fyd)
-
             if (mdl$nstatic) {
                 temp <- - C[1:mdl$nstatic, ] %*% self$gx %*% hx
                 b <- matrix(nrow = nrow(aa), ncol = length(private$index_c))
@@ -305,13 +279,7 @@ Rules <- R6Class("Rules",
                 temp <- solve(b10, temp - b11 %*% self$ghx)
                 self$ghx <- rbind(temp, self$ghx)
             }
-            cat("ghx=\n")
-            print(self$ghx)
-
             A_ <- cbind(B_static, C %*% self$gx + B_pred, B_fyd)
-            cat("A_:\n")
-            print(A_);
-
             if (mdl$exo_count) {
                 if (mdl$nstatic) {
                     fu <- t(Q) %*% jacobia[,  private$innovations_idx, drop = FALSE]
@@ -322,10 +290,7 @@ Rules <- R6Class("Rules",
             } else {
                 self$ghu <- matrix(nrow = 0, ncol = 0)
             }
-            cat("ghu:\n")
-            print(self$ghu)
-
-            return(invisible(self))
+            return (invisible(self))
         }
     )
 )

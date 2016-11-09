@@ -1,6 +1,5 @@
 library(dynr)
 
-
 mod_file <- system.file("extdata", "simple.mod", package = "dynr")
 
 mdl <- compile_model(mod_file)
@@ -9,7 +8,10 @@ mdl <- compile_model(mod_file)
 mdl$solve_steady()
 print(mdl$endos)
 
-mdl$set_period("2015/2017")
+mdl$set_period("2015/2020")
+
+mdl$endo_data[1] <- 2
+mdl$exo_data[1] <- 0.7
 
 #mdl$params['a'] <- 1
 #mdl$params['b'] <- 0.2
@@ -22,7 +24,8 @@ with(as.list(mdl$params), {
 })
 
 mdl$check()
-
-mdl$stoch_simul()
+mdl$solve_perturbation()
+print(mdl$endo_data)
+mdl$solve(control = list(trace = TRUE))
 print(mdl$endo_data)
 

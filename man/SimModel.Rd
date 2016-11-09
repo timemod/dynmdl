@@ -45,6 +45,10 @@ mod-file}
 
 \item{\code{nboth}}{the number of variables with both a lag and a lead}
 
+\item{\code{ndynamic}}{the number of variables with a lag or lead}
+
+\item{\code{nsfwrd}}{the number of variables with leads}
+
 \item{\code{lead_lag_incidence}}{see documentation Dynare
 of the model}
 
@@ -92,6 +96,10 @@ system and check if the Blachard and Kahn conditions are satisfied.}
 Newton method for the whole model period.
 Argument \code{control} is a list with solve options (TODO: describe these
 options somewhere).}
+
+\item{\code{solve_perturbation()}}{Solves the model using the perturbation
+theory used in the Dynare function stoch_simul. Only shocks in the first
+solution period are allowed.}
 
 \item{\code{get_jacob(sparse = TRUE)}}{Returns the Jacobian for the
 stacked-time Newton problem either as a sparse matrix
