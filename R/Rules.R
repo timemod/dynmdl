@@ -77,7 +77,7 @@ Rules <- R6Class("Rules",
                     kmask <- lead_lag_incidence[self$order_var, max_lag + 2,
                                                 drop = FALSE]
                 }
-                kmask <- cbind(kmask, lead_lag_incidence[self$order_var, 1,
+                kmask <- rbind(kmask, lead_lag_incidence[self$order_var, 1,
                                                          drop = FALSE])
             } else {
                 if (max_lead == 0) {
@@ -145,7 +145,7 @@ Rules <- R6Class("Rules",
             indexi_0 <- npred + nboth
 
             npred0 <- nnz(mdl$lead_lag_incidence[no_both_lag_id, max_lag + 1])
-            index_0m <- indexi_0 + nstatic  + seq_len(npred0)
+            private$index_0m <- indexi_0 + nstatic  + seq_len(npred0)
             nfwrd0 <- nnz(lead_lag_incidence[lead_id, 2])
             private$index_0p <- indexi_0 + nstatic + npred0 + seq_len(nfwrd0)
             private$index_m <- seq_len(npred + nboth)
@@ -184,7 +184,6 @@ Rules <- R6Class("Rules",
             jacobia <- mdl$f_dynamic(y, exo, mdl$params, it, jac = TRUE)
             jacobia <- jacobia[, private$reorder_jacobian_columns, drop = FALSE]
 
-
             if (mdl$nstatic) {
                 ret <- qr(jacobia[, private$index_s, drop = FALSE])
                 Q <- qr.Q(ret, complete = TRUE)
@@ -206,15 +205,20 @@ Rules <- R6Class("Rules",
             E[private$row_indx_de_1, private$index_e1] <- -aa[private$row_indx,
                                                               private$index_e]
             E[private$row_indx_de_2, private$index_e2] <- diag(mdl$nboth)
+            printobj(D)
+            printobj(E)
 
             if (only_eigval) {
                 self$eigval <- sort(geigen::geigen(E, D, only.values = TRUE)$values)
             } else {
                 qz_result <- geigen::gqz(E, D, sort = 'S')
                 self$eigval <- geigen::gevalues(qz_result)
+                printobj(qz_result)
             }
+            printobj(self$eigval)
 
             sdim <- sum(abs(self$eigval) <= 1)
+            printobj(sdim)
             nba <- private$nd - sdim
             if (nba > mdl$nsfwrd) {
                 warning("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
@@ -226,11 +230,11 @@ Rules <- R6Class("Rules",
                 return (self$eigval)
             }
 
-            A <- aa[, private$index_m]  # Jacobian matrix for lagged endogeneous variables
+            A <- aa[, private$index_m, drop = FALSE]  # Jacobian matrix for lagged endogeneous variables
             B <- matrix(NA, nrow = nrow(aa), ncol = length(private$index_c))
-            B[, private$cols_b] <- aa[, private$index_c] # Jacobian matrix for contemporaneous
+            B[, private$cols_b] <- aa[, private$index_c, drop = FALSE] # Jacobian matrix for contemporaneous
             # endogenous variables
-            C <- aa[, private$index_p] # Jacobian matrix for lead endogeneous variables
+            C <- aa[, private$index_p, drop = FALSE] # Jacobian matrix for lead endogeneous variables
 
             indx_stable_root <- 1: (private$nd - mdl$nsfwrd)             # %=> index of stable roots
             indx_explosive_root <- (mdl$npred + mdl$nboth + 1) : private$nd  # => index of explosive roots
@@ -243,20 +247,23 @@ Rules <- R6Class("Rules",
             Z21 <- Z[indx_explosive_root, indx_stable_root, drop = FALSE]
             Z22 <- Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
             self$gx <- -solve(Z22, Z21)
+            printobj(self$gx)
             # TODO: error if Z22 is new singular (see Matlab code)
             hx1 <- t(backsolve(t(qz_result$T[indx_stable_root, indx_stable_root, drop =
                                                  FALSE]), Z11))
             hx2 <- t(solve(Z11, t(qz_result$S[indx_stable_root, indx_stable_root, drop =
                                                   FALSE])))
+            printobj(hx1)
+            printobj(hx2)
             hx <- hx1 %*% hx2
             self$ghx <- hx[private$k1, , drop = FALSE]
             if (mdl$nboth + 1 <= length(private$k2)) {
-                self$ghx <- cbind(self$ghx,
-                                  self$gx[private$k2[(nboth + 1) :
-                                        length(private$k2)] , drop = FALSE])
+                self$ghx <- rbind(self$ghx,
+                                 self$gx[private$k2[(mdl$nboth + 1) :
+                                                     length(private$k2)], , drop = FALSE])
             }
             if (mdl$nstatic) {
-                B_static <- B[, 1:mdl$nstatic]
+                B_static <- B[, 1:mdl$nstatic, drop = FALSE]
             } else {
                 B_static <- matrix(nrow = nrow(B), ncol = 0)
             }
@@ -268,18 +275,22 @@ Rules <- R6Class("Rules",
             } else  {
                 B_fyd <- matrix(nrow = nrow(B), ncol = 0)
             }
+
             if (mdl$nstatic) {
-                temp <- - C[1:mdl$nstatic, ] %*% self$gx %*% hx
+                temp <- - C[1:mdl$nstatic, , drop = FALSE] %*% self$gx %*% hx
                 b <- matrix(nrow = nrow(aa), ncol = length(private$index_c))
-                b[, private$cols_b] <- aa[, private$index_c]
-                b10 <- b[1:mdl$nstatic, 1:mdl$nstatic]
-                b11 <- b[1:mdl$nstatic, (mdl$nstatic + 1) : ncol(b)]
-                temp[, private$index_m] <- temp[, private$index_m] -
-                             A[1:mdl$nstatic, ]
+                b[, private$cols_b] <- aa[ , private$index_c, drop = FALSE]
+                b10 <- b[1:mdl$nstatic, 1:mdl$nstatic, drop = FALSE]
+                b11 <- b[1:mdl$nstatic, (mdl$nstatic + 1) : ncol(b),
+                         drop = FALSE]
+                temp[, private$index_m] <- temp[, private$index_m, drop = FALSE] -
+                                         A[1:mdl$nstatic, , drop = FALSE]
                 temp <- solve(b10, temp - b11 %*% self$ghx)
                 self$ghx <- rbind(temp, self$ghx)
             }
+            printobj(self$ghx)
             A_ <- cbind(B_static, C %*% self$gx + B_pred, B_fyd)
+
             if (mdl$exo_count) {
                 if (mdl$nstatic) {
                     fu <- t(Q) %*% jacobia[,  private$innovations_idx, drop = FALSE]
@@ -290,6 +301,8 @@ Rules <- R6Class("Rules",
             } else {
                 self$ghu <- matrix(nrow = 0, ncol = 0)
             }
+            printobj(self$ghu)
+            self$Gy <- hx
             return (invisible(self))
         }
     )
