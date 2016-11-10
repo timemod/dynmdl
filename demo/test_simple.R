@@ -1,6 +1,6 @@
 library(dynr)
 
-mod_file <- system.file("extdata", "simple.mod", package = "dynr")
+mod_file <- system.file("extdata", "simple1.mod", package = "dynr")
 
 mdl <- compile_model(mod_file)
 

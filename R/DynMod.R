@@ -253,7 +253,7 @@ DynMod <- R6Class("DynMod",
             if (is.null(self$rules)) {
                 self$rules = Rules$new(self)
             }
-            ret <- self$rules$solve_first_order(self)
+            ret <- self$rules$solve_first_order(self, debug = FALSE)
             return (solve_perturbation(self))
         },
         get_jacob = function(sparse = TRUE) {

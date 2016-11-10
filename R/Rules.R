@@ -172,7 +172,7 @@ Rules <- R6Class("Rules",
             private$reorder_jacobian_columns <- c(vec, nz +
                                                       seq_len(mdl$exo_count))
         },
-        solve_first_order = function(mdl, only_eigval = FALSE) {
+        solve_first_order = function(mdl, only_eigval = FALSE, debug = FALSE) {
 
             # calculate the Jacobian
             nper_exo <- mdl$max_exo_lag + mdl$max_exo_lead + 1
@@ -190,6 +190,10 @@ Rules <- R6Class("Rules",
                 aa <- t(Q) %*% jacobia
             } else {
                 aa <- jacobia
+            }
+            if (debug) {
+                printobj(jacobia)
+                printobj(aa)
             }
 
             # compute D and E matrix
@@ -210,6 +214,11 @@ Rules <- R6Class("Rules",
             } else {
                 qz_result <- geigen::gqz(E, D, sort = 'S')
                 self$eigval <- geigen::gevalues(qz_result)
+            }
+            if (debug) {
+                printobj(D)
+                printobj(E)
+                printobj(qz_result)
             }
 
             sdim <- sum(abs(self$eigval) <= 1)
@@ -248,6 +257,11 @@ Rules <- R6Class("Rules",
                                                   FALSE])))
             hx <- hx1 %*% hx2
             self$ghx <- hx[private$k1, , drop = FALSE]
+            if (debug) {
+                printobj(hx1)
+                printobj(hx2)
+                printobj(private$k2)
+            }
             if (mdl$nboth + 1 <= length(private$k2)) {
                 self$ghx <- rbind(self$ghx,
                                  self$gx[private$k2[(mdl$nboth + 1) :

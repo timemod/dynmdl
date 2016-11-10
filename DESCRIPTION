@@ -12,3 +12,4 @@ RoxygenNote: 5.0.1
 LinkingTo: Rcpp, BH
 Imports: Rcpp, nleqslv, Matrix, methods, compiler, R6, geigen
 Depends: regts
+Suggests: testthat
