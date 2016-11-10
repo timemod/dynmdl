@@ -35,13 +35,15 @@ analytical_solution_2 <- get_analytical_solution(mdl$endo_period, mu_2)
 lead_per <- end_period(mdl$endo_period)
 mdl$endo_data[lead_per, 'y'] <- analytical_solution_1[lead_per]
 
-print(system.time(
+print(system.time({
     mdl$solve(control = list(trace = TRUE))
-))
+    solve_result <- mdl$endo_data
+}))
 
-print(mdl$solve_out$solved)
-print(mdl$solve_out$iter)
+mdl$solve_perturbation()
+solve_perturb_result <- mdl$endo_data
 
-plot(mdl$endo_data[mdl$endo_period, "y"], type = 'p')
+plot(solve_result[mdl$endo_period, "y"], type = 'p')
+lines(solve_perturb_result[mdl$endo_period, "y"], col = 'blue')
 lines(analytical_solution_1[mdl$endo_period], col = "red")
 lines(analytical_solution_2[mdl$endo_period], col = "green")

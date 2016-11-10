@@ -173,7 +173,7 @@ SimModel <- R6Class("SimModel",
                 return (self$f_static(x, self$exos, self$params, jac = TRUE))
             }
             # todo: print output / give error if the commamd was not
-            # succesfuill
+            # succesfull
             out <- nleqslv::nleqslv(self$endos, fn = f, jac = jac)
             self$endos <- out$x
             return (invisible(self))
@@ -213,7 +213,6 @@ SimModel <- R6Class("SimModel",
             return (invisible(self))
         },
         solve = function(control = list()) {
-
             control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE)
             control_[names(control)] <- control
 
@@ -223,6 +222,9 @@ SimModel <- R6Class("SimModel",
             nper <- length_range(self$model_period)
             x <- private$get_solve_endo()
 
+            if (control_$trace) {
+                cat(sprintf("\nIteration report:\n"))
+            }
             solved <- FALSE
             for (iter in 0:control_$maxiter) {
                 res <- private$get_residuals(x, lags, leads, nper)

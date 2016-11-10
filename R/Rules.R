@@ -205,25 +205,19 @@ Rules <- R6Class("Rules",
             E[private$row_indx_de_1, private$index_e1] <- -aa[private$row_indx,
                                                               private$index_e]
             E[private$row_indx_de_2, private$index_e2] <- diag(mdl$nboth)
-            printobj(D)
-            printobj(E)
-
             if (only_eigval) {
                 self$eigval <- sort(geigen::geigen(E, D, only.values = TRUE)$values)
             } else {
                 qz_result <- geigen::gqz(E, D, sort = 'S')
                 self$eigval <- geigen::gevalues(qz_result)
-                printobj(qz_result)
             }
-            printobj(self$eigval)
 
             sdim <- sum(abs(self$eigval) <= 1)
-            printobj(sdim)
             nba <- private$nd - sdim
             if (nba > mdl$nsfwrd) {
-                warning("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
+                stop("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
             } else if (nba < mdl$nsfwrd) {
-                warning("Blanchard & Kahn conditions are not satisfied: indeterminacy")
+                stop("Blanchard & Kahn conditions are not satisfied: indeterminacy")
             }
 
             if (only_eigval) {
@@ -247,14 +241,11 @@ Rules <- R6Class("Rules",
             Z21 <- Z[indx_explosive_root, indx_stable_root, drop = FALSE]
             Z22 <- Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
             self$gx <- -solve(Z22, Z21)
-            printobj(self$gx)
             # TODO: error if Z22 is new singular (see Matlab code)
-            hx1 <- t(backsolve(t(qz_result$T[indx_stable_root, indx_stable_root, drop =
-                                                 FALSE]), Z11))
+            hx1 <- t(backsolve(qz_result$T[indx_stable_root, indx_stable_root, drop =
+                                                 FALSE], Z11, transpose = TRUE))
             hx2 <- t(solve(Z11, t(qz_result$S[indx_stable_root, indx_stable_root, drop =
                                                   FALSE])))
-            printobj(hx1)
-            printobj(hx2)
             hx <- hx1 %*% hx2
             self$ghx <- hx[private$k1, , drop = FALSE]
             if (mdl$nboth + 1 <= length(private$k2)) {
@@ -288,7 +279,6 @@ Rules <- R6Class("Rules",
                 temp <- solve(b10, temp - b11 %*% self$ghx)
                 self$ghx <- rbind(temp, self$ghx)
             }
-            printobj(self$ghx)
             A_ <- cbind(B_static, C %*% self$gx + B_pred, B_fyd)
 
             if (mdl$exo_count) {
@@ -301,7 +291,6 @@ Rules <- R6Class("Rules",
             } else {
                 self$ghu <- matrix(nrow = 0, ncol = 0)
             }
-            printobj(self$ghu)
             self$Gy <- hx
             return (invisible(self))
         }
