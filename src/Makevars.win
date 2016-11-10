@@ -1,10 +1,10 @@
 # package flags. The -I is for FlexLexer.h and the include files in boost
-PKG_CXXFLAGS = -DPACKAGE_NAME=\"dynare\" -DPACKAGE_TARNAME=\"dynare\" -DPACKAGE_VERSION=\"4.6-unstable\" -DPACKAGE_STRING=\"dynare\ 4.6-unstable\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_BOOST_GRAPH_ADJACENCY_LIST_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_TRIM_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_SPLIT_HPP=1 -DHAVE_BOOST_LEXICAL_CAST_HPP=1 -DBOOST_NO_HASH=/\*\*/ -DUSE_R -I. 
+PKG_CXXFLAGS = -DPACKAGE_NAME=\"dynare\" -DPACKAGE_TARNAME=\"dynare\" -DPACKAGE_VERSION=\"4.6-unstable\" -DPACKAGE_STRING=\"dynare\ 4.6-unstable\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_BOOST_GRAPH_ADJACENCY_LIST_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_TRIM_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_SPLIT_HPP=1 -DHAVE_BOOST_LEXICAL_CAST_HPP=1 -DBOOST_NO_HASH=/\*\*/ -DUSE_R -I.
 SUBDIR = macro
 SUBLIB = lib$(SUBDIR).a
 PKG_LIBS = $(SUBDIR)/$(SUBLIB)
 
-## For the final version of the package, we have to clean the sublib here, 
+## For the final version of the package, we have to clean the sublib here,
 ## to clean up between architectures:
 ## INSTALL only cleans src/*.o src/*$(SHLIB_EXT) for each arch
 #all : subclean sublib $(SHLIB)
@@ -28,8 +28,10 @@ sublib:
 
 # TODO: flex/bison and python do not work on Windows within the Rtools
 # environment. Therefore, for the moment the package should only be developped
-# in a Linux environent. In a later stage we have to check if there is an 
+# in a Linux environent. In a later stage we have to check if there is an
 # alternative solution for Windows.
 
 # dependencies C files
+DEPS_DIR = deps
+DEP_FILE = $(DEPS_DIR)/makedeps
 include $(DEP_FILE)
