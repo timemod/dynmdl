@@ -2,7 +2,7 @@
 % Please edit documentation in R/compile_model.R
 \name{compile_model}
 \alias{compile_model}
-\title{Compile a Dynare model and return a \code{\link{SimModel}}}
+\title{Compile a Dynare model and return a \code{\link{DynMod}}}
 \usage{
 compile_model(mod_file, bytecode = TRUE)
 }
@@ -13,9 +13,9 @@ compile_model(mod_file, bytecode = TRUE)
 residuals and jacobian are compiled.}
 }
 \value{
-an \code{SimModel} object
+an \code{DynMod} object
 }
 \description{
-Compile a Dynare model and return a \code{\link{SimModel}}
+Compile a Dynare model and return a \code{\link{DynMod}}
 }
 

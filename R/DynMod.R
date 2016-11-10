@@ -9,7 +9,7 @@ setOldClass("regperiod_range")
 #' @exportClass regts
 setOldClass("regts")
 
-#' An R6 class for running simulations with the stacked-time Newton method
+#' An R6 class for a Dynare model
 #'
 #' @docType class
 #' @importFrom R6 R6Class
@@ -99,7 +99,7 @@ setOldClass("regts")
 #'
 #' }
 
-SimModel <- R6Class("SimModel",
+DynMod <- R6Class("DynMod",
     public = list(
         exo_count = NA_integer_,
         endo_count = NA_integer_,
