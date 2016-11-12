@@ -14,62 +14,6 @@ Object of \code{\link{R6Class}} containing a macro-economic model,
 \description{
 An R6 class for a Dynare model
 }
-\section{Fields}{
-
-\describe{
-\item{\code{endo_count}}{the number of endogenous variables}
-
-\item{\code{endos}}{the names and steady values of the endogenous variables. These
-values are initialised with the values from the \code{initval} block of the
-mod-file and may be computed with the \code{steady} method}
-
-\item{\code{exos}}{the names and steady values of the exogenous variables. These
-values are initialised with the values from the \code{initval} block of the
-mod-file}
-
-\item{\code{params}}{the names and steady values of the parameters}
-
-\item{\code{max_endo_lag}}{maximum lag for endogenous variables}
-
-\item{\code{max_endo_lead}}{maximum lead for endogenous variables}
-
-\item{\code{max_exo_lag}}{maximum lag for exogenous variables}
-
-\item{\code{max_exo_lead}}{maximum lead for exogenous variables}
-
-\item{\code{nstatic}}{the number of static variables (variables without lag or}
-
-\item{\code{nfwrd}}{the number of forward looking variables (variables with}
-
-\item{\code{npred}}{the number of backward looking variables (variables with}
-
-\item{\code{nboth}}{the number of variables with both a lag and a lead}
-
-\item{\code{ndynamic}}{the number of variables with a lag or lead}
-
-\item{\code{nsfwrd}}{the number of variables with leads}
-
-\item{\code{lead_lag_incidence}}{see documentation Dynare
-of the model}
-
-\item{\code{f_dynamic}}{function for the residuals and Jacobian for the dynamic version
-of the model}
-
-\item{\code{model_period}}{the model period as a \code{\link[regts]{regperiod_range}}}
-
-\item{\code{endo_period}}{the data period for the endogenous variables}
-
-\item{\code{exo_period}}{the data period for the exogenous variables}
-
-\item{\code{endo_data}}{a \code{\link[regts]{regts}} with the values of the
-endogenous variables}
-
-\item{\code{exo_data}}{a \code{\link[regts]{regts}} with the values of the
-exogenous variables}
-
-\item{\code{solve_out}}{the output of the solver (e.g. \code{\link[nleqslv]{nleqslv}})
-used to solve the model}
-}}
 \section{Methods}{
 
 \describe{
