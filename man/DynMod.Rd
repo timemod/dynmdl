@@ -18,6 +18,24 @@ An R6 class for a Dynare model
 
 \describe{
 
+\item{\code{set_params()}}{Sets the parameters of the model.}
+
+\item{\code{get_params()}}{Returns the parameters of the model.}
+
+\item{\code{set_static_exos(exos)}}{Sets the static values of
+the exogenous variables. These values are used to compute the steady state.}
+
+\item{\code{get_static_exos()}}{Returns the static values of
+the exogenous variables}
+
+\item{\code{get_static_endos()}}{Returns the static values of
+the endogenous variables, i.e. the values that are supposed to be
+the steady state values. Function \code{solve_steady} can be used
+to compute them. After compiling the model, the
+static endos are initialized with zeros and the values in the \code{initval}
+block in the  \code{mod} file. There is no setter for the static values:
+you can only modify them by calling function \code{solve_steady}}
+
 \item{\code{set_period(period)}}{Sets the model period. \code{period}
 is a \code{\link{regperiod_range}} object or an object that can be coerced
 to a \code{regperiod_range}. The model period is the longest period for which
@@ -25,13 +43,53 @@ the model may be solved. This method also allocates storage for
 all model timeseries.  Model timeseries are
 available for the so called 'model data period', which is
 the model period extended with a lag and lead period. This method
-also initialises all model timeseries with steady state values stored in the
-\code{endos} and \code{exos} fields.}
+also initialises all model timeseries with static values
+of the exogenous and endogenous model variables.}
 
-\item{\code{solve_steady()}}{Solve the steady state of the model.
-This methods solves the steady state problem. The data in field \code{endos}
-is used as initial values for the endogenous variables.
-This field is overwritten with the computed steady state values}
+\item{\code{get_period()}}{Returns the model period}
+
+\item{\code{get_endo_period()}}{Returns the endo period}
+
+\item{\code{get_exo_period()}}{Returns the exo period}
+
+\item{\code{set_exo_value(names, value, period = NULL)}}{Sets the value(s)
+of one more exogenous variables. \code{value} can be any R object
+that can be coerced to a numeric. \code{period} is the period
+for which endogenous variable is modified. If argument \code{period}
+is missing and if \code{value} is a \code{regts} or \code{ts}, then
+the period range of \code{value} is used; otherwise the exo period is
+used.}
+
+\item{\code{set_exo_data(data)}}{Sets the values
+of the exogenous variables. \code{data} is a
+\code{regts} or \code{ts} with column names.}
+
+\item{\code{get_exo_data(names, period = self$get_exo_period()}}{
+Returns the exogenous data}
+
+\item{\code{set_endo_value(names, value, period = NULL)}}{Sets the value(s)
+of one more endogenous variables. \code{value} can be any R object
+that can be coerced to a numeric. \code{period} is the period
+for which endogenous variable is modified. If argument \code{period}
+is missing and if \code{value} is a \code{regts} or \code{ts}, then
+the period range of \code{value} is used; otherwise the endo period is
+used.}
+
+\item{\code{set_endo_data(data)}}{Sets the values
+of the endogenous variables. \code{data} is a
+\code{regts} or \code{ts} with column names.}
+
+\item{\code{get_endo_data(names, period = self$get_endo_period()}}{
+Returns the endgenous data}
+
+\item{\code{solve_steady(start = mdl$get_static_endos(), control = NULL)}}{
+Solve the steady state of the model.
+This methods solves the steady state problem. Argument \code{start}
+can be used to specify an initial guess for the steady state values.
+By default, the initial guess is either based on the \code{initval}
+block of the mode file or the result of a previous call of \code{solve_steady}.
+\code{control} is a list of control options passed to
+\code{\link[nleqslv]{nleqslv}}.}
 
 \item{\code{check()}}{Compute the eigenvalues of the linear
 system and check if the Blachard and Kahn conditions are satisfied.}

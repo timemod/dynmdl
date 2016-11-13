@@ -12,8 +12,8 @@ system.time(
 mdl$check()
 
 mdl$set_period(regperiod_range("2010Q1", "2010Q2"))
-mdl$exo_data["2010Q1", "g"] <- mdl$exo_data["2010Q1", "g"] + 1
+mdl$set_exo_value(names = "g", value = 280, period = "2010Q1")
 mdl$solve_perturbation()
-print(mdl$endo_data)
+print(mdl$get_endo_data())
 mdl$solve(control = list(trace = TRUE))
-print(mdl$endo_data)
+print(mdl$get_endo_data())

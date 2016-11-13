@@ -6,7 +6,7 @@ mdl <- compile_model(mod_file)
 #print(mdl$endos)
 
 system.time(
-   mdl$solve_steady()
+   mdl$solve_steady(control = list(trace = 1))
 )
 #print(mdl$endos)
 mdl$check()
@@ -14,13 +14,10 @@ mdl$check()
 mdl$set_period(regperiod_range("2010Q1", "2011Q4"))
 
 # shock for variable g in first solve perod
-mdl$exo_data['2010Q1', 'g'] <- 280
+mdl$set_exo_value(names = "g", value = 280, period = "2010Q1")
 
 print(system.time(
-    mdl$solve()
+    mdl$solve(control = list(trace = TRUE))
 ))
 
-print(mdl$solve_out$message)
-print(mdl$solve_out$iter)
-
-plot(mdl$endo_data[, 'y'])
+plot(mdl$get_endo_data()[, 'y'])

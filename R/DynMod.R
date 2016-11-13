@@ -66,6 +66,24 @@ setOldClass("regts")
 #' @section Methods:
 #' \describe{
 #'
+#' \item{\code{set_params()}}{Sets the parameters of the model.}
+#'
+#' \item{\code{get_params()}}{Returns the parameters of the model.}
+#'
+#' \item{\code{set_static_exos(exos)}}{Sets the static values of
+#' the exogenous variables. These values are used to compute the steady state.}
+#'
+#' \item{\code{get_static_exos()}}{Returns the static values of
+#' the exogenous variables}
+#'
+#' \item{\code{get_static_endos()}}{Returns the static values of
+#' the endogenous variables, i.e. the values that are supposed to be
+#' the steady state values. Function \code{solve_steady} can be used
+#' to compute them. After compiling the model, the
+#' static endos are initialized with zeros and the values in the \code{initval}
+#' block in the  \code{mod} file. There is no setter for the static values:
+#' you can only modify them by calling function \code{solve_steady}}
+#'
 #' \item{\code{set_period(period)}}{Sets the model period. \code{period}
 #' is a \code{\link{regperiod_range}} object or an object that can be coerced
 #' to a \code{regperiod_range}. The model period is the longest period for which
@@ -73,13 +91,53 @@ setOldClass("regts")
 #' all model timeseries.  Model timeseries are
 #' available for the so called 'model data period', which is
 #' the model period extended with a lag and lead period. This method
-#' also initialises all model timeseries with steady state values stored in the
-#' \code{endos} and \code{exos} fields.}
+#' also initialises all model timeseries with static values
+#' of the exogenous and endogenous model variables.}
 #'
-#' \item{\code{solve_steady()}}{Solve the steady state of the model.
-#' This methods solves the steady state problem. The data in field \code{endos}
-#' is used as initial values for the endogenous variables.
-#' This field is overwritten with the computed steady state values}
+#' \item{\code{get_period()}}{Returns the model period}
+#'
+#' \item{\code{get_endo_period()}}{Returns the endo period}
+#'
+#' \item{\code{get_exo_period()}}{Returns the exo period}
+#'
+#' \item{\code{set_exo_value(names, value, period = NULL)}}{Sets the value(s)
+#' of one more exogenous variables. \code{value} can be any R object
+#' that can be coerced to a numeric. \code{period} is the period
+#' for which endogenous variable is modified. If argument \code{period}
+#' is missing and if \code{value} is a \code{regts} or \code{ts}, then
+#' the period range of \code{value} is used; otherwise the exo period is
+#' used.}
+#'
+#' \item{\code{set_exo_data(data)}}{Sets the values
+#' of the exogenous variables. \code{data} is a
+#' \code{regts} or \code{ts} with column names.}
+#'
+#' \item{\code{get_exo_data(names, period = self$get_exo_period()}}{
+#' Returns the exogenous data}
+#'
+#' \item{\code{set_endo_value(names, value, period = NULL)}}{Sets the value(s)
+#' of one more endogenous variables. \code{value} can be any R object
+#' that can be coerced to a numeric. \code{period} is the period
+#' for which endogenous variable is modified. If argument \code{period}
+#' is missing and if \code{value} is a \code{regts} or \code{ts}, then
+#' the period range of \code{value} is used; otherwise the endo period is
+#' used.}
+#'
+#' \item{\code{set_endo_data(data)}}{Sets the values
+#' of the endogenous variables. \code{data} is a
+#' \code{regts} or \code{ts} with column names.}
+#'
+#' \item{\code{get_endo_data(names, period = self$get_endo_period()}}{
+#' Returns the endgenous data}
+#'
+#' \item{\code{solve_steady(start = mdl$get_static_endos(), control = NULL)}}{
+#' Solve the steady state of the model.
+#' This methods solves the steady state problem. Argument \code{start}
+#' can be used to specify an initial guess for the steady state values.
+#' By default, the initial guess is either based on the \code{initval}
+#' block of the mode file or the result of a previous call of \code{solve_steady}.
+#' \code{control} is a list of control options passed to
+#' \code{\link[nleqslv]{nleqslv}}.}
 #'
 #' \item{\code{check()}}{Compute the eigenvalues of the linear
 #' system and check if the Blachard and Kahn conditions are satisfied.}
@@ -134,54 +192,26 @@ DynMod <- R6Class("DynMod",
                 private$npred              <- dynamic_model$npred
                 private$nboth              <- dynamic_model$nboth
             })
-            private$ndynamic               <- private$npred + private$nboth + private$nfwrd
+            private$ndynamic               <- private$npred + private$nboth +
+                                              private$nfwrd
             private$nsfwrd                 <- private$nfwrd + private$nboth
+        },
+        set_params = function(params) {
+            private$params[names(params)] <- params
+            return (invisible(self))
         },
         get_params = function() {
             return (private$params)
         },
-        get_endos = function() {
-            return (private$endos)
+        set_static_exos = function(exos) {
+            private$exos[names(exos)] <- exos
+            return (invisible(self))
         },
-        set_endos = function(endos) {
-            private$endos[names(endos)] <- endos
-        },
-        get_exos = function() {
+        get_static_exos = function() {
             return (private$exos)
         },
-        solve_steady = function() {
-            f <- function(x) {
-                return (private$f_static(x, private$exos, private$params))
-            }
-            jac <- function(x) {
-                return (private$f_static(x, private$exos, private$params, jac = TRUE))
-            }
-            # todo: print output / give error if the commamd was not
-            # succesfull
-            out <- nleqslv::nleqslv(private$endos, fn = f, jac = jac)
-            private$endos <- out$x
-            return (invisible(self))
-        },
-        check = function() {
-            if (is.null(private$rules)) {
-                private$init_rules()
-            }
-            eigvalues <- private$solve_first_order(self, only_eigval = TRUE)
-            cat("EIGENVALUES:\n")
-            for (eigval in eigvalues) {
-                cat(sprintf("%g\n", eigval))
-            }
-            cat("\n")
-            return (invisible(self))
-        },
-        get_model_period = function() {
-            return (private$model_period)
-        },
-        get_endo_period = function() {
-            return (private$endo_period)
-        },
-        get_exo_period = function() {
-            return (private$exo_period)
+        get_static_endos = function() {
+            return (private$endos)
         },
         set_period = function(period) {
             period <- as.regperiod_range(period)
@@ -196,28 +226,114 @@ DynMod <- R6Class("DynMod",
             nper <- length_range(private$endo_period)
             endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
             private$endo_data <- regts(endo_mat,
-                                     start = start_period(private$endo_period),
-                                     names = names(private$endos))
+                                       start = start_period(private$endo_period),
+                                       names = names(private$endos))
             if (private$exo_count > 0) {
                 nper <- length_range(private$exo_period)
                 exo_mat <- matrix(rep(private$exos, each = nper), nrow = nper)
                 private$exo_data <- regts(exo_mat,
-                                      start = start_period(private$exo_period),
-                                      names = names(private$exos))
+                                          start = start_period(private$exo_period),
+                                          names = names(private$exos))
             }
             return (invisible(self))
         },
-        get_endo_data = function() {
-            return (private$endo_data)
+        get_period = function() {
+            return (private$model_period)
         },
-        set_endo_data = function(x) {
-            # TODO: we assume here that x is a matrix type timeseries
-            # TODO: calculate the intersection of the period of x
+        get_endo_period = function() {
+            return (private$endo_period)
+        },
+        get_exo_period = function() {
+            return (private$exo_period)
+        },
+        set_exo_value = function(names, value, period = mdl$get_exo_period()) {
+            if (missing(period)) {
+                if (is.ts(value)) {
+                    period <- get_regperiod_range(value)
+                } else {
+                    period <- mdl$exo_period
+                }
+            }
+            # TODO: period should be the intersection of mdl$exo_period
+            # and period
+            private$exo_data[period, names] <- value
+            return (invisible(self))
+        },
+        set_exo_data = function(data) {
+            # TODO: calculate the intersection of the period of data
             # with private$endo_period
-            # TODO: x can be a list
-            # TODO: add period argument
-            names <- intersect(colnames(x), private$endo_names)
+            ts_names <- colnames(ts_data)
+            if (is.null(ts_names)) {
+                stop("Argument ts_data does not have colnames")
+            }
+            names <- intersect(ts_names, private$endo_names)
+            private$exo_data[, names] <- x[, names]
+            return (invisible(self))
+        },
+        get_exo_data = function(names = NULL, period = self$get_exo_period()) {
+            if (missing(names)) {
+                return (private$exo_data[period, ])
+            } else {
+                names <- intersect(names, private$endo_names)
+                return (private$exo_data[period, names])
+            }
+        },
+        set_endo_value = function(names, value, period = NULL) {
+            if (missing(period)) {
+                if (is.ts(value)) {
+                    period <- get_regperiod_range(value)
+                } else {
+                    period <- mdl$endo_period
+                }
+            }
+            # TODO: period should be the intersection of mdl$endo_period
+            # and period
+            private$endo_data[period, names] <- value
+            return (invisible(self))
+        },
+        set_endo_data = function(data) {
+            # TODO: calculate the intersection of the period of data
+            # with private$endo_period
+            ts_names <- colnames(ts_data)
+            if (is.null(ts_names)) {
+                stop("Argument ts_data does not have colnames")
+            }
+            names <- intersect(ts_names, private$exo_names)
             private$endo_data[, names] <- x[, names]
+            return (invisible(self))
+        },
+        get_endo_data = function(names = NULL, period = self$get_endo_period()) {
+            if (missing(names)) {
+                return (private$endo_data[period, ])
+            } else {
+                names <- intersect(names, private$endo_names)
+                return (private$endo_data[period, names])
+            }
+        },
+        solve_steady = function(start = self$get_static_endos(), control = NULL) {
+            f <- function(x) {
+                return (private$f_static(x, private$exos, private$params))
+            }
+            jac <- function(x) {
+                return (private$f_static(x, private$exos, private$params, jac = TRUE))
+            }
+            # todo: print output / give error if the commamd was not
+            # succesfull
+            out <- nleqslv::nleqslv(start, fn = f, jac = jac, control = control)
+            private$endos <- out$x
+            return (invisible(self))
+        },
+        check = function() {
+            if (is.null(private$rules)) {
+                private$init_rules()
+            }
+            eigvalues <- private$solve_first_order(only_eigval = TRUE)
+            cat("EIGENVALUES:\n")
+            for (eigval in eigvalues) {
+                cat(sprintf("%g\n", eigval))
+            }
+            cat("\n")
+            return (invisible(self))
         },
         solve = function(control = list()) {
             control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE)
@@ -304,9 +420,10 @@ DynMod <- R6Class("DynMod",
             } else {
                 epsilon <- rules$ghu %*% t(ex_)
                 for (i in 2 : (iter + private$max_endo_lag)) {
-                    yhat <- t(private$endo_data[i - 1, rules$order_var[k2], drop = FALSE])
-                    private$endo_data[i, rules$order_var] <- rules$ghx %*% yhat  +
-                        epsilon[ , i - 1, drop = FALSE]
+                    yhat <- t(private$endo_data[i - 1, rules$order_var[k2],
+                                                drop = FALSE])
+                    private$endo_data[i, rules$order_var] <-
+                        rules$ghx %*% yhat  + epsilon[ , i - 1, drop = FALSE]
                 }
                 n <- iter + private$max_endo_lag
                 private$endo_data[1:n, ] <- private$endo_data[1 : n, ]  +
@@ -326,7 +443,6 @@ DynMod <- R6Class("DynMod",
             return (jac)
         }
     ),
-
     private = list(
         exo_count = NA_integer_,
         endo_count = NA_integer_,
@@ -395,7 +511,7 @@ DynMod <- R6Class("DynMod",
                        x = mat_info$values, Dim = as.integer(rep(n, 2)))
             return (as(jac, "dgCMatrix"))
         },
-        init_rules = function() {
+        init_rules = function(debug = FALSE) {
 
             rules <- list()
 
