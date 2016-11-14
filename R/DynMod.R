@@ -100,13 +100,11 @@ setOldClass("regts")
 #'
 #' \item{\code{get_exo_period()}}{Returns the exo period}
 #'
-#' \item{\code{set_exo_value(names, value, period = NULL)}}{Sets the value(s)
+#' \item{\code{set_exo_value(names, value, period = self$get_exo_period())}}{Sets the value(s)
 #' of one more exogenous variables. \code{value} can be any R object
 #' that can be coerced to a numeric. \code{period} is the period
 #' for which endogenous variable is modified. If argument \code{period}
-#' is missing and if \code{value} is a \code{regts} or \code{ts}, then
-#' the period range of \code{value} is used; otherwise the exo period is
-#' used.}
+#' is missing the exo period is used.}
 #'
 #' \item{\code{set_exo_data(data)}}{Sets the values
 #' of the exogenous variables. \code{data} is a
@@ -115,13 +113,10 @@ setOldClass("regts")
 #' \item{\code{get_exo_data(names, period = self$get_exo_period()}}{
 #' Returns the exogenous data}
 #'
-#' \item{\code{set_endo_value(names, value, period = NULL)}}{Sets the value(s)
-#' of one more endogenous variables. \code{value} can be any R object
+#' \item{\code{set_endo_value(names, value, period = self$get_endo_period())}}{Sets the value(s) of one more endogenous variables. \code{value} can be any R object
 #' that can be coerced to a numeric. \code{period} is the period
 #' for which endogenous variable is modified. If argument \code{period}
-#' is missing and if \code{value} is a \code{regts} or \code{ts}, then
-#' the period range of \code{value} is used; otherwise the endo period is
-#' used.}
+#' is missing then the endo period is used.}
 #'
 #' \item{\code{set_endo_data(data)}}{Sets the values
 #' of the endogenous variables. \code{data} is a
@@ -154,6 +149,9 @@ setOldClass("regts")
 #' \item{\code{get_jacob(sparse = TRUE)}}{Returns the Jacobian for the
 #' stacked-time Newton problem either as a sparse matrix
 #' (a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
+#'
+#' \item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
+#' computed with functiomn \code{checkl()} of \code{solve_perturbation}.}
 #'
 #' }
 
@@ -247,13 +245,6 @@ DynMod <- R6Class("DynMod",
             return (private$exo_period)
         },
         set_exo_value = function(names, value, period = mdl$get_exo_period()) {
-            if (missing(period)) {
-                if (is.ts(value)) {
-                    period <- get_regperiod_range(value)
-                } else {
-                    period <- mdl$exo_period
-                }
-            }
             # TODO: period should be the intersection of mdl$exo_period
             # and period
             private$exo_data[period, names] <- value
@@ -270,22 +261,15 @@ DynMod <- R6Class("DynMod",
             private$exo_data[, names] <- x[, names]
             return (invisible(self))
         },
-        get_exo_data = function(names = NULL, period = self$get_exo_period()) {
+        get_exo_data = function(period = self$get_exo_period(), names = NULL) {
             if (missing(names)) {
                 return (private$exo_data[period, ])
             } else {
                 names <- intersect(names, private$endo_names)
-                return (private$exo_data[period, names])
+                return (private$exo_data[period, names, drop = FALSE])
             }
         },
-        set_endo_value = function(names, value, period = NULL) {
-            if (missing(period)) {
-                if (is.ts(value)) {
-                    period <- get_regperiod_range(value)
-                } else {
-                    period <- mdl$endo_period
-                }
-            }
+        set_endo_value = function(names, value, period = self$get_endo_period()) {
             # TODO: period should be the intersection of mdl$endo_period
             # and period
             private$endo_data[period, names] <- value
@@ -302,12 +286,12 @@ DynMod <- R6Class("DynMod",
             private$endo_data[, names] <- x[, names]
             return (invisible(self))
         },
-        get_endo_data = function(names = NULL, period = self$get_endo_period()) {
+        get_endo_data = function(period = self$get_endo_period(), names) {
             if (missing(names)) {
                 return (private$endo_data[period, ])
             } else {
                 names <- intersect(names, private$endo_names)
-                return (private$endo_data[period, names])
+                return (private$endo_data[period, names, , drop = FALSE])
             }
         },
         solve_steady = function(start = self$get_static_endos(), control = NULL) {
@@ -441,6 +425,14 @@ DynMod <- R6Class("DynMod",
                 jac <- as(jac, "matrix")
             }
             return (jac)
+        },
+        get_eigval = function() {
+            if (!is.null(private$rules)) {
+                return (private$rules$eigval)
+            } else {
+                stop(paste("Eigen values not available. Calculate the eigenvalues",
+                           "with method check()."))
+            }
         }
     ),
     private = list(

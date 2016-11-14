@@ -1,5 +1,7 @@
 library(dynr)
-context("simple model with 1 equation and no shock on exogenous data")
+context("simple model with 1 equation")
+
+source("simple_model_utils.R")
 
 mod_file <- "mod/simple1.mod"
 
@@ -9,36 +11,42 @@ mod_file <- "mod/simple1.mod"
 report <- capture_output(mdl <- compile_model(mod_file))
 
 mdl$set_period("2015/2060")
-
-# calculate the lowest eigenvalue
-mu_1 <- with(as.list(mdl$get_params()), (1 - sqrt(1 - 4 * a * b)) / (2 * a))
-
-# calculate the analytical result
-ref <- regts(matrix(cumprod(c(1,
-                       rep(mu_1, length_range(mdl$get_period()) + 1))),
-                    ncol = 1),
-             period = mdl$get_endo_period(),
-             names = 'y')
-
-# set lead value in the lead period
+endo_per <- mdl$get_endo_period()
+eigvals <- get_analytical_eigvals(mdl$get_params())
+ref1 <- get_analytical_result(y0 = 1, x1 = 0, period = endo_per,
+                              params = mdl$get_params())
+ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = endo_per,
+                              params = mdl$get_params())
 lead_per <- end_period(mdl$get_endo_period())
-mdl$set_endo_value(names = "y", value = ref["2014", "y"])
-mdl$set_endo_value(names = "y", value = ref[lead_per, "y"])
+
+mdl$set_endo_value("y", 1, start_period(mdl$get_endo_period()))
 
 test_that("steady state calculation", {
-    mdl2 <- mdl$clone()
-    mdl2$solve_steady(start = c(y = 2))
-	expect_equal(mdl2$get_static_endos(), c(y = 0))
+    mdl_stat <- mdl$clone()
+    mdl_stat$solve_steady(start = c(y = 2))
+	expect_equal(mdl_stat$get_static_endos(), c(y = 0))
 })
 
 test_that("solve", {
-    mdl2 <- mdl$clone()
+    mdl1 <- mdl$clone()
+    mdl1$set_endo_value("y", ref1[lead_per], lead_per)
+    mdl1$solve()
+    mdl2 <- mdl1$clone()
+    mdl2$set_endo_value("y", ref2[lead_per], lead_per)
+    mdl2$set_exo_value("x", 1, start_period(mdl$get_period()))
     mdl2$solve()
-    expect_equal(mdl2$get_endo_data(), ref)
+    expect_equal(mdl1$get_endo_data(), ref1)
+    expect_equal(mdl2$get_endo_data(), ref2)
 })
 
 test_that("solve_perturbation", {
-    mdl2 <- mdl$clone()
+    mdl1 <- mdl$clone()
+    mdl1$solve_perturbation()
+    expect_equal(mdl1$get_endo_data(), ref1)
+    expect_equal(mdl1$get_eigval(), eigvals)
+    mdl2 <- mdl1$clone()
+    mdl2$set_exo_value("x", 1, start_period(mdl$get_period()))
     mdl2$solve_perturbation()
-    expect_equal(mdl2$get_endo_data(), ref)
+    expect_equal(mdl1$get_endo_data(), ref1)
+    expect_equal(mdl2$get_endo_data(), ref2)
 })

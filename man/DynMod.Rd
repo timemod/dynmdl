@@ -52,13 +52,11 @@ of the exogenous and endogenous model variables.}
 
 \item{\code{get_exo_period()}}{Returns the exo period}
 
-\item{\code{set_exo_value(names, value, period = NULL)}}{Sets the value(s)
+\item{\code{set_exo_value(names, value, period = self$get_exo_period())}}{Sets the value(s)
 of one more exogenous variables. \code{value} can be any R object
 that can be coerced to a numeric. \code{period} is the period
 for which endogenous variable is modified. If argument \code{period}
-is missing and if \code{value} is a \code{regts} or \code{ts}, then
-the period range of \code{value} is used; otherwise the exo period is
-used.}
+is missing the exo period is used.}
 
 \item{\code{set_exo_data(data)}}{Sets the values
 of the exogenous variables. \code{data} is a
@@ -67,13 +65,10 @@ of the exogenous variables. \code{data} is a
 \item{\code{get_exo_data(names, period = self$get_exo_period()}}{
 Returns the exogenous data}
 
-\item{\code{set_endo_value(names, value, period = NULL)}}{Sets the value(s)
-of one more endogenous variables. \code{value} can be any R object
+\item{\code{set_endo_value(names, value, period = self$get_endo_period())}}{Sets the value(s) of one more endogenous variables. \code{value} can be any R object
 that can be coerced to a numeric. \code{period} is the period
 for which endogenous variable is modified. If argument \code{period}
-is missing and if \code{value} is a \code{regts} or \code{ts}, then
-the period range of \code{value} is used; otherwise the endo period is
-used.}
+is missing then the endo period is used.}
 
 \item{\code{set_endo_data(data)}}{Sets the values
 of the endogenous variables. \code{data} is a
@@ -106,6 +101,9 @@ solution period are allowed.}
 \item{\code{get_jacob(sparse = TRUE)}}{Returns the Jacobian for the
 stacked-time Newton problem either as a sparse matrix
 (a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
+
+\item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
+computed with functiomn \code{checkl()} of \code{solve_perturbation}.}
 
 }
 }
