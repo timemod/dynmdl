@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "MinimumFeedbackSet.hh"
+#include "dynout.hh"
 
 namespace MFS
 {
@@ -101,19 +102,19 @@ namespace MFS
   {
     AdjacencyList_t::vertex_iterator  it, it_end;
     property_map<AdjacencyList_t, vertex_index_t>::type v_index = get(vertex_index, G);
-    cout << "Graph\n";
-    cout << "-----\n";
+    DynOut << "Graph\n";
+    DynOut << "-----\n";
     for (tie(it, it_end) = vertices(G); it != it_end; ++it)
       {
-        cout << "vertex[" << v_index[*it] + 1 << "] <-";
+        DynOut << "vertex[" << v_index[*it] + 1 << "] <-";
         AdjacencyList_t::in_edge_iterator it_in, in_end;
         for (tie(it_in, in_end) = in_edges(*it, G); it_in != in_end; ++it_in)
-          cout << v_index[source(*it_in, G)] + 1 << " ";
-        cout << "\n       ->";
+          DynOut << v_index[source(*it_in, G)] + 1 << " ";
+        DynOut << "\n       ->";
         AdjacencyList_t::out_edge_iterator it_out, out_end;
         for (tie(it_out, out_end) = out_edges(*it, G); it_out != out_end; ++it_out)
-          cout << v_index[target(*it_out, G)] + 1 << " ";
-        cout << "\n";
+          DynOut << v_index[target(*it_out, G)] + 1 << " ";
+        DynOut << "\n";
       }
   }
 
@@ -240,7 +241,7 @@ namespace MFS
                   if (source(*it_in, G) == target(*it_in, G))
                     {
 #ifdef verbose
-                      cout << v_index[source(*it_in, G)] << " == " << v_index[target(*it_in, G)] << "\n";
+                      DynOut << v_index[source(*it_in, G)] << " == " << v_index[target(*it_in, G)] << "\n";
 #endif
                       not_a_loop = false;
                     }
@@ -249,7 +250,7 @@ namespace MFS
               {
 #ifdef verbose
                 property_map<AdjacencyList_t, vertex_index_t>::type v_index = get(vertex_index, G);
-                cout << "->eliminate vertex[" << v_index[*it] + 1 << "]\n";
+                DynOut << "->eliminate vertex[" << v_index[*it] + 1 << "]\n";
 #endif
                 Eliminate(*it, G);
 #ifdef verbose
@@ -282,7 +283,7 @@ namespace MFS
           {
 #ifdef verbose
             property_map<AdjacencyList_t, vertex_index_t>::type v_index = get(vertex_index, G);
-            cout << "eliminate vertex[" << v_index[*it] + 1 << "]\n";
+            DynOut << "eliminate vertex[" << v_index[*it] + 1 << "]\n";
 #endif
             Eliminate(*it, G);
             something_has_been_done = true;
@@ -314,7 +315,7 @@ namespace MFS
           {
 #ifdef verbose
             property_map<AdjacencyList_t, vertex_index_t>::type v_index = get(vertex_index, G);
-            cout << "store v[*it] = " << v_index[*it]+1 << "\n";
+            DynOut << "store v[*it] = " << v_index[*it]+1 << "\n";
 #endif
             property_map<AdjacencyList_t, vertex_index1_t>::type v_index1 = get(vertex_index1, G);
             feed_back_vertices.insert(v_index1[*it]);
@@ -349,26 +350,26 @@ namespace MFS
             //Rule 1
             something_has_been_done = (Elimination_of_Vertex_With_One_or_Less_Indegree_or_Outdegree_Step(G) /*or something_has_been_done*/);
 #ifdef verbose
-            cout << "1 something_has_been_done=" << something_has_been_done << "\n";
+            DynOut << "1 something_has_been_done=" << something_has_been_done << "\n";
 #endif
 
             //Rule 2
             something_has_been_done = (Elimination_of_Vertex_belonging_to_a_clique_Step(G) || something_has_been_done);
 #ifdef verbose
-            cout << "2 something_has_been_done=" << something_has_been_done << "\n";
+            DynOut << "2 something_has_been_done=" << something_has_been_done << "\n";
 #endif
 
             //Rule 3
             something_has_been_done = (Suppression_of_Vertex_X_if_it_loops_store_in_set_of_feedback_vertex_Step(feed_back_vertices, G) || something_has_been_done);
 #ifdef verbose
-            cout << "3 something_has_been_done=" << something_has_been_done << "\n";
+            DynOut << "3 something_has_been_done=" << something_has_been_done << "\n";
 #endif
           }
         vector<int> circuit;
         if (!has_cycle(circuit, G))
           {
 #ifdef verbose
-            cout << "has_cycle=false\n";
+            DynOut << "has_cycle=false\n";
 #endif
             //sort(feed_back_vertices.begin(), feed_back_vertices.end());
             return G;
@@ -390,18 +391,18 @@ namespace MFS
             feed_back_vertices.insert(v_index1[*max_degree_index]);
             /*property_map<AdjacencyList_t, vertex_index_t>::type v_index = get(vertex_index, G);
               feed_back_vertices.insert(v_index[*max_degree_index]);*/
-            //cout << "v_index1[*max_degree_index] = " << v_index1[*max_degree_index] << "\n";
+            //DynOut << "v_index1[*max_degree_index] = " << v_index1[*max_degree_index] << "\n";
             cut_++;
 #ifdef verbose
             property_map<AdjacencyList_t, vertex_index_t>::type v_index = get(vertex_index, G);
-            cout << "--> cut vertex " << v_index[*max_degree_index] + 1 << "\n";
+            DynOut << "--> cut vertex " << v_index[*max_degree_index] + 1 << "\n";
 #endif
             Suppress(*max_degree_index, G);
             something_has_been_done = true;
           }
       }
 #ifdef verbose
-    cout << "cut_=" << cut_ << "\n";
+    DynOut << "cut_=" << cut_ << "\n";
 #endif
     //sort(feed_back_vertices.begin(), feed_back_vertices.end());
     return G;
@@ -452,6 +453,6 @@ namespace MFS
           }
       }
     if (num_vertices(G))
-      cout << "Error in the computation of feedback vertex set\n";
+      DynOut << "Error in the computation of feedback vertex set\n";
   }
 }

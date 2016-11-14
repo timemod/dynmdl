@@ -25,6 +25,7 @@
 
 #include "MacroDriver.hh"
 #include "dyn_error.hh"
+#include "dynout.hh"
 
 MacroDriver::MacroDriver()
 {
@@ -201,7 +202,7 @@ MacroDriver::echo(const Macro::parser::location_type &l, const MacroValue *value
   if (!sval)
     throw MacroValue::TypeError("Argument of @#echo must be a string");
 
-  cerr << "ECHO in macro-processor: " << l << ": " << sval->value << endl;
+  DynErr << "ECHO in macro-processor: " << l << ": " << sval->value << endl;
 }
 
 void

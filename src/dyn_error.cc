@@ -21,6 +21,10 @@ void dyn_error(std::string message) {
 #endif
 }
 
+void dyn_warning(std::ostringstream &msg) {
+    dyn_warning(msg.str());
+}
+
 void dyn_warning(std::string message) {
 #ifdef USE_R
     Rf_warning(message.c_str());

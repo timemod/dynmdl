@@ -19,6 +19,7 @@
 
 #include "WarningConsolidation.hh"
 #include <ostream>
+#include "dyn_error.hh"
 
 WarningConsolidation&
 operator<< (WarningConsolidation& wcc, const string &warning)
@@ -26,7 +27,7 @@ operator<< (WarningConsolidation& wcc, const string &warning)
   if (wcc.no_warn)
     return wcc;
 
-  cerr << warning;
+  dyn_warning(warning);
   wcc.addWarning(warning);
   return wcc;
 };
@@ -49,7 +50,7 @@ operator<< (WarningConsolidation& wcc, const Dynare::location& loc)
   else if (loc.begin.column != last.column)
     ostr << '-' << last.column;
 
-  cerr << ostr.str();
+  dyn_warning(ostr.str());
   wcc.addWarning(ostr.str());
   return wcc;
 };
@@ -60,7 +61,9 @@ operator<< (WarningConsolidation& wcc, ostream& (*pf) (ostream&))
   if (wcc.no_warn)
     return wcc;
 
-  cerr << pf;
+  ostringstream msg;
+  msg << pf;
+  dyn_warning(msg);
   wcc.addWarning(pf);
   return wcc;
 }

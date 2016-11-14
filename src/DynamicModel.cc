@@ -27,6 +27,7 @@
 #include <iterator>
 #include "DynamicModel.hh"
 #include "dyn_error.hh"
+#include "dynout.hh"
 
 // For mkdir() and chdir()
 #ifdef _WIN32
@@ -1214,7 +1215,7 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
                   // Insert current node into tt2
                   tt2.insert(*it);
 #ifdef DEBUGC
-                  cout << "FSTPT " << v << "\n";
+                  DynOut << "FSTPT " << v << "\n";
                   instruction_number++;
                   code_file.write(&FOK, sizeof(FOK));
                   code_file.write(reinterpret_cast<char *>(&k), sizeof(k));
@@ -1228,7 +1229,7 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
                it != v_temporary_terms[block][i].end(); it++)
             {
               map_idx_t::const_iterator ii = map_idx.find((*it)->idx);
-              cout << "map_idx[" << (*it)->idx <<"]=" << ii->second << "\n";
+              DynOut << "map_idx[" << (*it)->idx <<"]=" << ii->second << "\n";
             }
 #endif
 
@@ -1529,7 +1530,7 @@ DynamicModel::writeDynamicMFile(const string &dynamic_basename) const
   if (!mDynamicModelFile.is_open())
     {
       std::ostringstream msg;
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
+      msg << "Error: Can't open file " << filename << " for writing" << endl;
       dyn_error(msg);
     }
   mDynamicModelFile << "function [residual, g1, g2, g3] = " << dynamic_basename << "(y, x, params, steady_state, it_)" << endl
@@ -1578,7 +1579,7 @@ DynamicModel::writeDynamicJuliaFile(const string &basename) const
   if (!output.is_open())
     {
       std::ostringstream msg;
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
+      msg << "Error: Can't open file " << filename << " for writing" << endl;
       dyn_error(msg);
     }
 
@@ -1605,7 +1606,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   if (!mDynamicModelFile.is_open())
     {
       std::ostringstream msg;
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
+      msg << "Error: Can't open file " << filename << " for writing" << endl;
       dyn_error(msg);
     }
   mDynamicModelFile << "/*" << endl
@@ -1638,7 +1639,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   if (!mDynamicMexFile.is_open())
     {
       std::ostringstream msg;
-      cerr << "Error: Can't open file " << filename_mex << " for writing" << endl;
+      msg << "Error: Can't open file " << filename_mex << " for writing" << endl;
       dyn_error(msg);
     }
 
@@ -1825,7 +1826,7 @@ DynamicModel::writeSparseDynamicMFile(const string &dynamic_basename, const stri
   if (!mDynamicModelFile.is_open())
     {
       std::ostringstream msg;
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
+      msg << "Error: Can't open file " << filename << " for writing" << endl;
       dyn_error(msg);
     }
   mDynamicModelFile << "%\n";
@@ -2774,7 +2775,7 @@ DynamicModel::writeOutput(ostream &output, const string &basename, bool block_de
             {
               for (vector<int>::const_iterator it=state_var.begin(); it != state_var.end(); it++)
                 {
-                  //cout << "block = " << block+1 << " state_var = " << *it << " it_other_endogenous=" << *it_other_endogenous + 1 << "\n";
+                  //DynOut << "block = " << block+1 << " state_var = " << *it << " it_other_endogenous=" << *it_other_endogenous + 1 << "\n";
                   if (*it == *it_other_endogenous + 1)
                     {
                       output << "block_structure.block(" << block+1 << ").tm1(" 
@@ -2783,7 +2784,7 @@ DynamicModel::writeOutput(ostream &output, const string &basename, bool block_de
                       /*output << "block_structure.block(" << block+1 << ").tm1(" 
                              << it - state_var.begin()+1 << ", " 
                              << count_other_endogenous << ") = 1;\n";*/
-                      //cout << "=>\n";
+                      //DynOut << "=>\n";
                     }
                 }
               count_other_endogenous++;
@@ -2991,7 +2992,7 @@ DynamicModel::writeOutput(ostream &output, const string &basename, bool block_de
                           vector<int>::const_iterator it_state_equ = find(state_equ.begin(), state_equ.end(), getBlockEquationID(block, i)+1);
                           if (it_state_equ != state_equ.end())
                             {
-                              cout << "row_state_var_incidence[make_pair([" << *it_state_equ << "] " << it_state_equ - state_equ.begin() << ", [" << *it_state_var << "] " << it_state_var - state_var.begin() << ")] =  1;\n";
+                              DynOut << "row_state_var_incidence[make_pair([" << *it_state_equ << "] " << it_state_equ - state_equ.begin() << ", [" << *it_state_var << "] " << it_state_var - state_var.begin() << ")] =  1;\n";
                               row_state_var_incidence.insert(make_pair(it_state_equ - state_equ.begin(), it_state_var - state_var.begin()));
                             }
                         }*/
@@ -3187,19 +3188,19 @@ DynamicModel::computingPass(bool jacobianExo, bool hessian, bool thirdDerivative
     }
 
   // Launch computations
-  cout << "Computing dynamic model derivatives:" << endl
+  DynOut << "Computing dynamic model derivatives:" << endl
        << " - order 1" << endl;
   computeJacobian(vars);
 
   if (hessian)
     {
-      cout << " - order 2" << endl;
+      DynOut << " - order 2" << endl;
       computeHessian(vars);
     }
 
   if (paramsDerivsOrder > 0)
     {
-      cout << " - derivatives of Jacobian/Hessian w.r. to parameters" << endl;
+      DynOut << " - derivatives of Jacobian/Hessian w.r. to parameters" << endl;
       computeParamsDerivatives(paramsDerivsOrder);
 
       if (!no_tmp_terms)
@@ -3208,7 +3209,7 @@ DynamicModel::computingPass(bool jacobianExo, bool hessian, bool thirdDerivative
 
   if (thirdDerivatives)
     {
-      cout << " - order 3" << endl;
+      DynOut << " - order 3" << endl;
       computeThirdDerivatives(vars);
     }
 
@@ -3230,7 +3231,7 @@ DynamicModel::computingPass(bool jacobianExo, bool hessian, bool thirdDerivative
 
       equation_type_and_normalized_equation = equationTypeDetermination(first_order_endo_derivatives, variable_reordered, equation_reordered, mfs);
 
-      cout << "Finding the optimal block decomposition of the model ...\n";
+      DynOut << "Finding the optimal block decomposition of the model ...\n";
 
       lag_lead_vector_t equation_lag_lead, variable_lag_lead;
 
@@ -3651,7 +3652,7 @@ DynamicModel::computeRamseyPolicyFOCs(const StaticModel &static_model)
       equations[i] = substeq;
     }
 
-  cout << "Ramsey Problem: added " << i << " Multipliers." << endl;
+  DynOut << "Ramsey Problem: added " << i << " Multipliers." << endl;
 
   // Add Planner Objective to equations to include in computeDerivIDs
   assert(static_model.equations.size() == 1);
@@ -4399,31 +4400,31 @@ DynamicModel::substituteLeadLagInternal(aux_var_t type, bool deterministic_model
 
   if (neweqs.size() > 0)
     {
-      cout << "Substitution of ";
+      DynOut << "Substitution of ";
       switch (type)
         {
         case avEndoLead:
-          cout << "endo leads >= 2";
+          DynOut << "endo leads >= 2";
           break;
         case avEndoLag:
-          cout << "endo lags >= 2";
+          DynOut << "endo lags >= 2";
           break;
         case avExoLead:
-          cout << "exo leads";
+          DynOut << "exo leads";
           break;
         case avExoLag:
-          cout << "exo lags";
+          DynOut << "exo lags";
           break;
         case avExpectation:
-          cout << "expectation";
+          DynOut << "expectation";
           break;
         case avDiffForward:
-          cout << "forward vars";
+          DynOut << "forward vars";
           break;
         case avMultiplier:
           dyn_error("avMultiplier encountered: impossible case");
         }
-      cout << ": added " << neweqs.size() << " auxiliary variables and equations." << endl;
+      DynOut << ": added " << neweqs.size() << " auxiliary variables and equations." << endl;
     }
 }
 
@@ -4456,9 +4457,9 @@ DynamicModel::substituteExpectation(bool partial_information_model)
   if (subst_table.size() > 0)
     {
       if (partial_information_model)
-        cout << "Substitution of Expectation operator: added " << subst_table.size() << " auxiliary variables and " << neweqs.size() << " auxiliary equations." << endl;
+        DynOut << "Substitution of Expectation operator: added " << subst_table.size() << " auxiliary variables and " << neweqs.size() << " auxiliary equations." << endl;
       else
-        cout << "Substitution of Expectation operator: added " << neweqs.size() << " auxiliary variables and equations." << endl;
+        DynOut << "Substitution of Expectation operator: added " << neweqs.size() << " auxiliary variables and equations." << endl;
     }
 }
 

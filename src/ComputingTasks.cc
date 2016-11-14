@@ -33,6 +33,7 @@ using namespace std;
 #include <boost/tokenizer.hpp>
 
 #include "dyn_error.hh"
+#include "dynout.hh"
 
 SteadyStatement::SteadyStatement(const OptionsList &options_list_arg) :
   options_list(options_list_arg)
@@ -388,11 +389,11 @@ RamseyConstraintsStatement::writeOutput(ostream &output, const string &basename,
 
 //   if (!errors.empty())
 //     {
-//       cerr << endl
+//       DynErr << endl
 //            << "ERROR: The following vars were used in the ramsey_policy statement(s) but  were not declared." << endl
 //            << "       This likely means that you declared them as varexo and that they're not in the model" << endl;
 //       for (vector<string>::const_iterator it = errors.begin(); it != errors.end(); it++)
-//         cerr << *it << endl;
+//         DynErr << *it << endl;
 //       exit(EXIT_FAILURE);
 //     }
 //   return new RamseyPolicyStatement(new_symbol_list, options_list);
@@ -1021,7 +1022,7 @@ ObservationTrendsStatement::writeOutput(ostream &output, const string &basename,
           output << "';" << endl;
         }
       else
-        cout << "Error : Non-variable symbol used in TREND_COEFF: " << it->first << endl;
+        DynOut << "Error : Non-variable symbol used in TREND_COEFF: " << it->first << endl;
     }
 }
 

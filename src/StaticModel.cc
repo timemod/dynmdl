@@ -26,6 +26,7 @@
 #include <algorithm>
 #include "StaticModel.hh"
 #include "dyn_error.hh"
+#include "dynout.hh"
 
 // For mkdir() and chdir()
 #ifdef _WIN32
@@ -1082,7 +1083,7 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
     }        
  
   // Launch computations
-  cout << "Computing static model derivatives:" << endl
+  DynOut << "Computing static model derivatives:" << endl
        << " - order 1" << endl;
   first_derivatives.clear();
 
@@ -1090,19 +1091,19 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
 
   if (hessian)
     {
-      cout << " - order 2" << endl;
+      DynOut << " - order 2" << endl;
       computeHessian(vars);
     }
 
   if (thirdDerivatives)
     {
-      cout << " - order 3" << endl;
+      DynOut << " - order 3" << endl;
       computeThirdDerivatives(vars);
     }
 
   if (paramsDerivsOrder > 0)
     {
-      cout << " - derivatives of Jacobian/Hessian w.r. to parameters" << endl;
+      DynOut << " - derivatives of Jacobian/Hessian w.r. to parameters" << endl;
       computeParamsDerivatives(paramsDerivsOrder);
 
       if (!no_tmp_terms)
@@ -1127,7 +1128,7 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
 
       equation_type_and_normalized_equation = equationTypeDetermination(first_order_endo_derivatives, variable_reordered, equation_reordered, mfs);
 
-      cout << "Finding the optimal block decomposition of the model ...\n";
+      DynOut << "Finding the optimal block decomposition of the model ...\n";
 
       lag_lead_vector_t equation_lag_lead, variable_lag_lead;
 

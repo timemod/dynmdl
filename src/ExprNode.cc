@@ -30,6 +30,7 @@
 #include "DataTree.hh"
 #include "ModFile.hh"
 #include "dyn_error.hh"
+#include "dynout.hh"
 
 ExprNode::ExprNode(DataTree &datatree_arg) : datatree(datatree_arg), preparedForDerivation(false)
 {
@@ -2208,7 +2209,7 @@ UnaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_
         case oErf:
           return (make_pair(2, (expr_t) NULL));
         default:
-          cerr << "Unary operator not handled during the normalization process" << endl;
+          DynErr << "Unary operator not handled during the normalization process" << endl;
           return (make_pair(2, (expr_t) NULL)); // Could not be normalized
         }
     }
@@ -2260,7 +2261,7 @@ UnaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_
         case oErf:
           return (make_pair(0, datatree.AddErf(New_expr_t)));
         default:
-          cerr << "Unary operator not handled during the normalization process" << endl;
+          DynErr << "Unary operator not handled during the normalization process" << endl;
           return (make_pair(2, (expr_t) NULL)); // Could not be normalized
         }
     }
@@ -3534,7 +3535,7 @@ BinaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr
         return (make_pair(1, (expr_t) NULL));
       break;
     default:
-      cerr << "Binary operator not handled during the normalization process" << endl;
+      DynErr << "Binary operator not handled during the normalization process" << endl;
       return (make_pair(2, (expr_t) NULL)); // Could not be normalized
     }
   // Suppress GCC warning

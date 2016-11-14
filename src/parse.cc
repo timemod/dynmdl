@@ -33,6 +33,7 @@
 #include "ConfigFile.hh"
 #include "run_dynare.hh"
 #include "parse.hh"
+#include "dynout.hh"
 
 ModFile* parse(char * modfile) {
   bool clear_all = true;
@@ -68,7 +69,7 @@ ModFile* parse(char * modfile) {
   FileOutputType output_mode = none;
   LanguageOutputType language = r;
 
-  cout << "Starting Dynare (version " << PACKAGE_VERSION << ")." << endl
+  DynOut << "Starting Dynare (version " << PACKAGE_VERSION << ")." << endl
        << "Starting preprocessing of the model file ..." << endl;
 
   // Construct basename (i.e. remove file extension if there is one)
@@ -106,7 +107,7 @@ ModFile* parse(char * modfile) {
 #endif
         );
 
-  cout << "Preprocessing completed." << endl;
+  DynOut << "Preprocessing completed." << endl;
 
    // Write outputs
    /*
