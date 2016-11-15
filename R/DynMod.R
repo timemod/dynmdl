@@ -194,12 +194,43 @@ DynMod <- R6Class("DynMod",
                                               private$nfwrd
             private$nsfwrd                 <- private$nfwrd + private$nboth
         },
+        print = function(...) {
+            cat("DynMod object\n")
+            cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
+                        private$endo_count))
+            cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
+                        private$exo_count))
+            cat(sprintf("%-60s%d\n", "Maximum endogenous lead:",
+                        private$max_endo_lead))
+            cat(sprintf("%-60s%d\n", "Maximum endogenous lag:",
+                        private$max_endo_lag))
+            cat(sprintf("%-60s%d\n", "Maximum exogenous lead:",
+                        private$max_exo_lead))
+            cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
+                        private$max_exo_lag))
+            cat(sprintf("%-60s%d\n", "Number of endogenous variables with only lags:",
+                        private$npred))
+            cat(sprintf("%-60s%d\n", "Number of endogenous variables with only leads:",
+                        private$nfwrd))
+            cat(sprintf("%-60s%d\n", "Number of endogenous variables with both lags and leads:",
+                        private$nboth))
+            cat(sprintf("%-60s%d\n", "Number of static endogenous variables:",
+                        private$nstatic))
+            if (!is.null(private$model_period)) {
+                cat(sprintf("%-60s%s\n", "Model period:",
+                            as.character(private$model_period)))
+            }
+        },
         set_params = function(params) {
             private$params[names(params)] <- params
             return (invisible(self))
         },
-        get_params = function() {
-            return (private$params)
+        get_params = function(names = NULL) {
+            if (missing(names)) {
+                return (private$params)
+            } else {
+                return (private$params[names])
+            }
         },
         set_static_exos = function(exos) {
             private$exos[names(exos)] <- exos

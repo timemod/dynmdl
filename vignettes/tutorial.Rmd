@@ -1,0 +1,163 @@
+---
+title: "Tutorial for package `dynr`"
+author: "Rob van Harrevelt"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+linkcolor: blue    
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  
+
+---
+
+# Introduction
+
+In this tutorial I show how a simple model with rational expectations
+can be solved with package `dynr`.
+
+The example model is a version of the IS-LM model with rational expectations.
+This model has the following variables:
+
+\begin{tabular}{ll|ll}
+\multicolumn{2}{c|}{Endogenous variables} & \multicolumn{2}{c}{Exogenous variables} \\
+\hline
+$Y$      & national income            & $G$      & government spending   \\
+$Y^D$    & dispensible income         & $Ms$     & money supply          \\
+$T$      & tax                        &          &                       \\
+$C$      & consumption                &          &                       \\
+$I$      & investments                &          &                       \\
+$M^D$    & money demand               &          &                       \\
+\end{tabular}
+
+The model equations are given by
+\begin{eqnarray*}
+Y_t   &=& C_t + I_t + G_t        \label{eqn:islm1:y}\\
+Y^D_t &=& Y_t - T_t            \label{eqn:islm1:yd}\\                   
+T_t   &=& t_0 + t_1 Y_t  \label{eqn:islm1:t}\\
+C_t  &=& c_0 + c_1 Y^D_{t-1} + c_2 Y^D_t + c_3 Y^D_{t-1]} + c_4 r_t + c_5 r_t\label{eqn:islm1:c}\\
+I_t   &=& i_0 + i_1  Y_{t-1} + i_2 Y_t + i_3 Y_{t+1} + i_4 r_t + i_5 r_t^2\label{eqn:islm1:i}\\
+M^d_t &=& m_0 + m_1 Y_t + m_2 r_t + m_3 r_t^2 + m_3 r_t^2\label{eqn:islm1:md}\\
+M^d_t &=& M^s_t                                         \label{eqn:islm1:mequ}
+\end{eqnarray*}
+
+<!--   
+PREPARATIONS
+-->
+```{r echo = FALSE, message = FALSE}
+
+library(dynr)
+
+# input/output chunks are separated
+# R inputlines start with >, outputlines with nothing
+knitr::opts_chunk$set(collapse = FALSE, comment = "", prompt = TRUE)
+```
+
+## The mod file
+
+`dynr` uses the same mod file as Dynare. However, only the `var`, `varexo`,
+`parameters`, `model` and `initval` blocks are used. The other blocks in the
+mod file are ignored.
+
+The mod file for the ISLM has the following contents:
+```{r echo = FALSE, comment=''}
+cat(readLines('islm.mod'), sep = '\n')
+```
+
+## The `DynMod` class
+
+The function `compile_model` creates a `DynMod` object from 
+the mod file.
+
+```{r}
+mdl <- compile_model("islm.mod")
+mdl
+```
+
+A `DynMod` object is an R6 class object. R6 
+classes behave quite differently than the more familiar S3 and S4 classes. 
+For example, for R6 classes methods are part of the object itself and not of 
+generic functions. R6 classes behave simular to classes in
+object oriented languages such as Java, C++ or Python. 
+
+For example, the method `get_params()` can be used to
+obtain the parameters of the model
+```{r}
+mdl$get_params()
+```
+
+Methods starting with `get_`, are ofter called a "getter" methods.
+There are also corresponding "setter" methods. For example
+```{r}
+mdl$set_params(c(m0 = 100))
+mdl$get_params("m0")
+```
+
+## Cloning `DynMod` object
+
+Consider the following assignment:
+```{r}
+mdl2 <- mdl
+```
+Now variables `mdl2` and `mdl` refer to the same object. If you modify
+`mdl2`, then also `mdl` is modified.
+```{r}
+mdl2$set_params(c(m0 = 75))
+mdl$get_params("m0")
+```
+The usual copy-on-modify semantics that it used for convential
+R objects such as S3 or S4 classes does not apply to R6 classes.
+
+If you want to create a copy of the model, use the `clone()` method.
+```{r}
+mdl2 <- mdl$clone()
+mdl2$set_params(c(m0 = -9999))
+mdl$get_params("m0")
+```
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
