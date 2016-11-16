@@ -39,7 +39,7 @@ exo_ref2 <- regts(c(0, 1, rep(0, nper - 2)), period = endo_per)
 ref2 <- cbind(y_ref2, yplus_ref2, ymin_ref2, exo = exo_ref2)[endo_per]
 ref2[lag_per, "ymin"] <- 0
 
-mdl$set_endo_value("y", 1, start_period(mdl$get_endo_period()))
+mdl$set_endo_values(1, names = "y", period = start_period(mdl$get_endo_period()))
 
 test_that("steady state calculation", {
     mdl_stat <- mdl$clone()
@@ -50,11 +50,11 @@ test_that("steady state calculation", {
 
 test_that("solve", {
     mdl1 <- mdl$clone()
-    mdl1$set_endo_value("y", ref1[lead_per, "y"], lead_per)
+    mdl1$set_endo_values(ref1[lead_per, "y"], names = "y", period = lead_per)
     mdl1$solve()
     mdl2 <- mdl1$clone()
-    mdl2$set_endo_value("y", ref2[lead_per, "y"], lead_per)
-    mdl2$set_exo_value("x", 1, start_period(mdl$get_period()))
+    mdl2$set_endo_values(ref2[lead_per, "y"], names = "y",  period = lead_per)
+    mdl2$set_exo_values(1, names = "x", period = start_period(mdl$get_period()))
     mdl2$solve()
     per <- mdl$get_period()
     expect_equal(mdl1$get_endo_data(per), ref1[per, ])
@@ -64,12 +64,12 @@ test_that("solve", {
 test_that("solve_perturbation", {
     mdl1 <- mdl$clone()
     mdl1$solve_perturbation()
-    mdl1$set_endo_value("yplus", y_ref1[lag_per + 1], lag_per)
+    mdl1$set_endo_values(y_ref1[lag_per + 1], names = "yplus", period = lag_per)
     expect_equal(mdl1$get_endo_data(), ref1)
     expect_equal(mdl1$get_eigval(), eigvals)
     mdl2 <- mdl1$clone()
-    mdl2$set_endo_value("yplus", y_ref2[lag_per + 1], lag_per)
-    mdl2$set_exo_value("x", 1, start_period(mdl$get_period()))
+    mdl2$set_endo_values(y_ref2[lag_per + 1], names = "yplus",  period = lag_per)
+    mdl2$set_exo_values(1, names = "x", period = start_period(mdl$get_period()))
     mdl2$solve_perturbation()
     expect_equal(mdl1$get_endo_data(), ref1)
     expect_equal(mdl2$get_endo_data(), ref2)

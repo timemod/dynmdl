@@ -164,13 +164,13 @@ Suppose that we know the values of the endogenous variables
 $Y$ and $Y^D$  in the lag period 2014. 
 We can set these model values as follows
 ```{r}
-mdl$set_endo_value(names = "y", value = 1200, period = "2014")
-mdl$set_endo_value(names = "yd", value = 1000, period = "2014")
+mdl$set_endo_values(1200, names = "y", period = "2014")
+mdl$set_endo_values(1000, names = "yd", period = "2014")
 ```
 
 Further suppose that in 2015 we know the intended government spending:
 ```{r}
-mdl$set_exo_value(names = "g", value = 280, period = "2015")
+mdl$set_exo_values(280, names = "g", period = "2015")
 ```
 
 Now we can solve the model using the stacked time Newton method;

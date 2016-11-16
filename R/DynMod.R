@@ -103,7 +103,7 @@ setOldClass("regts")
 #'
 #' \item{\code{get_exo_period()}}{Returns the exo period}
 #'
-#' \item{\code{set_exo_value(names, value, period = self$get_exo_period())}}{Sets the value(s)
+#' \item{\code{set_exo_values(value, names = NULL, period = self$get_exo_period())}}{Sets the value(s)
 #' of one more exogenous variables. \code{value} can be any R object
 #' that can be coerced to a numeric. \code{period} is the period
 #' for which endogenous variable is modified. If argument \code{period}
@@ -119,7 +119,7 @@ setOldClass("regts")
 #' \item{\code{get_exo_data(names, period = self$get_exo_period()}}{
 #' Returns the exogenous data}
 #'
-#' \item{\code{set_endo_value(names, value, period = self$get_endo_period())}}{
+#' \item{\code{set_endo_values(value, names = NULL,  period = self$get_endo_period())}}{
 #' Sets the value(s) of one more endogenous variables. \code{value} can be any R object
 #' that can be coerced to a numeric. \code{period} is the period
 #' for which endogenous variable is modified. If argument \code{period}
@@ -140,7 +140,7 @@ setOldClass("regts")
 #' \item{\code{get_endo_data(names, period = self$get_endo_period()}}{
 #' Returns the endgenous data}
 #'
-#' \item{\code{solve_steady(start = mdl$get_static_endos(), control = NULL)}}{
+#' \item{\code{solve_steady(start = self$get_static_endos(), control = NULL)}}{
 #' Solve the steady state of the model.
 #' This methods solves the steady state problem. Argument \code{start}
 #' can be used to specify an initial guess for the steady state values.
@@ -294,8 +294,9 @@ DynMod <- R6Class("DynMod",
         get_exo_period = function() {
             return (private$exo_period)
         },
-        set_exo_value = function(names, value, period = mdl$get_exo_period()) {
-            # TODO: period should be the intersection of mdl$exo_period
+        set_exo_values = function(value, names = private$exo_names,
+                                  period = private$exo_period) {
+            # TODO: period should be the intersection of private$exo_period
             # and period
             private$exo_data[period, names] <- value
             return (invisible(self))
@@ -330,8 +331,9 @@ DynMod <- R6Class("DynMod",
                 return (private$exo_data[period, names, drop = FALSE])
             }
         },
-        set_endo_value = function(names, value, period = self$get_endo_period()) {
-            # TODO: period should be the intersection of mdl$endo_period
+        set_endo_values = function(value, names = private$endo_names,
+                                   period = private$endo_period) {
+            # TODO: period should be the intersection of private$endo_period
             # and period
             private$endo_data[period, names] <- value
             return (invisible(self))
@@ -594,7 +596,7 @@ DynMod <- R6Class("DynMod",
 
             rules <- list()
 
-            # make local copies of the fields of the mdl object
+            # make local copies of the fields of the DynMod object
             exo_count <- private$exo_count
             endo_count <- private$endo_count
             npred <- private$npred

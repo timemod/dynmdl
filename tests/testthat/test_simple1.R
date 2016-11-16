@@ -19,7 +19,7 @@ ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = endo_per,
                               params = mdl$get_params())
 lead_per <- end_period(mdl$get_endo_period())
 
-mdl$set_endo_value("y", 1, start_period(mdl$get_endo_period()))
+mdl$set_endo_values(1, names = "y", period = start_period(mdl$get_endo_period()))
 
 test_that("steady state calculation", {
     mdl_stat <- mdl$clone()
@@ -29,11 +29,11 @@ test_that("steady state calculation", {
 
 test_that("solve", {
     mdl1 <- mdl$clone()
-    mdl1$set_endo_value("y", ref1[lead_per], lead_per)
+    mdl1$set_endo_values(ref1[lead_per], names = "y", period = lead_per)
     mdl1$solve()
     mdl2 <- mdl1$clone()
-    mdl2$set_endo_value("y", ref2[lead_per], lead_per)
-    mdl2$set_exo_value("x", 1, start_period(mdl$get_period()))
+    mdl2$set_endo_values(ref2[lead_per], names = "y", period = lead_per)
+    mdl2$set_exo_values(1, names = "x", period = start_period(mdl$get_period()))
     mdl2$solve()
     expect_equal(mdl1$get_endo_data(), ref1)
     expect_equal(mdl2$get_endo_data(), ref2)
@@ -45,7 +45,7 @@ test_that("solve_perturbation", {
     expect_equal(mdl1$get_endo_data(), ref1)
     expect_equal(mdl1$get_eigval(), eigvals)
     mdl2 <- mdl1$clone()
-    mdl2$set_exo_value("x", 1, start_period(mdl$get_period()))
+    mdl2$set_exo_values(1, names = "x", period = start_period(mdl$get_period()))
     mdl2$solve_perturbation()
     expect_equal(mdl1$get_endo_data(), ref1)
     expect_equal(mdl2$get_endo_data(), ref2)
