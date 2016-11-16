@@ -28,6 +28,9 @@ the exogenous variables. These values are used to compute the steady state.}
 \item{\code{get_static_exos()}}{Returns the static values of
 the exogenous variables}
 
+\item{\code{set_static_endos(endos)}}{Sets the static values of
+the endos variables. These values are used to compute the steady state.}
+
 \item{\code{get_static_endos()}}{Returns the static values of
 the endogenous variables, i.e. the values that are supposed to be
 the steady state values. Function \code{solve_steady} can be used
@@ -58,21 +61,33 @@ that can be coerced to a numeric. \code{period} is the period
 for which endogenous variable is modified. If argument \code{period}
 is missing the exo period is used.}
 
-\item{\code{set_exo_data(data)}}{Sets the values
-of the exogenous variables. \code{data} is a
-\code{regts} or \code{ts} with column names.}
+\item{\code{set_exo_data(data, update_mode = c("update", "updval"))}}{
+Sets the values of the exogenous variables. \code{data} is a
+\code{regts} or \code{ts} with column names.
+If \code{update_mode} is
+\code{"updval"}, then the values are only replaced by non NA values in
+\code{data}}
 
 \item{\code{get_exo_data(names, period = self$get_exo_period()}}{
 Returns the exogenous data}
 
-\item{\code{set_endo_value(names, value, period = self$get_endo_period())}}{Sets the value(s) of one more endogenous variables. \code{value} can be any R object
+\item{\code{set_endo_value(names, value, period = self$get_endo_period())}}{
+Sets the value(s) of one more endogenous variables. \code{value} can be any R object
 that can be coerced to a numeric. \code{period} is the period
 for which endogenous variable is modified. If argument \code{period}
 is missing then the endo period is used.}
 
-\item{\code{set_endo_data(data)}}{Sets the values
-of the endogenous variables. \code{data} is a
-\code{regts} or \code{ts} with column names.}
+\item{\code{set_endo_data(data, update_mode = c("update", "updval"))}}{
+Sets the values of the endogenous variables. \code{data} is a
+\code{regts} or \code{ts} with column names. If \code{update_mode} is
+\code{"updval"}, then the values are only replaced by non NA values in
+\code{data}}
+
+\item{\code{set_data(data, update_mode = c("update", "updval"))}}{
+Sets the values of the all model variables (both endogenous and exogenouys).
+\code{data} is a \code{regts} or \code{ts} with column names. If \code{update_mode} is
+\code{"updval"}, then the values are only replaced by non NA values in
+\code{data}}
 
 \item{\code{get_endo_data(names, period = self$get_endo_period()}}{
 Returns the endgenous data}

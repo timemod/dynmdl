@@ -76,6 +76,9 @@ setOldClass("regts")
 #' \item{\code{get_static_exos()}}{Returns the static values of
 #' the exogenous variables}
 #'
+#' \item{\code{set_static_endos(endos)}}{Sets the static values of
+#' the endos variables. These values are used to compute the steady state.}
+#'
 #' \item{\code{get_static_endos()}}{Returns the static values of
 #' the endogenous variables, i.e. the values that are supposed to be
 #' the steady state values. Function \code{solve_steady} can be used
@@ -106,21 +109,33 @@ setOldClass("regts")
 #' for which endogenous variable is modified. If argument \code{period}
 #' is missing the exo period is used.}
 #'
-#' \item{\code{set_exo_data(data)}}{Sets the values
-#' of the exogenous variables. \code{data} is a
-#' \code{regts} or \code{ts} with column names.}
+#' \item{\code{set_exo_data(data, update_mode = c("update", "updval"))}}{
+#' Sets the values of the exogenous variables. \code{data} is a
+#' \code{regts} or \code{ts} with column names.
+#' If \code{update_mode} is
+#' \code{"updval"}, then the values are only replaced by non NA values in
+#' \code{data}}
 #'
 #' \item{\code{get_exo_data(names, period = self$get_exo_period()}}{
 #' Returns the exogenous data}
 #'
-#' \item{\code{set_endo_value(names, value, period = self$get_endo_period())}}{Sets the value(s) of one more endogenous variables. \code{value} can be any R object
+#' \item{\code{set_endo_value(names, value, period = self$get_endo_period())}}{
+#' Sets the value(s) of one more endogenous variables. \code{value} can be any R object
 #' that can be coerced to a numeric. \code{period} is the period
 #' for which endogenous variable is modified. If argument \code{period}
 #' is missing then the endo period is used.}
 #'
-#' \item{\code{set_endo_data(data)}}{Sets the values
-#' of the endogenous variables. \code{data} is a
-#' \code{regts} or \code{ts} with column names.}
+#' \item{\code{set_endo_data(data, update_mode = c("update", "updval"))}}{
+#' Sets the values of the endogenous variables. \code{data} is a
+#' \code{regts} or \code{ts} with column names. If \code{update_mode} is
+#' \code{"updval"}, then the values are only replaced by non NA values in
+#' \code{data}}
+#'
+#' \item{\code{set_data(data, update_mode = c("update", "updval"))}}{
+#' Sets the values of the all model variables (both endogenous and exogenouys).
+#' \code{data} is a \code{regts} or \code{ts} with column names. If \code{update_mode} is
+#' \code{"updval"}, then the values are only replaced by non NA values in
+#' \code{data}}
 #'
 #' \item{\code{get_endo_data(names, period = self$get_endo_period()}}{
 #' Returns the endgenous data}
@@ -239,6 +254,10 @@ DynMod <- R6Class("DynMod",
         get_static_exos = function() {
             return (private$exos)
         },
+        set_static_endos = function(endos) {
+            private$endos[names(endos)] <- endos
+            return (invisible(self))
+        },
         get_static_endos = function() {
             return (private$endos)
         },
@@ -281,15 +300,26 @@ DynMod <- R6Class("DynMod",
             private$exo_data[period, names] <- value
             return (invisible(self))
         },
-        set_exo_data = function(data) {
-            # TODO: calculate the intersection of the period of data
-            # with private$endo_period
-            ts_names <- colnames(ts_data)
+        set_exo_data = function(data, update_mode = c("update", "updval")) {
+            # TODO: rangrange_intersect is not yet exported in regts.
+            # this should be modified in regts.
+            per <- regts:::regrange_intersect(get_regperiod_range(data),
+                                              private$exo_period)
+            update_mode <- match.arg(update_mode)
+            ts_names <- colnames(data)
             if (is.null(ts_names)) {
-                stop("Argument ts_data does not have colnames")
+                stop("Argument data does not have colnames")
             }
-            names <- intersect(ts_names, private$endo_names)
-            private$exo_data[, names] <- x[, names]
+            names <- intersect(ts_names, private$exo_names)
+            if (update_mode == "update") {
+                new_data <- data[per, names]
+             } else if (update_mode == "updval") {
+                data <- data[per, names, drop = FALSE]
+                new_data <- private$exo_data[per, names, drop = FALSE]
+                sel <- !is.na(data)
+                new_data[sel] <- data
+            }
+            private$exo_data[per, names] <- new_data
             return (invisible(self))
         },
         get_exo_data = function(period = self$get_exo_period(), names = NULL) {
@@ -306,23 +336,48 @@ DynMod <- R6Class("DynMod",
             private$endo_data[period, names] <- value
             return (invisible(self))
         },
-        set_endo_data = function(data) {
-            # TODO: calculate the intersection of the period of data
-            # with private$endo_period
-            ts_names <- colnames(ts_data)
+        set_endo_data = function(data, update_mode = c("update", "updval")) {
+            # TODO: rangrange_intersect is not yet exported in regts.
+            # this should be modified in regts.
+            per <- regts:::regrange_intersect(get_regperiod_range(data),
+                                              private$endo_period)
+            update_mode <- match.arg(update_mode)
+            ts_names <- colnames(data)
             if (is.null(ts_names)) {
-                stop("Argument ts_data does not have colnames")
+                stop("Argument data does not have colnames")
             }
-            names <- intersect(ts_names, private$exo_names)
-            private$endo_data[, names] <- x[, names]
+            names <- intersect(ts_names, private$endo_names)
+            if (update_mode == "update") {
+                new_data <- data[per, names]
+            } else if (update_mode == "updval") {
+                data <- data[per, names, drop = FALSE]
+                new_data <- private$endo_data[per, names, drop = FALSE]
+                sel <- !is.na(data)
+                new_data[sel] <- data[sel]
+            }
+            private$endo_data[per, names] <- new_data
             return (invisible(self))
+        },
+        set_data = function(data, update_mode = c("update", "updval"))  {
+            ts_names <- colnames(data)
+            if (is.null(ts_names)) {
+                stop("Argument data does not have colnames")
+            }
+            endo_names <- intersect(ts_names, private$endo_names)
+            exo_names  <- intersect(ts_names, private$exo_names)
+            if (length(endo_names) > 0) {
+                self$set_endo_data(data, update_mode)
+            }
+            if (length(exo_names) > 0) {
+                self$set_exo_data(data, update_mode)
+            }
         },
         get_endo_data = function(period = self$get_endo_period(), names) {
             if (missing(names)) {
                 return (private$endo_data[period, ])
             } else {
                 names <- intersect(names, private$endo_names)
-                return (private$endo_data[period, names, , drop = FALSE])
+                return (private$endo_data[period, names, drop = FALSE])
             }
         },
         solve_steady = function(start = self$get_static_endos(), control = NULL) {
@@ -334,7 +389,8 @@ DynMod <- R6Class("DynMod",
             }
             # todo: print output / give error if the commamd was not
             # succesfull
-            out <- nleqslv::nleqslv(start, fn = f, jac = jac, control = control)
+            out <- nleqslv::nleqslv(start, fn = f, jac = jac,
+                                    method = "Newton", control = control)
             private$endos <- out$x
             return (invisible(self))
         },

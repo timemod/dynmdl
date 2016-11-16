@@ -120,44 +120,91 @@ mdl2$set_params(c(m0 = -9999))
 mdl$get_params("m0")
 ```
 
-## Vignette Info
+## Computing the steady state
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+To compute the steady state of the model, use
+```{r}
+mdl$solve_steady(control = list(trace = 1))
+```
 
-## Styles
+This method uses the package `nleqslv` to solve for the steady state.
+Argument `control` is specified to get an iteration report.
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+The method `get_static_endos()` returns the computed static endogenous variables.
+```{r}
+mdl$get_static_endos()
+```
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+The steady state computation requires
+    * Static values for the exogenous variables
+    * An initial guess for the static values of the endogenous variables
 
-## Figures
+After compiling a model, these values are set to the corresponding
+values in the `initval` block of the mod file (or set to 0).
+You can change these values with `set_steady_exos()` or `set_steady_endos()`.
+For example:
+```{r}
+mdl$set_static_exos(c(g = 243))
+mdl$solve_steady()
+mdl$get_static_endos()
+```
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+## The model period
+```{r}
+mdl$set_period(regperiod_range("2015", "2020"))
+```
+
+```{r}
+mdl$get_endo_data()
+```
+
+## Solving the model
+
+Suppose that we know the values of the endogenous variables
+$Y$ and $Y^D$  in the lag period 2014. 
+We can set these model values as follows
+```{r}
+mdl$set_endo_value(names = "y", value = 1200, period = "2014")
+mdl$set_endo_value(names = "yd", value = 1000, period = "2014")
+```
+
+Further suppose that in 2015 we know the intended government spending:
+```{r}
+mdl$set_exo_value(names = "g", value = 280, period = "2015")
+```
+
+Now we can solve the model using the stacked time Newton method;
+```{r}
+mdl$solve(control = list(trace = TRUE))
+```
 
 ```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+plot(mdl$get_endo_data(names = 'y'))
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+The methods `set_endo_value()` and `set_exo_value` are usefull for simple experiments,
+but in a more typical applications the exogenous shocks and values of the
+endogenous variables are stored in a csv file. For example,
+consider the following csv file
+```{r echo = FALSE, comment=''}
+cat(readLines('input.csv'), sep = '\n')
 ```
 
-Also a quote using `>`:
+To update the model workspace, first read the csv file and convert it to a
+`regts`
+```{r}
+df <- read.csv("input.csv")
+ts <- as.regts(df, time_column = 1)
+ts
+```
+Then update the model data with
+```{r}
+mdl$set_data(ts, update_mode = "updval")
+```
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+The `update_mode` `"updval"` is used here: this update mode
+makes sure that the NA values in the timeseries data are ignored.
+
+If the exogenous and endogenous data are in different files,
+then you can use the methods `set_endo_data()` or
+`set_exo_data()` instead of `set_data()`.
