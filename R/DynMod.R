@@ -677,8 +677,8 @@ DynMod <- R6Class("DynMod",
             lead_id <- which(lead_lag_incidence[, max_lag + 2] != 0)
             lead_idx <- lead_lag_incidence[lead_id, max_lag + 2]
             if (max_lag) {
-                lag_id <- which(rules$lead_lag_incidence[, 1] != 0)
-                lag_idx <- rules$lead_lag_incidence[lag_id, 1]
+                lag_id <- which(lead_lag_incidence[, 1] != 0)
+                lag_idx <- lead_lag_incidence[lag_id, 1]
             } else {
                 lag_id  <- numeric(0)
                 lag_idx <- numeric(0)
@@ -698,8 +698,7 @@ DynMod <- R6Class("DynMod",
 
             rules$index_s <- npred + nboth + seq_len(nstatic)
             indexi_0 <- npred + nboth
-
-            npred0 <- nnz(rules$lead_lag_incidence[no_both_lag_id, max_lag + 1])
+            npred0 <- nnz(lead_lag_incidence[no_both_lag_id, max_lag + 1])
             rules$index_0m <- indexi_0 + nstatic  + seq_len(npred0)
             nfwrd0 <- nnz(lead_lag_incidence[lead_id, 2])
             rules$index_0p <- indexi_0 + nstatic + npred0 + seq_len(nfwrd0)
