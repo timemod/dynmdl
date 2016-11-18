@@ -11,13 +11,13 @@ mod_file <- "mod/simple2.mod"
 report <- capture_output(mdl <- compile_model(mod_file))
 
 mdl$set_period("2015/2017")
-endo_per <- mdl$get_endo_period()
-nper <- length_range(endo_per)
-lead_per <- end_period(endo_per)
-lag_per  <- start_period(endo_per)
+data_per <- mdl$get_data_period()
+nper <- length_range(data_per)
+lead_per <- mdl$get_lead_period()
+lag_per  <- mdl$get_lag_period()
 
 eigvals <- get_analytical_eigvals(mdl$get_params())
-y_ref_per <- regperiod_range(start_period(endo_per), end_period(endo_per) + 1)
+y_ref_per <- regperiod_range(start_period(data_per), end_period(data_per) + 1)
 y_ref1 <- get_analytical_result(y0 = 1, x1 = 0, period = y_ref_per,
                                 mdl$get_params())
 y_ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = y_ref_per,
@@ -27,19 +27,19 @@ ymin_ref1  <- lag(y_ref1, -1)
 colnames(ymin_ref1) <- "ymin"
 yplus_ref1 <- lag(y_ref1, 1)
 colnames(yplus_ref1) <- "yplus"
-exo_ref1   <- regts(0, period = endo_per)
-ref1 <- cbind(y_ref1, yplus_ref1, ymin_ref1, exo = exo_ref1)[endo_per]
+exo_ref1   <- regts(0, period = data_per)
+ref1 <- cbind(y_ref1, yplus_ref1, ymin_ref1, exo = exo_ref1)[data_per]
 ref1[lag_per, "ymin"] <- 0
 
-ymin_ref2 <- lag(y_ref2, -1)[endo_per]
+ymin_ref2 <- lag(y_ref2, -1)[data_per]
 colnames(ymin_ref2) <- "ymin"
-yplus_ref2 <- lag(y_ref2, 1)[endo_per]
+yplus_ref2 <- lag(y_ref2, 1)[data_per]
 colnames(yplus_ref2) <- "yplus"
-exo_ref2 <- regts(c(0, 1, rep(0, nper - 2)), period = endo_per)
-ref2 <- cbind(y_ref2, yplus_ref2, ymin_ref2, exo = exo_ref2)[endo_per]
+exo_ref2 <- regts(c(0, 1, rep(0, nper - 2)), period = data_per)
+ref2 <- cbind(y_ref2, yplus_ref2, ymin_ref2, exo = exo_ref2)[data_per]
 ref2[lag_per, "ymin"] <- 0
 
-mdl$set_endo_values(1, names = "y", period = start_period(mdl$get_endo_period()))
+mdl$set_endo_values(1, names = "y", period = lag_per)
 
 test_that("steady state calculation", {
     mdl_stat <- mdl$clone()

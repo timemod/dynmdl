@@ -11,15 +11,16 @@ mod_file <- "mod/simple1.mod"
 report <- capture_output(mdl <- compile_model(mod_file))
 
 mdl$set_period("2015/2060")
-endo_per <- mdl$get_endo_period()
+data_per <- mdl$get_data_period()
 eigvals <- get_analytical_eigvals(mdl$get_params())
-ref1 <- get_analytical_result(y0 = 1, x1 = 0, period = endo_per,
+ref1 <- get_analytical_result(y0 = 1, x1 = 0, period = data_per,
                               params = mdl$get_params())
-ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = endo_per,
+ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = data_per,
                               params = mdl$get_params())
-lead_per <- end_period(mdl$get_endo_period())
+lead_per <- mdl$get_lead_period()
+lag_per <- mdl$get_lag_period()
 
-mdl$set_endo_values(1, names = "y", period = start_period(mdl$get_endo_period()))
+mdl$set_endo_values(1, names = "y", period = lag_per)
 
 test_that("steady state calculation", {
     mdl_stat <- mdl$clone()

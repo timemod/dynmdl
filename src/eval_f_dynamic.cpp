@@ -19,7 +19,7 @@ public:
 // [[Rcpp::export]]
 NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_data,
                              SEXP params, Function f_dynamic, int n_endo, int nper,
-                             int max_exo_lag) {
+                             int max_lag) {
 
     NumericVector res(nper * n_endo);
     NumericVector x(icols.size());
@@ -29,7 +29,7 @@ NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_
             x(i) = endos(icols(i) +  it * n_endo);
         }
         NumericVector res_t = f_dynamic(x, exo_data, params, 
-                                        it + 1 + max_exo_lag, false);          
+                                        it + 1 + max_lag, false);          
         for (int id = 0; id < n_endo; id++) {
             res(id + it * n_endo) = res_t[id];
         }
@@ -40,7 +40,7 @@ NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_
 // [[Rcpp::export]]
 List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, SEXP exo_data,
                      SEXP params, Function f_dynamic, int n_endo,
-                     int nper, int max_exo_lag) {
+                     int nper, int max_lag) {
 
     std::map<int, VarInfo> jacmap;
     std::vector<int> icols;
@@ -66,7 +66,7 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, SEXP
         for (int i = 0; i < icols.size(); i++) {
             x(i) = endos(icols[i] + it * n_endo);
         }
-        NumericMatrix jt  = f_dynamic(x, exo_data, params, it + 1 + max_exo_lag,
+        NumericMatrix jt  = f_dynamic(x, exo_data, params, it + 1 + max_lag,
                                       true);
         for (int ieq = 0; ieq < n_endo; ieq++) {
             for (int ideriv = 0; ideriv < jacmap.size(); ideriv++) {

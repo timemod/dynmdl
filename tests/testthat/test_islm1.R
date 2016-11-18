@@ -13,31 +13,26 @@ model_period <- regperiod_range(p1, p1 + nperiods - 1)
 report <- capture_output(mdl <- compile_model(mod_file))
 mdl$solve_steady()
 mdl$set_period(model_period)
-lag_per <- start_period(mdl$get_endo_period())
+lag_per <- mdl$get_lag_period()
 
-get_dynare_endo <- function(endo_file, endo_period) {
+get_dynare_endo <- function(endo_file, data_period) {
     endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
                            header = FALSE, sep = "")[[1]]
     endo_data <- t(as.matrix(read.csv(file.path(dynare_dir, endo_file),
                                       header = FALSE)))
-    return (regts(endo_data, period = endo_period, names = endo_names))
+    return (regts(endo_data, period = data_period, names = endo_names))
 }
 
-get_dynare_exo <- function(exo_file, exo_period, endo_period) {
+get_dynare_exo <- function(exo_file, data_period) {
     exo_names <- read.csv(exo_name_file, stringsAsFactors = FALSE,
                           header = FALSE, sep = "")[[1]]
     exo_data <- as.matrix(read.csv(file.path(dynare_dir, exo_file),
                                    header = FALSE))
-    # In dynare, the exogenous data period is the same
-    # as the endogenous data period. This is different in dynr
-    # (maybe I should change this!)
-    ret <- regts(exo_data, period = endo_period, names = exo_names)
-    return (ret[exo_period])
+    return (regts(exo_data, period = data_period, names = exo_names))
 }
 
-dynare_endo <- get_dynare_endo("islm_simul_endo.csv", mdl$get_endo_period())
-dynare_exo <- get_dynare_exo("islm_simul_exo.csv", mdl$get_exo_period(),
-                             mdl$get_endo_period())
+dynare_endo <- get_dynare_endo("islm_simul_endo.csv", mdl$get_data_period())
+dynare_exo <- get_dynare_exo("islm_simul_exo.csv", mdl$get_data_period())
 
 test_that("solve", {
     mdl2 <- mdl$clone()

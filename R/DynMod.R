@@ -28,41 +28,6 @@ setOldClass("regts")
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
 #' @format \code{\link{R6Class}} object.
 #'
-# @field endo_count the number of endogenous variables
-# @field endos the names and steady values of the endogenous variables. These
-# values are initialised with the values from the \code{initval} block of the
-# mod-file and may be computed with the \code{steady} method
-# @field exos the names and steady values of the exogenous variables. These
-# values are initialised with the values from the \code{initval} block of the
-# mod-file
-# @field params the names and steady values of the parameters
-# @field max_endo_lag   maximum lag for endogenous variables
-# @field max_endo_lead   maximum lead for endogenous variables
-# @field max_exo_lag   maximum lag for exogenous variables
-# @field max_exo_lead   maximum lead for exogenous variables
-# @field nstatic   the number of static variables (variables without lag or
-#  lead)
-# @field nfwrd  the number of forward looking variables (variables with
-#  leads but no lags)
-# @field npred  the number of backward looking variables (variables with
-#  lag but no lead)
-# @field nboth  the number of variables with both a lag and a lead
-#  lead)
-# @field ndynamic  the number of variables with a lag or lead
-# @field nsfwrd the number of variables with leads
-# @field lead_lag_incidence see documentation Dynare
-# of the model
-# @field f_dynamic function for the residuals and Jacobian for the dynamic version
-# of the model
-# @field model_period the model period as a \code{\link[regts]{regperiod_range}}
-# @field endo_period the data period for the endogenous variables
-# @field exo_period the data period for the exogenous variables
-# @field endo_data a \code{\link[regts]{regts}} with the values of the
-# endogenous variables
-# @field exo_data a \code{\link[regts]{regts}} with the values of the
-# exogenous variables
-# @field solve_out the output of the solver (e.g. \code{\link[nleqslv]{nleqslv}})
-# used to solve the model
 #' @section Methods:
 #' \describe{
 #'
@@ -99,11 +64,14 @@ setOldClass("regts")
 #'
 #' \item{\code{get_period()}}{Returns the model period}
 #'
-#' \item{\code{get_endo_period()}}{Returns the endo period}
+#' \item{\code{get_data_period()}}{Returns the data period, i.e. the model period
+#'  extended with the lag end lead period}
 #'
-#' \item{\code{get_exo_period()}}{Returns the exo period}
+#' \item{\code{get_lag_period()}}{Returns the lag period}
 #'
-#' \item{\code{set_exo_values(value, names = NULL, period = self$get_exo_period())}}{Sets the value(s)
+#' \item{\code{get_lead_period()}}{Returns the lead period}
+#'
+#' \item{\code{set_exo_values(value, names = NULL, period = self$get_data_period())}}{Sets the value(s)
 #' of one more exogenous variables. \code{value} can be any R object
 #' that can be coerced to a numeric. \code{period} is the period
 #' for which endogenous variable is modified. If argument \code{period}
@@ -116,10 +84,10 @@ setOldClass("regts")
 #' \code{"updval"}, then the values are only replaced by non NA values in
 #' \code{data}}
 #'
-#' \item{\code{get_exo_data(names, period = self$get_exo_period()}}{
+#' \item{\code{get_exo_data(names, period = self$get_data_period()}}{
 #' Returns the exogenous data}
 #'
-#' \item{\code{set_endo_values(value, names = NULL,  period = self$get_endo_period())}}{
+#' \item{\code{set_endo_values(value, names = NULL,  period = self$get_data_period())}}{
 #' Sets the value(s) of one more endogenous variables. \code{value} can be any R object
 #' that can be coerced to a numeric. \code{period} is the period
 #' for which endogenous variable is modified. If argument \code{period}
@@ -137,7 +105,7 @@ setOldClass("regts")
 #' \code{"updval"}, then the values are only replaced by non NA values in
 #' \code{data}}
 #'
-#' \item{\code{get_endo_data(names, period = self$get_endo_period()}}{
+#' \item{\code{get_endo_data(names, period = self$get_data_period()}}{
 #' Returns the endgenous data}
 #'
 #' \item{\code{solve_steady(start = self$get_static_endos(), control = NULL)}}{
@@ -208,6 +176,16 @@ DynMod <- R6Class("DynMod",
             private$ndynamic               <- private$npred + private$nboth +
                                               private$nfwrd
             private$nsfwrd                 <- private$nfwrd + private$nboth
+            private$max_lag  <- max(private$max_endo_lag,  private$max_exo_lag)
+            private$max_lead <- max(private$max_endo_lead, private$max_exo_lead)
+
+            if (private$max_lag > 1) {
+                stop("dynr cannot yet handle models with max. lag > 1")
+            }
+            if (private$max_lead > 1) {
+                stop("dynr cannot yet handle models with max. lead > 1")
+            }
+
         },
         print = function(...) {
             cat("DynMod object\n")
@@ -264,23 +242,18 @@ DynMod <- R6Class("DynMod",
         set_period = function(period) {
             period <- as.regperiod_range(period)
             private$model_period <-  period
-            private$endo_period <- regperiod_range(
-                start_period(period) - private$max_endo_lag,
-                end_period(period) + private$max_endo_lead)
-            private$exo_period <- regperiod_range(
-                start_period(period) - private$max_exo_lag,
-                end_period(period) + private$max_exo_lead)
-
-            nper <- length_range(private$endo_period)
+            private$data_period <- regperiod_range(
+                                       start_period(period) - private$max_lag,
+                                       end_period(period) + private$max_lead)
+            nper <- length_range(private$data_period)
             endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
             private$endo_data <- regts(endo_mat,
-                                       start = start_period(private$endo_period),
+                                       start = start_period(private$data_period),
                                        names = names(private$endos))
             if (private$exo_count > 0) {
-                nper <- length_range(private$exo_period)
                 exo_mat <- matrix(rep(private$exos, each = nper), nrow = nper)
                 private$exo_data <- regts(exo_mat,
-                                          start = start_period(private$exo_period),
+                                          start = start_period(private$data_period),
                                           names = names(private$exos))
             }
             return (invisible(self))
@@ -288,15 +261,28 @@ DynMod <- R6Class("DynMod",
         get_period = function() {
             return (private$model_period)
         },
-        get_endo_period = function() {
-            return (private$endo_period)
+        get_data_period = function() {
+            return (private$data_period)
         },
-        get_exo_period = function() {
-            return (private$exo_period)
+        get_lag_period = function() {
+            if (private$max_lag > 0) {
+                p <- start_period(private$data_period)
+                return (regperiod_range(p, p + private$max_lag - 1))
+            } else {
+                return (NULL)
+            }
+        },
+        get_lead_period = function() {
+            if (private$max_lead > 0) {
+                p <- end_period(private$data_period)
+                return (regperiod_range(p - private$max_lead + 1, p))
+            } else {
+                return (NULL)
+            }
         },
         set_exo_values = function(value, names = private$exo_names,
-                                  period = private$exo_period) {
-            # TODO: period should be the intersection of private$exo_period
+                                  period = private$data_period) {
+            # TODO: period should be the intersection of private$data_period
             # and period
             private$exo_data[period, names] <- value
             return (invisible(self))
@@ -305,7 +291,7 @@ DynMod <- R6Class("DynMod",
             # TODO: rangrange_intersect is not yet exported in regts.
             # this should be modified in regts.
             per <- regts:::regrange_intersect(get_regperiod_range(data),
-                                              private$exo_period)
+                                              private$data_period)
             update_mode <- match.arg(update_mode)
             ts_names <- colnames(data)
             if (is.null(ts_names)) {
@@ -323,7 +309,7 @@ DynMod <- R6Class("DynMod",
             private$exo_data[per, names] <- new_data
             return (invisible(self))
         },
-        get_exo_data = function(period = self$get_exo_period(), names = NULL) {
+        get_exo_data = function(period = private$data_period, names = NULL) {
             if (missing(names)) {
                 return (private$exo_data[period, ])
             } else {
@@ -332,8 +318,8 @@ DynMod <- R6Class("DynMod",
             }
         },
         set_endo_values = function(value, names = private$endo_names,
-                                   period = private$endo_period) {
-            # TODO: period should be the intersection of private$endo_period
+                                   period = private$data_period) {
+            # TODO: period should be the intersection of private$data_period
             # and period
             private$endo_data[period, names] <- value
             return (invisible(self))
@@ -342,7 +328,7 @@ DynMod <- R6Class("DynMod",
             # TODO: rangrange_intersect is not yet exported in regts.
             # this should be modified in regts.
             per <- regts:::regrange_intersect(get_regperiod_range(data),
-                                              private$endo_period)
+                                              private$data_period)
             update_mode <- match.arg(update_mode)
             ts_names <- colnames(data)
             if (is.null(ts_names)) {
@@ -374,7 +360,7 @@ DynMod <- R6Class("DynMod",
                 self$set_exo_data(data, update_mode)
             }
         },
-        get_endo_data = function(period = self$get_endo_period(), names) {
+        get_endo_data = function(period = private$data_period, names) {
             if (missing(names)) {
                 return (private$endo_data[period, ])
             } else {
@@ -397,7 +383,7 @@ DynMod <- R6Class("DynMod",
 
             if (!is.null(private$endo_data)) {
                 # update the model data
-                nper <- length_range(private$endo_period)
+                nper <- length_range(private$data_period)
                 private$endo_data[ , ] <- matrix(rep(private$endos, each = nper),
                                                 nrow = nper)
             }
@@ -459,23 +445,18 @@ DynMod <- R6Class("DynMod",
             rules <- private$solve_first_order()
             private$rules <- rules
 
-            sel <-  which(rules$kstate[, 2, drop = FALSE] <= private$max_endo_lag + 1)
+            sel <-  which(rules$kstate[, 2, drop = FALSE] <= private$max_lag + 1)
             k2 <- rules$kstate[sel, c(1,2), drop = FALSE]
             k2 <- k2[, 1, drop = FALSE] +
-                (private$max_endo_lag + 1 - k2[, 2, drop = FALSE]) * private$endo_count
+                (private$max_lag + 1 - k2[, 2, drop = FALSE]) * private$endo_count
 
-            endo_names <- names(private$endos)
-            private$endo_data[1, endo_names] <-
-                           private$endo_data[1, endo_names] - private$endos
+            private$endo_data[1, ] <- private$endo_data[1, ] - private$endos
 
-            nper <- length_range(private$model_period)
-
-            exo_names <- names(private$exos)
-            ex_ <- private$exo_data[, exo_names] -
-                                rep(private$exos, each = nrow(private$exo_data))
+            ex_ <- private$exo_data[ , ] -
+                      rep(private$exos, each = nrow(private$exo_data))
 
             check_per <- regperiod_range(start_period(private$model_period) + 1,
-                                         end_period(private$exo_period))
+                                         end_period(private$data_period))
             if (sum(abs(ex_[check_per])) > .Machine$double.eps) {
                 # The dynare command stoch_simul only allows for shocks in the first
                 # period. An analytical solution in a Taylor approximation requires
@@ -485,13 +466,6 @@ DynMod <- R6Class("DynMod",
                            "in the first period"))
             }
 
-            if (private$max_exo_lead == 0 && private$max_endo_lead > 0) {
-                # add an extra row to ex_, so that we can simulate up to the last period
-                # in private$endo_period
-                ex_[end_period(private$endo_period)] <- 0
-            }
-
-            iter <- NROW(ex_)
             if (length(rules$ghu) == 0) {
                 # purely backward?
                 stop("Situation where length(ghu) == 0 not yet supported")
@@ -500,15 +474,16 @@ DynMod <- R6Class("DynMod",
                 stop("Situation where length(ghx) == 0 not yet supported")
             } else {
                 epsilon <- rules$ghu %*% t(ex_)
-                for (i in 2 : (iter + private$max_endo_lag)) {
+                for (i in 2 : length_range(private$data_period)) {
                     yhat <- t(private$endo_data[i - 1, rules$order_var[k2],
                                                 drop = FALSE])
                     private$endo_data[i, rules$order_var] <-
-                        rules$ghx %*% yhat  + epsilon[ , i - 1, drop = FALSE]
+                        rules$ghx %*% yhat  + epsilon[ , i, drop = FALSE]
                 }
-                n <- iter + private$max_endo_lag
-                private$endo_data[1:n, ] <- private$endo_data[1 : n, ]  +
-                    rep(private$endos, each = n)
+
+                # add steady state values
+                private$endo_data[ , ] <- private$endo_data[ , ]  +
+                              rep(private$endos, each = nrow(private$endo_data))
             }
             return (invisible(self))
         },
@@ -543,8 +518,10 @@ DynMod <- R6Class("DynMod",
         params = NULL,
         max_endo_lag = NA_integer_,
         max_endo_lead = NA_integer_,
+        max_lead = NA_integer_,
         max_exo_lag =  NA_integer_,
         max_exo_lead =  NA_integer_,
+        max_lag  = NA_integer_,
         nstatic =  NA_integer_,
         nfwrd =  NA_integer_,
         npred =  NA_integer_,
@@ -556,21 +533,20 @@ DynMod <- R6Class("DynMod",
         f_static = NULL,
         f_dynamic = NULL,
         model_period = NULL,
-        endo_period =  NULL,
-        exo_period = NULL,
+        data_period =  NULL,
         endo_data = NULL,
         exo_data = NULL,
         solve_out = NULL,
         rules = NULL,
 
         get_lags = function() {
-            lag_per <- regperiod_range(start_period(private$endo_period),
+            lag_per <- regperiod_range(start_period(private$data_period),
                                        start_period(private$model_period) - 1)
             return (as.numeric(t(private$endo_data[lag_per, ])))
         },
         get_leads = function() {
             lead_per <- regperiod_range(end_period(private$model_period) + 1,
-                                        end_period(private$endo_period))
+                                        end_period(private$data_period))
             return (as.numeric(t(private$endo_data[lead_per, ])))
         },
         # returns a vector with endogenous variables in the solution period
@@ -586,7 +562,7 @@ DynMod <- R6Class("DynMod",
                                    which(private$lead_lag_incidence != 0) - 1,
                                    private$exo_data, private$params,
                                    private$f_dynamic, private$endo_count,
-                                   nper, private$max_exo_lag))
+                                   nper, private$max_lag))
         },
         get_jac = function(x, lags, leads, nper) {
             endos <- c(private$get_lags(), x, private$get_leads())
@@ -594,7 +570,7 @@ DynMod <- R6Class("DynMod",
             mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
                                         private$exo_data, private$params,
                                         private$f_dynamic, private$endo_count,
-                                        nper, private$max_exo_lag)
+                                        nper, private$max_lag)
             n <- nper * private$endo_count
             jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
                        x = mat_info$values, Dim = as.integer(rep(n, 2)))
@@ -743,12 +719,11 @@ DynMod <- R6Class("DynMod",
             }
 
             # calculate the Jacobian
-            nper_exo <- private$max_exo_lag + private$max_exo_lead + 1
-            nper_endo <- private$max_endo_lag + private$max_endo_lead + 1
-            exos <- rep(private$exos, nper_exo)
-            endos <- rep(private$endos, nper_endo)
+            nper <- private$max_lag + private$max_lead + 1
+            exos <- rep(private$exos, nper)
+            endos <- rep(private$endos, nper)
             y <- endos[which(private$lead_lag_incidence != 0)]
-            it <- private$max_exo_lag + 1
+            it <- private$max_lag + 1
             jacobia <- private$f_dynamic(y, exo, private$params, it, jac = TRUE)
             jacobia <- jacobia[, rules$reorder_jacobian_columns, drop = FALSE]
 

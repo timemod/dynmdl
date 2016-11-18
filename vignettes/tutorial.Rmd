@@ -21,7 +21,7 @@ vignette: >
 In this tutorial I show how a simple model with rational expectations
 can be solved with package `dynr`.
 
-The example model is a version of the IS-LM model with rational expectations.
+The example model is a version of the ISLM model with rational expectations.
 This model has the following variables:
 
 \begin{tabular}{ll|ll}
