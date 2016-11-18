@@ -1,0 +1,6 @@
+tc   
+rf   
+risk 
+tp   
+gpx  
+groei

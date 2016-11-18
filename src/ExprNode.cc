@@ -3062,7 +3062,8 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         unpackPowerDeriv()->writeOutput(output, output_type, temporary_terms, tef_terms);
       else
         {
-          if (output_type == oJuliaStaticModel || output_type == oJuliaDynamicModel)
+          if (output_type == oJuliaStaticModel || output_type == oJuliaDynamicModel ||
+              output_type == oRStaticModel     || output_type == oRDynamicModel)
             output << "get_power_deriv(";
           else
             output << "getPowerDeriv(";

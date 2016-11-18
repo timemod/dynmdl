@@ -191,6 +191,7 @@ DynMod <- R6Class("DynMod",
             if (private$max_lead > 1) {
                 stop("dynr cannot yet handle models with max. lead > 1")
             }
+            print(private$f_dynamic)
 
         },
         print = function(...) {
@@ -735,11 +736,11 @@ DynMod <- R6Class("DynMod",
 
             # calculate the Jacobian
             nper <- private$max_lag + private$max_lead + 1
-            exos <- rep(private$exos, nper)
+            exos <- matrix(rep(private$exos, each = nper), nrow = nper)
             endos <- rep(private$endos, nper)
             y <- endos[which(private$lead_lag_incidence != 0)]
             it <- private$max_lag + 1
-            jacobia <- private$f_dynamic(y, exo, private$params, it, jac = TRUE)
+            jacobia <- private$f_dynamic(y, exos, private$params, it, jac = TRUE)
             jacobia <- jacobia[, rules$reorder_jacobian_columns, drop = FALSE]
 
             if (private$nstatic) {
