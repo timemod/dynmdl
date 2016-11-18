@@ -31,6 +31,12 @@ setOldClass("regts")
 #' @section Methods:
 #' \describe{
 #'
+#' \item{\code{get_endo_names()}}{Returns the names of the endogenous variables.}
+#
+#' \item{\code{get_exo_names()}}{Returns the names of the exogenous variables.}
+#'
+#' \item{\code{get_param_names()}}{Returns the names of the parameters.}
+#'
 #' \item{\code{set_params()}}{Sets the parameters of the model.}
 #'
 #' \item{\code{get_params()}}{Returns the parameters of the model.}
@@ -213,6 +219,15 @@ DynMod <- R6Class("DynMod",
                 cat(sprintf("%-60s%s\n", "Model period:",
                             as.character(private$model_period)))
             }
+        },
+        get_endo_names = function() {
+            return (private$endo_names)
+        },
+        get_exo_names = function() {
+            return (private$exo_names)
+        },
+        get_param_names = function() {
+            return (private$param_names)
         },
         set_params = function(params) {
             private$params[names(params)] <- params
