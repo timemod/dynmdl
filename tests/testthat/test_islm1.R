@@ -1,11 +1,12 @@
 library(dynr)
 context("ISLM model")
 
-nperiods = 18
-
+nperiods <- 18
 mod_file <- "mod/islm.mod"
-endo_name_file <- "dynare/output/islm_endo_names.txt"
-dynare_result_file <- "dynare/output/islm_simul.csv"
+dynare_dir     <- "dynare/output"
+endo_name_file <- file.path(dynare_dir, "islm_endo_names.txt")
+exo_name_file  <- file.path(dynare_dir, "islm_exo_names.txt")
+
 p1 <- regperiod("2011Q3")
 model_period <- regperiod_range(p1, p1 + nperiods - 1)
 
@@ -14,22 +15,64 @@ mdl$solve_steady()
 mdl$set_period(model_period)
 lag_per <- start_period(mdl$get_endo_period())
 
-endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE, header = FALSE,
-                       sep = "")[[1]]
+get_dynare_endo <- function(endo_file, endo_period) {
+    endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
+                           header = FALSE, sep = "")[[1]]
+    endo_data <- t(as.matrix(read.csv(file.path(dynare_dir, endo_file),
+                                      header = FALSE)))
+    return (regts(endo_data, period = endo_period, names = endo_names))
+}
 
+get_dynare_exo <- function(exo_file, exo_period, endo_period) {
+    exo_names <- read.csv(exo_name_file, stringsAsFactors = FALSE,
+                          header = FALSE, sep = "")[[1]]
+    exo_data <- as.matrix(read.csv(file.path(dynare_dir, exo_file),
+                                   header = FALSE))
+    # In dynare, the exogenous data period is the same
+    # as the endogenous data period. This is different in dynr
+    # (maybe I should change this!)
+    ret <- regts(exo_data, period = endo_period, names = exo_names)
+    return (ret[exo_period])
+}
 
-test_that("simulation with shock in g and historical value for y", {
-    endo_data <- t(as.matrix(read.csv(dynare_result_file, header = FALSE)))
-    dynare_result <- regts(endo_data,
-                           start = start_period(mdl$get_endo_period()),
-                           end = end_period(mdl$get_endo_period()),
-                           names = endo_names)
+dynare_endo <- get_dynare_endo("islm_simul_endo.csv", mdl$get_endo_period())
+dynare_exo <- get_dynare_exo("islm_simul_exo.csv", mdl$get_exo_period(),
+                             mdl$get_endo_period())
 
-    mdl$set_endo_values(1200, "y", lag_per)
-    g_values <- c(245, 250, 260)
-    mdl$set_exo_values(g_values, "g",
-                       period = regperiod_range(p1, p1 + length(g_values) - 1))
-    mdl$solve()
-    expect_equal(dynare_result, mdl$get_endo_data())
+test_that("solve", {
+    mdl2 <- mdl$clone()
+    mdl2$set_endo_data(dynare_endo[lag_per])
+    mdl2$set_exo_data(dynare_exo)
+    mdl2$solve()
+    expect_equal(dynare_endo, mdl2$get_endo_data())
+    expect_error(mdl2$solve_perturbation(),
+                   "The perturbation approach currently only allows shocks in the first period")
 })
+
+test_that("solve_perturb", {
+    mdl2 <- mdl$clone()
+    mdl2$set_endo_values(1200, "y", lag_per)
+    mdl2$set_exo_values(245, "g", start_period(model_period))
+    mdl2$solve()
+    mdl3 <- mdl2$clone()
+    mdl3$solve_perturbation()
+    # note that the results are not exactly equal because of nonlinear terms
+    expect_equal(mdl2$get_endo_data(), mdl3$get_endo_data(), tolerance = 1e-6)
+})
+
+test_that("solve_perturb linear model", {
+    mdl2 <- mdl$clone()
+    # set all non-linear parameters to 0
+    mdl2$set_params(c(c5 = 0, i5 = 0, m3 = 0))
+    mdl2$solve_steady()
+    mdl2$set_endo_values(1200, "y", lag_per)
+    # use a large shock, this should not matter if the model
+    # is exactly linear
+    mdl2$set_exo_values(280, "g", start_period(model_period))
+    mdl2$solve()
+    mdl3 <- mdl2$clone()
+    mdl3$solve_perturbation()
+    expect_equal(mdl2$get_endo_data(), mdl3$get_endo_data())
+})
+
 

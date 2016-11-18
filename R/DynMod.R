@@ -394,6 +394,14 @@ DynMod <- R6Class("DynMod",
             out <- nleqslv::nleqslv(start, fn = f, jac = jac,
                                     method = "Newton", control = control)
             private$endos <- out$x
+
+            if (!is.null(private$endo_data)) {
+                # update the model data
+                nper <- length_range(private$endo_period)
+                private$endo_data[ , ] <- matrix(rep(private$endos, each = nper),
+                                                nrow = nper)
+            }
+
             return (invisible(self))
         },
         check = function() {
