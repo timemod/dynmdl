@@ -114,12 +114,15 @@ setOldClass("regts")
 #' \item{\code{get_endo_data(names, period = self$get_data_period()}}{
 #' Returns the endgenous data}
 #'
-#' \item{\code{solve_steady(start = self$get_static_endos(), control = NULL)}}{
+#' \item{\code{solve_steady(start = self$get_static_endos(), init_data = TRUE,
+#' control = NULL)}}{
 #' Solve the steady state of the model.
 #' This methods solves the steady state problem. Argument \code{start}
 #' can be used to specify an initial guess for the steady state values.
 #' By default, the initial guess is either based on the \code{initval}
 #' block of the mode file or the result of a previous call of \code{solve_steady}.
+#' If \code{init_data} is true, then the computed steady state values
+#' are used to initialise the endogenous model variables
 #' \code{control} is a list of control options passed to
 #' \code{\link[nleqslv]{nleqslv}}.}
 #'
@@ -384,7 +387,8 @@ DynMod <- R6Class("DynMod",
                 return (private$endo_data[period, names, drop = FALSE])
             }
         },
-        solve_steady = function(start = self$get_static_endos(), control = NULL) {
+        solve_steady = function(start = self$get_static_endos(),
+                                init_data = TRUE, control = NULL) {
             f <- function(x) {
                 return (private$f_static(x, private$exos, private$params))
             }
@@ -395,9 +399,13 @@ DynMod <- R6Class("DynMod",
             # succesfull
             out <- nleqslv::nleqslv(start, fn = f, jac = jac,
                                     method = "Newton", control = control)
+            if (out$termcd != 1) {
+                stop(paste("Error solving the steady state.\n",
+                           out$message))
+            }
             private$endos <- out$x
 
-            if (!is.null(private$endo_data)) {
+            if (init_data && !is.null(private$endo_data)) {
                 # update the model data
                 nper <- length_range(private$data_period)
                 private$endo_data[ , ] <- matrix(rep(private$endos, each = nper),
@@ -727,7 +735,7 @@ DynMod <- R6Class("DynMod",
             return (rules)
         },
         solve_first_order = function(only_eigval = FALSE, debug = FALSE) {
-
+            self$solve_steady(init_data = FALSE)
             if (is.null(private$rules)) {
                 rules <- private$init_rules()
             } else {

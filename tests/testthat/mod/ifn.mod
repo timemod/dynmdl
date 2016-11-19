@@ -32,7 +32,7 @@ g1     = 0.05;
 g2     = 0.05;
 eps    = 1.0;
 
-model(bytecode);
+model;
 % hcap = verschil dividenduitkeringen bij n = 0 - minimale dividenduitkeringen
 
  hcap  = (1-alfa)*(cfcap - delta)
@@ -118,3 +118,18 @@ model(bytecode);
  aiq = ( lab * wage ) / ( py * ys );
 
 end;
+
+initval;
+%exogenous variables:
+tc = 0.4; rf = 0.08; risk = 0.025; tp = 0.5; gpx = 0.0; groei = 0.01;
+%endogenous variables
+hcap = 0.03; cfcap = 0.18;  bcap = 0.10; kgv = 216; px  = 1; xk = 0.1;
+ocap = 0.034; ncap = 0; dcap = 0.08;  zcap = 0.25;  py = 1.42; ys = 185;
+wage = 1; lab = 207; i  = 0.08; bzcap = 0.067; bzmax = 3.1; bzmin = 0.10; 
+x = 23;  a  = 0.56;  theta  = 0.5;  eta = 0; lambda = 1;  di = 0.06; 
+rho = 0.065;  mzk = 0.18; rhoxmin = 0.091; rhoxmax = 1.85;   
+rhox  = 0.091;  mpk = 0.19;  pyc = 1;  pyc1 = 1;  wage1 = 1; yd  = 185; 
+ydex = 265; ydex1 = 267;  mpl = 0.7;  capcost = 0.09;  aiq = 0.78;
+
+end;
+
