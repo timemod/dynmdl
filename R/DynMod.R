@@ -303,6 +303,7 @@ DynMod <- R6Class("DynMod",
                                   period = private$data_period) {
             # TODO: period should be the intersection of private$data_period
             # and period
+            names <- intersect(names, private$exo_names)
             private$exo_data[period, names] <- value
             return (invisible(self))
         },
@@ -340,6 +341,7 @@ DynMod <- R6Class("DynMod",
                                    period = private$data_period) {
             # TODO: period should be the intersection of private$data_period
             # and period
+            names <- intersect(names, private$endo_names)
             private$endo_data[period, names] <- value
             return (invisible(self))
         },

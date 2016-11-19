@@ -1,5 +1,6 @@
-dynare ifn_simul noclearall
+extend_path
 
+dynare ifn_simul noclearall
 clean_dynare('ifn_simul', 'temp', true)
 
 dlmwrite('output/ifn_endo_names.txt',   M_.endo_names,  'delimiter', '')

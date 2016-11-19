@@ -9,8 +9,8 @@ mkdir temp
 
 % Temporarily rename two main files (main mod file and steady-state m file)
 copyfile([name_mod_file,'.mod'],['temp ',name_mod_file,'.mod'])
-try copyfile([name_mod_file,' steadystate.m'],...
-	['temp ',name_mod_file,' steadystate.m']),
+try copyfile([name_mod_file,'_steadystate.m'],...
+	['temp ',name_mod_file,'_steadystate.m']),
 end
 
 % Move files to sub-directory (including main mod file and steady-state m file)
@@ -18,8 +18,8 @@ movefile([name_mod_file,'*'],name_directory_results)
 
 % Restore the names of the two main files in the working directory
 movefile(['temp ',name_mod_file,'.mod'],[name_mod_file,'.mod'])
-try movefile(['temp ',name_mod_file,' steadystate.m'],...
-	[name_mod_file,' steadystate.m']),
+try movefile(['temp ',name_mod_file,'_steadystate.m'],...
+	[name_mod_file,'_steadystate.m']),
 end
 
 % If requested, delete all the files created by Dynare

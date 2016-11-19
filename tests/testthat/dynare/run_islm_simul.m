@@ -1,3 +1,5 @@
+extend_path
+
 dynare islm_simul noclearall
 
 clean_dynare('islm_simul', 'temp', true)
