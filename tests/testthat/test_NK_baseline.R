@@ -27,28 +27,17 @@ mdl$set_period(model_period)
 data_period <- mdl$get_data_period()
 dynare_result <- regts(endo_data, period = data_period, names = endo_names)
 
-# Read in the parameters from the parameter files.
-# Not all parameters are defined in the mod file, some
-# parameters are set in dynare/NK_baseline_stoch_steady_state.m.
-param_names <- read.csv(param_name_file, stringsAsFactors = FALSE,
-                        header = FALSE, sep = "")[[1]]
-params <- read.csv(param_value_file, header = FALSE, sep = "")[[1]]
-names(params) <- param_names
-mdl$set_params(params)
-
-# use dynare result as starting point for solve_steady
-endos <- dynare_result[end_period(data_period)]
-names(endos) <- endo_names
-mdl$set_static_endos(endos)
-mdl$solve_steady(control = list(trace = 1))
+# TODO: the computed steady state does not agree with the Dynare result.
+# What is going on?
+mdl$solve_steady(control = list(trace = 0))
 
 # todo: handle imaginary parts
-mdl$check()
+check_output <- capture.output(mdl$check())
 
 test_that("solve", {
     mdl2 <- mdl$clone()
     mdl2$set_data(dynare_result[mdl$get_lead_period()])
-    # mdl2$set_data(dynare_result)
+    mdl2$set_data(dynare_result[mdl$get_lag_period()])
     p <- start_period(model_period)
     with (as.list(mdl2$get_params()), {
         mdl2$set_exo_values(exp(sigma_d), names = "epsd", period = p);
@@ -57,6 +46,6 @@ test_that("solve", {
         mdl2$set_exo_values(exp(sigma_A), names = "epsA", period = p);
         mdl2$set_exo_values(exp(sigma_m), names = "epsm", period = p);
     })
-    mdl2$solve(control = list(trace = TRUE))
+    mdl2$solve(control = list(trace = FALSE))
     expect_equal(mdl2$get_endo_data(), dynare_result)
 })

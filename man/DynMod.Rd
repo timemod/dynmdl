@@ -100,12 +100,15 @@ Sets the values of the all model variables (both endogenous and exogenouys).
 \item{\code{get_endo_data(names, period = self$get_data_period()}}{
 Returns the endgenous data}
 
-\item{\code{solve_steady(start = self$get_static_endos(), control = NULL)}}{
+\item{\code{solve_steady(start = self$get_static_endos(), init_data = TRUE,
+control = NULL)}}{
 Solve the steady state of the model.
 This methods solves the steady state problem. Argument \code{start}
 can be used to specify an initial guess for the steady state values.
 By default, the initial guess is either based on the \code{initval}
 block of the mode file or the result of a previous call of \code{solve_steady}.
+If \code{init_data} is true, then the computed steady state values
+are used to initialise the endogenous model variables
 \code{control} is a list of control options passed to
 \code{\link[nleqslv]{nleqslv}}.}
 

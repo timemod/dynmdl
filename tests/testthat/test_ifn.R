@@ -55,7 +55,7 @@ test_that("solve", {
 test_that("solve_steady, check and solve_perturb give an error", {
     # for the ifn model the steady state cannot be computed
     msg <-  paste("Error solving the steady state.\n Jacobian is",
-                  "too ill-conditioned \\(1/condition=1.7e-22\\)",
+                  "too ill-conditioned \\(1/condition=\\d.\\d*e-\\d+\\)",
                   "\\(see allowSingular option\\)")
     expect_error(mdl$solve_steady(), msg)
     expect_error(mdl$check(), msg)

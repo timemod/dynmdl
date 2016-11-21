@@ -422,8 +422,10 @@ DynMod <- R6Class("DynMod",
             }
             eigvalues <- private$solve_first_order(only_eigval = TRUE)
             cat("EIGENVALUES:\n")
+            cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
             for (eigval in eigvalues) {
-                cat(sprintf("%g\n", eigval))
+                cat(sprintf("%16g%16g%16g\n", Mod(eigval), Re(eigval),
+                            Im(eigval)))
             }
             cat("\n")
             return (invisible(self))

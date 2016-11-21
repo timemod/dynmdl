@@ -234,3 +234,21 @@ log(mu_A)=LambdaA+epsA;
 mu_z=mu_A^(1/(1-alppha))*mu_I^(alppha/(1-alppha));
 
 end;
+
+
+/*
+ * dynr extension: parameter values and initial values
+ * for endgenous variables
+ */
+
+gammma1 = 0.034898776;
+Rbar = 1.016535660;
+Lambdax =  1.004458009;
+
+initval;
+d = 1; c = 0.4; mu_z = 1; mu_I = 1; mu_A = 1; lambda = 2.6; R = 1; PI = 1; r  = 0.35;
+x = 0.09; u = 1; q = 1; f = 2.5; ld = 0.3; w = 1; wstar = 1; PIstarw  = 1; PIstar   = 1;
+g1 = 7; g2 = 8; yd = 0.5; mc = 0.9; k = 2.7; vp  = 1; vw = 1; l = 0.3; phi = 1;
+F = 0.04;
+end;
+

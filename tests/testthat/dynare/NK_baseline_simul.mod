@@ -1,5 +1,5 @@
 @#include "../mod/NK_baseline.mod"
-
+    
 shocks;
 var epsd; 
 periods 1;
