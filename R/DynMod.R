@@ -143,7 +143,7 @@ setOldClass("regts")
 #' (a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
 #'
 #' \item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
-#' computed with functiomn \code{checkl()} of \code{solve_perturbation},
+#' computed with functiomn \code{check()} of \code{solve_perturbation()},
 #' ordered with increasing absolute value}
 #'
 #' }
