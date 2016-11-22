@@ -316,7 +316,7 @@ DynMod <- R6Class("DynMod",
                 data <- data[per, names, drop = FALSE]
                 new_data <- private$exo_data[per, names, drop = FALSE]
                 sel <- !is.na(data)
-                new_data[sel] <- data
+                new_data[sel] <- data[sel]
             }
             private$exo_data[per, names] <- new_data
             return (invisible(self))

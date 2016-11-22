@@ -97,6 +97,7 @@ There are also corresponding "setter" methods. For example
 mdl$set_params(c(m0 = 100))
 mdl$get_params("m0")
 ```
+Input for function `set_params()` is a named numerical vector.
 
 ## Cloning `DynMod` object
 
@@ -136,17 +137,15 @@ mdl$get_static_endos()
 ```
 
 The steady state computation requires
-    * Static values for the exogenous variables
-    * An initial guess for the static values of the endogenous variables
-
+*  Static values for the exogenous variables
+*  An initial guess for the static values of the endogenous variables
 After compiling a model, these values are set to the corresponding
 values in the `initval` block of the mod file (or set to 0).
 You can change these values with `set_steady_exos()` or `set_steady_endos()`.
+Input for these function is a named numerical vector.
 For example:
-```{r}
-mdl$set_static_exos(c(g = 243))
-mdl$solve_steady()
-mdl$get_static_endos()
+```{r, eval = FALSE}
+mdl$set_static_exos(c(g = 240))
 ```
 
 ## The model period
