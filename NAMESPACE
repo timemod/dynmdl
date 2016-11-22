@@ -2,8 +2,6 @@
 
 export(DynMod)
 export(compile_model)
-exportClasses(regperiod_range)
-exportClasses(regts)
 importFrom(Matrix,Matrix)
 importFrom(R6,R6Class)
 importFrom(Rcpp,sourceCpp)

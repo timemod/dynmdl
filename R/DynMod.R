@@ -1,12 +1,5 @@
-#' "regperiod_range" class
-#' @name regperiod_range-class
-#' @exportClass regperiod_range
 #' @importFrom methods setOldClass
 setOldClass("regperiod_range")
-
-#' "regts" class
-#' @name regts-class
-#' @exportClass regts
 setOldClass("regts")
 
 #' An R6 class for a Dynare model
@@ -195,8 +188,6 @@ DynMod <- R6Class("DynMod",
             if (private$max_lead > 1) {
                 stop("dynr cannot yet handle models with max. lead > 1")
             }
-            print(private$f_dynamic)
-
         },
         print = function(...) {
             cat("DynMod object\n")
