@@ -18,7 +18,7 @@ periods 1;
 values (exp(sigma_m));
 end;
 
-steady;
+steady(solve_algo = 1);
 check;
 
 simul(periods=19);

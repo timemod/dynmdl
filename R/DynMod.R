@@ -143,7 +143,8 @@ setOldClass("regts")
 #' (a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
 #'
 #' \item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
-#' computed with functiomn \code{checkl()} of \code{solve_perturbation}.}
+#' computed with functiomn \code{checkl()} of \code{solve_perturbation},
+#' ordered with increasing absolute value}
 #'
 #' }
 
@@ -528,7 +529,8 @@ DynMod <- R6Class("DynMod",
         },
         get_eigval = function() {
             if (!is.null(private$rules)) {
-                return (private$rules$eigval)
+                i <- order(abs(private$rules$eigval))
+                return (private$rules$eigval[i])
             } else {
                 stop(paste("Eigen values not available. Calculate the eigenvalues",
                            "with method check()."))
@@ -781,7 +783,7 @@ DynMod <- R6Class("DynMod",
                                                               rules$index_e]
             E[rules$row_indx_de_2, rules$index_e2] <- diag(private$nboth)
             if (only_eigval) {
-                rules$eigval <- sort(geigen::geigen(E, D, only.values = TRUE)$values)
+                rules$eigval <- geigen::geigen(E, D, only.values = TRUE)$values
             } else {
                 qz_result <- geigen::gqz(E, D, sort = 'S')
                 rules$eigval <- geigen::gevalues(qz_result)
@@ -801,7 +803,9 @@ DynMod <- R6Class("DynMod",
             }
 
             if (only_eigval) {
-                return (rules$eigval)
+                i <- order(abs(rules$eigval))
+                private$rules <- rules
+                return (rules$eigval[i])
             }
 
             A <- aa[, rules$index_m, drop = FALSE]  # Jacobian matrix for lagged endogeneous variables
