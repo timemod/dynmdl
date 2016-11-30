@@ -46,11 +46,9 @@ def update_dep_dict(src_files, dep_dict):
         read_depend(srcfile, srcfile, depend)
         if len(depend) > 0:
             dep_dict[srcfile] = depend
-    print dep_dict
 
 def read_depend(srcfile, filenm, depend) :
     # read dependencies of file srcfile on modules
-    print srcfile
     for line in open(os.path.join(src_dir, filenm)):
         line = line.strip() # remove trailing blancs
         m = re.search(include_pattern, line)
@@ -74,7 +72,6 @@ def read_depend(srcfile, filenm, depend) :
                     if not is_macro_header:
                         # call subroutine recursively
                         read_depend(srcfile, include_name, depend);
-        print depend
 
 # main program
 if __name__ == "__main__":
