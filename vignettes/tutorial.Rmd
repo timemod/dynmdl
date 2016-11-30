@@ -137,8 +137,10 @@ mdl$get_static_endos()
 ```
 
 The steady state computation requires
+
 *  Static values for the exogenous variables
 *  An initial guess for the static values of the endogenous variables
+
 After compiling a model, these values are set to the corresponding
 values in the `initval` block of the mod file (or set to 0).
 You can change these values with `set_steady_exos()` or `set_steady_endos()`.
