@@ -1,0 +1,27 @@
+# this is  a Gnu makefile used tp check dependencies of Fortran- and C-files.
+
+TOOLDIR = tools
+DEP_DIR = deps
+DEP_FILE = makedeps
+DEP_PKL = dep.pkl
+SRC_DIR = pkg/src
+SRC_C = $(wildcard $(SRC_DIR)/*.c*)
+SRC_H = $(wildcard $(SRC_DIR)/*.h*)
+PYTHON = python
+SRC_DEP_DIR = $(SRC_DIR)/deps
+
+all: check $(SRC_DEP_DIR)/$(DEP_FILE)
+
+check:
+	@echo checking source files does not work yet
+#	@python $(TOOLDIR)/check_srcfiles.py $(SRC_DIR) $(DEP_DIR)
+
+
+$(SRC_DEP_DIR)/$(DEP_FILE) : $(DEP_DIR)/$(DEP_PKL)
+	@$(PYTHON) $(TOOLDIR)/write_makedeps.py $< $@
+
+$(DEP_DIR)/$(DEP_PKL) : $(SRC_C) $(SRC_H)
+	@$(PYTHON) $(TOOLDIR)/gendepend.py $(SRC_DIR) $@ $(notdir $(?F))
+
+clean:
+	@rm -f deps/*pkl

@@ -18,7 +18,7 @@ LEX_YACC_DIR = lex_yacc
 # to clean sublib
 all : sublib $(SHLIB) DynareFlex.o DynareBison.o
 
-$(SHLIB) : check_source_files $(OBJECTS) $(SUBDIR)/$(SUBLIB)
+$(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 subclean:
 	@(cd $(SUBDIR) && $(MAKE) $(SUBLIB) clean)
@@ -33,19 +33,6 @@ sublib:
 
 DEPS_DIR = deps
 DEP_FILE = $(DEPS_DIR)/makedeps
-DEP_PKL = $(DEPS_DIR)/deps.pkl
-SRC_C = $(wildcard *.c*)
-SRC_H =  $(wildcard *.h*)
-PYTHON = python
-
-check_source_files:
-	@$(PYTHON) $(DEPS_DIR)/check_srcfiles.py
-
-$(DEP_FILE) : $(DEP_PKL)
-	@$(PYTHON) $(DEPS_DIR)/write_makedeps.py $(DEP_PKL) $@
-
-$(DEP_PKL) : $(SRC_C) $(SRC_H)
-	@$(PYTHON) $(DEPS_DIR)/gendepend.py $@ $(?F)
 
 # dependencies C files
 include $(DEP_FILE)

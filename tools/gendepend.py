@@ -18,7 +18,8 @@ def gendepend(dict_filename):
         # no dictionaries present
         dep_dict = {}
         print("Analyzing dependencies of c++ files on header files\n")
-        src_files = glob.glob('*.c*')
+        src_files = glob.glob(os.path.join(src_dir, '*.c*'))
+        src_files = [os.path.basename(file) for file in src_files]
     else:
         # dictionaries present.
         print("Updating dependencies of C++ files on header files")
@@ -45,33 +46,39 @@ def update_dep_dict(src_files, dep_dict):
         read_depend(srcfile, srcfile, depend)
         if len(depend) > 0:
             dep_dict[srcfile] = depend
+    print dep_dict
 
 def read_depend(srcfile, filenm, depend) :
     # read dependencies of file srcfile on modules
-    for line in open(filenm) :
+    print srcfile
+    for line in open(os.path.join(src_dir, filenm)):
         line = line.strip() # remove trailing blancs
         m = re.search(include_pattern, line)
         if m != None:
             # syntax is "include "mymodule""
             include_name = m.group(1)
             if not include_name in depend:
-                    
                 ok = False
                 is_macro_header = False
-                if os.path.isfile(include_name):
+                if os.path.isfile(os.path.join(src_dir, include_name)):
                     ok = True
                 else:
-                    include_name = os.path.join("macro", include_name)
-                    ok =os.path.isfile(include_name)
+                    # do not use os.path here, because otherwise
+                    # the generated dependency file on Windows
+                    # doesn't run on Linux
+                    include_name = "macro/" + include_name
+                    ok = os.path.isfile(os.path.join(src_dir, include_name))
                     is_macro_header = True
                 if ok:
                     depend.add(include_name)
                     if not is_macro_header:
                         # call subroutine recursively
                         read_depend(srcfile, include_name, depend);
+        print depend
 
 # main program
 if __name__ == "__main__":
-    dict_filename = sys.argv[1]
-    new_files = sys.argv[2:] # all files which are newer than the dictionary
+    src_dir = sys.argv[1]
+    dict_filename = sys.argv[2]
+    new_files = sys.argv[3:] # all files which are newer than the dictionary
     gendepend(dict_filename)
