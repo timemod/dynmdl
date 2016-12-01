@@ -1,25 +1,28 @@
-# This is a gnu makefile. The makefile contains some commands that makes
-# it easy to build and install the package, but is it NOT used to build
-# the package itself (for that purpose R CMD INSTALL in used).
-# On Windows, the Rtools directories (e.g. c:\Rtools\bin and 
-# c:\Rtools\gcc-4.6.3\bin) should be in the path, but you should not use
-# the make of c:\Rtools\bin to run this file. Instead use the standard 
-# gnuwin32 make command (at the ontwikkelomgeving at the CPB, use 
-# command gwmake instead of make).
+# This is a gnu makefile with several commands to build, document and test
+# the package.  The actual building and installation of the package is achieved
+# with the standard R commands R CMD BUOLD and R CMD INSTALL.
+#
+# This script assumes that environment variable R_LIBS_USER exists.
+
 PKGDIR=pkg
-VIEWER=gvim
-OSNAME := $(shell uname | tr A-Z a-z)
 INSTALL_FLAGS=--no-multiarch --with-keep.source 
 RCHECKARG=--no-multiarch
+PKG_FFLAGS=-fimplicit-none -cpp -J $(PKGDIR)/src/mod -I $(PKGDIR)/src/include
+PKG_CFLAGS=-DMCISIS
+
+OSNAME := $(shell uname | tr A-Z a-z)
+ifeq ($(findstring windows, $(OSNAME)), windows) 
+    OSTYPE = windows
+else
+    # Linux or MAC OSX
+    OSTYPE = unix
+endif
 
 # Package name, Version and date from DESCIPTION
 PKG=$(shell grep 'Package:' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2)
 PKGTAR=$(PKG)_$(shell grep 'Version' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2).tar.gz
 PKGDATE=$(shell grep 'Date' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2)
 TODAY=$(shell date "+%Y-%m-%d")
-
-PKG_FFLAGS=-fimplicit-none -cpp -J $(PKGDIR)/src/mod -I $(PKGDIR)/src/include
-PKG_CFLAGS=-DMCISIS
 
 .PHONY: clean cleanx check install uninstall mkpkg bin pdf
 
@@ -83,12 +86,13 @@ check: cleanx syntax
 	@echo ""
 
 syntax:
-	$(FC) $(PKG_FFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/*.f90
-	$(CC) $(CPP_FLAGS) $(PKG_CFLAGS) -std=gnu99 -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/*.c
+	@echo "Syntax checking does not work yet"
 
 cleanx:
 # Apple Finder rubbish
+ifneq ($(findstring windows, $(OSNAME)), windows) 
 	@find . -name '.DS_Store' -delete
+endif
 	@rm -f $(PKGTAR)
 	@rm -fr $(PKG).Rcheck
 
