@@ -72,6 +72,12 @@ If \code{update_mode} is
 \code{"updval"}, then the values are only replaced by non NA values in
 \code{data}}
 
+\item{\code{set_exo_values(value, names = NULL, period = self$get_data_period())}}{Sets the value(s)
+of one more exogenous variables. \code{value} can be any R object
+that can be coerced to a numeric. \code{period} is the period
+for which endogenous variable is modified. If argument \code{period}
+is missing the exo period is used.}
+
 \item{\code{get_exo_data(names, period = self$get_data_period()}}{
 Returns the exogenous data}
 
@@ -83,6 +89,12 @@ is mandatary if \code{data} does not have column names.
 If \code{update_mode} is
 \code{"updval"}, then the values are only replaced by non NA values in
 \code{data}}
+
+\item{\code{set_endo_values(value, names = NULL,  period = self$get_data_period())}}{
+Sets the value(s) of one more endogenous variables. \code{value} can be any R object
+that can be coerced to a numeric. \code{period} is the period
+for which endogenous variable is modified. If argument \code{period}
+is missing then the data period is used.}
 
 \item{\code{set_data(data, names, update_mode = c("update", "updval"))}}{
 Sets the values of the all model variables (both endogenous and exogenouys).

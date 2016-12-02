@@ -79,6 +79,12 @@ setOldClass("regts")
 #' \code{"updval"}, then the values are only replaced by non NA values in
 #' \code{data}}
 #'
+#' \item{\code{set_exo_values(value, names = NULL, period = self$get_data_period())}}{Sets the value(s)
+#' of one more exogenous variables. \code{value} can be any R object
+#' that can be coerced to a numeric. \code{period} is the period
+#' for which endogenous variable is modified. If argument \code{period}
+#' is missing the exo period is used.}
+#'
 #' \item{\code{get_exo_data(names, period = self$get_data_period()}}{
 #' Returns the exogenous data}
 #'
@@ -90,6 +96,12 @@ setOldClass("regts")
 #' If \code{update_mode} is
 #' \code{"updval"}, then the values are only replaced by non NA values in
 #' \code{data}}
+#'
+#' \item{\code{set_endo_values(value, names = NULL,  period = self$get_data_period())}}{
+#' Sets the value(s) of one more endogenous variables. \code{value} can be any R object
+#' that can be coerced to a numeric. \code{period} is the period
+#' for which endogenous variable is modified. If argument \code{period}
+#' is missing then the data period is used.}
 #'
 #' \item{\code{set_data(data, names, update_mode = c("update", "updval"))}}{
 #' Sets the values of the all model variables (both endogenous and exogenouys).
@@ -290,8 +302,20 @@ DynMod <- R6Class("DynMod",
         },
         set_exo_data = function(data, names = colnames(data),
                                 update_mode = "update") {
-            return (private$set_data_(data, names, names_missing = missing(names), 
+            return (private$set_data_(data, names, names_missing = missing(names),
                               type = "exo", update_mode = update_mode))
+        },
+        set_exo_values = function(value, names = private$exo_names,
+                                  period = private$data_period) {
+            names <- intersect(names, private$exo_names)
+            if (!missing(period)) {
+                period <- as.regperiod_range(period)
+                per <- regts:::regrange_intersect(period, private$data_period)
+            } else {
+                per <- period
+            }
+            private$exo_data[period, names] <- value
+            return (invisible(self))
         },
         get_exo_data = function(names, period = private$data_period) {
             if (missing(names)) {
@@ -302,13 +326,25 @@ DynMod <- R6Class("DynMod",
             }
         },
         set_endo_data = function(data, names = colnames(data), update_mode = "update") {
-            return (private$set_data_(data, names, names_missing = missing(names), 
+            return (private$set_data_(data, names, names_missing = missing(names),
                               type = "endo", update_mode = update_mode))
         },
+        set_endo_values = function(value, names = private$endo_names,
+                                   period = private$data_period) {
+            names <- intersect(names, private$endo_names)
+            if (!missing(period)) {
+                period <- as.regperiod_range(period)
+                per <- regts:::regrange_intersect(period, private$data_period)
+            } else {
+                per <- period
+            }
+            private$endo_data[period, names] <- value
+            return (invisible(self))
+        },
         set_data = function(data, names = colnames(data), update_mode = "update")  {
-            private$set_data_(data, names, names_missing = missing(names), 
+            private$set_data_(data, names, names_missing = missing(names),
                               type = "exo", update_mode = update_mode)
-            private$set_data_(data, names, names_missing = missing(names), 
+            private$set_data_(data, names, names_missing = missing(names),
                               type = "endo", update_mode = update_mode)
             return (invisible(self))
         },

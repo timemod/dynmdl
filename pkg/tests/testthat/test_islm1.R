@@ -61,10 +61,10 @@ test_that("solve_perturb linear model", {
     # set all non-linear parameters to 0
     mdl2$set_params(c(c5 = 0, i5 = 0, m3 = 0))
     mdl2$solve_steady()
-    mdl2$set_endo_data(regts(1200, period = lag_per), names = "y")
+    mdl2$set_endo_values(1200, names = "y", period = lag_per)
     # use a large shock, this should not matter if the model
     # is exactly linear
-    mdl2$set_exo_data(regts(280, start = start_period(model_period)), names = "g")
+    mdl2$set_exo_values(280, period = start_period(model_period), names = "g")
     mdl2$solve()
     mdl3 <- mdl2$clone()
     mdl3$solve_perturbation()
