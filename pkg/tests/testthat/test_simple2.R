@@ -1,4 +1,5 @@
 library(dynr)
+
 context("simple model expanded to a model with 4 equations")
 
 source("simple_model_utils.R")
@@ -39,7 +40,7 @@ exo_ref2 <- regts(c(0, 1, rep(0, nper - 2)), period = data_per)
 ref2 <- cbind(y_ref2, yplus_ref2, ymin_ref2, exo = exo_ref2)[data_per]
 ref2[lag_per, "ymin"] <- 0
 
-mdl$set_endo_values(1, names = "y", period = lag_per)
+mdl$set_endo_data(regts(1, period = lag_per), names = "y")
 
 test_that("steady state calculation", {
     mdl_stat <- mdl$clone()
@@ -50,26 +51,29 @@ test_that("steady state calculation", {
 
 test_that("solve", {
     mdl1 <- mdl$clone()
-    mdl1$set_endo_values(ref1[lead_per, "y"], names = "y", period = lead_per)
+    mdl1$set_endo_data(ref1[lead_per, "y", drop = FALSE])
     mdl1$solve()
     mdl2 <- mdl1$clone()
-    mdl2$set_endo_values(ref2[lead_per, "y"], names = "y",  period = lead_per)
-    mdl2$set_exo_values(1, names = "x", period = start_period(mdl$get_period()))
+    mdl2$set_endo_data(ref2[lead_per, "y", drop = FALSE])
+    mdl2$set_exo_data(regts(1, start = start_period(mdl$get_period())), 
+                      names = "x")
     mdl2$solve()
     per <- mdl$get_period()
-    expect_equal(mdl1$get_endo_data(per), ref1[per, ])
-    expect_equal(mdl2$get_endo_data(per), ref2[per, ])
+    expect_equal(mdl1$get_endo_data(period = per), ref1[per, ])
+    expect_equal(mdl2$get_endo_data(period = per), ref2[per, ])
 })
 
 test_that("solve_perturbation", {
     mdl1 <- mdl$clone()
     mdl1$solve_perturbation()
-    mdl1$set_endo_values(y_ref1[lag_per + 1], names = "yplus", period = lag_per)
+    x <- lag(y_ref1)[lag_per]
+    mdl1$set_endo_data(lag(y_ref1)[lag_per], names = "yplus")
     expect_equal(mdl1$get_endo_data(), ref1)
     expect_equal(mdl1$get_eigval(), eigvals)
     mdl2 <- mdl1$clone()
-    mdl2$set_endo_values(y_ref2[lag_per + 1], names = "yplus",  period = lag_per)
-    mdl2$set_exo_values(1, names = "x", period = start_period(mdl$get_period()))
+    mdl2$set_endo_data(lag(y_ref2)[lag_per], names = "yplus")
+    mdl2$set_exo_data(regts(1, start = start_period(mdl$get_period())), 
+                      names = "x")
     mdl2$solve_perturbation()
     expect_equal(mdl1$get_endo_data(), ref1)
     expect_equal(mdl2$get_endo_data(), ref2)

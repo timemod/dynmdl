@@ -165,16 +165,19 @@ Suppose that we know the values of the endogenous variables
 $Y$ and $Y^D$  in the lag period 2014. 
 We can set these model values as follows
 ```{r}
-mdl$set_endo_values(1200, names = "y", period = "2014")
-mdl$set_endo_values(1000, names = "yd", period = "2014")
+y  <- regts(1200, start = "2014")
+yd <- regts(1000, start = "2014")
+mdl$set_endo_data(cbind(y, yd))
 ```
 
 Further suppose that in 2015 we know the intended government spending:
 ```{r}
-mdl$set_exo_values(280, names = "g", period = "2015")
+g <- regts(280, start = "2015")
+mdl$set_exo_data(g, names = "g")
 ```
 
-Now we can solve the model using the stacked time Newton method;
+Note that in this example argument `names` has to be specified, because univariate
+timeseries do not have column names. Now we can solve the model using the stacked time Newton method;
 ```{r}
 mdl$solve(control = list(trace = TRUE))
 ```
