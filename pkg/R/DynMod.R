@@ -198,7 +198,7 @@ DynMod <- R6Class("DynMod",
                 stop("dynr cannot yet handle models with max. lead > 1")
             }
         },
-        print = function(...) {
+        print = function(short = TRUE) {
             cat("DynMod object\n")
             cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
                         private$endo_count))
@@ -224,6 +224,24 @@ DynMod <- R6Class("DynMod",
                 cat(sprintf("%-60s%s\n", "Model period:",
                             as.character(private$model_period)))
             }
+            if (!short) {
+                cat("Names of the endogenous variables:\n")
+                print(private$endo_names)
+                cat("Names of the exogenous variables:\n")
+                print(private$exo_names)
+                cat("Names of the parameters:\n")
+                print(private$param_names)
+                cat("Leag lag incidence matrix:\n")
+                mat <- private$lead_lag_incidence
+                rownames(mat) <- private$endo_names
+                colnames(mat) <- as.character(-private$max_lag : private$max_lead)
+                print(mat)
+                cat("\nstatic function and Jacobian:\n")
+                print(private$f_static)
+                cat("\ndynamic function and Jacobian:\n")
+                print(private$f_dynamic)
+            }
+            return (invisible(NULL))
         },
         get_endo_names = function() {
             return (private$endo_names)
