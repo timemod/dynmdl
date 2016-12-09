@@ -1,4 +1,5 @@
-PKG_CXXFLAGS = @DEFS@ -DUSE_R -I.\
+PKG_CXXFLAGS = @DEFS@ -DUSE_R -I.\ `"$(R_HOME)/bin/Rscript" -e "Rcpp:::CxxFlags()"`
+
 # the -I. is for FlexLexer.h
 
 SUBDIR = macro

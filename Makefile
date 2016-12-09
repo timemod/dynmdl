@@ -9,6 +9,7 @@ INSTALL_FLAGS=--no-multiarch --with-keep.source
 RCHECKARG=--no-multiarch
 PKG_FFLAGS=-fimplicit-none -cpp -J $(PKGDIR)/src/mod -I $(PKGDIR)/src/include
 PKG_CFLAGS=-DMCISIS
+R_HOME=$(shell R RHOME)
 
 OSNAME := $(shell uname | tr A-Z a-z)
 ifeq ($(findstring windows, $(OSNAME)), windows) 
@@ -46,13 +47,13 @@ help:
 # if you don't do this you'll get make's initial values
 # gives error doing syntax target
 #R_CPPFLAGS=$(shell R CMD config --cppflags)
-FC=$(shell R CMD config FC)
-F77=$(shell R CMD config F77)
 CC=$(shell R CMD config CC)
 CPP=$(shell R CMD config CXX)
 CPP_FLAGS=$(shell R CMD config --cppflags)
+PKG_CXXFLAGS = -DPACKAGE_NAME=\"dynare\" -DPACKAGE_TARNAME=\"dynare\" -DPACKAGE_VERSION=\"4.6-unstable\" -DPACKAGE_STRING=\"dynare\ 4.6-unstable\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_BOOST_GRAPH_ADJACENCY_LIST_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_TRIM_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_SPLIT_HPP=1 -DHAVE_BOOST_LEXICAL_CAST_HPP=1 -DBOOST_NO_HASH=/\*\*/ -DUSE_R -I.\  `"$(R_HOME)/bin/Rscript" -e "Rcpp:::CxxFlags()"`
 
 flags:
+	@echo "R_HOME=$(R_HOME)"
 	@echo "SHELL=$(SHELL)"
 	@echo "CPP_FLAGS=$(CPP_FLAGS)"
 	@echo "PKGDIR=$(PKGDIR)"
@@ -60,19 +61,17 @@ flags:
 	@echo "PKGTAR=$(PKGTAR)"
 	@echo "PKGDATE=$(PKGDATE)"
 	@echo "R .libPaths()"
-	@echo "FC=$(FC)"
-	@echo "F77=$(F77)"
 	@echo "CC=$(CC)"
 	@echo "CPP=$(CPP)"
 	@echo "CPP_FLAGS=$(CPP_FLAGS)"
+	@echo "PKG_CXXFLAGS=$(PKG_CXXFLAGS)"
 	@R --no-save --quiet --slave -e '.libPaths()'
 
-
 test:
-	Rscript test.R
+	R --slave -f test.R
 
 test_covr:
-	Rscript test_covr.R
+	R --slave -f test_covr.R
 
 check: cleanx syntax
 	@echo " *** Running R CMD check ***"
@@ -86,7 +85,8 @@ check: cleanx syntax
 	@echo ""
 
 syntax:
-	@echo "Syntax checking does not work yet"
+	# TODO: also check the source in pkg/src/macro
+	$(CXX) "$(CPP_FLAGS)" $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/*.c*
 
 cleanx:
 # Apple Finder rubbish
@@ -130,8 +130,12 @@ uninstall:
 
 clean:
 	$(MAKE) -f Makedeps clean
+	$(MAKE) -C $(PKGDIR)/src/macro clean
 	rm -fr $(PKGDIR).Rcheck
 	rm -fr tmp
 	rm -f $(PKGTAR)
 	rm -f $(PKGDIR).pdf
 	rm -f $(PKGDIR).log
+	rm -f $(PKGDIR)/src/*.o
+	rm -f $(PKGDIR)/src/*.so
+	rm -f $(PKGDIR)/src/*.dll
