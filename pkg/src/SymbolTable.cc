@@ -982,3 +982,7 @@ SymbolTable::writeJuliaOutput(ostream &output) const throw (NotYetFrozenExceptio
         output << "                   ]" << endl;
       }
 }
+
+vector<AuxVarInfo> SymbolTable::get_aux_vars() const {
+    return aux_vars;
+}

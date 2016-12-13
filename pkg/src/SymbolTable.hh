@@ -327,6 +327,7 @@ public:
   bool isAuxiliaryVariableButNotMultiplier(int symb_id) const;
   //! Get list of endogenous variables without aux vars
   set <int> getOrigEndogenous() const;
+  vector<AuxVarInfo> get_aux_vars() const;
 };
 
 inline bool

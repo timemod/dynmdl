@@ -166,37 +166,59 @@ DynMod <- R6Class("DynMod",
                 private$f_static <- compiler::cmpfun(private$f_static)
                 private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
             }
-            private$exo_count <- length(model_info$exos)
-            private$endo_count <- length(model_info$endos)
+
             with(model_info, {
-                private$exo_names <- names(exos)
-                private$endo_names <- names(endos)
-                private$param_names <- names(params)
+                private$endo_names         <- names(endos)
+                private$exo_names          <- names(exos)
+                private$param_names        <- names(params)
                 private$endos              <- endos
                 private$exos               <- exos
                 private$params             <- params
-                private$max_endo_lag       <- dynamic_model$max_endo_lag
-                private$max_endo_lead      <- dynamic_model$max_endo_lead
+                private$max_endo_lag_f     <- dynamic_model$max_endo_lag
+                private$max_endo_lead_f    <- dynamic_model$max_endo_lead
                 private$max_exo_lag        <- dynamic_model$max_exo_lag
                 private$max_exo_lead       <- dynamic_model$max_exo_lead
+                private$aux_vars           <- aux_vars
                 private$lead_lag_incidence <- dynamic_model$lead_lag_incidence
                 private$nstatic            <- dynamic_model$nstatic
                 private$nfwrd              <- dynamic_model$nfwrd
                 private$npred              <- dynamic_model$npred
                 private$nboth              <- dynamic_model$nboth
             })
+
             private$ndynamic               <- private$npred + private$nboth +
                                               private$nfwrd
             private$nsfwrd                 <- private$nfwrd + private$nboth
+
+            private$max_endo_lead <- private$max_endo_lead_f  
+            private$max_endo_lag  <- private$max_endo_lag_f 
+
+            private$exo_count <- length(private$exos)
+            private$aux_count <- nrow(private$aux_vars)
+
+            if (private$aux_count > 0) {
+                # max_endo_lag_f is the maximum lag used in solving the model
+                # (1). Compute the true maximum endo lag. endo_leads > 1 are not yet supported   
+                private$max_endo_lag <- max(private$max_endo_lag,
+                                        max(-subset(private$aux_vars, 
+                                                    type == "lag")$orig_lead + 1))
+                private$endo_indices <- (1:length(private$endos))[-private$aux_vars$endo_index]
+                private$endos <- private$endos[-private$aux_vars$endo_index]
+                private$endo_names <- names(private$endos)
+            } else {
+                private$endo_indices <- (1:length(private$endos))
+            }
+    
+            private$endo_count <- length(private$endo_names)
+            private$endo_count_solve <- private$endo_count + private$aux_count 
             private$max_lag  <- max(private$max_endo_lag,  private$max_exo_lag)
             private$max_lead <- max(private$max_endo_lead, private$max_exo_lead)
 
-            if (private$max_lag > 1) {
-                stop("dynr cannot yet handle models with max. lag > 1")
-            }
-            if (private$max_lead > 1) {
-                stop("dynr cannot yet handle models with max. lead > 1")
-            }
+            # add column names and row names to the lead lag incidence matrix
+            colnames(private$lead_lag_incidence) <- as.character(-private$max_endo_lag_f : 
+                                                                 private$max_endo_lead_f)
+            rownames(private$lead_lag_incidence) <- names(model_info$endos)
+
         },
         print = function(short = TRUE) {
             cat("DynMod object\n")
@@ -231,11 +253,10 @@ DynMod <- R6Class("DynMod",
                 print(private$exo_names)
                 cat("Names of the parameters:\n")
                 print(private$param_names)
-                cat("Leag lag incidence matrix:\n")
-                mat <- private$lead_lag_incidence
-                rownames(mat) <- private$endo_names
-                colnames(mat) <- as.character(-private$max_lag : private$max_lead)
-                print(mat)
+                cat("Lead lag incidence matrix:\n")
+                print(private$lead_lag_incidence)
+                cat("aux_vars:\n")
+                print(private$aux_vars)
                 cat("\nstatic function and Jacobian:\n")
                 print(private$f_static)
                 cat("\ndynamic function and Jacobian:\n")
@@ -382,15 +403,22 @@ DynMod <- R6Class("DynMod",
             jac <- function(x) {
                 return (private$f_static(x, private$exos, private$params, jac = TRUE))
             }
-            # todo: print output / give error if the commamd was not
-            # succesfull
+
+            if (private$aux_count > 0) {
+                # add auxiliary variables to start
+                start <- c(start, start[private$aux_vars$orig_index])
+            }
             out <- nleqslv::nleqslv(start, fn = f, jac = jac,
                                     method = "Newton", control = control)
             if (out$termcd != 1) {
                 stop(paste("Error solving the steady state.\n",
                            out$message))
             }
+
             private$endos <- out$x
+            if (private$aux_count > 0) {
+                private$endos <- private$endos[-private$aux_vars$endo_index]
+            }
 
             if (init_data && !is.null(private$endo_data)) {
                 # update the model data
@@ -449,14 +477,25 @@ DynMod <- R6Class("DynMod",
 
             private$solve_out <- list(solved = solved, iter = iter,
                                       residual = res)
-            private$endo_data[private$model_period, ] <-
-                                t(matrix(x, nrow = private$endo_count))
-
+            p <- start_period(private$model_period)
+            nvar <- private$endo_count_solve
+            for (i in 1:length_range(private$model_period)) {
+                sel <- ((i - 1) * nvar + 1) : (i * nvar)
+                data <- x[sel]
+                if (private$aux_count > 0) {
+                    data <- data[-private$aux_vars$endo_index]
+                }
+                private$endo_data[p + i - 1, ] <- data
+            }
             return (invisible(self))
         },
         solve_perturbation = function() {
             rules <- private$solve_first_order()
             private$rules <- rules
+
+            if (private$aux_count > 0) {
+                stop("solve perturbation does not work yet if the  maximum lag > 1")
+            }
 
             sel <-  which(rules$kstate[, 2, drop = FALSE] <= private$max_lag + 1)
             k2 <- rules$kstate[sel, c(1,2), drop = FALSE]
@@ -471,7 +510,6 @@ DynMod <- R6Class("DynMod",
             check_per <- regperiod_range(start_period(private$model_period) + 1,
                                          end_period(private$data_period))
             if (sum(abs(ex_[check_per])) > .Machine$double.eps) {
-                # The dynare command stoch_simul only allows for shocks in the first
                 # period. An analytical solution in a Taylor approximation requires
                 # so called deterministic exogenoeous variables. I do not known
                 # yet how this works.
@@ -524,14 +562,21 @@ DynMod <- R6Class("DynMod",
     private = list(
         exo_count = NA_integer_,
         endo_count = NA_integer_,
+        endo_count_solve = NA_integer_,
+        aux_count = NA_integer_,
         exo_names = NULL,
         endo_names = NULL,
+        endo_indices = NA_integer_,
         param_names = NULL,
         exos = NULL,
         endos = NULL,
         params = NULL,
-        max_endo_lag = NA_integer_,
-        max_endo_lead = NA_integer_,
+        max_endo_lag_f = NA_integer_,  # maximum endo lag in model function,
+                                       # (0 or 1)
+        max_endo_lead_f = NA_integer_, #maximum endo lead in model function,
+                                       # (0 or 1)
+        max_endo_lag = NA_integer_,  # true maximum lag
+        max_endo_lead = NA_integer_, # real maximum endo lead
         max_lead = NA_integer_,
         max_exo_lag =  NA_integer_,
         max_exo_lead =  NA_integer_,
@@ -544,6 +589,7 @@ DynMod <- R6Class("DynMod",
         nsfwrd = NA_integer_,
 
         lead_lag_incidence = NULL,
+        aux_vars = NULL,
         f_static = NULL,
         f_dynamic = NULL,
         model_period = NULL,
@@ -615,18 +661,40 @@ DynMod <- R6Class("DynMod",
             return (invisible(self))
         },
         get_lags = function() {
-            lag_per <- regperiod_range(start_period(private$data_period),
-                                       start_period(private$model_period) - 1)
-            return (as.numeric(t(private$endo_data[lag_per, ])))
+            lag_per <- start_period(private$model_period) - 1
+            return (private$get_endo_per(lag_per));
         },
         get_leads = function() {
-            lead_per <- regperiod_range(end_period(private$model_period) + 1,
-                                        end_period(private$data_period))
-            return (as.numeric(t(private$endo_data[lead_per, ])))
+            lead_per <- end_period(private$model_period) + 1
+            return (private$get_endo_per(lead_per));
         },
         # returns a vector with endogenous variables in the solution period
         get_solve_endo = function() {
-            return (as.numeric(t(private$endo_data[private$model_period, ])))
+            nper <- length_range(private$model_period)
+            nvar <- private$endo_count_solve
+            ret <- numeric(nper * nvar)
+            p_start <- start_period(private$model_period)
+            for (i in 1:nper) {
+                p <- p_start + (i - 1)
+                sel <- ((i - 1) * nvar + 1): (i * nvar)
+                ret[sel] <- private$get_endo_per(p)
+            }
+            return (ret)
+        },
+        # returns endogenous variables as used in the function evaluations at
+        # period p
+        get_endo_per = function(per) {
+            nvar <- private$endo_count_solve
+            ip <- per - start_period(private$data_period) + 1
+            ret <- numeric(nvar)
+            ret[private$endo_indices] <- private$endo_data[ip, ]
+            if (private$aux_count  > 0) {
+                row_nrs <- ip + private$aux_vars$orig_lead
+                col_nrs <- private$aux_vars$orig_index
+                selmat <- cbind(row_nrs, col_nrs)
+                ret[private$aux_vars$endo_index] <- private$endo_data[selmat]
+            }
+            return (ret)
         },
         # returns the residual of the stacked-time system
         # x is vector of endogenous variables in the solution period
@@ -636,17 +704,18 @@ DynMod <- R6Class("DynMod",
             return (get_residuals_(endos,
                                    which(private$lead_lag_incidence != 0) - 1,
                                    private$exo_data, private$params,
-                                   private$f_dynamic, private$endo_count,
+                                   private$f_dynamic, private$endo_count_solve,
                                    nper, private$max_lag))
         },
         get_jac = function(x, lags, leads, nper) {
-            endos <- c(private$get_lags(), x, private$get_leads())
+            endos <- c(lags, x, leads)
             nper <- length_range(private$model_period)
             mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
                                         private$exo_data, private$params,
-                                        private$f_dynamic, private$endo_count,
+                                        private$f_dynamic,
+                                        private$endo_count_solve,
                                         nper, private$max_lag)
-            n <- nper * private$endo_count
+            n <- nper * private$endo_count_solve
             jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
                        x = mat_info$values, Dim = as.integer(rep(n, 2)))
             return (as(jac, "dgCMatrix"))
