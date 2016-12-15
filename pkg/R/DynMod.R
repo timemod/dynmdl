@@ -198,10 +198,12 @@ DynMod <- R6Class("DynMod",
 
             if (private$aux_count > 0) {
                 # max_endo_lag_f is the maximum lag used in solving the model
-                # (1). Compute the true maximum endo lag. endo_leads > 1 are not yet supported   
                 private$max_endo_lag <- max(private$max_endo_lag,
                                         max(-subset(private$aux_vars, 
                                                     type == "lag")$orig_lead + 1))
+                private$max_endo_lead <- max(private$max_endo_lead,
+                                        max(subset(private$aux_vars, 
+                                                    type == "lead")$orig_lead + 1))
                 private$endo_indices <- (1:length(private$endos))[-private$aux_vars$endo_index]
                 private$endos <- private$endos[-private$aux_vars$endo_index]
                 private$endo_names <- names(private$endos)

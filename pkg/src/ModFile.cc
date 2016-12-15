@@ -356,11 +356,15 @@ ModFile::transformPass(bool nostrict)
       || mod_file_struct.discretionary_policy_present
       || mod_file_struct.calib_smoother_present)
     {
+
+      dyn_error("Package dynr cannot handle stochastic models\n");
+
       // In stochastic models, create auxiliary vars for leads and lags greater than 2, on both endos and exos
       dynamic_model.substituteEndoLeadGreaterThanTwo(false);
       dynamic_model.substituteExoLead(false);
       dynamic_model.substituteEndoLagGreaterThanTwo(false);
       dynamic_model.substituteExoLag(false);
+
     }
   else
     {
@@ -1212,9 +1216,6 @@ Rcpp::List ModFile::getModelListR(void)  {
         for (int i = 0; i < aux_count; i++) {
             endo_index[i] =  symbol_table.getTypeSpecificID(aux_vars[i].get_symb_id()) + 1;
             int type = aux_vars[i].get_type();
-            if (type == 0) {
-                Rf_error("Package dynr cannot yet handle endogenous leads > 1");
-            }
             types[i] = type ? "lag" : "lead";
             orig_index[i] = symbol_table.getTypeSpecificID(aux_vars[i].get_orig_symb_id()) + 1;
             orig_lead_lag[i] = aux_vars[i].get_orig_lead_lag();
