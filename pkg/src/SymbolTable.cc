@@ -613,32 +613,6 @@ SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int index, expr_t expr_arg) 
 }
 
 int
-SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t expr_arg) throw (FrozenException)
-{
-  ostringstream varname;
-  if (endo)
-    varname << "AUX_ENDO_LEAD_";
-  else
-    varname << "AUX_EXO_LEAD_";
-  varname << orig_symb_id << "_" << -orig_lead_lag;
-
-  int symb_id;
-  try
-    {
-      symb_id = addSymbol(varname.str(), eEndogenous);
-    }
-  catch (AlreadyDeclaredException &e)
-    {
-      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
-    }
-
-  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLead : avExoLead), orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
-
-  return symb_id;
-}
-
-
-int
 SymbolTable::addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t expr_arg) throw (FrozenException)
 {
   ostringstream varname;
@@ -668,13 +642,6 @@ SymbolTable::addEndoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenEx
 {
   return addLeadAuxiliaryVarInternal(true, index, expr_arg);
 }
-
-int
-SymbolTable::addEndoLeadAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t expr_arg) throw (FrozenException)
-{
-  return addLeadAuxiliaryVarInternal(true, orig_symb_id, orig_lead_lag, expr_arg);
-}
-
 
 int
 SymbolTable::addEndoLagAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t expr_arg) throw (FrozenException)
@@ -1014,8 +981,4 @@ SymbolTable::writeJuliaOutput(ostream &output) const throw (NotYetFrozenExceptio
                  << getTypeSpecificID(*it)+1 << ")" << endl;
         output << "                   ]" << endl;
       }
-}
-
-vector<AuxVarInfo> SymbolTable::get_aux_vars() const {
-    return aux_vars;
 }

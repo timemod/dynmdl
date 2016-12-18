@@ -58,6 +58,7 @@ test_that("solve_steady, check and solve_perturb give an error", {
                   "too ill-conditioned \\(1/condition=\\d.\\d*e-\\d+\\)",
                   "\\(see allowSingular option\\)")
     expect_error(mdl$solve_steady(), msg)
+    msg <- "solve_first_order does not work for models with exogenous lags or leads"
     expect_error(mdl$check(), msg)
     expect_error(mdl$solve_perturbation(), msg)
 })

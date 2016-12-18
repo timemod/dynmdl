@@ -38,7 +38,8 @@ NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_
 }
 
 // [[Rcpp::export]]
-List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, SEXP exo_data,
+List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, 
+                     IntegerVector tshift, SEXP exo_data,
                      SEXP params, Function f_dynamic, int n_endo,
                      int nper, int max_lag) {
 
@@ -49,7 +50,7 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, SEXP
         for (int r = 0; r < lead_lag_incidence.nrow(); r++) {
             int i = lead_lag_incidence(r, c);
             if (i) {
-                jacmap[i - 1] = VarInfo(r, c - 1);
+                jacmap[i - 1] = VarInfo(r, tshift[c]);
                 icols.push_back(cnt);
             }
             cnt++;

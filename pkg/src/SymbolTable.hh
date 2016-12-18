@@ -192,7 +192,6 @@ private:
   int addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
   //! Factorized code for adding aux lead variables
   int addLeadAuxiliaryVarInternal(bool endo, int index, expr_t arg) throw (FrozenException);
-  int addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
 
 public:
   //! Add a symbol
@@ -206,7 +205,6 @@ public:
     \param[in] index Used to construct the variable name
     \return the symbol ID of the new symbol */
   int addEndoLeadAuxiliaryVar(int index, expr_t arg) throw (FrozenException);
-  int addEndoLeadAuxiliaryVar(int orig_index, int orig_lead_lag, expr_t arg) throw (FrozenException);
   //! Adds an auxiliary variable for endogenous with lag >= 2
   /*!
     \param[in] orig_symb_id symbol ID of the endogenous declared by the user that this new variable will represent
@@ -329,7 +327,6 @@ public:
   bool isAuxiliaryVariableButNotMultiplier(int symb_id) const;
   //! Get list of endogenous variables without aux vars
   set <int> getOrigEndogenous() const;
-  vector<AuxVarInfo> get_aux_vars() const;
 };
 
 inline bool

@@ -35,20 +35,21 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_triplet_jac
-List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, SEXP exo_data, SEXP params, Function f_dynamic, int n_endo, int nper, int max_lag);
-RcppExport SEXP dynr_get_triplet_jac(SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP f_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {
+List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, IntegerVector tshift, SEXP exo_data, SEXP params, Function f_dynamic, int n_endo, int nper, int max_lag);
+RcppExport SEXP dynr_get_triplet_jac(SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP f_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type lead_lag_incidence(lead_lag_incidenceSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type tshift(tshiftSEXP);
     Rcpp::traits::input_parameter< SEXP >::type exo_data(exo_dataSEXP);
     Rcpp::traits::input_parameter< SEXP >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< Function >::type f_dynamic(f_dynamicSEXP);
     Rcpp::traits::input_parameter< int >::type n_endo(n_endoSEXP);
     Rcpp::traits::input_parameter< int >::type nper(nperSEXP);
     Rcpp::traits::input_parameter< int >::type max_lag(max_lagSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_triplet_jac(endos, lead_lag_incidence, exo_data, params, f_dynamic, n_endo, nper, max_lag));
+    rcpp_result_gen = Rcpp::wrap(get_triplet_jac(endos, lead_lag_incidence, tshift, exo_data, params, f_dynamic, n_endo, nper, max_lag));
     return rcpp_result_gen;
 END_RCPP
 }

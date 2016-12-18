@@ -356,21 +356,21 @@ ModFile::transformPass(bool nostrict)
       || mod_file_struct.discretionary_policy_present
       || mod_file_struct.calib_smoother_present)
     {
-
-      dyn_error("Package dynr cannot handle stochastic models\n");
-
       // In stochastic models, create auxiliary vars for leads and lags greater than 2, on both endos and exos
       dynamic_model.substituteEndoLeadGreaterThanTwo(false);
       dynamic_model.substituteExoLead(false);
       dynamic_model.substituteEndoLagGreaterThanTwo(false);
       dynamic_model.substituteExoLag(false);
-
     }
   else
     {
       // In deterministic models, create auxiliary vars for leads and lags endogenous greater than 2, only on endos (useless on exos)
+      /* For package dynr, it is not requited to substitute
+       * lags and leads > 2 */
+      /*
       dynamic_model.substituteEndoLeadGreaterThanTwo(true);
       dynamic_model.substituteEndoLagGreaterThanTwo(true);
+      */
     }
 
   if (differentiate_forward_vars)
@@ -1204,27 +1204,6 @@ Rcpp::List ModFile::getModelListR(void)  {
         param_names[i] = symbol_table.getName(eParameter, i).c_str();
     }
 
-    // auxiliary vars
-    vector<AuxVarInfo> aux_vars;
-    aux_vars = symbol_table.get_aux_vars();
-    int aux_count = aux_vars.size();
-    Rcpp::CharacterVector types(aux_count);
-    Rcpp::NumericVector endo_index(aux_count);
-    Rcpp::NumericVector orig_index(aux_count);
-    Rcpp::NumericVector orig_lead_lag(aux_count);
-    if (aux_count) {
-        for (int i = 0; i < aux_count; i++) {
-            endo_index[i] =  symbol_table.getTypeSpecificID(aux_vars[i].get_symb_id()) + 1;
-            int type = aux_vars[i].get_type();
-            types[i] = type ? "lag" : "lead";
-            orig_index[i] = symbol_table.getTypeSpecificID(aux_vars[i].get_orig_symb_id()) + 1;
-            orig_lead_lag[i] = aux_vars[i].get_orig_lead_lag();
-        }
-    }
-    Rcpp::DataFrame aux_info = Rcpp::DataFrame::create(Rcpp::Named("endo_index") = endo_index,
-                                                       Rcpp::Named("type") = types,
-                                                       Rcpp::Named("orig_index") = orig_index,
-                                                       Rcpp::Named("orig_lead") = orig_lead_lag);
 
     Rcpp::List dynmod = dynamic_model.getDynamicModelR();
     Rcpp::String static_function_body = static_model.getStaticModelR();
@@ -1254,7 +1233,6 @@ Rcpp::List ModFile::getModelListR(void)  {
     return Rcpp::List::create(Rcpp::Named("exos") = exos,
                               Rcpp::Named("endos") = endos,
                               Rcpp::Named("params") = params,
-                              Rcpp::Named("aux_vars") = aux_info,
                               Rcpp::Named("dynamic_model") = dynmod,
                               Rcpp::Named("static_function_body") = static_function_body);
 }

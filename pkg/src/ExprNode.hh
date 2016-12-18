@@ -351,8 +351,6 @@ public:
     \return The new variable node corresponding to the current expression
   */
   VariableNode *createEndoLeadAuxiliaryVarForMyself(subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const;
-  VariableNode *createEndoLeadAuxiliaryVarForMyself(subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs, 
-                                                    int orig_symb_id) const;
 
   //! Creates auxiliary exo lead variables corresponding to this expression
   /*!

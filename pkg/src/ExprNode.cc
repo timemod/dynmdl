@@ -233,43 +233,6 @@ ExprNode::createEndoLeadAuxiliaryVarForMyself(subst_table_t &subst_table, vector
 }
 
 VariableNode *
-ExprNode::createEndoLeadAuxiliaryVarForMyself(subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs, int orig_symb_id) const
-{
-  int n = maxEndoLead();
-  assert(n >= 2);
-
-  subst_table_t::const_iterator it = subst_table.find(this);
-  if (it != subst_table.end())
-    return const_cast<VariableNode *>(it->second);
-
-  expr_t substexpr = decreaseLeadsLags(n-1);
-  int lag = n-2;
-
-  // Each iteration tries to create an auxvar such that auxvar(+1)=expr(-lag)
-  // At the beginning (resp. end) of each iteration, substexpr is an expression (possibly an auxvar) equivalent to expr(-lag-1) (resp. expr(-lag))
-  while (lag >= 0)
-    {
-      expr_t orig_expr = decreaseLeadsLags(lag);
-      it = subst_table.find(orig_expr);
-      if (it == subst_table.end())
-        {
-          int symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(orig_symb_id, n - lag - 1, substexpr);
-          neweqs.push_back(dynamic_cast<BinaryOpNode *>(datatree.AddEqual(datatree.AddVariable(symb_id, 0), substexpr)));
-          substexpr = datatree.AddVariable(symb_id, +1);
-          assert(dynamic_cast<VariableNode *>(substexpr) != NULL);
-          subst_table[orig_expr] = dynamic_cast<VariableNode *>(substexpr);
-        }
-      else
-        substexpr = const_cast<VariableNode *>(it->second);
-
-      lag--;
-    }
-
-  return dynamic_cast<VariableNode *>(substexpr);
-}
-
-
-VariableNode *
 ExprNode::createExoLeadAuxiliaryVarForMyself(subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const
 {
   int n = maxExoLead();
@@ -1230,7 +1193,7 @@ VariableNode::substituteEndoLeadGreaterThanTwo(subst_table_t &subst_table, vecto
       if (lag <= 1)
         return const_cast<VariableNode *>(this);
       else
-        return createEndoLeadAuxiliaryVarForMyself(subst_table, neweqs, symb_id);
+        return createEndoLeadAuxiliaryVarForMyself(subst_table, neweqs);
     case eModelLocalVariable:
       value = datatree.local_variables_table[symb_id];
       if (value->maxEndoLead() <= 1)
