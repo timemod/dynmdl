@@ -179,16 +179,7 @@ DynMod <- R6Class("DynMod",
                 private$max_exo_lag        <- dynamic_model$max_exo_lag
                 private$max_exo_lead       <- dynamic_model$max_exo_lead
                 private$lead_lag_incidence <- dynamic_model$lead_lag_incidence
-                private$nstatic            <- dynamic_model$nstatic
-                private$nfwrd              <- dynamic_model$nfwrd
-                private$npred              <- dynamic_model$npred
-                private$nboth              <- dynamic_model$nboth
             })
-
-            private$ndynamic               <- private$npred + private$nboth +
-                                              private$nfwrd
-            private$nsfwrd                 <- private$nfwrd + private$nboth
-
 
             private$exo_count  <- length(private$exos)
             private$endo_count <- length(private$endo_names)
@@ -215,14 +206,6 @@ DynMod <- R6Class("DynMod",
                         private$max_exo_lead))
             cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
                         private$max_exo_lag))
-            cat(sprintf("%-60s%d\n", "Number of endogenous variables with only lags:",
-                        private$npred))
-            cat(sprintf("%-60s%d\n", "Number of endogenous variables with only leads:",
-                        private$nfwrd))
-            cat(sprintf("%-60s%d\n", "Number of endogenous variables with both lags and leads:",
-                        private$nboth))
-            cat(sprintf("%-60s%d\n", "Number of static endogenous variables:",
-                        private$nstatic))
             if (!is.null(private$model_period)) {
                 cat(sprintf("%-60s%s\n", "Model period:",
                             as.character(private$model_period)))
@@ -402,8 +385,8 @@ DynMod <- R6Class("DynMod",
             return (invisible(self))
         },
         check = function() {
-            if (is.null(private$rules)) {
-                private$init_rules()
+            if (is.null(private$ss)) {
+                private$ss <- init_state_space(private$exo_count, private$lead_lag_incidence)
             }
             eigvalues <- private$solve_first_order(only_eigval = TRUE)
             cat("EIGENVALUES:\n")
@@ -439,11 +422,11 @@ DynMod <- R6Class("DynMod",
             return (invisible(self))
         },
         solve_perturbation = function() {
-            rules <- private$solve_first_order()
-            private$rules <- rules
+            ss <- private$solve_first_order()
+            private$ss <- ss
 
-            sel <-  which(rules$kstate[, 2, drop = FALSE] <= private$max_lag + 1)
-            k2 <- rules$kstate[sel, c(1,2), drop = FALSE]
+            sel <-  which(ss$kstate[, 2, drop = FALSE] <= private$max_lag + 1)
+            k2 <- ss$kstate[sel, c(1,2), drop = FALSE]
             k2 <- k2[, 1, drop = FALSE] +
                 (private$max_lag + 1 - k2[, 2, drop = FALSE]) * private$endo_count
 
@@ -462,19 +445,19 @@ DynMod <- R6Class("DynMod",
                            "in the first period"))
             }
 
-            if (length(rules$ghu) == 0) {
+            if (length(ss$ghu) == 0) {
                 # purely backward?
                 stop("Situation where length(ghu) == 0 not yet supported")
-            } else if (length(rules$ghx) == 0) {
+            } else if (length(ss$ghx) == 0) {
                 # purely forward
                 stop("Situation where length(ghx) == 0 not yet supported")
             } else {
-                epsilon <- rules$ghu %*% t(ex_)
+                epsilon <- ss$ghu %*% t(ex_)
                 for (i in 2 : length_range(private$data_period)) {
-                    yhat <- t(private$endo_data[i - 1, rules$order_var[k2],
+                    yhat <- t(private$endo_data[i - 1, ss$order_var[k2],
                                                 drop = FALSE])
-                    private$endo_data[i, rules$order_var] <-
-                        rules$ghx %*% yhat  + epsilon[ , i, drop = FALSE]
+                    private$endo_data[i, ss$order_var] <-
+                        ss$ghx %*% yhat  + epsilon[ , i, drop = FALSE]
                 }
 
                 # add steady state values
@@ -495,9 +478,9 @@ DynMod <- R6Class("DynMod",
             return (jac)
         },
         get_eigval = function() {
-            if (!is.null(private$rules)) {
-                i <- order(abs(private$rules$eigval))
-                return (private$rules$eigval[i])
+            if (!is.null(private$ss)) {
+                i <- order(abs(private$ss$eigval))
+                return (private$ss$eigval[i])
             } else {
                 stop(paste("Eigen values not available. Calculate the eigenvalues",
                            "with method check()."))
@@ -519,13 +502,6 @@ DynMod <- R6Class("DynMod",
         max_exo_lag =  NA_integer_,
         max_exo_lead =  NA_integer_,
         max_lag  = NA_integer_,
-        nstatic =  NA_integer_,
-        nfwrd =  NA_integer_,
-        npred =  NA_integer_,
-        nboth =  NA_integer_,
-        ndynamic = NA_integer_,
-        nsfwrd = NA_integer_,
-
         lead_lag_incidence = NULL,
         f_static = NULL,
         f_dynamic = NULL,
@@ -534,7 +510,7 @@ DynMod <- R6Class("DynMod",
         endo_data = NULL,
         exo_data = NULL,
         solve_out = NULL,
-        rules = NULL,
+        ss = NULL,
         period_error_msg = paste("The model period is not set.",
                             "Set the model period with set_period()."),
 
@@ -634,140 +610,6 @@ DynMod <- R6Class("DynMod",
                        x = mat_info$values, Dim = as.integer(rep(n, 2)))
             return (as(jac, "dgCMatrix"))
         },
-        init_rules = function(debug = FALSE) {
-
-            rules <- list()
-
-            # make local copies of the fields of the DynMod object
-            exo_count <- private$exo_count
-            endo_count <- private$endo_count
-            npred <- private$npred
-            nboth <- private$nboth
-            nfwrd <- private$nfwrd
-            nstatic <- private$nstatic
-            ndynamic <- private$ndynamic
-            nsfwrd <- private$nsfwrd
-            lead_lag_incidence <- private$lead_lag_incidence
-            max_lag <- private$max_endo_lag
-            max_lead <- private$max_endo_lead
-            klen <- max_lag + max_lead + 1
-
-            lead_var <- which(lead_lag_incidence[, max_lag + 2] != 0)
-            if (max_lag > 0) {
-                lag_var <- which(lead_lag_incidence[, 1] != 0)
-                stat_var <- setdiff(1:endo_count, union(lag_var, lead_var))
-                both_var <- intersect(lead_var, lag_var)
-                pred_var <- setdiff(lag_var, both_var)
-                fwrd_var <- setdiff(lead_var, both_var)
-            } else {
-                pred_var <- numeric(0)
-                both_var <- numeric(0)
-                stat_var <- setdiff(1:endo_count, lead_var)
-                fwrd_var <- lead_var
-            }
-            rules$order_var <- c(stat_var, pred_var, both_var, fwrd_var)
-            rules$inv_order_var <- numeric(endo_count)
-            rules$inv_order_var[rules$order_var] <- seq_len(endo_count)
-
-            # building kmask for z state vector in t+1
-            if (max_lag > 0) {
-                kmask <- numeric(0)
-                if (max_lead > 0) {
-                    kmask <- lead_lag_incidence[rules$order_var, max_lag + 2,
-                                                drop = FALSE]
-                }
-                kmask <- rbind(kmask, lead_lag_incidence[rules$order_var, 1,
-                                                         drop = FALSE])
-            } else {
-                if (max_lead == 0) {
-                    # in this case lead_lag_incidence has no entry max_lag+2
-                    error(paste('Dynare currently does not allow to solve"),
-                                "purely static models in a stochastic context.'))
-                }
-                kmask <- lead_lag_incidence[rules$order_var, max_lag + 2,
-                                            drop = FALSE]
-                }
-            i_kmask <- which(kmask != 0)
-
-            # composition of state vector
-            # col 1: variable;           col 2: lead/lag in z(t+1);
-            # col 3: A cols for t+1 (D); col 4: A cols for t (E)
-            rules$kstate <- matrix(0, nrow = endo_count * (klen - 1), ncol = 4)
-            rules$kstate[, 1] <- rep(seq_len(endo_count), klen - 1)
-            rules$kstate[, 2] <- t(kronecker(matrix(klen: 2, ncol = 1),
-                                             matrix(1, ncol = endo_count)))
-
-            kiy <- as.numeric(t(t(lead_lag_incidence[rules$order_var, , drop = FALSE])
-                                [klen:1, , drop = FALSE]))
-            if (max_lead > 0) {
-                rules$kstate[1 : endo_count, 3] <- kiy[1 : endo_count] -
-                    nnz(lead_lag_incidence[, max_lag+ 1 ])
-                rules$kstate[rules$kstate[ , 3] < 0, 3] <- 0
-                rules$kstate[(endo_count + 1): nrow(rules$kstate), 4] <-
-                    kiy[(2 * endo_count + 1) : length(kiy)];
-            } else {
-                rules$kstate[, 4] <- kiy[endo_count + 1 : length(kiy)]
-            }
-            rules$kstate <- rules$kstate[i_kmask, ]
-
-            rules$nd <- nrow(rules$kstate)
-
-            rules$k1 <- seq_len(npred + nboth)
-            rules$k2 <- seq_len(nfwrd + nboth)
-
-            nz <- nnz(lead_lag_incidence)
-            lead_id <- which(lead_lag_incidence[, max_lag + 2] != 0)
-            lead_idx <- lead_lag_incidence[lead_id, max_lag + 2]
-            if (max_lag) {
-                lag_id <- which(lead_lag_incidence[, 1] != 0)
-                lag_idx <- lead_lag_incidence[lag_id, 1]
-            } else {
-                lag_id  <- numeric(0)
-                lag_idx <- numeric(0)
-            }
-            both_id <- intersect(lead_id, lag_id)
-            if (max_lag) {
-                no_both_lag_id <- setdiff(lag_id, both_id)
-            } else {
-                no_both_lag_id <- lag_id
-            }
-            rules$innovations_idx <- nz + (1:exo_count)
-            rules$state_var <- c(no_both_lag_id, both_id)
-
-            # indices of the endogenous variables at time t
-            rules$index_c <- nonzeros(lead_lag_incidence[, max_lag + 1])
-            rules$n_current <- length(rules$index_c)
-
-            rules$index_s <- npred + nboth + seq_len(nstatic)
-            indexi_0 <- npred + nboth
-            npred0 <- nnz(lead_lag_incidence[no_both_lag_id, max_lag + 1])
-            rules$index_0m <- indexi_0 + nstatic  + seq_len(npred0)
-            nfwrd0 <- nnz(lead_lag_incidence[lead_id, 2])
-            rules$index_0p <- indexi_0 + nstatic + npred0 + seq_len(nfwrd0)
-            rules$index_m <- seq_len(npred + nboth)
-            rules$index_p <- npred + nboth + rules$n_current + seq_len(nfwrd + nboth)
-            rules$row_indx_de_1 <- seq_len(ndynamic)
-            rules$row_indx_de_2 <- ndynamic + seq_len(nboth)
-            rules$row_indx <- nstatic + rules$row_indx_de_1
-            rules$index_d <- c(rules$index_0m, rules$index_p)
-            llx <- lead_lag_incidence[rules$order_var, , drop = FALSE]
-            rules$index_d1 <- c(which(llx[nstatic + seq_len(npred), max_lag + 1] != 0),
-                                npred + nboth + seq_len(nsfwrd))
-            rules$index_d2 <- npred + seq_len(nboth)
-            rules$index_e <- c(rules$index_m, rules$index_0p);
-            rules$index_e1 <- c(seq_len(npred + nboth), npred + nboth +
-                                    which(llx[nstatic + npred +
-                                                  seq_len(nsfwrd), max_lag + 1] != 0)
-            )
-            rules$index_e2 <- npred + nboth + seq_len(nboth)
-
-            rules$cols_b <- which(lead_lag_incidence[, max_lag + 1, drop = FALSE] != 0,
-                                  arr.in = TRUE)[, 1]
-
-            vec <- llx[llx != 0]
-            rules$reorder_jacobian_columns <- c(vec, nz + seq_len(exo_count))
-            return (rules)
-        },
         solve_first_order = function(only_eigval = FALSE, debug = FALSE) {
 
             # solve_first_order does not works for endogenous
@@ -786,10 +628,10 @@ DynMod <- R6Class("DynMod",
             }
 
             self$solve_steady(init_data = FALSE)
-            if (is.null(private$rules)) {
-                rules <- private$init_rules()
+            if (is.null(private$ss)) {
+                ss <- init_state_space(private$exo_count, private$lead_lag_incidence)
             } else {
-                rules <- private$rules
+                ss <- private$ss
             }
 
             # calculate the Jacobian
@@ -799,10 +641,10 @@ DynMod <- R6Class("DynMod",
             y <- endos[which(private$lead_lag_incidence != 0)]
             it <- private$max_lag + 1
             jacobia <- private$f_dynamic(y, exos, private$params, it, jac = TRUE)
-            jacobia <- jacobia[, rules$reorder_jacobian_columns, drop = FALSE]
+            jacobia <- jacobia[, ss$reorder_jacobian_columns, drop = FALSE]
 
-            if (private$nstatic) {
-                ret <- qr(jacobia[, rules$index_s, drop = FALSE])
+            if (ss$nstatic) {
+                ret <- qr(jacobia[, ss$index_s, drop = FALSE])
                 Q <- qr.Q(ret, complete = TRUE)
                 aa <- t(Q) %*% jacobia
             } else {
@@ -817,20 +659,20 @@ DynMod <- R6Class("DynMod",
             # The linearized model has the form
             # D * (z_t+1,  y_t+1)' = E * (z_t, y_t)'
             # where z_t = y_t-1
-            n <- private$nboth + private$ndynamic
+            n <- ss$nboth + ss$ndynamic
             D <- matrix(0, nrow = n, ncol = n)
             E <- matrix(0, nrow = n, ncol = n)
-            D[rules$row_indx_de_1, rules$index_d1] <- aa[rules$row_indx,
-                                                             rules$index_d]
-            D[rules$row_indx_de_2, rules$index_d2] <- diag(private$nboth)
-            E[rules$row_indx_de_1, rules$index_e1] <- -aa[rules$row_indx,
-                                                              rules$index_e]
-            E[rules$row_indx_de_2, rules$index_e2] <- diag(private$nboth)
+            D[ss$row_indx_de_1, ss$index_d1] <- aa[ss$row_indx,
+                                                             ss$index_d]
+            D[ss$row_indx_de_2, ss$index_d2] <- diag(ss$nboth)
+            E[ss$row_indx_de_1, ss$index_e1] <- -aa[ss$row_indx,
+                                                              ss$index_e]
+            E[ss$row_indx_de_2, ss$index_e2] <- diag(ss$nboth)
             if (only_eigval) {
-                rules$eigval <- geigen::geigen(E, D, only.values = TRUE)$values
+                ss$eigval <- geigen::geigen(E, D, only.values = TRUE)$values
             } else {
                 qz_result <- geigen::gqz(E, D, sort = 'S')
-                rules$eigval <- geigen::gevalues(qz_result)
+                ss$eigval <- geigen::gevalues(qz_result)
             }
             if (debug) {
                 printobj(D)
@@ -838,28 +680,28 @@ DynMod <- R6Class("DynMod",
                 printobj(qz_result)
             }
 
-            sdim <- sum(abs(rules$eigval) <= 1)
-            nba <- rules$nd - sdim
-            if (nba > private$nsfwrd) {
+            sdim <- sum(abs(ss$eigval) <= 1)
+            nba <- ss$nd - sdim
+            if (nba > ss$nsfwrd) {
                 stop("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
-            } else if (nba < private$nsfwrd) {
+            } else if (nba < ss$nsfwrd) {
                 stop("Blanchard & Kahn conditions are not satisfied: indeterminacy")
             }
 
             if (only_eigval) {
-                i <- order(abs(rules$eigval))
-                private$rules <- rules
-                return (rules$eigval[i])
+                i <- order(abs(ss$eigval))
+                private$ss <- ss
+                return (ss$eigval[i])
             }
 
-            A <- aa[, rules$index_m, drop = FALSE]  # Jacobian matrix for lagged endogeneous variables
-            B <- matrix(NA, nrow = nrow(aa), ncol = length(rules$index_c))
-            B[, rules$cols_b] <- aa[, rules$index_c, drop = FALSE] # Jacobian matrix for contemporaneous
+            A <- aa[, ss$index_m, drop = FALSE]  # Jacobian matrix for lagged endogeneous variables
+            B <- matrix(NA, nrow = nrow(aa), ncol = length(ss$index_c))
+            B[, ss$cols_b] <- aa[, ss$index_c, drop = FALSE] # Jacobian matrix for contemporaneous
             # endogenous variables
-            C <- aa[, rules$index_p, drop = FALSE] # Jacobian matrix for lead endogeneous variables
+            C <- aa[, ss$index_p, drop = FALSE] # Jacobian matrix for lead endogeneous variables
 
-            indx_stable_root <- 1: (rules$nd - private$nsfwrd)             # %=> index of stable roots
-            indx_explosive_root <- (private$npred + private$nboth + 1) : rules$nd  # => index of explosive roots
+            indx_stable_root <- 1: (ss$nd - ss$nsfwrd)             # %=> index of stable roots
+            indx_explosive_root <- (ss$npred + ss$nboth + 1) : ss$nd  # => index of explosive roots
             #derivatives with respect to dynamic state variables
             #forward variables
 
@@ -868,65 +710,65 @@ DynMod <- R6Class("DynMod",
             Z11 <- Z[indx_stable_root,    indx_stable_root, drop = FALSE]
             Z21 <- Z[indx_explosive_root, indx_stable_root, drop = FALSE]
             Z22 <- Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
-            rules$gx <- -solve(Z22, Z21)
+            ss$gx <- -solve(Z22, Z21)
             # TODO: error if Z22 is new singular (see Matlab code)
             hx1 <- t(backsolve(qz_result$T[indx_stable_root, indx_stable_root, drop =
                                                FALSE], Z11, transpose = TRUE))
             hx2 <- t(solve(Z11, t(qz_result$S[indx_stable_root, indx_stable_root, drop =
                                                   FALSE])))
             hx <- hx1 %*% hx2
-            rules$ghx <- hx[rules$k1, , drop = FALSE]
+            ss$ghx <- hx[ss$k1, , drop = FALSE]
             if (debug) {
                 printobj(hx1)
                 printobj(hx2)
-                printobj(rules$k2)
+                printobj(ss$k2)
             }
-            if (private$nboth + 1 <= length(rules$k2)) {
-                rules$ghx <- rbind(rules$ghx,
-                                  rules$gx[rules$k2[(private$nboth + 1) :
-                                                         length(rules$k2)], , drop = FALSE])
+            if (ss$nboth + 1 <= length(ss$k2)) {
+                ss$ghx <- rbind(ss$ghx,
+                                  ss$gx[ss$k2[(ss$nboth + 1) :
+                                                         length(ss$k2)], , drop = FALSE])
             }
-            if (private$nstatic) {
-                B_static <- B[, 1:private$nstatic, drop = FALSE]
+            if (ss$nstatic) {
+                B_static <- B[, 1:ss$nstatic, drop = FALSE]
             } else {
                 B_static <- matrix(nrow = nrow(B), ncol = 0)
             }
 
+
             # static variables, backward variables, mixed variables and forward variables
-            B_pred <- B[, (private$nstatic + 1) : (private$nstatic + private$npred + private$nboth)]
-            if (private$nstatic + private$npred + private$nboth + 1 <= ncol(B)) {
-                B_fyd <- B[, (private$nstatic + private$npred + private$nboth + 1) : ncol(B)]
+            B_pred <- B[, (ss$nstatic + 1) : (ss$nstatic + ss$npred + ss$nboth)]
+            if (ss$nstatic + ss$npred + ss$nboth + 1 <= ncol(B)) {
+                B_fyd <- B[, (ss$nstatic + ss$npred + ss$nboth + 1) : ncol(B)]
             } else  {
                 B_fyd <- matrix(nrow = nrow(B), ncol = 0)
             }
 
-            if (private$nstatic) {
-                temp <- - C[1:private$nstatic, , drop = FALSE] %*% rules$gx %*% hx
-                b <- matrix(nrow = nrow(aa), ncol = length(rules$index_c))
-                b[, rules$cols_b] <- aa[ , rules$index_c, drop = FALSE]
-                b10 <- b[1:private$nstatic, 1:private$nstatic, drop = FALSE]
-                b11 <- b[1:private$nstatic, (private$nstatic + 1) : ncol(b),
+            if (ss$nstatic) {
+                temp <- - C[1:ss$nstatic, , drop = FALSE] %*% ss$gx %*% hx
+                b <- matrix(nrow = nrow(aa), ncol = length(ss$index_c))
+                b[, ss$cols_b] <- aa[ , ss$index_c, drop = FALSE]
+                b10 <- b[1:ss$nstatic, 1:ss$nstatic, drop = FALSE]
+                b11 <- b[1:ss$nstatic, (ss$nstatic + 1) : ncol(b),
                          drop = FALSE]
-                temp[, rules$index_m] <- temp[, rules$index_m, drop = FALSE] -
-                    A[1:private$nstatic, , drop = FALSE]
-                temp <- solve(b10, temp - b11 %*% rules$ghx)
-                rules$ghx <- rbind(temp, rules$ghx)
+                temp[, ss$index_m] <- temp[, ss$index_m, drop = FALSE] -
+                    A[1:ss$nstatic, , drop = FALSE]
+                temp <- solve(b10, temp - b11 %*% ss$ghx)
+                ss$ghx <- rbind(temp, ss$ghx)
             }
-            A_ <- cbind(B_static, C %*% rules$gx + B_pred, B_fyd)
+            A_ <- cbind(B_static, C %*% ss$gx + B_pred, B_fyd)
 
             if (private$exo_count) {
-                if (private$nstatic) {
-                    fu <- t(Q) %*% jacobia[,  rules$innovations_idx, drop = FALSE]
+                if (ss$nstatic) {
+                    fu <- t(Q) %*% jacobia[,  ss$innovations_idx, drop = FALSE]
                 } else {
-                    fu <- jacobia[, rules$innovations_idx, drop = FALSE]
+                    fu <- jacobia[, ss$innovations_idx, drop = FALSE]
                 }
-                rules$ghu <- - solve(A_, fu)
+                ss$ghu <- - solve(A_, fu)
             } else {
-                rules$ghu <- matrix(nrow = 0, ncol = 0)
+                ss$ghu <- matrix(nrow = 0, ncol = 0)
             }
-            rules$Gy <- hx
-
-            return (rules)
+            ss$Gy <- hx
+            return (ss)
         }
     )
 )
