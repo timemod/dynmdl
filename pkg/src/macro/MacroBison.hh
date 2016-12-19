@@ -1,8 +1,8 @@
-// A Bison parser, made by GNU Bison 3.0.4.
+// A Bison parser, made by GNU Bison 3.0.2.
 
 // Skeleton interface for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015 Free Software Foundation, Inc.
+// Copyright (C) 2002-2013 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,18 +40,17 @@
 #ifndef YY_MACRO_MACROBISON_HH_INCLUDED
 # define YY_MACRO_MACROBISON_HH_INCLUDED
 // //                    "%code requires" blocks.
-#line 44 "MacroBison.yy" // lalr1.cc:377
+#line 44 "MacroBison.yy" // lalr1.cc:372
 
 #include "MacroValue.hh"
 
-#line 48 "MacroBison.hh" // lalr1.cc:377
+#line 48 "MacroBison.hh" // lalr1.cc:372
 
 
-# include <cstdlib> // std::abort
+# include <vector>
 # include <iostream>
 # include <stdexcept>
 # include <string>
-# include <vector>
 # include "stack.hh"
 # include "location.hh"
 
@@ -116,7 +115,7 @@
 
 
 namespace Macro {
-#line 120 "MacroBison.hh" // lalr1.cc:377
+#line 119 "MacroBison.hh" // lalr1.cc:372
 
 
 
@@ -130,13 +129,13 @@ namespace Macro {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 49 "MacroBison.yy" // lalr1.cc:377
+    #line 49 "MacroBison.yy" // lalr1.cc:372
 
   string *string_val;
   int int_val;
   const MacroValue *mv;
 
-#line 140 "MacroBison.hh" // lalr1.cc:377
+#line 139 "MacroBison.hh" // lalr1.cc:372
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -200,11 +199,8 @@ namespace Macro {
     /// (External) token type, as returned by yylex.
     typedef token::yytokentype token_type;
 
-    /// Symbol type: an internal symbol number.
+    /// Internal symbol number.
     typedef int symbol_number_type;
-
-    /// The symbol type number to denote an empty symbol.
-    enum { empty_symbol = -2 };
 
     /// Internal symbol number for tokens (subsumed by symbol_number_type).
     typedef unsigned char token_number_type;
@@ -236,14 +232,7 @@ namespace Macro {
                     const semantic_type& v,
                     const location_type& l);
 
-      /// Destroy the symbol.
       ~basic_symbol ();
-
-      /// Destroy contents, and record that is empty.
-      void clear ();
-
-      /// Whether empty.
-      bool empty () const;
 
       /// Destructive move, \a s is emptied into this.
       void move (basic_symbol& s);
@@ -274,23 +263,21 @@ namespace Macro {
       /// Constructor from (external) token numbers.
       by_type (kind_type t);
 
-      /// Record that this symbol is empty.
-      void clear ();
-
       /// Steal the symbol type from \a that.
       void move (by_type& that);
 
       /// The (internal) type number (corresponding to \a type).
-      /// \a empty when empty.
+      /// -1 when this symbol is empty.
       symbol_number_type type_get () const;
 
       /// The token.
       token_type token () const;
 
+      enum { empty = 0 };
+
       /// The symbol type.
-      /// \a empty_symbol when empty.
-      /// An int, not token_number_type, to be able to store empty_symbol.
-      int type;
+      /// -1 when this symbol is empty.
+      token_number_type type;
     };
 
     /// "External" symbols: returned by the scanner.
@@ -337,9 +324,9 @@ namespace Macro {
 
     /// Generate an error message.
     /// \param yystate   the state where the error occurred.
-    /// \param yyla      the lookahead token.
+    /// \param yytoken   the lookahead token type, or yyempty_.
     virtual std::string yysyntax_error_ (state_type yystate,
-                                         const symbol_type& yyla) const;
+                                         symbol_number_type yytoken) const;
 
     /// Compute post-reduction state.
     /// \param yystate   the current state
@@ -442,21 +429,16 @@ namespace Macro {
       /// Copy constructor.
       by_state (const by_state& other);
 
-      /// Record that this symbol is empty.
-      void clear ();
-
       /// Steal the symbol type from \a that.
       void move (by_state& that);
 
       /// The (internal) type number (corresponding to \a state).
-      /// \a empty_symbol when empty.
+      /// "empty" when empty.
       symbol_number_type type_get () const;
 
-      /// The state number used to denote an empty symbol.
-      enum { empty_state = -1 };
+      enum { empty = 0 };
 
       /// The state.
-      /// \a empty when empty.
       state_type state;
     };
 
@@ -497,12 +479,13 @@ namespace Macro {
     /// Pop \a n symbols the three stacks.
     void yypop_ (unsigned int n = 1);
 
-    /// Constants.
+    // Constants.
     enum
     {
       yyeof_ = 0,
       yylast_ = 206,     ///< Last index in yytable_.
       yynnts_ = 6,  ///< Number of nonterminal symbols.
+      yyempty_ = -2,
       yyfinal_ = 37, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
@@ -518,7 +501,7 @@ namespace Macro {
 
 
 } // Macro
-#line 522 "MacroBison.hh" // lalr1.cc:377
+#line 505 "MacroBison.hh" // lalr1.cc:372
 
 
 

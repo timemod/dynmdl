@@ -17,7 +17,7 @@ LEX_YACC_DIR = lex_yacc
 
 # While developping on the same architecture is not not necessary
 # to clean sublib
-all : sublib $(SHLIB) DynareFlex.o DynareBison.o
+all : FlexLexer.h sublib $(SHLIB) DynareFlex.o DynareBison.o
 
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
@@ -48,6 +48,7 @@ DynareFlex.cc FlexLexer.h : $(LEX_YACC_DIR)/DynareFlex.ll
         # the version of lex is incompatible with the version used
         # to generate DynareFlex.cc
 	cp $(LEXINC)/FlexLexer.h .
+	touch FlexLexer.h
 
 DynareBison.cc DynareBison.hh location.hh stack.hh position.hh: $(LEX_YACC_DIR)/DynareBison.yy
 	$(YACC) -o DynareBison.cc $<
