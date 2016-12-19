@@ -40,7 +40,7 @@ test_that("solve", {
     mdl2 <- mdl$clone()
     mdl2$set_endo_data(dynare_endo[lag_per])
     mdl2$set_exo_data(dynare_exo)
-    mdl2$solve()
+    mdl2$solve(control = list(silent = TRUE))
     expect_equal(dynare_endo, mdl2$get_endo_data())
     expect_error(mdl2$solve_perturbation(),
                    "The perturbation approach currently only allows shocks in the first period")
@@ -50,7 +50,7 @@ test_that("solve_perturb", {
     mdl2 <- mdl$clone()
     mdl2$set_endo_data(regts(1200, period = lag_per), names = "y")
     mdl2$set_exo_data(regts(245, start = start_period(model_period)), names = "g")
-    mdl2$solve()
+    mdl2$solve(control = list(silent = TRUE))
     mdl3 <- mdl2$clone()
     mdl3$solve_perturbation()
     # note that the results are not exactly equal because of nonlinear terms
@@ -66,7 +66,7 @@ test_that("solve_perturb linear model", {
     # use a large shock, this should not matter if the model
     # is exactly linear
     mdl2$set_exo_data(regts(280, start = start_period(model_period)), names = "g")
-    mdl2$solve()
+    mdl2$solve(control = list(silent = TRUE))
     mdl3 <- mdl2$clone()
     mdl3$solve_perturbation()
     expect_equal(mdl2$get_endo_data(), mdl3$get_endo_data())

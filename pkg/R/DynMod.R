@@ -380,7 +380,7 @@ DynMod <- R6Class("DynMod",
                 return (private$f_static(x, private$exos, private$params))
             }
             jac <- function(x) {
-                return (private$f_static(x, private$exos, private$params, 
+                return (private$f_static(x, private$exos, private$params,
                                          jac = TRUE))
             }
 
@@ -416,7 +416,8 @@ DynMod <- R6Class("DynMod",
             return (invisible(self))
         },
         solve = function(control = list()) {
-            control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE)
+            control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE,
+                             silent = FALSE)
             control_[names(control)] <- control
 
             # preparations
@@ -425,38 +426,22 @@ DynMod <- R6Class("DynMod",
             nper <- length_range(private$model_period)
             x <- private$get_solve_endo()
 
-            if (control_$trace) {
-                cat(sprintf("\nIteration report:\n"))
-            }
-            solved <- FALSE
-            for (iter in 0:control_$maxiter) {
-                res <- private$get_residuals(x, lags, leads, nper)
-                err <- max(abs(res))
-                if (control_$trace) {
-                    cat(sprintf("Iteration: %d Largest |f| %g\n", iter, err))
-                }
-                if (err < control_$ftol) {
-                    solved <- TRUE
-                    break
-                } else {
-                    jac <- private$get_jac(x, lags, leads, nper)
-                    ret <- Matrix::solve(jac, res)
-                    x <- x - as.numeric(ret)
-                }
-            }
+            ret <- solve_sparse(x, private$get_residuals,
+                                private$get_jac, lags = lags,
+                                leads = leads, nper = nper,
+                                control = control_)
 
-            # TODO: line searching?
+            private$solve_out <- list(solved = ret$solved, iter = ret$iter,
+                                      residuals = ret$fval)
 
-            private$solve_out <- list(solved = solved, iter = iter,
-                                      residual = res)
             private$endo_data[private$model_period, ] <-
-                                 t(matrix(x, nrow = private$endo_count))
+                                 t(matrix(ret$x, nrow = private$endo_count))
             return (invisible(self))
         },
         solve_perturbation = function() {
             rules <- private$solve_first_order()
             private$rules <- rules
-    
+
             sel <-  which(rules$kstate[, 2, drop = FALSE] <= private$max_lag + 1)
             k2 <- rules$kstate[sel, c(1,2), drop = FALSE]
             k2 <- k2[, 1, drop = FALSE] +
@@ -528,7 +513,7 @@ DynMod <- R6Class("DynMod",
         exos = NULL,
         endos = NULL,
         params = NULL,
-        max_endo_lag = NA_integer_,  
+        max_endo_lag = NA_integer_,
         max_endo_lead = NA_integer_,
         max_lead = NA_integer_,
         max_exo_lag =  NA_integer_,
@@ -786,7 +771,7 @@ DynMod <- R6Class("DynMod",
         solve_first_order = function(only_eigval = FALSE, debug = FALSE) {
 
             # solve_first_order does not works for endogenous
-            # lags or leads > 1, or exogenous leads. 
+            # lags or leads > 1, or exogenous leads.
             # For perturbation approaches, Dynare substitutes these lags
             # return (private$get_endo_per(lag_per));
             # and leads by creating auxiliary variables and

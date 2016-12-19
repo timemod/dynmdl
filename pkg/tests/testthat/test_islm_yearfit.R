@@ -17,7 +17,7 @@ mdl$set_period(model_period)
 mdl$set_exo_data(regts(1275, start = "2016Q4"), names = "y_year_exo")
 mdl$set_exo_data(regts(1, start = "2016Q4"), names = "fit_y_year")
 
-mdl$solve()
+mdl$solve(control = list(silent = TRUE))
 
 endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
                            header = FALSE, sep = "")[[1]]

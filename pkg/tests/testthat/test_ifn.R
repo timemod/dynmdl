@@ -48,7 +48,7 @@ dynare_exo <- get_dynare_exo("ifn_simul_exo.csv", mdl$get_data_period())
 test_that("solve", {
     mdl2 <- mdl$clone()
     mdl2$set_data(input)
-    mdl2$solve(control = list(trace = FALSE))
+    mdl2$solve(control = list(silent = TRUE, trace = FALSE))
     expect_equal(dynare_endo, mdl2$get_endo_data())
 })
 

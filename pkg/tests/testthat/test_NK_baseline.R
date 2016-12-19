@@ -60,7 +60,7 @@ test_that("solve", {
         mdl2$set_exo_values(exp(sigma_A), names = "epsA", period = p);
         mdl2$set_exo_values(exp(sigma_m), names = "epsm", period = p);
     })
-    mdl2$solve(control = list(trace = FALSE))
+    mdl2$solve(control = list(silent = TRUE, trace = FALSE))
 
     expect_equal(mdl2$get_endo_data(), dynare_result)
 })
