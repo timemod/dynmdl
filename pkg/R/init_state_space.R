@@ -10,7 +10,11 @@ init_state_space <- function(nexo, lead_lag_incidence, debug = FALSE) {
 
     klen <- max_lag + max_lead + 1
 
-    lead_var <- which(lead_lag_incidence[, max_lag + 2] != 0)
+    if (max_lead > 0) {
+        lead_var <- which(lead_lag_incidence[, max_lag + 2] != 0)
+    } else {
+        lead_var <- numeric(0)
+    }
     if (max_lag > 0) {
         lag_var <- which(lead_lag_incidence[, 1] != 0)
         stat_var <- setdiff(1:nendo, union(lag_var, lead_var))
@@ -71,7 +75,7 @@ init_state_space <- function(nexo, lead_lag_incidence, debug = FALSE) {
         ss$kstate[(nendo + 1): nrow(ss$kstate), 4] <-
             kiy[(2 * nendo + 1) : length(kiy)];
     } else {
-        ss$kstate[, 4] <- kiy[nendo + 1 : length(kiy)]
+        ss$kstate[, 4] <- kiy[(nendo + 1) : length(kiy)]
     }
     ss$kstate <- ss$kstate[i_kmask, ]
 
@@ -81,8 +85,13 @@ init_state_space <- function(nexo, lead_lag_incidence, debug = FALSE) {
     ss$k2 <- seq_len(ss$nfwrd + ss$nboth)
 
     nz <- nnz(lead_lag_incidence)
-    lead_id <- which(lead_lag_incidence[, max_lag + 2] != 0)
-    lead_idx <- lead_lag_incidence[lead_id, max_lag + 2]
+    if (max_lead) {
+        lead_id <- which(lead_lag_incidence[, max_lag + 2] != 0)
+        lead_idx <- lead_lag_incidence[lead_id, max_lag + 2]
+    } else {
+        lead_id <- numeric(0)
+        lead_idx <- numeric(0)
+    }
     if (max_lag) {
         lag_id <- which(lead_lag_incidence[, 1] != 0)
         lag_idx <- lead_lag_incidence[lag_id, 1]

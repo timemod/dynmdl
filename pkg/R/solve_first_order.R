@@ -85,17 +85,26 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
     # endogenous variables
     C <- aa[, ss$index_p, drop = FALSE] # Jacobian matrix for lead endogeneous variables
 
-    indx_stable_root <- 1: (ss$nd - ss$nsfwrd)             # %=> index of stable roots
-    indx_explosive_root <- (ss$npred + ss$nboth + 1) : ss$nd  # => index of explosive roots
-    #derivatives with respect to dynamic state variables
-    #forward variables
+    nstable <- ss$nd - ss$nsfwrd
+    if (nstable <= 0) {
+        stop("No stable roots")
+    } else {
+        indx_stable_root <- seq_len(nstable)     # index of stable roots
+    }
+    if (ss$nd >= (ss$npred + ss$nboth + 1)) {
+        indx_explosive_root <- (ss$npred + ss$nboth + 1) : ss$nd
+        # index of explosive roots
+    } else {
+        stop(paste("No explosive roots. solve_first_order cannot handle this",
+                   "situation yet."))
+    }
 
-    # TODO: what to do if there are no explosive roots or no stable roots?
     Z <- t(qz_result$Z)
     Z11 <- Z[indx_stable_root,    indx_stable_root, drop = FALSE]
     Z21 <- Z[indx_explosive_root, indx_stable_root, drop = FALSE]
     Z22 <- Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
     ss$gx <- -solve(Z22, Z21)
+
     # TODO: error if Z22 is new singular (see Matlab code)
     hx1 <- t(backsolve(qz_result$T[indx_stable_root, indx_stable_root, drop =
                                        FALSE], Z11, transpose = TRUE))
