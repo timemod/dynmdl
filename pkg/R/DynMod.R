@@ -385,15 +385,17 @@ DynMod <- R6Class("DynMod",
             return (invisible(self))
         },
         check = function() {
-            if (is.null(private$ss)) {
-                private$ss <- init_state_space(private$exo_count, private$lead_lag_incidence)
-            }
-            eigvalues <- private$solve_first_order(only_eigval = TRUE)
+            self$solve_steady(init_data = FALSE)
+            private$ss  <- solve_first_order(private$ss,
+                                             private$lead_lag_incidence,
+                                             private$exos, private$endos,
+                                             private$params,
+                                             private$f_dynamic,
+                                             only_eigval = TRUE, debug = FALSE)
             cat("EIGENVALUES:\n")
             cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
-            for (eigval in eigvalues) {
-                cat(sprintf("%16g%16g%16g\n", Mod(eigval), Re(eigval),
-                            Im(eigval)))
+            for (eigv in private$ss$eigval) {
+                cat(sprintf("%16g%16g%16g\n", Mod(eigv), Re(eigv), Im(eigv)))
             }
             cat("\n")
             return (invisible(self))
@@ -422,7 +424,22 @@ DynMod <- R6Class("DynMod",
             return (invisible(self))
         },
         solve_perturbation = function() {
-            ss <- private$solve_first_order()
+            self$solve_steady(init_data = FALSE)
+
+            # solve_perturbation does not works for exogenous lags and leads.
+            # For perturbation approaches, Dynare substitutes
+            # these lags and leads by creating auxiliary variables and
+            # equations. dynr does not do that.
+            if (private$max_exo_lag > 0 || private$max_exo_lead > 0) {
+                stop(paste("Method solve_perturbation does not work for models",
+                           "with exogenous lags or leads"))
+            }
+
+
+            ss <- solve_first_order(private$ss, private$lead_lag_incidence,
+                                    private$exos, private$endos,
+                                    private$params, private$f_dynamic,
+                                    only_eigval = FALSE, debug = FALSE)
             private$ss <- ss
 
             sel <-  which(ss$kstate[, 2, drop = FALSE] <= private$max_lag + 1)
@@ -609,166 +626,7 @@ DynMod <- R6Class("DynMod",
             jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
                        x = mat_info$values, Dim = as.integer(rep(n, 2)))
             return (as(jac, "dgCMatrix"))
-        },
-        solve_first_order = function(only_eigval = FALSE, debug = FALSE) {
-
-            # solve_first_order does not works for endogenous
-            # lags or leads > 1, or exogenous leads.
-            # For perturbation approaches, Dynare substitutes these lags
-            # return (private$get_endo_per(lag_per));
-            # and leads by creating auxiliary variables and
-            # equations. We don't do that.
-            if (private$max_endo_lag > 1 || private$max_endo_lead > 1) {
-                stop(paste("solve_first_order does not work for models",
-                           "with max_lag > 1 or max_lead > 1"))
-            }
-            if (private$max_exo_lag > 0 || private$max_exo_lead > 0) {
-                stop(paste("solve_first_order does not work for models",
-                           "with exogenous lags or leads"))
-            }
-
-            self$solve_steady(init_data = FALSE)
-            if (is.null(private$ss)) {
-                ss <- init_state_space(private$exo_count, private$lead_lag_incidence)
-            } else {
-                ss <- private$ss
-            }
-
-            # calculate the Jacobian
-            nper <- private$max_lag + private$max_lead + 1
-            exos <- matrix(rep(private$exos, each = nper), nrow = nper)
-            endos <- rep(private$endos, nper)
-            y <- endos[which(private$lead_lag_incidence != 0)]
-            it <- private$max_lag + 1
-            jacobia <- private$f_dynamic(y, exos, private$params, it, jac = TRUE)
-            jacobia <- jacobia[, ss$reorder_jacobian_columns, drop = FALSE]
-
-            if (ss$nstatic) {
-                ret <- qr(jacobia[, ss$index_s, drop = FALSE])
-                Q <- qr.Q(ret, complete = TRUE)
-                aa <- t(Q) %*% jacobia
-            } else {
-                aa <- jacobia
-            }
-            if (debug) {
-                printobj(jacobia)
-                printobj(aa)
-            }
-
-            # compute D and E matrix
-            # The linearized model has the form
-            # D * (z_t+1,  y_t+1)' = E * (z_t, y_t)'
-            # where z_t = y_t-1
-            n <- ss$nboth + ss$ndynamic
-            D <- matrix(0, nrow = n, ncol = n)
-            E <- matrix(0, nrow = n, ncol = n)
-            D[ss$row_indx_de_1, ss$index_d1] <- aa[ss$row_indx,
-                                                             ss$index_d]
-            D[ss$row_indx_de_2, ss$index_d2] <- diag(ss$nboth)
-            E[ss$row_indx_de_1, ss$index_e1] <- -aa[ss$row_indx,
-                                                              ss$index_e]
-            E[ss$row_indx_de_2, ss$index_e2] <- diag(ss$nboth)
-            if (only_eigval) {
-                ss$eigval <- geigen::geigen(E, D, only.values = TRUE)$values
-            } else {
-                qz_result <- geigen::gqz(E, D, sort = 'S')
-                ss$eigval <- geigen::gevalues(qz_result)
-            }
-            if (debug) {
-                printobj(D)
-                printobj(E)
-                printobj(qz_result)
-            }
-
-            sdim <- sum(abs(ss$eigval) <= 1)
-            nba <- ss$nd - sdim
-            if (nba > ss$nsfwrd) {
-                stop("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
-            } else if (nba < ss$nsfwrd) {
-                stop("Blanchard & Kahn conditions are not satisfied: indeterminacy")
-            }
-
-            if (only_eigval) {
-                i <- order(abs(ss$eigval))
-                private$ss <- ss
-                return (ss$eigval[i])
-            }
-
-            A <- aa[, ss$index_m, drop = FALSE]  # Jacobian matrix for lagged endogeneous variables
-            B <- matrix(NA, nrow = nrow(aa), ncol = length(ss$index_c))
-            B[, ss$cols_b] <- aa[, ss$index_c, drop = FALSE] # Jacobian matrix for contemporaneous
-            # endogenous variables
-            C <- aa[, ss$index_p, drop = FALSE] # Jacobian matrix for lead endogeneous variables
-
-            indx_stable_root <- 1: (ss$nd - ss$nsfwrd)             # %=> index of stable roots
-            indx_explosive_root <- (ss$npred + ss$nboth + 1) : ss$nd  # => index of explosive roots
-            #derivatives with respect to dynamic state variables
-            #forward variables
-
-            # TODO: what to do if there are no explosive roots or no stable roots?
-            Z <- t(qz_result$Z)
-            Z11 <- Z[indx_stable_root,    indx_stable_root, drop = FALSE]
-            Z21 <- Z[indx_explosive_root, indx_stable_root, drop = FALSE]
-            Z22 <- Z[indx_explosive_root, indx_explosive_root, drop = FALSE]
-            ss$gx <- -solve(Z22, Z21)
-            # TODO: error if Z22 is new singular (see Matlab code)
-            hx1 <- t(backsolve(qz_result$T[indx_stable_root, indx_stable_root, drop =
-                                               FALSE], Z11, transpose = TRUE))
-            hx2 <- t(solve(Z11, t(qz_result$S[indx_stable_root, indx_stable_root, drop =
-                                                  FALSE])))
-            hx <- hx1 %*% hx2
-            ss$ghx <- hx[ss$k1, , drop = FALSE]
-            if (debug) {
-                printobj(hx1)
-                printobj(hx2)
-                printobj(ss$k2)
-            }
-            if (ss$nboth + 1 <= length(ss$k2)) {
-                ss$ghx <- rbind(ss$ghx,
-                                  ss$gx[ss$k2[(ss$nboth + 1) :
-                                                         length(ss$k2)], , drop = FALSE])
-            }
-            if (ss$nstatic) {
-                B_static <- B[, 1:ss$nstatic, drop = FALSE]
-            } else {
-                B_static <- matrix(nrow = nrow(B), ncol = 0)
-            }
-
-
-            # static variables, backward variables, mixed variables and forward variables
-            B_pred <- B[, (ss$nstatic + 1) : (ss$nstatic + ss$npred + ss$nboth)]
-            if (ss$nstatic + ss$npred + ss$nboth + 1 <= ncol(B)) {
-                B_fyd <- B[, (ss$nstatic + ss$npred + ss$nboth + 1) : ncol(B)]
-            } else  {
-                B_fyd <- matrix(nrow = nrow(B), ncol = 0)
-            }
-
-            if (ss$nstatic) {
-                temp <- - C[1:ss$nstatic, , drop = FALSE] %*% ss$gx %*% hx
-                b <- matrix(nrow = nrow(aa), ncol = length(ss$index_c))
-                b[, ss$cols_b] <- aa[ , ss$index_c, drop = FALSE]
-                b10 <- b[1:ss$nstatic, 1:ss$nstatic, drop = FALSE]
-                b11 <- b[1:ss$nstatic, (ss$nstatic + 1) : ncol(b),
-                         drop = FALSE]
-                temp[, ss$index_m] <- temp[, ss$index_m, drop = FALSE] -
-                    A[1:ss$nstatic, , drop = FALSE]
-                temp <- solve(b10, temp - b11 %*% ss$ghx)
-                ss$ghx <- rbind(temp, ss$ghx)
-            }
-            A_ <- cbind(B_static, C %*% ss$gx + B_pred, B_fyd)
-
-            if (private$exo_count) {
-                if (ss$nstatic) {
-                    fu <- t(Q) %*% jacobia[,  ss$innovations_idx, drop = FALSE]
-                } else {
-                    fu <- jacobia[, ss$innovations_idx, drop = FALSE]
-                }
-                ss$ghu <- - solve(A_, fu)
-            } else {
-                ss$ghu <- matrix(nrow = 0, ncol = 0)
-            }
-            ss$Gy <- hx
-            return (ss)
         }
+
     )
 )
