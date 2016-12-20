@@ -79,7 +79,8 @@ enum ExprNodeOutputType
     oCSteadyStateFile,                            //!< C code, in the generated steady state file
     oJuliaSteadyStateFile,                        //!< Julia code, in the generated steady state file
     oRStaticModel,                                //!< R code, static model
-    oRDynamicModel                               //!< R code, dynamic model
+    oRDynamicModel,                               //!< R code, dynamic model
+    oRDerivatives                                 //!< code for the analytical derivatives
   };
 
 #define IS_MATLAB(output_type) ((output_type) == oMatlabStaticModel     \

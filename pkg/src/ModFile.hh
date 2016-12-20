@@ -166,6 +166,7 @@ public:
   void computeChecksum();
 #ifdef USE_R
   Rcpp::List getModelListR(void);
+  Rcpp::List getDerivativeInfo(void);
 #endif
 };
 

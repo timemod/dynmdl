@@ -503,6 +503,7 @@ public:
 
 #ifdef USE_R
    Rcpp::List getDynamicModelR(void);
+   Rcpp::List getDerivativeInfoR(void);
 #endif
 };
 

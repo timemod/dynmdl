@@ -1236,4 +1236,30 @@ Rcpp::List ModFile::getModelListR(void)  {
                               Rcpp::Named("dynamic_model") = dynmod,
                               Rcpp::Named("static_function_body") = static_function_body);
 }
+
+Rcpp::List ModFile::getDerivativeInfo(void)  {
+    int exo_count = symbol_table.exo_nbr();
+    int endo_count =  symbol_table.endo_nbr();
+    int param_count = symbol_table.param_nbr();
+
+    Rcpp::CharacterVector exo_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_names[i] = symbol_table.getName(eExogenous, i).c_str();
+    }
+    Rcpp::CharacterVector endo_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_names[i] = symbol_table.getName(eEndogenous, i).c_str();
+    }
+    Rcpp::CharacterVector param_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_names[i] = symbol_table.getName(eParameter, i).c_str();
+    }
+
+    Rcpp::List dynmod = dynamic_model.getDerivativeInfoR();
+
+    return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,
+                              Rcpp::Named("endo_names") = endo_names,
+                              Rcpp::Named("param_names") = param_names,
+                              Rcpp::Named("dynamic_model") = dynmod);
+}
 #endif

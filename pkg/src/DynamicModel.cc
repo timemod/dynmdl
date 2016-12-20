@@ -5323,5 +5323,46 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
                               Rcpp::Named("max_exo_lead")  = max_exo_lead
                              );
 }
+
+Rcpp::List DynamicModel::getDerivativeInfoR(void) {
+
+    // create lead_lag_indicence matrix 
+    Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);
+    for (int endoID = 0; endoID < symbol_table.endo_nbr(); endoID++) {
+        Rcpp::IntegerMatrix::Row endo_row = lead_lag_incidence(endoID, Rcpp::_);
+        // Loop on periods
+        for (int lag = -max_endo_lag; lag <= max_endo_lead; lag++) {
+            // Print variableID if exists with current period, otherwise print 0
+            try {
+                int varID = getDerivID(symbol_table.getID(eEndogenous, endoID), lag);
+                endo_row[lag + max_endo_lag] = getDynJacobianCol(varID) + 1;
+            } catch (UnknownDerivIDException &e) {
+            }
+        }
+    }
+
+    // derivative matrix
+    temporary_terms_t temp_term_union = temporary_terms_res;
+    deriv_node_temp_terms_t tef_terms;
+
+    int nderiv = deriv_id_table.size() - symbol_table.param_nbr();
+    Rcpp::CharacterMatrix derivatives(symbol_table.endo_nbr(), nderiv);
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        int eq = it->first.first;
+        int var = it->first.second;
+        expr_t d1 = it->second;
+        ostringstream txt;
+        d1->writeOutput(txt, oRDerivatives, temp_term_union, tef_terms);
+        derivatives(eq, var) = Rcpp::String(txt.str());
+    }
+    return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
+                              Rcpp::Named("derivatives")   = derivatives,
+                              Rcpp::Named("max_endo_lag")  = max_endo_lag,
+                              Rcpp::Named("max_endo_lead") = max_endo_lead,
+                              Rcpp::Named("max_exo_lag")   = max_exo_lag,
+                              Rcpp::Named("max_exo_lead")  = max_exo_lead
+                             );
+}
 #endif
 

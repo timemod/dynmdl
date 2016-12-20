@@ -16,6 +16,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_derivatives
+Rcpp::List compute_derivatives(std::string modfile);
+RcppExport SEXP dynr_compute_derivatives(SEXP modfileSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_derivatives(modfile));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_residuals_
 NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_data, SEXP params, Function f_dynamic, int n_endo, int nper, int max_lag);
 RcppExport SEXP dynr_get_residuals_(SEXP endosSEXP, SEXP icolsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP f_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {

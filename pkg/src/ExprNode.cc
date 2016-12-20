@@ -648,11 +648,13 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   switch (type)
     {
     case eParameter:
-      if (output_type == oMatlabOutsideModel)
-        //output << "M_.params" << "(" << tsid + 1 << ")";
-        output << "params" << "[" << tsid + 1 << "]";
-      else
-        output << "params" << LEFT_ARRAY_SUBSCRIPT(output_type) << tsid + ARRAY_SUBSCRIPT_OFFSET(output_type) << RIGHT_ARRAY_SUBSCRIPT(output_type);
+      if (output_type == oMatlabOutsideModel) {
+          output << "M_.params" << "(" << tsid + 1 << ")";
+      } else if (output_type == oRDerivatives) {
+          output <<  datatree.symbol_table.getName(symb_id);
+      } else {
+          output << "params" << LEFT_ARRAY_SUBSCRIPT(output_type) << tsid + ARRAY_SUBSCRIPT_OFFSET(output_type) << RIGHT_ARRAY_SUBSCRIPT(output_type);
+      }
       break;
 
     case eModelLocalVariable:
@@ -683,6 +685,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oRDynamicModel:
           i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag)) + ARRAY_SUBSCRIPT_OFFSET(output_type);
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
+          break;
+        case oRDerivatives:
+          output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
           break;
         case oCDynamic2Model:
           i = tsid + (lag+1)*datatree.symbol_table.endo_nbr() + ARRAY_SUBSCRIPT_OFFSET(output_type);
@@ -745,6 +750,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           else
             output <<  "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << "it_, " << i
                    << RIGHT_ARRAY_SUBSCRIPT(output_type);
+          break;
+        case oRDerivatives:
+          output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
           break;
         case oCDynamicModel:
         case oCDynamic2Model:

@@ -1,6 +1,6 @@
 #include "ModFile.hh"
 
-ModFile *parse(char * modfile);
+ModFile *parse(char * modfile, bool no_tmp_terms = false);
 
 void parse_macro(char *modfile, string &basename, bool debug, bool save_macro, string &save_macro_file, bool no_line_macro,
       map<string, string> &defines, vector<string> &path, stringstream &macro_output);

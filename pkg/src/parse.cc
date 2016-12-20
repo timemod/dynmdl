@@ -35,13 +35,12 @@
 #include "parse.hh"
 #include "dynout.hh"
 
-ModFile* parse(char * modfile) {
+ModFile* parse(char * modfile, bool no_tmp_terms) {
   bool clear_all = true;
   bool clear_global = false;
   bool save_macro = false;
   string save_macro_file;
   bool debug = false;
-  bool no_tmp_terms = false;
   bool only_macro = false;
   bool no_line_macro = false;
   bool no_log = false;
