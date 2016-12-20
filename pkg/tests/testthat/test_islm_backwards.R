@@ -39,7 +39,6 @@ dynare_exo <- get_dynare_exo("islm_backwards_simul_exo.csv", mdl$get_data_period
 
 test_that("solve", {
     mdl2 <- mdl$clone()
-    mdl2$check()
     mdl2$set_endo_data(dynare_endo[lag_per])
     mdl2$set_exo_data(dynare_exo)
     mdl2$solve(control = list(silent = TRUE))
