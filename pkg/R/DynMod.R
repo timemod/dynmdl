@@ -435,52 +435,16 @@ DynMod <- R6Class("DynMod",
                            "with exogenous lags or leads"))
             }
 
-
-            ss <- solve_first_order(private$ss, private$lead_lag_incidence,
+            private$ss <- solve_first_order(private$ss, private$lead_lag_incidence,
                                     private$exos, private$endos,
                                     private$params, private$f_dynamic,
                                     only_eigval = FALSE, debug = FALSE)
-            private$ss <- ss
 
-            sel <-  which(ss$kstate[, 2, drop = FALSE] <= private$max_lag + 1)
-            k2 <- ss$kstate[sel, c(1,2), drop = FALSE]
-            k2 <- k2[, 1, drop = FALSE] +
-                (private$max_lag + 1 - k2[, 2, drop = FALSE]) * private$endo_count
+            private$endo_data <- solve_perturbation_(private$ss,
+                                            private$max_endo_lag,
+                                            private$exo_data, private$endo_data,
+                                            private$exos, private$endos)
 
-            private$endo_data[1, ] <- private$endo_data[1, ] - private$endos
-
-            ex_ <- private$exo_data[ , ] -
-                      rep(private$exos, each = nrow(private$exo_data))
-
-            check_per <- regperiod_range(start_period(private$model_period) + 1,
-                                         end_period(private$data_period))
-            if (sum(abs(ex_[check_per])) > .Machine$double.eps) {
-                # period. An analytical solution in a Taylor approximation requires
-                # so called deterministic exogenoeous variables. I do not known
-                # yet how this works.
-                stop(paste("The perturbation approach currently only allows shocks",
-                           "in the first period"))
-            }
-
-            if (length(ss$ghu) == 0) {
-                # purely backward?
-                stop("Situation where length(ghu) == 0 not yet supported")
-            } else if (length(ss$ghx) == 0) {
-                # purely forward
-                stop("Situation where length(ghx) == 0 not yet supported")
-            } else {
-                epsilon <- ss$ghu %*% t(ex_)
-                for (i in 2 : length_range(private$data_period)) {
-                    yhat <- t(private$endo_data[i - 1, ss$order_var[k2],
-                                                drop = FALSE])
-                    private$endo_data[i, ss$order_var] <-
-                        ss$ghx %*% yhat  + epsilon[ , i, drop = FALSE]
-                }
-
-                # add steady state values
-                private$endo_data[ , ] <- private$endo_data[ , ]  +
-                              rep(private$endos, each = nrow(private$endo_data))
-            }
             return (invisible(self))
         },
         get_jacob = function(sparse = TRUE) {
@@ -495,7 +459,7 @@ DynMod <- R6Class("DynMod",
             return (jac)
         },
         get_eigval = function() {
-            if (!is.null(private$ss)) {
+            if (!is.null(private$ss) && !is.null(private$ss$eigval)) {
                 i <- order(abs(private$ss$eigval))
                 return (private$ss$eigval[i])
             } else {
