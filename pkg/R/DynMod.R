@@ -556,15 +556,15 @@ DynMod <- R6Class("DynMod",
         },
         get_lags = function() {
             lag_per <- self$get_lag_period()
-            return (as.numeric(t(private$endo_data[lag_per, ])))
+            return (t(private$endo_data[lag_per, ]))
         },
         get_leads = function() {
             lead_per <- self$get_lead_period()
-            return (as.numeric(t(private$endo_data[lead_per, ])))
+            return (t(private$endo_data[lead_per, ]))
         },
         # returns a vector with endogenous variables in the solution period
         get_solve_endo = function() {
-            return (as.numeric(t(private$endo_data[private$model_period, ])))
+            return (t(private$endo_data[private$model_period, ]))
         },
         # returns the residual of the stacked-time system
         # x is vector of endogenous variables in the solution period
