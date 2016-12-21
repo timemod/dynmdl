@@ -666,7 +666,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           datatree.local_variables_table[symb_id]->writeOutput(output, output_type, temporary_terms, tef_terms);
           output << ")";
         }
-      else
+      else if (output_type == oRDerivatives) {
+        output << datatree.symbol_table.getName(symb_id);
+      } else
         /* We append underscores to avoid name clashes with "g1" or "oo_" (see
            also ModelTree::writeModelLocalVariables) */
         output << datatree.symbol_table.getName(symb_id) << "__";
@@ -687,7 +689,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
         case oRDerivatives:
-          output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
+          output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
         case oCDynamic2Model:
           i = tsid + (lag+1)*datatree.symbol_table.endo_nbr() + ARRAY_SUBSCRIPT_OFFSET(output_type);
@@ -752,7 +754,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
                    << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
         case oRDerivatives:
-          output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
+          output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
         case oCDynamicModel:
         case oCDynamic2Model:

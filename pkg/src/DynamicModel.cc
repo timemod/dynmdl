@@ -5345,8 +5345,7 @@ Rcpp::List DynamicModel::getDerivativeInfoR(void) {
     temporary_terms_t temp_term_union = temporary_terms_res;
     deriv_node_temp_terms_t tef_terms;
 
-    int nderiv = deriv_id_table.size() - symbol_table.param_nbr();
-    Rcpp::CharacterMatrix derivatives(symbol_table.endo_nbr(), nderiv);
+    Rcpp::CharacterMatrix derivatives(equations.size(), dynJacobianColsNbr);
     for (first_derivatives_t::const_iterator it = first_derivatives.begin();
          it != first_derivatives.end(); it++) {
         int eq = it->first.first;
