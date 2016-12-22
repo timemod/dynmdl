@@ -1,16 +1,17 @@
 % A version of the ISLM model with leads, including the equation for the 
-% fit procedure for a year observation for variable y.
+% fit procedure with the maximum likelihood method. All endogenous variables
+% can be a fit target.
 
 %declaring variables
-var y yd t c i md r y_year; %endogenous variables
+var y yd t c i md r; %endogenous variables
 varexo g ms; %exogenous variables
 var ut uc ui umd; %residuals (endogenous)
 %Lagrangian multipliers (one for each model equation):
-var ly lyd lt lc li lmd lr ly_year; 
+var ly lyd lt lc li lmd lr; 
 %dummy indicating conditioning period:
-varexo fit_y_year; 
+varexo fit_y fit_yd fit_t fit_c fit_i fit_md fit_r; 
 %values for conditioning var in conditioning period:
-varexo y_year_exo; 
+varexo y_exo yd_exo c_exo i_exo t_exo md_exo r_exo; 
 
 %Setting parameter values
 parameters c0 c1 c2 c3 c4 c5;
@@ -35,9 +36,6 @@ i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + i5 * r^2 + ui;
 md = m0 + m1 * y + m2 * r + m3 * r^2 + umd;
 md = ms;
 
-% Yearly average:
-y_year = 0.25 * (y + y(-1) + y(-2) + y(-3));
-
 %First-order conditions with respect to residuals:
 ut / qt^2 = lt ;
 uc / qc^2 = lc ;
@@ -45,24 +43,22 @@ ui / qi^2 = li ;
 umd / qmd^2 = lmd;
 
 %First-order conditions with respect to model variables:
-fit_y_year  * (y_year  - y_year_exo)  + (1 - fit_y_year)  * (- ly_year) = 0;
+fit_y  * (y   - y_exo)  + (1 - fit_y)  * (- ly + lyd + t1 * lt + i1 * li(+1) +
+    i2 * li + i3 * li(-1) + m1 * lmd) = 0;
 
-(- ly + lyd + t1 * lt + i1 * li(+1) + i2 * li + i3 * li(-1) + m1 * lmd
-    + 0.25 * (ly_year + ly_year(+1) + ly_year(+2) + ly_year(+3))) = 0;
+fit_yd * (yd - yd_exo)  + (1 - fit_yd) * (- lyd + c1 * lc(+1) + c2 * lc +
+    c3 * lc(-1)) = 0;
 
-(- lyd + c1 * lc(+1) + c2 * lc + c3 * lc(-1)) = 0;
+fit_c  * (c  -  c_exo)  + (1 - fit_c)  * (ly - lc) = 0;
 
-ly - lc = 0;
+fit_i  * (i  -  i_exo)  + (1 - fit_i)  * (ly - li) = 0;
 
-ly - li = 0;
+fit_md * (md - md_exo)  + (1 - fit_md) * (- lmd - lr) = 0;
 
-- lmd - lr = 0;
+fit_r  * (r  -  r_exo)  + (1 - fit_r)  * (( c4 + 2 * c5 * r ) * lc + 
+    ( i4 + 2 * i5 * r ) * li + ( m2 + 2 * m3 * r ) * lmd) = 0;
 
-(( c4 + 2 * c5 * r ) * lc + ( i4 + 2 * i5 * r ) * li + 
-    ( m2 + 2 * m3 * r ) * lmd) = 0;
-
-- lyd - lt = 0;
-
+fit_t * ( t - t_exo ) + ( 1 - fit_t) * ( - lyd - lt ) = 0;
 end;
 
 initval;
