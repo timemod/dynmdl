@@ -10,7 +10,7 @@ compute_first_order(mod_file)
 \item{mod_file}{the filename of the mod file}
 }
 \value{
-\code{NULL}
+the derivative matrix
 }
 \description{
 Computes the first order conditions of a model file

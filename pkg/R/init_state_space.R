@@ -50,8 +50,8 @@ init_state_space <- function(nexo, lead_lag_incidence, debug = FALSE) {
     } else {
         if (max_lead == 0) {
             # in this case lead_lag_incidence has no entry max_lag+2
-            error(paste('Dynare currently does not allow to solve"),
-                                "purely static models in a stochastic context.'))
+            stop(paste("Dynare currently does not allow to solve",
+                       "purely static models in a stochastic context."))
         }
         kmask <- lead_lag_incidence[ss$order_var, max_lag + 2,
                                     drop = FALSE]
@@ -132,11 +132,12 @@ init_state_space <- function(nexo, lead_lag_incidence, debug = FALSE) {
     ss$index_e1 <- c(seq_len(ss$npred + ss$nboth), ss$npred + ss$nboth +
                             which(llx[ss$nstatic + ss$npred +
                                           seq_len(ss$nsfwrd), max_lag + 1] != 0)
+
     )
     ss$index_e2 <- ss$npred + ss$nboth + seq_len(ss$nboth)
 
     ss$cols_b <- which(lead_lag_incidence[, max_lag + 1, drop = FALSE] != 0,
-                          arr.in = TRUE)[, 1]
+                          arr.ind = TRUE)[, 1]
 
     vec <- llx[llx != 0]
     ss$reorder_jacobian_columns <- c(vec, nz + seq_len(nexo))

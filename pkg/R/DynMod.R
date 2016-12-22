@@ -12,6 +12,7 @@ setOldClass("regts")
 #' @importFrom regts end_period
 #' @importFrom regts as.regperiod_range
 #' @importFrom regts length_range
+#' @importFrom regts regperiod_range
 #' @importFrom regts regts
 #' @importFrom methods new
 #' @importFrom methods as

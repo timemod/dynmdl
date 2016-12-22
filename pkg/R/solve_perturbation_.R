@@ -5,6 +5,7 @@
 # - no exogenous lags and leads
 # - no endogenous lags and leads > 1
 # - only exogenous shocks in the first solution pertiod
+#' @importFrom regts get_regperiod_range
 solve_perturbation_  <- function(ss, max_lag, exo_data, endo_data, static_exos,
                                  static_endos) {
 
