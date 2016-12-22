@@ -144,7 +144,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
           }
 #endif
         configFile = new ifstream(defaultConfigFile.c_str(), fstream::in);
-        if (!configFile->is_open())
+        if (!configFile->is_open()) {
           if (parallel || parallel_test)
             {
                 std::string msg = "ERROR: Could not open the default config file (" + defaultConfigFile + ")\n";
@@ -152,6 +152,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
             }
           else
             return;
+        }
       }
     else
       {
@@ -386,13 +387,14 @@ ConfigFile::getConfigFileInfo(const string &config_file)
 
                     if (!begin_weight)
                       {
-                        if (!node_name.empty())
+                        if (!node_name.empty()) {
                           if (member_nodes.find(node_name) != member_nodes.end())
                             {
                               dyn_error("ERROR (in config file): Node entered twice in specification of cluster.\n");
                             }
                           else
                             member_nodes[node_name] = 1.0;
+                        }
                         node_name = token;
                       }
                     else
@@ -410,13 +412,14 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                           dyn_error("ERROR (in config file): Misspecification of weights passed to Members option.\n");
                         }
                   }
-                if (!node_name.empty())
+                if (!node_name.empty()) {
                   if (member_nodes.find(node_name) == member_nodes.end())
                     member_nodes[node_name] = 1.0;
                   else
                     {
                       dyn_error("ERROR (in config file): Node entered twice in specification of cluster.\n");
                     }
+                }
               }
             else
               {
@@ -482,12 +485,13 @@ ConfigFile::addParallelConfFileElement(bool inNode, bool inCluster, member_nodes
         {
           dyn_error("ERROR: Every node must be assigned a unique name.\n");
         }
-      else
+      else  {
         slave_nodes[name] = new SlaveNode(computerName, port, minCpuNbr, maxCpuNbr, userName,
                                           password, remoteDrive, remoteDirectory, dynarePath,
                                           matlabOctavePath, singleCompThread, operatingSystem);
+       }
   //! ADD CLUSTER
-  else if (inCluster)
+  else if (inCluster) {
     if (minCpuNbr > 0 || maxCpuNbr > 0 || !userName.empty()
         || !password.empty() || !remoteDrive.empty() || !remoteDirectory.empty()
         || !dynarePath.empty() || !matlabOctavePath.empty() || !operatingSystem.empty())
@@ -505,6 +509,7 @@ ConfigFile::addParallelConfFileElement(bool inNode, bool inCluster, member_nodes
             firstClusterName = name;
           clusters[name] = new Cluster(member_nodes);
         }
+    }
 }
 
 void
@@ -515,13 +520,14 @@ ConfigFile::checkPass(WarningConsolidation &warnings) const
     {
       const map <string, string> hookmap = (*it)->get_hooks();
       for (map <string, string>::const_iterator mapit = hookmap.begin() ; mapit != hookmap.end(); mapit++)
-        if (mapit->first.compare("global_init_file") == 0)
+        if (mapit->first.compare("global_init_file") == 0) {
           if (global_init_file_declared == true)
             {
               dyn_error("ERROR: Only one global initialization file may be provided.\n");
             }
           else
             global_init_file_declared = true;
+        }
     }
 
   if (!parallel && !parallel_test)

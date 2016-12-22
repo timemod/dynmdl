@@ -2597,13 +2597,14 @@ ParsingDriver::add_model_var_or_external_function(string *function_name, bool in
           if (!mod_file->external_functions_table.exists(symb_id))
             error("Using a derivative of an external function (" + *function_name + ") in the model block is currently not allowed.");
 
-          if (in_model_block)
+          if (in_model_block) {
             if (mod_file->external_functions_table.getNargs(symb_id) == eExtFunNotSet)
               error("Before using " + *function_name
                     +"() in the model block, you must first declare it via the external_function() statement");
             else if ((int) (stack_external_function_args.top().size()) != mod_file->external_functions_table.getNargs(symb_id))
               error("The number of arguments passed to " + *function_name
                     +"() does not match those of a previous call or declaration of this function.");
+          }
         }
     }
   else

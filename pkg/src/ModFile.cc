@@ -224,7 +224,7 @@ ModFile::checkPass()
         }
     }
 
-  if (mod_file_struct.dsge_prior_weight_in_estimated_params)
+  if (mod_file_struct.dsge_prior_weight_in_estimated_params) {
     if (!mod_file_struct.dsge_var_estimated && !mod_file_struct.dsge_var_calibrated.empty())
       {
         dyn_error("ERROR: If dsge_prior_weight is in the estimated_params block, the prior weight cannot be calibrated "
@@ -235,6 +235,7 @@ ModFile::checkPass()
         dyn_error("ERROR: If dsge_prior_weight is in the estimated_params block, it must either be declared as a parameter "
                   "(deprecated) or the dsge_var option must be passed to the estimation statement (preferred).");
       }
+  }
 
   if (dynamic_model.staticOnlyEquationsNbr() != dynamic_model.dynamicOnlyEquationsNbr())
     {
@@ -433,7 +434,7 @@ ModFile::transformPass(bool nostrict)
       DynOut << "Found " << dynamic_model.equation_number() << " FOC equation(s) for Ramsey Problem." << endl;
     }
 
-  if (symbol_table.exists("dsge_prior_weight"))
+  if (symbol_table.exists("dsge_prior_weight")) {
     if (mod_file_struct.bayesian_irf_present)
       {
         if (symbol_table.exo_nbr() != symbol_table.observedVariablesNbr())
@@ -448,6 +449,7 @@ ModFile::transformPass(bool nostrict)
           dyn_error("ERROR: When estimating a DSGE-Var, the number of shocks must be "
                     "greater than or equal to the number of observed variables.");
         }
+  }
 }
 
 void

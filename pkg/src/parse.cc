@@ -41,7 +41,6 @@ ModFile* parse(char * modfile, bool no_tmp_terms) {
   bool save_macro = false;
   string save_macro_file;
   bool debug = false;
-  bool only_macro = false;
   bool no_line_macro = false;
   bool no_log = false;
   bool no_warn = false;

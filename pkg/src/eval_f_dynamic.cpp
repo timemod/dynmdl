@@ -64,13 +64,13 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
     vector<double> values;
 
     for (int it = 0; it < nper; it++) {
-        for (int i = 0; i < icols.size(); i++) {
+        for (size_t i = 0; i < icols.size(); i++) {
             x(i) = endos(icols[i] + it * n_endo);
         }
         NumericMatrix jt  = f_dynamic(x, exo_data, params, it + 1 + max_lag,
                                       true);
         for (int ieq = 0; ieq < n_endo; ieq++) {
-            for (int ideriv = 0; ideriv < jacmap.size(); ideriv++) {
+            for (size_t ideriv = 0; ideriv < jacmap.size(); ideriv++) {
                 VarInfo var_info = jacmap[ideriv];
                 int id = var_info.id;
                 int ivt = it + var_info.shift;

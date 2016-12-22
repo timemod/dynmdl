@@ -589,7 +589,7 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
   unsigned int instruction_number = 0;
   expr_t lhs = NULL, rhs = NULL;
   BinaryOpNode *eq_node;
-  Uff Uf[symbol_table.endo_nbr()];
+  Uff* Uf = new Uff[symbol_table.endo_nbr()];
   map<expr_t, int> reference_count;
   vector<int> feedback_variables;
   deriv_node_temp_terms_t tef_terms;
@@ -981,6 +981,8 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
   FEND_ fend;
   fend.write(code_file, instruction_number);
   code_file.close();
+
+  delete [] Uf;
 }
 
 void
@@ -1235,11 +1237,12 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
   // Write Jacobian w.r. to endogenous only
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g1.begin(), temporary_terms_g1.end());
-  if (!first_derivatives.empty())
+  if (!first_derivatives.empty()) {
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, jacobian_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, jacobian_output, output_type, tef_terms);
+  }
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
        it != first_derivatives.end(); it++)
     {
@@ -1260,11 +1263,12 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
   // Write Hessian w.r. to endogenous only (only if 2nd order derivatives have been computed)
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g2.begin(), temporary_terms_g2.end());
-  if (!second_derivatives.empty())
+  if (!second_derivatives.empty()) {
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, hessian_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, hessian_output, output_type, tef_terms);
+  }
   int k = 0; // Keep the line of a 2nd derivative in v2
   for (second_derivatives_t::const_iterator it = second_derivatives.begin();
        it != second_derivatives.end(); it++)
@@ -1304,7 +1308,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
         }
 
       // Treating symetric elements
-      if (symb_id1 != symb_id2)
+      if (symb_id1 != symb_id2) {
         if (output_type == oJuliaDynamicModel)
           hessian_output << "  @inbounds g2[" << eq + 1 << "," << col_nb_sym + 1 << "] = "
                          << for_sym.str() << endl;
@@ -1323,16 +1327,18 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
             k++;
           }
+      }
     }
 
   // Writing third derivatives
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g3.begin(), temporary_terms_g3.end());
-  if (!third_derivatives.empty())
+  if (!third_derivatives.empty()) {
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, third_derivatives_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, third_derivatives_output, output_type, tef_terms);
+  }
   k = 0; // Keep the line of a 3rd derivative in v3
   for (third_derivatives_t::const_iterator it = third_derivatives.begin();
        it != third_derivatives.end(); it++)
@@ -1383,7 +1389,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
       int k2 = 1; // Keeps the offset of the permutation relative to k
       for (set<int>::iterator it2 = cols.begin(); it2 != cols.end(); it2++)
-        if (*it2 != ref_col)
+        if (*it2 != ref_col) {
           if (output_type == oJuliaDynamicModel)
             third_derivatives_output << "  @inbounds g3[" << eq + 1 << "," << *it2 + 1 << "] = "
                                      << for_sym.str() << endl;
@@ -1402,6 +1408,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
               k2++;
             }
+        }
       k += k2;
     }
 

@@ -128,7 +128,7 @@ mdl$solve_steady(control = list(trace = 1))
 ```
 
 Control parameter `trace` has been set to `TRUE` in order to get an iteration
-report. The function `solve_steady()` employs package `nleqslv` to solve for
+report. Method `solve_steady()` employs package `nleqslv` to solve
 the steady state problem.
 
 The method `get_static_endos()` returns the computed static endogenous variables.

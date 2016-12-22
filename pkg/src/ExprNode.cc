@@ -5506,6 +5506,7 @@ SecondDerivExternalFunctionNode::composeDerivatives(const vector<expr_t> &dargs)
 
 {
   dyn_error("ERROR: third order derivatives of external functions are not implemented");
+  return NULL;
 }
 
 void

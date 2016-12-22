@@ -1069,7 +1069,7 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
   unsigned int instruction_number = 0;
   expr_t lhs = NULL, rhs = NULL;
   BinaryOpNode *eq_node;
-  Uff Uf[symbol_table.endo_nbr()];
+  Uff* Uf = new Uff[symbol_table.endo_nbr()];
   map<expr_t, int> reference_count;
   deriv_node_temp_terms_t tef_terms;
   vector<int> feedback_variables;
@@ -1518,6 +1518,7 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
   FEND_ fend;
   fend.write(code_file, instruction_number);
   code_file.close();
+  delete [] Uf;
 }
 
 void
@@ -2166,11 +2167,12 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
   // Writing Jacobian
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g1.begin(), temporary_terms_g1.end());
-  if (!first_derivatives.empty())
+  if (!first_derivatives.empty()) {
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, jacobian_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, jacobian_output, output_type, tef_terms);
+  }
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
        it != first_derivatives.end(); it++)
     {
@@ -2190,11 +2192,12 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
   // Writing Hessian
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g2.begin(), temporary_terms_g2.end());
-  if (!second_derivatives.empty())
+  if (!second_derivatives.empty()) {
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, hessian_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, hessian_output, output_type, tef_terms);
+  }
   int k = 0; // Keep the line of a 2nd derivative in v2
   for (second_derivatives_t::const_iterator it = second_derivatives.begin();
        it != second_derivatives.end(); it++)
@@ -2235,7 +2238,7 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
         }
 
       // Treating symetric elements
-      if (id1 != id2)
+      if (id1 != id2) {
         if (output_type == oJuliaDynamicModel)
           hessian_output << "  @inbounds g2[" << eq + 1 << "," << col_nb_sym + 1 << "] = "
                          << for_sym.str() << endl;
@@ -2254,16 +2257,18 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
 
             k++;
           }
+      }
     }
 
   // Writing third derivatives
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g3.begin(), temporary_terms_g3.end());
-  if (!third_derivatives.empty())
+  if (!third_derivatives.empty()) {
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, third_derivatives_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, third_derivatives_output, output_type, tef_terms);
+  }
   k = 0; // Keep the line of a 3rd derivative in v3
   for (third_derivatives_t::const_iterator it = third_derivatives.begin();
        it != third_derivatives.end(); it++)
@@ -2314,7 +2319,7 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
 
       int k2 = 1; // Keeps the offset of the permutation relative to k
       for (set<int>::iterator it2 = cols.begin(); it2 != cols.end(); it2++)
-        if (*it2 != ref_col)
+        if (*it2 != ref_col) {
           if (output_type == oJuliaDynamicModel)
             third_derivatives_output << "  @inbounds g3[" << eq + 1 << "," << *it2 + 1 << "] = "
                                      << for_sym.str() << endl;
@@ -2333,6 +2338,7 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
 
               k2++;
             }
+        }
       k += k2;
     }
 
@@ -4672,7 +4678,7 @@ DynamicModel::isChecksumMatching(const string &basename) const
 #else
   int r = mkdir(basename.c_str(), 0777);
 #endif
-  if (r < 0)
+  if (r < 0)  {
     if (errno != EEXIST)
       {
     std::ostringstream msg;
@@ -4681,6 +4687,7 @@ DynamicModel::isChecksumMatching(const string &basename) const
       }
     else
       basename_dir_exists = true;
+  }
 
   // check whether basename directory exist. If not, create it.
   // If it does, read old checksum if it exist
