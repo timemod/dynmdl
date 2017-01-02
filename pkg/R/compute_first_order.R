@@ -8,9 +8,9 @@ compute_first_order <- function(mod_file) {
     print(model_info)
 
     with(model_info, {
-        # a problem will occur if the fit instruments occur with 
+        # a problem will occur if the fit instruments occur with
         # lags or leads. When computing derivatives with respect to the
-        # exogenous variables, the dynare preprocessor ignores 
+        # exogenous variables, the dynare preprocessor ignores
         # leads and leads. For other variables a lag or lead > 1
         # would not result in an error
         # TODO: maybe we could search for lags and leads of fit instruments
@@ -30,8 +30,7 @@ compute_first_order <- function(mod_file) {
     colnames(endo_deriv) <- paste0(endo_names, paste0("(", endo_lags, ")"))
 
     exo_deriv <- model_info$dynamic_model$derivatives[, -(1:length(endo_names))]
-    colnames(exo_deriv) <- model_info$exo_names
-    printobj(endo_deriv)
-    printobj(exo_deriv)
-    return (endo_deriv)
+    colnames(exo_deriv) <- model_info$exo_name
+    return (list(model_info = model_info, exo_deriv = exo_deriv,
+                 endo_deriv = endo_deriv, endo_lags = endo_lags))
 }

@@ -5353,14 +5353,15 @@ Rcpp::List DynamicModel::getDerivativeInfoR(void) {
     deriv_node_temp_terms_t tef_terms;
 
     Rcpp::CharacterMatrix derivatives(equations.size(), dynJacobianColsNbr);
+    std::fill(derivatives.begin(), derivatives.end(), Rcpp::CharacterVector::get_na());
     for (first_derivatives_t::const_iterator it = first_derivatives.begin();
          it != first_derivatives.end(); it++) {
         int eq = it->first.first;
-        int var = it->first.second;
+        int col = getDynJacobianCol(it->first.second);
         expr_t d1 = it->second;
         ostringstream txt;
         d1->writeOutput(txt, oRDerivatives, temp_term_union, tef_terms);
-        derivatives(eq, var) = Rcpp::String(txt.str());
+        derivatives(eq, col) = Rcpp::String(txt.str());
     }
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
                               Rcpp::Named("derivatives")   = derivatives,

@@ -1,7 +1,10 @@
 library(dynr)
+library(gsubfn)
 
-print(compute_first_order("islm.mod"))
+source("create_fitmod.R")
 
+fit_instruments <- c("ut", "uc", "ui", "umd")
+create_fitmod("islm.mod", fit_instruments)
 
 # mdl <- compile_model("islm.mod")
 # print(mdl, short = FALSE)
@@ -13,3 +16,11 @@ print(compute_first_order("islm.mod"))
 # mdl$set_endo_values(1000, names = "yd", period = "2016Q4")
 # mdl$set_exo_values(280, names = "g", period = "2017Q1")
 # mdl2$solve(control = list(trace = TRUE))
+#
+# pattern <- "\\[(-?\\d+)\\]"
+# f <- function(x) {
+#     print(x)
+#     return (paste0("(", as.integer(x) + 2, ")"))
+# }
+# ret <- gsubfn(pattern, f, "x[2] + zz[-2]")
+# print(ret)
