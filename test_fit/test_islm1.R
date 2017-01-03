@@ -1,10 +1,7 @@
 library(dynr)
 library(gsubfn)
 
-source("create_fitmod.R")
-
-fit_instruments <- c("ut", "uc", "ui", "umd")
-create_fitmod("islm.mod", fit_instruments)
+dynr:::create_fitmod("islm_fit_inp.mod", "islm_fit.mod")
 
 # mdl <- compile_model("islm.mod")
 # print(mdl, short = FALSE)

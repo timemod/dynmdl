@@ -2,10 +2,10 @@
 
 export(DynMod)
 export(compile_model)
-export(compute_first_order)
 importFrom(Matrix,Matrix)
 importFrom(R6,R6Class)
 importFrom(Rcpp,sourceCpp)
+importFrom(gsubfn,gsubfn)
 importFrom(methods,as)
 importFrom(methods,new)
 importFrom(methods,setOldClass)

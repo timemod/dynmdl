@@ -1,24 +1,18 @@
 %Declaring variables
-
+var y yd c i md r t;       % endogenous variables
 varexo g ms;               % exogenous variables
-
-
+#FIT residuals ut uc umd ui;       % residuals
+#FIT sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 21;
 %Setting parameter values
 parameters c0 c1 c2 c3 c4 c5;
 parameters i0 i1 i2 i3 i4 i5;
 parameters m0 m1 m2 m3;
 parameters t0 t1;
 
-
-
-
 c0 = 100; c1 = 0.28; c2 = 0.32; c3 = 0.10; c4 = -20; c5 = 1;
 i0 = 100; i1 = 0.12; i2 = 0.08; i3 = 0.04; i4 = -40; i5 = -1.5;
 m0 = 75; m1 = 0.23; m2 = -35; m3 = -1.5;
 t0 = -15; t1 = 0.22;
-
-varexo ut uc ui umd;       % residuals
-var y yd c i md r t;       % endogenous variables
 
 model;
 t = t0 + t1 * y + ut;
