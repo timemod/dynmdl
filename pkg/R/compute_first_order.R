@@ -5,8 +5,6 @@
 #' @export
 compute_first_order <- function(mod_file) {
     model_info <- compute_derivatives(mod_file)
-    print(model_info)
-
     with(model_info, {
         # a problem will occur if the fit instruments occur with
         # lags or leads. When computing derivatives with respect to the
