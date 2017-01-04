@@ -195,36 +195,7 @@ DynMod <- R6Class("DynMod",
         },
         print = function(short = TRUE) {
             cat("DynMod object\n")
-            cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
-                        private$endo_count))
-            cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
-                        private$exo_count))
-            cat(sprintf("%-60s%d\n", "Maximum endogenous lead:",
-                        private$max_endo_lead))
-            cat(sprintf("%-60s%d\n", "Maximum endogenous lag:",
-                        private$max_endo_lag))
-            cat(sprintf("%-60s%d\n", "Maximum exogenous lead:",
-                        private$max_exo_lead))
-            cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
-                        private$max_exo_lag))
-            if (!is.null(private$model_period)) {
-                cat(sprintf("%-60s%s\n", "Model period:",
-                            as.character(private$model_period)))
-            }
-            if (!short) {
-                cat("Names of the endogenous variables:\n")
-                print(private$endo_names)
-                cat("Names of the exogenous variables:\n")
-                print(private$exo_names)
-                cat("Names of the parameters:\n")
-                print(private$param_names)
-                cat("Lead lag incidence matrix:\n")
-                print(private$lead_lag_incidence)
-                cat("\nstatic function and Jacobian:\n")
-                print(private$f_static)
-                cat("\ndynamic function and Jacobian:\n")
-                print(private$f_dynamic)
-            }
+            print_info(short)
             return (invisible(NULL))
         },
         get_endo_names = function() {
@@ -591,7 +562,38 @@ DynMod <- R6Class("DynMod",
             jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
                        x = mat_info$values, Dim = as.integer(rep(n, 2)))
             return (as(jac, "dgCMatrix"))
+        },
+        print_info = function(short) {
+            cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
+                        private$endo_count))
+            cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
+                        private$exo_count))
+            cat(sprintf("%-60s%d\n", "Maximum endogenous lead:",
+                        private$max_endo_lead))
+            cat(sprintf("%-60s%d\n", "Maximum endogenous lag:",
+                        private$max_endo_lag))
+            cat(sprintf("%-60s%d\n", "Maximum exogenous lead:",
+                        private$max_exo_lead))
+            cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
+                        private$max_exo_lag))
+            if (!is.null(private$model_period)) {
+                cat(sprintf("%-60s%s\n", "Model period:",
+                            as.character(private$model_period)))
+            }
+            if (!short) {
+                cat("Names of the endogenous variables:\n")
+                print(private$endo_names)
+                cat("Names of the exogenous variables:\n")
+                print(private$exo_names)
+                cat("Names of the parameters:\n")
+                print(private$param_names)
+                cat("Lead lag incidence matrix:\n")
+                print(private$lead_lag_incidence)
+                cat("\nstatic function and Jacobian:\n")
+                print(private$f_static)
+                cat("\ndynamic function and Jacobian:\n")
+                print(private$f_dynamic)
+            }
         }
-
     )
 )

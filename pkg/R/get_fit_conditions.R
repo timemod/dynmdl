@@ -103,8 +103,9 @@ get_fit_conditions <- function(mod_file, residuals) {
         endo_equations[ivar] <- equation
     }
 
-    return (list(l_vars = l_vars, fit_vars = fit_vars,
-                 exo_vars = exo_vars, sigmas = sigmas,
+    return (list(vars = vars, l_vars = l_vars, fit_vars = fit_vars,
+                 exo_vars = exo_vars, residuals = residuals, sigmas = sigmas,
+                 orig_exos = setdiff(model_info$exo_names, residuals),
                  res_equations = res_equations,
                  endo_equations = endo_equations))
 }

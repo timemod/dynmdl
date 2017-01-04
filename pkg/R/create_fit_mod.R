@@ -1,7 +1,8 @@
 # Constructs a mod file for the fit procedure based on a mod file with
 # special #FIT tags.
 # @param mod_file the filename of the mod file with #FIT tags
-# @return a list with the names of several auxiliary variables
+# @param fit_mod the name of the file used for the fit procedure
+# @return a list with the names of the auxiliary variables
 create_fitmod <- function(mod_file, fit_mod) {
 
     tmp_mod <- tempfile()
@@ -34,8 +35,6 @@ create_fitmod <- function(mod_file, fit_mod) {
 
     # analyse #FIT line to find a list of residuals
     fit_txt <- paste(fit_lines, collapse = " ")
-    cat("fit_txt\n")
-    print(fit_txt)
     m <- gregexpr("residuals([^;]+)", fit_txt, perl = TRUE)
     ma <- regmatches(fit_txt, m)
     residuals <- strsplit(ma[[1]], split = " ")
@@ -57,7 +56,8 @@ create_fitmod <- function(mod_file, fit_mod) {
             if (!params_written) {
                 writeLines(c("",
              "% Parameters for the standard deviation for the fit procedure:"))
-                param_lines <- paste("parameters", paste(cond$sigmas, collapse = " "), ";", "")
+                param_lines <- paste("parameters", paste(cond$sigmas,
+                                         collapse = " "), ";", "")
                 writeLines(strwrap(param_lines, width = 80))
                 writeLines("")
                 params_written <- TRUE
@@ -69,11 +69,14 @@ create_fitmod <- function(mod_file, fit_mod) {
         } else {
             if (startsWith(line, "model")) {
                 in_model <- TRUE
-                lambda_lines <- paste("var", paste(cond$l_vars, collapse = " "), ";", "")
+                lambda_lines <- paste("var", 
+                            paste(cond$l_vars, collapse = " "), ";", "")
                 writeLines(strwrap(lambda_lines, width = 80))
-                fit_lines <- paste("varexo", paste(cond$fit_vars, collapse = " "), ";", "")
+                fit_lines <- paste("varexo", 
+                            paste(cond$fit_vars, collapse = " "), ";", "")
                 writeLines(strwrap(fit_lines, width = 80))
-                exo_lines <- paste("varexo", paste(cond$exo_vars, collapse = " "), ";", "")
+                exo_lines <- paste("varexo", 
+                            paste(cond$exo_vars, collapse = " "), ";", "")
                 writeLines(strwrap(exo_lines, width = 80))
                 writeLines("")
                 writeLines(line)
@@ -83,7 +86,8 @@ create_fitmod <- function(mod_file, fit_mod) {
                 writeLines(c("% First order condition the resisuals:", ""))
                 writeLines(strwrap(cond$res_equations, width = 80))
                 writeLines("")
-                writeLines(c("", "% First order conditions endogenous variables:", ""))
+                writeLines(c("", 
+                    "% First order conditions endogenous variables:", ""))
                 writeLines(strwrap(cond$endo_equations, width = 80, exdent = 4))
                 writeLines("end;")
                 in_model <- FALSE
@@ -97,7 +101,9 @@ create_fitmod <- function(mod_file, fit_mod) {
 
     # return information about the fit variables
     with (cond, {
-        return (list(l_vars = l_vars, fit_vars = fit_vars,
-                          exo_vars = exo_vars, sigmas = sigmas))
+        return (list(orig_endos = vars, orig_exos = orig_exos, 
+                     l_vars = l_vars, fit_vars = fit_vars,
+                     exo_vars = exo_vars, residuals = residuals, 
+                     sigmas = sigmas))
     })
 }
