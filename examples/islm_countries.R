@@ -35,11 +35,7 @@ print(mdl$get_residuals())
 cat("calculated endogenous variables for the fit target variables:\n")
 print(mdl$get_endo_data(names = colnames(fit_targets)))
 
-# TODO: get_endo_data should have a pattern argument, just as
-# isismdl
-y_vars <- paste("y",  c("nl", "uk", "be", "ge", "fr", "es", "dk", "us", "it",
-                        "ch"),  sep = "_")
-print(mdl$get_endo_data(y_vars))
+print(mdl$get_endo_data("y_.."))
 plot(mdl$get_endo_data(names = c("y_nl", "y_be")), type = "o")
 
 write.csv(as.data.frame(mdl$get_endo_data()), file = output_file)

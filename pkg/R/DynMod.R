@@ -88,7 +88,11 @@ setOldClass("regts")
 #' is missing the exo period is used.}
 #'
 #' \item{\code{get_exo_data(names, period = self$get_data_period()}}{
-#' Returns the exogenous data}
+#' Returns the exogenous data.
+#' \code{pattern} is a regular expression,  \code{names} a list of variables
+#'  and \code{period} an \code{\link[regts]{regperiod_range}} object
+#'  or an object that can be coerced to \code{regperiod_range}.}
+
 #'
 #' \item{\code{set_endo_data(data, names = colnames(data), update_mode = c("update", "updval"))}}{
 #' Sets the values of the endogenous variables. \code{data} is a
@@ -115,8 +119,12 @@ setOldClass("regts")
 #' \code{"updval"}, then the values are only replaced by non NA values in
 #' \code{data}}
 #'
-#' \item{\code{get_endo_data(names, period = self$get_data_period()}}{
-#' Returns the endgenous data}
+#' \item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{
+#' Returns the endogenous data.
+#' \code{pattern} is a regular expression,  \code{names} a list of variables
+#'  and \code{period} an \code{\link[regts]{regperiod_range}} object
+#'  or an object that can be coerced to \code{regperiod_range}.}
+
 #'
 #' \item{\code{solve_steady(start = self$get_static_endos(), init_data = TRUE,
 #' control = NULL)}}{
@@ -291,11 +299,18 @@ DynMod <- R6Class("DynMod",
             private$exo_data[period, names] <- value
             return (invisible(self))
         },
-        get_exo_data = function(names, period = private$data_period) {
-            if (missing(names)) {
+        get_exo_data = function(pattern, names, period = private$data_period) {
+            if (missing(pattern) && missing(names)) {
                 return (private$exo_data[period, ])
             } else {
-                names <- intersect(names, private$endo_names)
+                if (missing(names)) {
+                    names <- grep(pattern, private$exo_names)
+                } else {
+                    names <- intersect(names, private$exo_names)
+                    if (!missing(pattern)) {
+                        names <- union(names, grep(pattern, private$exo_names))
+                    }
+                }
                 return (private$exo_data[period, names, drop = FALSE])
             }
         },
@@ -322,11 +337,18 @@ DynMod <- R6Class("DynMod",
                               type = "endo", update_mode = update_mode)
             return (invisible(self))
         },
-        get_endo_data = function(names, period = private$data_period) {
-            if (missing(names)) {
+        get_endo_data = function(pattern, names, period = private$data_period) {
+            if (missing(pattern) && missing(names)) {
                 return (private$endo_data[period, ])
             } else {
-                names <- intersect(names, private$endo_names)
+                if (missing(names)) {
+                    names <- grep(pattern, private$endo_names)
+                } else {
+                    names <- intersect(names, private$endo_names)
+                    if (!missing(pattern)) {
+                        names <- union(names, grep(pattern, private$endo_names))
+                    }
+                }
                 return (private$endo_data[period, names, drop = FALSE])
             }
         },

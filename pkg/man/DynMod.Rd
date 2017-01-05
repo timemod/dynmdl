@@ -79,7 +79,10 @@ for which endogenous variable is modified. If argument \code{period}
 is missing the exo period is used.}
 
 \item{\code{get_exo_data(names, period = self$get_data_period()}}{
-Returns the exogenous data}
+Returns the exogenous data.
+\code{pattern} is a regular expression,  \code{names} a list of variables
+ and \code{period} an \code{\link[regts]{regperiod_range}} object
+ or an object that can be coerced to \code{regperiod_range}.}
 
 \item{\code{set_endo_data(data, names = colnames(data), update_mode = c("update", "updval"))}}{
 Sets the values of the endogenous variables. \code{data} is a
@@ -106,8 +109,11 @@ If \code{update_mode} is
 \code{"updval"}, then the values are only replaced by non NA values in
 \code{data}}
 
-\item{\code{get_endo_data(names, period = self$get_data_period()}}{
-Returns the endgenous data}
+\item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{
+Returns the endogenous data.
+\code{pattern} is a regular expression,  \code{names} a list of variables
+ and \code{period} an \code{\link[regts]{regperiod_range}} object
+ or an object that can be coerced to \code{regperiod_range}.}
 
 \item{\code{solve_steady(start = self$get_static_endos(), init_data = TRUE,
 control = NULL)}}{

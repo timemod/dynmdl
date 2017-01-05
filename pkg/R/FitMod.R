@@ -44,12 +44,17 @@
 #'
 #' \item{\code{get_exo_data(names, period = self$get_data_period()}}{Returns
 #' the exogenous data excluding the control variables of the
-#' fit procedure.}
+#' fit procedure.
+#' \code{pattern} is a regular expression,  \code{names} a list of variables
+#'  and \code{period} an \code{\link[regts]{regperiod_range}} object
+#'  or an object that can be coerced to \code{regperiod_range}.}
 #'
-#' \item{\code{get_endo_data(names, period = self$get_data_period()}}{Returns
+#' \item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{Returns
 #' the endogenous data excluding the auxiliary endogenous variables
-#'  for the fit procedure (the residuals and the Lagrange multipliers).}
-#'
+#'  for the fit procedure (the residuals and the Lagrange multipliers).
+#' \code{pattern} is a regular expression,  \code{names} a list of variables
+#'  and \code{period} an \code{\link[regts]{regperiod_range}} object
+#'  or an object that can be coerced to \code{regperiod_range}.}
 #' }
 
 FitMod <- R6Class("FitMod",
@@ -109,10 +114,19 @@ FitMod <- R6Class("FitMod",
             super$set_data_(data, private$fit_info$fit_vars[cols], FALSE, 
                             type = "exo")
         },
-        get_endo_data = function(names = private$fit_info$orig_endos, 
-                                 period = private$data_period) {
-            if (! missing(names)) {
-                names <- intersect(names, private$fit_info$orig_endos)
+        get_endo_data = function(pattern, names, period = private$data_period) {
+            endo_names <- private$fit_info$orig_endos
+            if (missing(pattern) && missing(names)) {
+                names <- endo_names
+            } else {
+                if (missing(names)) {
+                    names <- grep(pattern, endo_names)
+                } else {
+                    names <- intersect(names, endo_names)
+                    if (!missing(pattern)) {
+                        names <- union(names, grep(pattern, endo_names))
+                    }
+                }
             }
             return (private$endo_data[period, names, drop = FALSE])
         },
@@ -146,10 +160,19 @@ FitMod <- R6Class("FitMod",
             }
             return (private$endo_data[period, names, drop = FALSE])
         },
-        get_exo_data = function(names = private$fit_info$orig_exos, 
-                                period = private$data_period) {
-            if (!missing(names)) {
-                names <- intersect(names, private$fit_info$orig_exos)
+        get_exo_data = function(pattern, names, period = private$data_period) {
+            exo_names <- private$fit_info$orig_exos
+            if (missing(pattern) && missing(names)) {
+                names <- exo_names
+            } else {
+                if (missing(names)) {
+                    names <- grep(pattern, exo_names)
+                } else {
+                    names <- intersect(names, exo_names)
+                    if (!missing(pattern)) {
+                        names <- union(names, grep(pattern, exo_names))
+                    }
+                }
             }
             return (private$exo_data[period, names, drop = FALSE])
         }

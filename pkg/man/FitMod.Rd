@@ -48,12 +48,17 @@ used in the fit procedure.}
 
 \item{\code{get_exo_data(names, period = self$get_data_period()}}{Returns
 the exogenous data excluding the control variables of the
-fit procedure.}
+fit procedure.
+\code{pattern} is a regular expression,  \code{names} a list of variables
+ and \code{period} an \code{\link[regts]{regperiod_range}} object
+ or an object that can be coerced to \code{regperiod_range}.}
 
-\item{\code{get_endo_data(names, period = self$get_data_period()}}{Returns
+\item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{Returns
 the endogenous data excluding the auxiliary endogenous variables
- for the fit procedure (the residuals and the Lagrange multipliers).}
-
+ for the fit procedure (the residuals and the Lagrange multipliers).
+\code{pattern} is a regular expression,  \code{names} a list of variables
+ and \code{period} an \code{\link[regts]{regperiod_range}} object
+ or an object that can be coerced to \code{regperiod_range}.}
 }
 }
 \keyword{data}
