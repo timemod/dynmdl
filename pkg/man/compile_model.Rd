@@ -4,13 +4,16 @@
 \alias{compile_model}
 \title{Compile a Dynare model and return a \code{\link{DynMod}}}
 \usage{
-compile_model(mod_file, bytecode = TRUE)
+compile_model(mod_file, bytecode = TRUE, fit_mod_file)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
 
 \item{bytecode}{If \code{TRUE}, then the functions used to calculate the
-residuals and jacobian are compiled.}
+residuals and jacobian are compiled}
+
+\item{fit_mod_file}{the name of the fit mode file. If not specified,
+then the fit mod file is destroyed after the model has been parsed.}
 }
 \value{
 an \code{DynMod} object

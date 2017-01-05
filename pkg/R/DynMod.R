@@ -13,6 +13,7 @@ setOldClass("regts")
 #' @importFrom regts as.regperiod_range
 #' @importFrom regts length_range
 #' @importFrom regts regperiod_range
+#' @importFrom regts regrange_intersect
 #' @importFrom regts regts
 #' @importFrom methods new
 #' @importFrom methods as
@@ -195,7 +196,7 @@ DynMod <- R6Class("DynMod",
         },
         print = function(short = TRUE) {
             cat("DynMod object\n")
-            print_info(short)
+            private$print_info(short)
             return (invisible(NULL))
         },
         get_endo_names = function() {
@@ -283,7 +284,7 @@ DynMod <- R6Class("DynMod",
             names <- intersect(names, private$exo_names)
             if (!missing(period)) {
                 period <- as.regperiod_range(period)
-                per <- regts:::regrange_intersect(period, private$data_period)
+                per <- regrange_intersect(period, private$data_period)
             } else {
                 per <- period
             }
@@ -307,7 +308,7 @@ DynMod <- R6Class("DynMod",
             names <- intersect(names, private$endo_names)
             if (!missing(period)) {
                 period <- as.regperiod_range(period)
-                per <- regts:::regrange_intersect(period, private$data_period)
+                per <- regrange_intersect(period, private$data_period)
             } else {
                 per <- period
             }
@@ -475,8 +476,8 @@ DynMod <- R6Class("DynMod",
             if (is.null(private$model_period)) stop(private$period_error_msg)
             update_mode <- match.arg(update_mode)
 
-            per <- regts:::regrange_intersect(get_regperiod_range(data),
-                                              private$data_period)
+            per <- regrange_intersect(get_regperiod_range(data),
+                                      private$data_period)
             if (NCOL(data) == 0) {
                 # TODO: warning?
                 return (invisible(NULL))
