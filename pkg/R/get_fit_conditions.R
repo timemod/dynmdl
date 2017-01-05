@@ -5,7 +5,7 @@
 #' @importFrom gsubfn gsubfn
 # @return a list with information about the derivatives
 get_fit_conditions <- function(mod_file, residuals) {
-
+    
     model_info <- compute_derivatives(mod_file)
     with(model_info, {
         # a problem will occur if the residuals have

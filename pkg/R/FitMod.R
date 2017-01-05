@@ -61,7 +61,9 @@ FitMod <- R6Class("FitMod",
             }
             private$fit_info <- create_fitmod(mod_file, fit_mod_file)
             super$initialize(fit_mod_file, bytecode)
-            unlink(fit_mod_file)
+            if (missing(fit_mod_file)) {
+                unlink(fit_mod_file)
+            }
         }, 
         print = function(short = TRUE) {
             cat("FitMod object\n")
@@ -86,8 +88,11 @@ FitMod <- R6Class("FitMod",
         },
         set_fit_targets = function(data, names = colnames(data)) {
             names <- intersect(names, private$fit_info$orig_endos)
-
-            data <- data[private$model_period, names]
+            if (!is.matrix(data)) {
+                dim(data) <- c(length(data), 1)
+                colnames(data) <- names
+            } 
+            data <- data[private$model_period, names, drop = FALSE]
 
             # update endogenous variables
             super$set_data_(data, names, missing(names), type = "endo",
@@ -121,8 +126,8 @@ FitMod <- R6Class("FitMod",
             }
             rowsel <- min(which(rows)) : max(which(rows))
             cols <- !apply(fit_vars == 0, 2, all)
-            fit_vars <- fit_vars[rowsel, cols]
-            fit_exos <- fit_exos[rowsel, cols]
+            fit_vars <- fit_vars[rowsel, cols, drop = FALSE]
+            fit_exos <- fit_exos[rowsel, cols, drop = FALSE]
             fit_exos <- ifelse(fit_vars == 1, fit_exos, NA)
             ps <- start_period(private$model_period) + min(which(rows)) - 1
             return (regts(fit_exos, start = ps))

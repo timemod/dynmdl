@@ -1,12 +1,12 @@
 library(dynr)
 
-context("ISLM model with year fit using FitMod")
+context("ISLM model with fit procedure")
 
 nperiods <- 18
-mod_file <- "mod/islm_yearfit2.mod"
+mod_file <- "mod/islm_fit.mod"
 dynare_dir     <- "dynare/output"
-endo_name_file <- file.path(dynare_dir, "islm_yearfit_endo_names.txt")
-endo_file <- file.path(dynare_dir, "islm_yearfit_endo.csv")
+endo_name_file <- file.path(dynare_dir, "islm_fit_endo_names.txt")
+endo_file <- file.path(dynare_dir, "islm_fit_endo.csv")
 
 p1 <- regperiod("2016Q1")
 model_period <- regperiod_range(p1, p1 + nperiods - 1)
@@ -14,8 +14,8 @@ model_period <- regperiod_range(p1, p1 + nperiods - 1)
 report <- capture_output(mdl <- compile_model(mod_file))
 mdl$solve_steady()
 mdl$set_period(model_period)
-mdl$set_exo_data(regts(1275, start = "2016Q4"), names = "y_year_exo")
-mdl$set_exo_data(regts(1, start = "2016Q4"), names = "fit_y_year")
+mdl$set_fit_targets(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
+mdl$set_fit_targets(regts(c(250, 255), start = "2016Q1"), names = "t")
 
 mdl$solve(control = list(silent = TRUE))
 

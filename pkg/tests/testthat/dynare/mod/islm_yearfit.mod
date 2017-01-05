@@ -4,9 +4,13 @@
 %declaring variables
 var y yd t c i md r y_year; %endogenous variables
 varexo g ms; %exogenous variables
-
-#FIT residuals ut uc ui umd; %residuals (endogenous)
-#FIT sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 2;
+var ut uc ui umd; %residuals (endogenous)
+%Lagrangian multipliers (one for each model equation):
+var ly lyd lt lc li lmd lr ly_year; 
+%dummy indicating conditioning period:
+varexo fit_y_year; 
+%values for conditioning var in conditioning period:
+varexo y_year_exo; 
 
 %Setting parameter values
 parameters c0 c1 c2 c3 c4 c5;
@@ -18,6 +22,7 @@ c0 = 100; c1 = 0.28; c2 = 0.32; c3 = 0.10; c4 = -20; c5 = 1;
 i0 = 100; i1 = 0.12; i2 = 0.08; i3 = 0.04; i4 = -40; i5 = -1.5;
 m0 = 75; m1 = 0.23; m2 = -35; m3 = -1.5;
 t0 = -15; t1 = 0.22;
+qt = 7; qc = 5; qi = 21; qmd = 2;
 
 model;
 
@@ -32,6 +37,31 @@ md = ms;
 
 % Yearly average:
 y_year = 0.25 * (y + y(-1) + y(-2) + y(-3));
+
+%First-order conditions with respect to residuals:
+ut / qt^2 = lt ;
+uc / qc^2 = lc ;
+ui / qi^2 = li ;
+umd / qmd^2 = lmd;
+
+%First-order conditions with respect to model variables:
+fit_y_year  * (y_year  - y_year_exo)  + (1 - fit_y_year)  * (- ly_year) = 0;
+
+(- ly + lyd + t1 * lt + i1 * li(+1) + i2 * li + i3 * li(-1) + m1 * lmd
+    + 0.25 * (ly_year + ly_year(+1) + ly_year(+2) + ly_year(+3))) = 0;
+
+(- lyd + c1 * lc(+1) + c2 * lc + c3 * lc(-1)) = 0;
+
+ly - lc = 0;
+
+ly - li = 0;
+
+- lmd - lr = 0;
+
+(( c4 + 2 * c5 * r ) * lc + ( i4 + 2 * i5 * r ) * li + 
+    ( m2 + 2 * m3 * r ) * lmd) = 0;
+
+- lyd - lt = 0;
 
 end;
 

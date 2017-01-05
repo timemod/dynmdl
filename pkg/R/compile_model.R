@@ -15,7 +15,7 @@ compile_model <- function(mod_file, bytecode = TRUE,
         stop(paste("ERROR: Could not open file:", mod_file))
     }
     if (has_fit_tags(mod_file)) {
-        return (FitMod$new(mod_file, bytecode))
+        return (FitMod$new(mod_file, bytecode, fit_mod_file))
     } else {
         if (!missing(fit_mod_file)) {
             warning("fit_mod_file specified, but no #FIT tags in mod file")

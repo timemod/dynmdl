@@ -1,4 +1,4 @@
-@#include "../mod/islm_yearfit.mod"
+@#include "mod/islm_yearfit.mod"
 
 steady;
 

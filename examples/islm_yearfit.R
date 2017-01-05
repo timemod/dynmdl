@@ -13,9 +13,7 @@ mdl <- compile_model("islm_yearfit.mod")
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period(period)
 
-mdl$set_exo_data(regts(1275, period = "2017Q4"), names = "y_year_exo");
-mdl$set_exo_data(regts(1, period = "2017Q4"),    names = "fit_y_year");
-print(mdl$get_exo_data())
+mdl$set_fit_targets(regts(1275, start = "2017Q4"), names = "y_year")
 mdl$solve(control = list(trace = TRUE))
 
 print(mdl$get_endo_data())
