@@ -108,7 +108,7 @@ bin:
 	$(MAKE) -f Makedeps
 	-@rm -rf tmp
 	mkdir tmp
-	R CMD INSTALL -l ./tmp --build $(PKGDIR)
+	R CMD INSTALL $(INSTALL_FLAGS) -l ./tmp --build $(PKGDIR)
 
 document:
 	$(MAKE) -f Makedeps
