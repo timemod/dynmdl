@@ -64,3 +64,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// run_macro
+void run_macro(std::string modfile, std::string new_modfile);
+RcppExport SEXP dynr_run_macro(SEXP modfileSEXP, SEXP new_modfileSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type new_modfile(new_modfileSEXP);
+    run_macro(modfile, new_modfile);
+    return R_NilValue;
+END_RCPP
+}

@@ -1,8 +1,12 @@
 %Declaring variables
 var y yd c i md r t;       % endogenous variables
 varexo g ms;               % exogenous variables
-#FIT residuals ut uc umd ui;       % residuals
-#FIT sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 2;
+
+fit;
+residuals ut uc umd ui;       % residuals
+sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 2;
+end;
+
 %Setting parameter values
 parameters c0 c1 c2 c3 c4 c5;
 parameters i0 i1 i2 i3 i4 i5;

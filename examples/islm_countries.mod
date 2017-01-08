@@ -5,19 +5,13 @@ var y_@{co} yd_@{co} t_@{co} c_@{co} i_@{co} md_@{co} r_@{co}
     x_@{co} imp_@{co};
 varexo g_@{co} ms_@{co};              
 @#endfor
-var tot_imp tot_x imp_adj;
 
-% TODO: also evaluate macro expression in fit lines
-#FIT residuals ut_nl ui_nl uc_nl umd_nl
-#FIT           ut_uk ui_uk uc_uk umd_uk
-#FIT           ut_be ui_be uc_be umd_be
-#FIT           ut_fr ui_fr uc_fr umd_fr
-#FIT           ut_ge ui_ge uc_ge umd_ge
-#FIT           ut_es ui_es uc_es umd_es
-#FIT           ut_dk ui_dk uc_dk umd_dk
-#FIT           ut_us ui_us uc_us umd_us
-#FIT           ut_it ui_it uc_it umd_it
-#FIT           ut_ch ui_ch uc_ch umd_ch;
+fit;
+@#for co in countries
+residuals ut_@{co} ui_@{co} uc_@{co} umd_@{co};
+sigma_ut_@{co} = 6; sigma_uc_@{co} = 5; sigma_ui_@{co} = 21; sigma_umd_@{co} = 2;
+@#endfor
+end;
 
 @#for co in countries
 parameters c0_@{co} c1_@{co} c2_@{co} c3_@{co} c4_@{co} c5_@{co};
@@ -34,6 +28,7 @@ t0_@{co} = -15; t1_@{co} = 0.22;
 x0_@{co} = 14; x1_@{co} = 0.2;
 imp0_@{co} = 32; imp1_@{co} = 0.2;
 @#endfor
+var tot_imp tot_x imp_adj;
 
 model;
 @#for co in countries

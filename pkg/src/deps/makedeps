@@ -113,3 +113,12 @@ parse_post_macro.o : CodeInterpreter.hh ComputingTasks.hh \
                     ParsingDriver.hh Shocks.hh SigmaeInitialization.hh Statement.hh \
                     StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
                     WarningConsolidation.hh location.hh parse.hh
+run_macro.o : run_macro_.hh
+run_macro_.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
+              DataTree.hh DynamicModel.hh DynareBison.hh ExprNode.hh \
+              ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModFile.hh \
+              ModelTree.hh NumericalConstants.hh NumericalInitialization.hh \
+              ParsingDriver.hh Shocks.hh SigmaeInitialization.hh Statement.hh \
+              StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+              WarningConsolidation.hh dynout.hh location.hh parse.hh run_dynare.hh \
+              run_macro_.hh

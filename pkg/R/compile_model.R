@@ -14,19 +14,19 @@ compile_model <- function(mod_file, bytecode = TRUE,
     if (!file.exists(mod_file)) {
         stop(paste("ERROR: Could not open file:", mod_file))
     }
-    if (has_fit_tags(mod_file)) {
+    if (has_fit_block(mod_file)) {
         return (FitMod$new(mod_file, bytecode, fit_mod_file))
     } else {
         if (!missing(fit_mod_file)) {
-            warning("fit_mod_file specified, but no #FIT tags in mod file")
+            warning("fit_mod_file specified, but no fit block in mod file")
         }
         return (DynMod$new(mod_file, bytecode))
     }
 }
 
-# Returns true if model mod_file contains #FIT tags
-has_fit_tags <- function(mod_file) {
-    fit_tag <- "#FIT"
+# Returns true if model mod_file contains a fit block
+has_fit_block <- function(mod_file) {
+    fit_command <- "fit;"
     fit <- FALSE
     con <- file(mod_file, "r")
     while (TRUE) {
@@ -34,7 +34,7 @@ has_fit_tags <- function(mod_file) {
          if (length(line) == 0) {
              break
          }
-         if (startsWith(line, fit_tag)) {
+         if (startsWith(trimws(line, "left"), fit_command)) {
              fit <- TRUE
              break
         }

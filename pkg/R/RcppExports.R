@@ -17,3 +17,7 @@ get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params,
     .Call('dynr_get_triplet_jac', PACKAGE = 'dynr', endos, lead_lag_incidence, tshift, exo_data, params, f_dynamic, n_endo, nper, max_lag)
 }
 
+run_macro <- function(modfile, new_modfile) {
+    invisible(.Call('dynr_run_macro', PACKAGE = 'dynr', modfile, new_modfile))
+}
+
