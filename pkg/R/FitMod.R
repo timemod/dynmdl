@@ -102,8 +102,8 @@ FitMod <- R6Class("FitMod",
             # update endogenous variables
             super$set_data_(data, names, missing(names), type = "endo",
                             update_mode = "updval")
-
-            cols <- which(private$fit_info$orig_endos %in% names)
+    
+            cols <- match(names, private$fit_info$orig_endos)
     
             # set exogenous variables
             super$set_data_(data, private$fit_info$exo_vars[cols], FALSE,

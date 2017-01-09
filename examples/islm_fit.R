@@ -8,7 +8,7 @@
 
 library(dynr)
 
-period <- regperiod_range("2017Q1", "2019Q3")
+period <- regperiod_range("2017Q1", "2022Q4")
 fit_target_csv <- "islm_fit_targets.csv"
 
 mdl <- compile_model("islm_fit.mod")
