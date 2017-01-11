@@ -12,3 +12,5 @@ dynr.Rcheck
 pkg.log
 pkg.pdf
 dynr*tar.gz
+dynr*zip
+tmp/
