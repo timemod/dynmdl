@@ -15,13 +15,15 @@ names(params) <- as.character(param_names)
 fit_targets <- as.regts(read.csv("islm_countries_fit.csv", row.names = 1))
 
 system.time(
-    mdl <- compile_model("islm_countries_big.mod", fit_mod_file = "islm_countries.fmod")
+    mdl <- compile_model("islm_countries_big.mod",
+                         fit_mod_file = "islm_countries.fmod",
+                         bytecode = FALSE)
 )
-print(mdl)
+print(mline,dl)
 
 mdl$set_params(params)
 
-print(mdl$get_params())
+#print(mdl$get_params())
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2021Q4")
@@ -34,7 +36,7 @@ system.time(
     mdl$solve(control = list(trace = TRUE))
 )
 
-print(mdl$get_residuals())
+#print(mdl$get_residuals())
 
 cat("calculated endogenous variables for the fit target variables:\n")
 print(mdl$get_endo_data(names = colnames(fit_targets)))
