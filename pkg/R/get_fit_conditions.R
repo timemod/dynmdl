@@ -6,6 +6,9 @@
 # @return a list with information about the derivatives
 get_fit_conditions <- function(mod_file, residuals) {
     
+    # regular expressions:
+    lag_pattern <- "\\[(-?\\d+)\\]"
+
     model_info <- compute_derivatives(mod_file)
     with(model_info, {
         # a problem will occur if the residuals have
@@ -30,7 +33,15 @@ get_fit_conditions <- function(mod_file, residuals) {
     colnames(endo_deriv) <- paste0(endo_names, paste0("(", endo_lags, ")"))
 
     exo_deriv <- model_info$dynamic_model$derivatives[, -(1:length(endo_names))]
-    colnames(exo_deriv) <- model_info$exo_name
+    colnames(exo_deriv) <- model_info$exo_names
+    res_deriv <- exo_deriv[, residuals, drop = FALSE]
+    
+    # handle **
+    fpow <- function(x) {
+        return (gsub("\\*\\*", "^", x))
+    }
+    res_deriv  <- apply(res_deriv,  MARGIN = c(1,2), FUN = fpow)
+    endo_deriv <- apply(endo_deriv, MARGIN = c(1,2), FUN = fpow)
 
     vars <- model_info$endo_names
     # names of lagrange multipliers:
@@ -47,8 +58,25 @@ get_fit_conditions <- function(mod_file, residuals) {
         return (ifelse(nchar(x) > 0, paste(l_names, x, sep = " * "), x))
     }
 
-    res_deriv <- apply(exo_deriv[ , residuals], MARGIN = 2,
-                       FUN = mult_lagrange, l_names = l_vars)
+    # replace [d] with () in exo_deriv
+    handle_lags_res <- function(x) {
+        if (is.na(x)) {
+            return(x)
+        }
+        repl <- function(x) {
+            i <- as.integer(x)
+            if (i == 0) {
+                return ("")
+            } else {
+                return (paste0("(", i, ")"))
+            }
+        }
+        return(gsubfn(lag_pattern, repl, x))
+    }
+    res_deriv <- apply(res_deriv, MARGIN = c(1,2), FUN = handle_lags_res)
+
+    res_deriv <- apply(res_deriv, MARGIN = 2, FUN = mult_lagrange, 
+                       l_names = l_vars)
     endo_deriv <- apply(endo_deriv, MARGIN = 2, FUN = mult_lagrange,
                         l_names = paste0(l_vars, "[0]"))
 
@@ -60,8 +88,6 @@ get_fit_conditions <- function(mod_file, residuals) {
     deriv0 <- paste(residuals, paste0(sigmas, "^2"), sep = " / ")
     res_equations <- (paste0(paste(deriv0, deriv1, sep = " + "), " = 0;"))
 
-    # endogenous variables
-    pattern <- "\\[(-?\\d+)\\]"
     handle_lags <- function(x, endo_lags) {
         repl <- function(x) {
             i <- as.integer(x) - shift
@@ -74,20 +100,16 @@ get_fit_conditions <- function(mod_file, residuals) {
         for (i in seq_along(x)) {
             shift <- endo_lags[i]
             if (!is.na(x[i])) {
-                x[i] <- gsubfn(pattern, repl, x[i])
+                x[i] <- gsubfn(lag_pattern, repl, x[i])
             }
         }
         return (x)
     }
+
+    # endogenous variables
     dshift <- apply(endo_deriv, MARGIN = 1, FUN = handle_lags,
                     endo_lags = endo_lags)
     dshift <- t(dshift)
-
-    # handle **
-    fpow <- function(x) {
-        return (gsub("\\*\\*", "^", x))
-    }
-    dshift <- apply(dshift, MARGIN = c(1,2), FUN = fpow)
 
     nendo <- nrow(lli)
     endo_equations <- character(nendo)

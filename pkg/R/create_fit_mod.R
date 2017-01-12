@@ -7,18 +7,22 @@
 #' @importFrom stringi stri_split_fixed
 create_fitmod <- function(mod_file, fit_mod, debug = FALSE) {
     
+    if (file.exists(fit_mod)) {
+        unlink(fit_mod)
+    }
+
     if (debug) {
         tmp_mod          <- "tmp.mod"
         fit_control_file <- "fit_control_file.mod"
         expanded_file    <- "expanded.mod"
-        if (file.exists(output_file)) {
-            unlink(output_file)
+        if (file.exists(tmp_mod)) {
+            unlink(tmp_mod)
         }
         if (file.exists(fit_control_file)) {
             unlink(fit_control_file)
         }
         if (file.exists(expanded_file)) {
-            unlink(fit_control_file)
+            unlink(expanded_file)
         }
     } else {
         tmp_mod          <- tempfile()
@@ -83,7 +87,9 @@ convert_mod <- function(input_file, output_file, step1,
 
     input <- file(input_file, "r")
     output <- file(output_file, open = "a")
-    fit_control_output <- file(fit_control_file, open = "a")
+    if (step1) {
+        fit_control_output <- file(fit_control_file, open = "a")
+    }
 
     # initialisation
     fit_block_found <- FALSE
@@ -96,14 +102,15 @@ convert_mod <- function(input_file, output_file, step1,
             break
         }
         if (step1 && startsWith(trimws(line, "left"), "@#define")) {
-            writeLines(line, con = fit_control_file)
+            writeLines(line, con = fit_control_output)
         }
         if (!fit_block_found && startsWith(trimws(line, "left"), fit_tag)) {
             if (!step1) {
                 writeLines(c("",
-             "% Parameters for the standard deviation for the fit procedure:"))
+             "% Parameters for the standard deviation for the fit procedure:"),
+                           con = output)
                 param_lines <- paste("parameters", paste(fit_cond$sigmas,
-                                         collapse = " "), ";", "")
+                                    collapse = " "), ";", "")
                 writeLines(strwrap(param_lines, width = 80), con = output)
                 writeLines("", con = output)
             }
@@ -123,7 +130,7 @@ convert_mod <- function(input_file, output_file, step1,
                     }
                     writeLines(tmp, con = output)
                     if (step1) {
-                        writeLines(fit_statement, con = fit_control_file)
+                        writeLines(fit_statement, con = fit_control_output)
                     }
                 }
                 if (!ready) {
@@ -135,7 +142,7 @@ convert_mod <- function(input_file, output_file, step1,
             }
             fit_block_found <- TRUE
         } else if (step1) {
-            writeLines(line)
+            writeLines(line, con = output)
         } else if (!model_block_found && startsWith(line, "model")) {
             in_model <- TRUE
             lambda_lines <- paste("var", 
@@ -148,12 +155,14 @@ convert_mod <- function(input_file, output_file, step1,
                           paste(fit_cond$exo_vars, collapse = " "), ";", "")
             writeLines(strwrap(exo_lines, width = 80), con = output)
             writeLines(c("", line, ""), con = output)
-            writeLines(c("", "% Model equations", ""), con = output)
+            writeLines(c("% Model equations", ""), con = output)
             model_found <- TRUE
         } else if (in_model && endsWith(trimws(line, "right"), "end;")) {
-            writeLines(gsub("end;", "", line))
-            writeLines(c("% First order condition the resisuals:", ""))
-            writeLines(strwrap(fit_cond$res_equations, width = 80))
+            writeLines(gsub("end;", "", line), con = output)
+            writeLines(c("% First order condition the resisuals:", ""),
+                       con = output)
+            writeLines(strwrap(fit_cond$res_equations, width = 80),
+                       con = output)
             writeLines(c("", "% First order conditions endogenous variables:",
                          ""), con = output)
             writeLines(strwrap(fit_cond$endo_equations, width = 80, exdent = 4),
@@ -166,7 +175,9 @@ convert_mod <- function(input_file, output_file, step1,
     }
     close(input)
     close(output)
-    close(fit_control_output)
+    if (step1) {
+        close(fit_control_output)
+    }
 
     return(invisible(NULL))
 }

@@ -2,8 +2,8 @@
 
 library(dynr)
 
-mod_file <- "ifn.mod"
-input_file <- "ifn_input.csv"
+mod_file <- "mod/ifn.mod"
+input_file <- "input/ifn_input.csv"
 
 mdl <- compile_model(mod_file)
 

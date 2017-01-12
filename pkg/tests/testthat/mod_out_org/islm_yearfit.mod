@@ -52,7 +52,6 @@ uc / sigma_uc^2 + l_4 * (-1) = 0;
 ui / sigma_ui^2 + l_5 * (-1) = 0;
 umd / sigma_umd^2 + l_6 * (-1) = 0;
 
-
 % First order conditions endogenous variables:
 
 fit_y * ( y - y_exo ) + (1 - fit_y ) * ( l_8(3) * (-0.25) + l_8(2) * (-0.25) +

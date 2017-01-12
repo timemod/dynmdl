@@ -1,0 +1,911 @@
+Starting Dynare (version 4.6-unstable).
+Starting preprocessing of the model file ...
+Found 28 equation(s).
+Evaluating expressions...done
+Computing static model derivatives:
+ - order 1
+Computing dynamic model derivatives:
+ - order 1
+ - order 2
+Preprocessing completed.
+DynMod object
+Number of endogenous variables:                             28
+Number of exogenous variables:                              5
+Maximum endogenous lead:                                    1
+Maximum endogenous lag:                                     1
+Maximum exogenous lead:                                     0
+Maximum exogenous lag:                                      0
+Names of the endogenous variables:
+ [1] "d"       "c"       "mu_z"    "mu_I"    "mu_A"    "lambda"  "R"      
+ [8] "PI"      "r"       "x"       "u"       "q"       "f"       "ld"     
+[15] "w"       "wstar"   "PIstarw" "PIstar"  "g1"      "g2"      "yd"     
+[22] "mc"      "k"       "vp"      "vw"      "l"       "phi"     "F"      
+Names of the exogenous variables:
+[1] "epsd"    "epsphi"  "epsmu_I" "epsA"    "epsm"   
+Names of the parameters:
+ [1] "h"         "betta"     "gammma1"   "gammma2"   "delta"     "kappa"    
+ [7] "eta"       "epsilon"   "varpsi"    "gammma"    "chiw"      "chi"      
+[13] "thetap"    "thetaw"    "alppha"    "Rbar"      "PIbar"     "gammmaR"  
+[19] "gammmaPI"  "gammmay"   "Phi"       "rhod"      "rhophi"    "Lambdamu" 
+[25] "LambdaA"   "Lambdax"   "LambdaYd"  "sigma_d"   "sigma_phi" "sigma_mu" 
+[31] "sigma_A"   "sigma_m"  
+Lead lag incidence matrix:
+        -1  0  1
+d        1 12 40
+c        2 13 41
+mu_z     0 14 42
+mu_I     0 15 43
+mu_A     0 16  0
+lambda   0 17 44
+R        3 18  0
+PI       4 19 45
+r        0 20 46
+x        5 21 47
+u        0 22 48
+q        0 23 49
+f        0 24 50
+ld       0 25  0
+w        6 26  0
+wstar    0 27 51
+PIstarw  0 28  0
+PIstar   0 29 52
+g1       0 30 53
+g2       0 31 54
+yd       7 32  0
+mc       0 33  0
+k        8 34  0
+vp       9 35  0
+vw      10 36  0
+l        0 37  0
+phi     11 38  0
+F        0 39  0
+
+static function and Jacobian:
+function (y, x, params, jac = FALSE) 
+{
+    if (!jac) {
+        residual <- numeric(28)
+        T13 = y[3]^(-1)
+        T16 = (y[2] - y[2] * params[1] * T13)^(-1)
+        T23 = (y[2] * y[3] - y[2] * params[1])^(-1)
+        T47 = y[4]^(-1)
+        T48 = T13 * params[2] * y[6]/y[6] * T47
+        T58 = params[3] * (y[11] - 1) + params[4]/2 * (y[11] - 
+            1)^2
+        T69 = 1 - params[6]/2 * (y[3] - params[26])^2
+        T82 = y[3]^2
+        T93 = (params[7] - 1)/params[7] * y[16]^(1 - params[7])
+        T96 = y[15]^params[7]
+        T103 = y[8]^params[11]
+        T104 = T103/y[8]
+        T105 = T104^(1 - params[7])
+        T107 = y[3]^(params[7] - 1)
+        T121 = y[17]^((-params[7]) * (1 + params[10]))
+        T123 = y[14]^(1 + params[10])
+        T126 = params[2] * params[14] * T104^((-params[7]) * 
+            (1 + params[10]))
+        T128 = y[3]^(params[7] * (1 + params[10]))
+        T141 = y[8]^params[12]
+        T142 = T141/y[8]
+        T145 = T142^(-params[8])
+        T155 = T142^(1 - params[8])
+        T171 = params[15]/(1 - params[15])
+        T173 = y[15] * T171/y[9]
+        T177 = 1/(1 - params[15])
+        T181 = T177^(1 - params[15]) * (1/params[15])^params[15]
+        T183 = T181 * y[15]^(1 - params[15])
+        T184 = y[9]^params[15]
+        T188 = (T13)^(1 - params[7])
+        T204 = (y[7]/params[16])^params[18]
+        T208 = (y[8]/params[17])^params[19]
+        T213 = (y[3]/exp(params[27]))^params[20]
+        T214 = T208 * T213
+        T216 = T214^(1 - params[18])
+        T228 = y[14]^(1 - params[15])
+        T231 = (y[11] * y[23])^params[15]
+        T252 = params[14] * (T13 * T103/y[8])^(-params[7])
+        T296 = y[5]^T177
+        T297 = y[4]^T171
+        lhs <- y[1] * T16 - y[1] * params[1] * params[2] * T23
+        rhs <- y[6]
+        residual[1] <- lhs - rhs
+        lhs <- y[6]
+        rhs <- T13 * params[2] * y[6]/y[8] * y[7]
+        residual[2] <- lhs - rhs
+        lhs <- y[9]
+        rhs <- params[3] + params[4] * (y[11] - 1)
+        residual[3] <- lhs - rhs
+        lhs <- y[12]
+        rhs <- T48 * (y[12] * (1 - params[5]) + y[9] * y[11] - 
+            T58)
+        residual[4] <- lhs - rhs
+        lhs <- 1
+        rhs <- y[12] * (T69 - y[3] * y[10] * params[6] * (y[3] - 
+            params[26])/y[10]) + (y[3] - params[26]) * params[6] * 
+            T13 * y[6] * params[2] * y[12]/y[6] * T82
+        residual[5] <- lhs - rhs
+        lhs <- y[13]
+        rhs <- y[6] * T93 * T96 * y[14] + y[13] * params[2] * 
+            params[14] * T105 * T107
+        residual[6] <- lhs - rhs
+        lhs <- y[13]
+        rhs <- y[1] * params[9] * y[27] * T121 * T123 + y[13] * 
+            T126 * T128
+        residual[7] <- lhs - rhs
+        lhs <- y[19]
+        rhs <- y[6] * y[22] * y[21] + y[19] * params[2] * params[13] * 
+            T145
+        residual[8] <- lhs - rhs
+        lhs <- y[20]
+        rhs <- y[21] * y[6] * y[18] + y[20] * y[18] * params[2] * 
+            params[13] * T155/y[18]
+        residual[9] <- lhs - rhs
+        lhs <- y[19] * params[8]
+        rhs <- y[20] * (params[8] - 1)
+        residual[10] <- lhs - rhs
+        lhs <- y[11] * y[23]/y[14]
+        rhs <- y[4] * y[3] * T173
+        residual[11] <- lhs - rhs
+        lhs <- y[22]
+        rhs <- T183 * T184
+        residual[12] <- lhs - rhs
+        lhs <- 1
+        rhs <- params[14] * T105 * T188 + (1 - params[14]) * 
+            y[17]^(1 - params[7])
+        residual[13] <- lhs - rhs
+        lhs <- 1
+        rhs <- params[13] * T155 + (1 - params[13]) * y[18]^(1 - 
+            params[8])
+        residual[14] <- lhs - rhs
+        lhs <- y[7]/params[16]
+        rhs <- T204 * T216 * exp(x[5])
+        residual[15] <- lhs - rhs
+        lhs <- y[21]
+        rhs <- y[2] + y[10] + y[23] * T58 * T13 * T47
+        residual[16] <- lhs - rhs
+        lhs <- y[21]
+        rhs <- (T228 * T13 * y[5] * T231 - params[21])/y[24]
+        residual[17] <- lhs - rhs
+        lhs <- y[26]
+        rhs <- y[14] * y[25]
+        residual[18] <- lhs - rhs
+        lhs <- y[24]
+        rhs <- y[24] * params[13] * T145 + (1 - params[13]) * 
+            y[18]^(-params[8])
+        residual[19] <- lhs - rhs
+        lhs <- y[25]
+        rhs <- y[25] * T252 + (1 - params[14]) * y[17]^(-params[7])
+        residual[20] <- lhs - rhs
+        residual[21] = y[4] * y[3] * y[23] - (1 - params[5]) * 
+            y[23] - y[10] * T69 * y[3] * y[4]
+        lhs <- y[28]
+        rhs <- y[21] - y[14] * y[15] * T177
+        residual[22] <- lhs - rhs
+        lhs <- y[17]
+        rhs <- y[16]/y[15]
+        residual[23] <- lhs - rhs
+        lhs <- log(y[1])
+        rhs <- log(y[1]) * params[22] + x[1]
+        residual[24] <- lhs - rhs
+        lhs <- log(y[27])
+        rhs <- log(y[27]) * params[23] + x[2]
+        residual[25] <- lhs - rhs
+        lhs <- log(y[4])
+        rhs <- params[24] + x[3]
+        residual[26] <- lhs - rhs
+        lhs <- log(y[5])
+        rhs <- params[25] + x[4]
+        residual[27] <- lhs - rhs
+        lhs <- y[3]
+        rhs <- T296 * T297
+        residual[28] <- lhs - rhs
+        return(residual)
+    }
+    else {
+        g1 <- matrix(0, 28, 28)
+        T13 = y[3]^(-1)
+        T16 = (y[2] - y[2] * params[1] * T13)^(-1)
+        T23 = (y[2] * y[3] - y[2] * params[1])^(-1)
+        T47 = y[4]^(-1)
+        T48 = T13 * params[2] * y[6]/y[6] * T47
+        T58 = params[3] * (y[11] - 1) + params[4]/2 * (y[11] - 
+            1)^2
+        T69 = 1 - params[6]/2 * (y[3] - params[26])^2
+        T82 = y[3]^2
+        T93 = (params[7] - 1)/params[7] * y[16]^(1 - params[7])
+        T96 = y[15]^params[7]
+        T103 = y[8]^params[11]
+        T104 = T103/y[8]
+        T105 = T104^(1 - params[7])
+        T107 = y[3]^(params[7] - 1)
+        T121 = y[17]^((-params[7]) * (1 + params[10]))
+        T123 = y[14]^(1 + params[10])
+        T126 = params[2] * params[14] * T104^((-params[7]) * 
+            (1 + params[10]))
+        T128 = y[3]^(params[7] * (1 + params[10]))
+        T141 = y[8]^params[12]
+        T142 = T141/y[8]
+        T145 = T142^(-params[8])
+        T155 = T142^(1 - params[8])
+        T171 = params[15]/(1 - params[15])
+        T173 = y[15] * T171/y[9]
+        T177 = 1/(1 - params[15])
+        T181 = T177^(1 - params[15]) * (1/params[15])^params[15]
+        T183 = T181 * y[15]^(1 - params[15])
+        T184 = y[9]^params[15]
+        T188 = (T13)^(1 - params[7])
+        T204 = (y[7]/params[16])^params[18]
+        T208 = (y[8]/params[17])^params[19]
+        T213 = (y[3]/exp(params[27]))^params[20]
+        T214 = T208 * T213
+        T216 = T214^(1 - params[18])
+        T228 = y[14]^(1 - params[15])
+        T231 = (y[11] * y[23])^params[15]
+        T252 = params[14] * (T13 * T103/y[8])^(-params[7])
+        T296 = y[5]^T177
+        T297 = y[4]^T171
+        T311 = get_power_deriv(y[2] - y[2] * params[1] * T13, 
+            (-1), 1)
+        T315 = get_power_deriv(y[2] * y[3] - y[2] * params[1], 
+            (-1), 1)
+        T319 = get_power_deriv(y[3], (-1), 1)
+        T372 = get_power_deriv(T214, 1 - params[18], 1)
+        T388 = get_power_deriv(T13 * T103/y[8], (-params[7]), 
+            1)
+        T399 = get_power_deriv(y[4], (-1), 1)
+        T447 = get_power_deriv(y[8], params[11], 1)
+        T450 = (y[8] * T447 - T103)/(y[8] * y[8])
+        T452 = T450 * get_power_deriv(T104, 1 - params[7], 1)
+        T466 = (y[8] * get_power_deriv(y[8], params[12], 1) - 
+            T141)/(y[8] * y[8])
+        T468 = T466 * get_power_deriv(T142, (-params[8]), 1)
+        T473 = T466 * get_power_deriv(T142, 1 - params[8], 1)
+        T527 = get_power_deriv(y[11] * y[23], params[15], 1)
+        g1[1, 1] <- T16 - params[1] * params[2] * T23
+        g1[1, 2] <- y[1] * (1 - params[1] * T13) * T311 - y[1] * 
+            params[1] * params[2] * (y[3] - params[1]) * T315
+        g1[1, 3] <- y[1] * T311 * (-(y[2] * params[1] * T319)) - 
+            y[1] * params[1] * params[2] * y[2] * T315
+        g1[1, 6] <- (-1)
+        g1[2, 3] <- (-(y[7] * params[2] * y[6] * T319/y[8]))
+        g1[2, 6] <- 1 - y[7] * T13 * params[2]/y[8]
+        g1[2, 7] <- (-(T13 * params[2] * y[6]/y[8]))
+        g1[2, 8] <- (-(y[7] * (-(T13 * params[2] * y[6]))/(y[8] * 
+            y[8])))
+        g1[3, 9] <- 1
+        g1[3, 11] <- (-params[4])
+        g1[4, 3] <- (-((y[12] * (1 - params[5]) + y[9] * y[11] - 
+            T58) * T47 * params[2] * y[6]/y[6] * T319))
+        g1[4, 4] <- (-((y[12] * (1 - params[5]) + y[9] * y[11] - 
+            T58) * T13 * params[2] * y[6]/y[6] * T399))
+        g1[4, 9] <- (-(y[11] * T48))
+        g1[4, 11] <- (-(T48 * (y[9] - (params[3] + params[4]/2 * 
+            2 * (y[11] - 1)))))
+        g1[4, 12] <- 1 - T48 * (1 - params[5])
+        g1[5, 3] <- (-(y[12] * ((-(params[6]/2 * 2 * (y[3] - 
+            params[26]))) - (y[10] * params[6] * (y[3] - params[26])/y[10] + 
+            y[3] * params[6] * y[10]/y[10])) + T82 * (params[6] * 
+            T13 * y[6] * params[2] * y[12]/y[6] + (y[3] - params[26]) * 
+            params[6] * y[6] * params[2] * y[12]/y[6] * T319) + 
+            (y[3] - params[26]) * params[6] * T13 * y[6] * params[2] * 
+                y[12]/y[6] * 2 * y[3]))
+        g1[5, 12] <- (-(T69 - y[3] * y[10] * params[6] * (y[3] - 
+            params[26])/y[10] + T82 * (y[3] - params[26]) * T13 * 
+            params[2] * y[6]/y[6] * params[6]))
+        g1[6, 3] <- (-(y[13] * params[2] * params[14] * T105 * 
+            get_power_deriv(y[3], params[7] - 1, 1)))
+        g1[6, 6] <- (-(y[14] * T93 * T96))
+        g1[6, 8] <- (-(y[13] * T107 * params[2] * params[14] * 
+            T452))
+        g1[6, 13] <- 1 - params[2] * params[14] * T105 * T107
+        g1[6, 14] <- (-(y[6] * T93 * T96))
+        g1[6, 15] <- (-(y[14] * y[6] * T93 * get_power_deriv(y[15], 
+            params[7], 1)))
+        g1[6, 16] <- (-(y[14] * T96 * y[6] * (params[7] - 1)/params[7] * 
+            get_power_deriv(y[16], 1 - params[7], 1)))
+        g1[7, 1] <- (-(T123 * T121 * params[9] * y[27]))
+        g1[7, 3] <- (-(y[13] * T126 * get_power_deriv(y[3], params[7] * 
+            (1 + params[10]), 1)))
+        g1[7, 8] <- (-(y[13] * T128 * params[2] * params[14] * 
+            T450 * get_power_deriv(T104, (-params[7]) * (1 + 
+            params[10]), 1)))
+        g1[7, 13] <- 1 - T126 * T128
+        g1[7, 14] <- (-(y[1] * params[9] * y[27] * T121 * get_power_deriv(y[14], 
+            1 + params[10], 1)))
+        g1[7, 17] <- (-(T123 * y[1] * params[9] * y[27] * get_power_deriv(y[17], 
+            (-params[7]) * (1 + params[10]), 1)))
+        g1[7, 27] <- (-(T123 * y[1] * params[9] * T121))
+        g1[8, 6] <- (-(y[22] * y[21]))
+        g1[8, 8] <- (-(y[19] * params[2] * params[13] * T468))
+        g1[8, 19] <- 1 - params[2] * params[13] * T145
+        g1[8, 21] <- (-(y[6] * y[22]))
+        g1[8, 22] <- (-(y[6] * y[21]))
+        g1[9, 6] <- (-(y[21] * y[18]))
+        g1[9, 8] <- (-(y[20] * y[18] * params[2] * params[13] * 
+            T473/y[18]))
+        g1[9, 18] <- (-(y[6] * y[21]))
+        g1[9, 20] <- 1 - y[18] * params[2] * params[13] * T155/y[18]
+        g1[9, 21] <- (-(y[6] * y[18]))
+        g1[10, 19] <- params[8]
+        g1[10, 20] <- (-(params[8] - 1))
+        g1[11, 3] <- (-(y[4] * T173))
+        g1[11, 4] <- (-(y[3] * T173))
+        g1[11, 9] <- (-(y[4] * y[3] * (-(y[15] * T171))/(y[9] * 
+            y[9])))
+        g1[11, 11] <- y[23]/y[14]
+        g1[11, 14] <- (-(y[11] * y[23]))/(y[14] * y[14])
+        g1[11, 15] <- (-(y[4] * y[3] * T171/y[9]))
+        g1[11, 23] <- y[11]/y[14]
+        g1[12, 9] <- (-(T183 * get_power_deriv(y[9], params[15], 
+            1)))
+        g1[12, 15] <- (-(T184 * T181 * get_power_deriv(y[15], 
+            1 - params[15], 1)))
+        g1[12, 22] <- 1
+        g1[13, 3] <- (-(params[14] * T105 * T319 * get_power_deriv(T13, 
+            1 - params[7], 1)))
+        g1[13, 8] <- (-(T188 * params[14] * T452))
+        g1[13, 17] <- (-((1 - params[14]) * get_power_deriv(y[17], 
+            1 - params[7], 1)))
+        g1[14, 8] <- (-(params[13] * T473))
+        g1[14, 18] <- (-((1 - params[13]) * get_power_deriv(y[18], 
+            1 - params[8], 1)))
+        g1[15, 3] <- (-(exp(x[5]) * T204 * T208 * 1/exp(params[27]) * 
+            get_power_deriv(y[3]/exp(params[27]), params[20], 
+                1) * T372))
+        g1[15, 7] <- 1/params[16] - exp(x[5]) * T216 * 1/params[16] * 
+            get_power_deriv(y[7]/params[16], params[18], 1)
+        g1[15, 8] <- (-(exp(x[5]) * T204 * T372 * T213 * 1/params[17] * 
+            get_power_deriv(y[8]/params[17], params[19], 1)))
+        g1[16, 2] <- (-1)
+        g1[16, 3] <- (-(y[23] * T58 * T47 * T319))
+        g1[16, 4] <- (-(y[23] * T58 * T13 * T399))
+        g1[16, 10] <- (-1)
+        g1[16, 11] <- (-(y[23] * T13 * T47 * (params[3] + params[4]/2 * 
+            2 * (y[11] - 1))))
+        g1[16, 21] <- 1
+        g1[16, 23] <- (-(T58 * T13 * T47))
+        g1[17, 3] <- (-(T228 * T231 * y[5] * T319/y[24]))
+        g1[17, 5] <- (-(T228 * T13 * T231/y[24]))
+        g1[17, 11] <- (-(T228 * T13 * y[5] * y[23] * T527/y[24]))
+        g1[17, 14] <- (-(T13 * y[5] * T231 * get_power_deriv(y[14], 
+            1 - params[15], 1)/y[24]))
+        g1[17, 21] <- 1
+        g1[17, 23] <- (-(T228 * T13 * y[5] * y[11] * T527/y[24]))
+        g1[17, 24] <- (-((-(T228 * T13 * y[5] * T231 - params[21]))/(y[24] * 
+            y[24])))
+        g1[18, 14] <- (-y[25])
+        g1[18, 25] <- (-y[14])
+        g1[18, 26] <- 1
+        g1[19, 8] <- (-(y[24] * params[13] * T468))
+        g1[19, 18] <- (-((1 - params[13]) * get_power_deriv(y[18], 
+            (-params[8]), 1)))
+        g1[19, 24] <- 1 - params[13] * T145
+        g1[20, 3] <- (-(y[25] * params[14] * T103 * T319/y[8] * 
+            T388))
+        g1[20, 8] <- (-(y[25] * params[14] * T388 * (y[8] * T13 * 
+            T447 - T13 * T103)/(y[8] * y[8])))
+        g1[20, 17] <- (-((1 - params[14]) * get_power_deriv(y[17], 
+            (-params[7]), 1)))
+        g1[20, 25] <- 1 - T252
+        g1[21, 3] <- y[4] * y[23] - y[10] * (y[3] * y[4] * (-(params[6]/2 * 
+            2 * (y[3] - params[26]))) + y[4] * T69)
+        g1[21, 4] <- y[3] * y[23] - y[10] * y[3] * T69
+        g1[21, 10] <- (-(T69 * y[3] * y[4]))
+        g1[21, 23] <- y[3] * y[4] - (1 - params[5])
+        g1[22, 14] <- y[15] * T177
+        g1[22, 15] <- y[14] * T177
+        g1[22, 21] <- (-1)
+        g1[22, 28] <- 1
+        g1[23, 15] <- (-((-y[16])/(y[15] * y[15])))
+        g1[23, 16] <- (-(1/y[15]))
+        g1[23, 17] <- 1
+        g1[24, 1] <- 1/y[1] - params[22] * 1/y[1]
+        g1[25, 27] <- 1/y[27] - params[23] * 1/y[27]
+        g1[26, 4] <- 1/y[4]
+        g1[27, 5] <- 1/y[5]
+        g1[28, 3] <- 1
+        g1[28, 4] <- (-(T296 * get_power_deriv(y[4], T171, 1)))
+        g1[28, 5] <- (-(T297 * get_power_deriv(y[5], T177, 1)))
+        return(g1)
+    }
+}
+<bytecode: 0x000000000ab958a0>
+<environment: 0x000000000ab07dd0>
+
+dynamic function and Jacobian:
+function (y, x, params, it_, jac = FALSE) 
+{
+    if (!jac) {
+        residual <- numeric(28)
+        T14 = y[14]^(-1)
+        T17 = (y[13] - params[1] * y[2] * T14)^(-1)
+        T28 = (y[41] * y[42] - y[13] * params[1])^(-1)
+        T35 = y[42]^(-1)
+        T52 = T35 * params[2] * y[44]/y[17]
+        T54 = y[43]^(-1)
+        T55 = T52 * T54
+        T66 = params[4]/2
+        T70 = (1 - params[5]) * y[49] + y[46] * y[48] - (params[3] * 
+            (y[48] - 1) + T66 * (y[48] - 1)^2)
+        T74 = params[6]/2
+        T77 = y[21]/y[5]
+        T83 = 1 - T74 * (y[14] * T77 - params[26])^2
+        T86 = y[21] * params[6] * (y[14] * T77 - params[26])/y[5]
+        T94 = params[6] * T35 * y[44] * params[2] * y[49]/y[17]
+        T96 = y[47]/y[21]
+        T98 = y[42] * T96 - params[26]
+        T99 = T94 * T98
+        T100 = (y[42] * T96)^2
+        T111 = (params[7] - 1)/params[7] * y[27]^(1 - params[7])
+        T114 = y[26]^params[7]
+        T122 = y[19]^params[11]
+        T123 = T122/y[45]
+        T125 = params[2] * params[14] * T123^(1 - params[7])
+        T127 = y[51]/y[27]
+        T128 = y[42] * T127
+        T129 = T128^(params[7] - 1)
+        T144 = y[28]^((-params[7]) * (1 + params[10]))
+        T146 = y[25]^(1 + params[10])
+        T149 = params[2] * params[14] * T123^((-params[7]) * 
+            (1 + params[10]))
+        T151 = T128^(params[7] * (1 + params[10]))
+        T164 = y[19]^params[12]
+        T165 = T164/y[45]
+        T169 = params[2] * params[13] * T165^(-params[8])
+        T180 = params[2] * params[13] * T165^(1 - params[8])
+        T197 = params[15]/(1 - params[15])
+        T199 = y[26] * T197/y[20]
+        T204 = 1/(1 - params[15])
+        T208 = T204^(1 - params[15]) * (1/params[15])^params[15]
+        T210 = T208 * y[26]^(1 - params[15])
+        T211 = y[20]^params[15]
+        T215 = y[4]^params[11]
+        T218 = params[14] * (T215/y[19])^(1 - params[7])
+        T221 = T14 * y[6]/y[26]
+        T222 = T221^(1 - params[7])
+        T229 = y[4]^params[12]
+        T230 = T229/y[19]
+        T243 = (y[3]/params[16])^params[18]
+        T247 = (y[19]/params[17])^params[19]
+        T253 = y[14] * y[32]/y[7]/exp(params[27])
+        T255 = T253^params[20]
+        T256 = T247 * T255
+        T258 = T256^(1 - params[18])
+        T265 = y[15]^(-1)
+        T270 = params[3] * (y[22] - 1) + T66 * (y[22] - 1)^2
+        T279 = y[25]^(1 - params[15])
+        T291 = params[13] * T230^(-params[8])
+        T299 = T215 * T221/y[19]
+        T301 = params[14] * T299^(-params[7])
+        T351 = y[16]^T204
+        T352 = y[15]^T197
+        T362 = (y[22] * y[8])^params[15]
+        lhs <- y[12] * T17 - params[1] * params[2] * y[40] * 
+            T28
+        rhs <- y[17]
+        residual[1] <- lhs - rhs
+        lhs <- y[17]
+        rhs <- params[2] * y[44] * T35/y[45] * y[18]
+        residual[2] <- lhs - rhs
+        lhs <- y[20]
+        rhs <- params[3] + params[4] * (y[22] - 1)
+        residual[3] <- lhs - rhs
+        lhs <- y[23]
+        rhs <- T55 * T70
+        residual[4] <- lhs - rhs
+        lhs <- 1
+        rhs <- y[23] * (T83 - y[14] * T86) + T99 * T100
+        residual[5] <- lhs - rhs
+        lhs <- y[24]
+        rhs <- y[17] * T111 * T114 * y[25] + T125 * T129 * y[50]
+        residual[6] <- lhs - rhs
+        lhs <- y[24]
+        rhs <- y[12] * params[9] * y[38] * T144 * T146 + y[50] * 
+            T149 * T151
+        residual[7] <- lhs - rhs
+        lhs <- y[30]
+        rhs <- y[17] * y[33] * y[32] + T169 * y[53]
+        residual[8] <- lhs - rhs
+        lhs <- y[31]
+        rhs <- y[32] * y[17] * y[29] + y[29] * T180/y[52] * y[54]
+        residual[9] <- lhs - rhs
+        lhs <- y[30] * params[8]
+        rhs <- y[31] * (params[8] - 1)
+        residual[10] <- lhs - rhs
+        lhs <- y[22] * y[8]/y[25]
+        rhs <- y[14] * T199 * y[15]
+        residual[11] <- lhs - rhs
+        lhs <- y[33]
+        rhs <- T210 * T211
+        residual[12] <- lhs - rhs
+        lhs <- 1
+        rhs <- T218 * T222 + (1 - params[14]) * y[28]^(1 - params[7])
+        residual[13] <- lhs - rhs
+        lhs <- 1
+        rhs <- params[13] * T230^(1 - params[8]) + (1 - params[13]) * 
+            y[29]^(1 - params[8])
+        residual[14] <- lhs - rhs
+        lhs <- y[18]/params[16]
+        rhs <- T243 * T258 * exp(x[it_, 5])
+        residual[15] <- lhs - rhs
+        lhs <- y[32]
+        rhs <- y[13] + y[21] + T14 * T265 * T270 * y[8]
+        residual[16] <- lhs - rhs
+        lhs <- y[32]
+        rhs <- (T279 * T14 * y[16] * T362 - params[21])/y[35]
+        residual[17] <- lhs - rhs
+        lhs <- y[37]
+        rhs <- y[25] * y[36]
+        residual[18] <- lhs - rhs
+        lhs <- y[35]
+        rhs <- T291 * y[9] + (1 - params[13]) * y[29]^(-params[8])
+        residual[19] <- lhs - rhs
+        lhs <- y[36]
+        rhs <- T301 * y[10] + (1 - params[14]) * y[28]^(-params[7])
+        residual[20] <- lhs - rhs
+        residual[21] = y[15] * y[14] * y[34] - (1 - params[5]) * 
+            y[8] - y[21] * T83 * y[14] * y[15]
+        lhs <- y[39]
+        rhs <- y[32] - y[25] * y[26] * T204
+        residual[22] <- lhs - rhs
+        lhs <- y[28]
+        rhs <- y[27]/y[26]
+        residual[23] <- lhs - rhs
+        lhs <- log(y[12])
+        rhs <- params[22] * log(y[1]) + x[it_, 1]
+        residual[24] <- lhs - rhs
+        lhs <- log(y[38])
+        rhs <- params[23] * log(y[11]) + x[it_, 2]
+        residual[25] <- lhs - rhs
+        lhs <- log(y[15])
+        rhs <- params[24] + x[it_, 3]
+        residual[26] <- lhs - rhs
+        lhs <- log(y[16])
+        rhs <- params[25] + x[it_, 4]
+        residual[27] <- lhs - rhs
+        lhs <- y[14]
+        rhs <- T351 * T352
+        residual[28] <- lhs - rhs
+        return(residual)
+    }
+    else {
+        g1 <- matrix(0, 28, 59)
+        T14 = y[14]^(-1)
+        T17 = (y[13] - params[1] * y[2] * T14)^(-1)
+        T28 = (y[41] * y[42] - y[13] * params[1])^(-1)
+        T35 = y[42]^(-1)
+        T52 = T35 * params[2] * y[44]/y[17]
+        T54 = y[43]^(-1)
+        T55 = T52 * T54
+        T66 = params[4]/2
+        T70 = (1 - params[5]) * y[49] + y[46] * y[48] - (params[3] * 
+            (y[48] - 1) + T66 * (y[48] - 1)^2)
+        T74 = params[6]/2
+        T77 = y[21]/y[5]
+        T83 = 1 - T74 * (y[14] * T77 - params[26])^2
+        T86 = y[21] * params[6] * (y[14] * T77 - params[26])/y[5]
+        T94 = params[6] * T35 * y[44] * params[2] * y[49]/y[17]
+        T96 = y[47]/y[21]
+        T98 = y[42] * T96 - params[26]
+        T99 = T94 * T98
+        T100 = (y[42] * T96)^2
+        T111 = (params[7] - 1)/params[7] * y[27]^(1 - params[7])
+        T114 = y[26]^params[7]
+        T122 = y[19]^params[11]
+        T123 = T122/y[45]
+        T125 = params[2] * params[14] * T123^(1 - params[7])
+        T127 = y[51]/y[27]
+        T128 = y[42] * T127
+        T129 = T128^(params[7] - 1)
+        T144 = y[28]^((-params[7]) * (1 + params[10]))
+        T146 = y[25]^(1 + params[10])
+        T149 = params[2] * params[14] * T123^((-params[7]) * 
+            (1 + params[10]))
+        T151 = T128^(params[7] * (1 + params[10]))
+        T164 = y[19]^params[12]
+        T165 = T164/y[45]
+        T169 = params[2] * params[13] * T165^(-params[8])
+        T180 = params[2] * params[13] * T165^(1 - params[8])
+        T197 = params[15]/(1 - params[15])
+        T199 = y[26] * T197/y[20]
+        T204 = 1/(1 - params[15])
+        T208 = T204^(1 - params[15]) * (1/params[15])^params[15]
+        T210 = T208 * y[26]^(1 - params[15])
+        T211 = y[20]^params[15]
+        T215 = y[4]^params[11]
+        T218 = params[14] * (T215/y[19])^(1 - params[7])
+        T221 = T14 * y[6]/y[26]
+        T222 = T221^(1 - params[7])
+        T229 = y[4]^params[12]
+        T230 = T229/y[19]
+        T243 = (y[3]/params[16])^params[18]
+        T247 = (y[19]/params[17])^params[19]
+        T253 = y[14] * y[32]/y[7]/exp(params[27])
+        T255 = T253^params[20]
+        T256 = T247 * T255
+        T258 = T256^(1 - params[18])
+        T265 = y[15]^(-1)
+        T270 = params[3] * (y[22] - 1) + T66 * (y[22] - 1)^2
+        T279 = y[25]^(1 - params[15])
+        T291 = params[13] * T230^(-params[8])
+        T299 = T215 * T221/y[19]
+        T301 = params[14] * T299^(-params[7])
+        T351 = y[16]^T204
+        T352 = y[15]^T197
+        T362 = (y[22] * y[8])^params[15]
+        T386 = get_power_deriv(y[13] - params[1] * y[2] * T14, 
+            (-1), 1)
+        T391 = get_power_deriv(y[41] * y[42] - y[13] * params[1], 
+            (-1), 1)
+        T398 = get_power_deriv(y[14], (-1), 1)
+        T403 = 2 * (y[14] * T77 - params[26])
+        T417 = y[6]/y[26] * T398
+        T418 = get_power_deriv(T221, 1 - params[7], 1)
+        T422 = y[32]/y[7]/exp(params[27])
+        T423 = get_power_deriv(T253, params[20], 1)
+        T426 = get_power_deriv(T256, 1 - params[18], 1)
+        T442 = get_power_deriv(T299, (-params[7]), 1)
+        T456 = get_power_deriv(y[42], (-1), 1)
+        T462 = T54 * params[2] * y[44]/y[17] * T456
+        T466 = params[6] * y[44] * params[2] * y[49]/y[17] * 
+            T456
+        T469 = T98 * T466 + T94 * T96
+        T471 = T96 * 2 * y[42] * T96
+        T476 = get_power_deriv(T128, params[7] - 1, 1)
+        T481 = get_power_deriv(T128, params[7] * (1 + params[10]), 
+            1)
+        T487 = get_power_deriv(y[15], (-1), 1)
+        T496 = get_power_deriv(y[15], T197, 1)
+        T499 = get_power_deriv(y[43], (-1), 1)
+        T508 = get_power_deriv(y[16], T204, 1)
+        T514 = T35 * (-(params[2] * y[44]))/(y[17] * y[17])
+        T515 = T54 * T514
+        T521 = params[6] * T35 * (-(y[44] * params[2] * y[49]))/(y[17] * 
+            y[17])
+        T538 = T54 * T35 * params[2]/y[17]
+        T543 = params[6] * T35 * params[2] * y[49]/y[17]
+        T547 = 1/params[16]
+        T549 = T547 * get_power_deriv(y[3]/params[16], params[18], 
+            1)
+        T554 = get_power_deriv(y[4], params[11], 1)
+        T556 = get_power_deriv(T215/y[19], 1 - params[7], 1)
+        T558 = params[14] * T554/y[19] * T556
+        T561 = get_power_deriv(y[4], params[12], 1)
+        T562 = T561/y[19]
+        T563 = get_power_deriv(T230, 1 - params[8], 1)
+        T567 = get_power_deriv(T230, (-params[8]), 1)
+        T573 = T221 * T554/y[19]
+        T578 = get_power_deriv(y[19], params[11], 1)
+        T579 = T578/y[45]
+        T580 = get_power_deriv(T123, 1 - params[7], 1)
+        T586 = get_power_deriv(T123, (-params[7]) * (1 + params[10]), 
+            1)
+        T592 = get_power_deriv(y[19], params[12], 1)
+        T593 = T592/y[45]
+        T594 = get_power_deriv(T165, (-params[8]), 1)
+        T599 = get_power_deriv(T165, 1 - params[8], 1)
+        T608 = (-T215)/(y[19] * y[19])
+        T614 = (-T229)/(y[19] * y[19])
+        T620 = 1/params[17] * get_power_deriv(y[19]/params[17], 
+            params[19], 1)
+        T621 = T255 * T620
+        T631 = (-(T215 * T221))/(y[19] * y[19])
+        T642 = (-T122)/(y[45] * y[45])
+        T654 = (-T164)/(y[45] * y[45])
+        T671 = get_power_deriv(y[20], params[15], 1)
+        T679 = y[14] * (-y[21])/(y[5] * y[5])
+        T689 = (-(T74 * T403 * T679)) - y[14] * (y[5] * y[21] * 
+            params[6] * T679 - y[21] * params[6] * (y[14] * T77 - 
+            params[26]))/(y[5] * y[5])
+        T696 = y[14] * 1/y[5]
+        T703 = (params[6] * (y[14] * T77 - params[26]) + y[21] * 
+            params[6] * T696)/y[5]
+        T710 = y[42] * (-y[47])/(y[21] * y[21])
+        T723 = y[42] * 1/y[21]
+        T738 = get_power_deriv(y[22] * y[8], params[15], 1)
+        T760 = get_power_deriv(y[25], 1 + params[10], 1)
+        T766 = get_power_deriv(y[25], 1 - params[15], 1)
+        T773 = T14 * 1/y[26]
+        T778 = T215 * T773/y[19]
+        T783 = get_power_deriv(y[26], params[7], 1)
+        T792 = T208 * get_power_deriv(y[26], 1 - params[15], 
+            1)
+        T798 = T14 * (-y[6])/(y[26] * y[26])
+        T803 = T215 * T798/y[19]
+        T814 = (params[7] - 1)/params[7] * get_power_deriv(y[27], 
+            1 - params[7], 1)
+        T821 = y[42] * (-y[51])/(y[27] * y[27])
+        T833 = y[42] * 1/y[27]
+        T842 = get_power_deriv(y[28], (-params[7]) * (1 + params[10]), 
+            1)
+        T875 = y[14] * (-y[32])/(y[7] * y[7])/exp(params[27])
+        T877 = T247 * T423 * T875
+        T886 = y[14] * 1/y[7]/exp(params[27])
+        T888 = T247 * T423 * T886
+        g1[1, 12] <- T17
+        g1[1, 40] <- (-(params[1] * params[2] * T28))
+        g1[1, 2] <- y[12] * (-(params[1] * T14)) * T386
+        g1[1, 13] <- y[12] * T386 - params[1] * params[2] * y[40] * 
+            (-params[1]) * T391
+        g1[1, 41] <- (-(params[1] * params[2] * y[40] * y[42] * 
+            T391))
+        g1[1, 14] <- y[12] * T386 * (-(params[1] * y[2] * T398))
+        g1[1, 42] <- (-(params[1] * params[2] * y[40] * y[41] * 
+            T391))
+        g1[1, 17] <- (-1)
+        g1[2, 42] <- (-(y[18] * params[2] * y[44] * T456/y[45]))
+        g1[2, 17] <- 1
+        g1[2, 44] <- (-(y[18] * params[2] * T35/y[45]))
+        g1[2, 18] <- (-(params[2] * y[44] * T35/y[45]))
+        g1[2, 45] <- (-(y[18] * (-(params[2] * y[44] * T35))/(y[45] * 
+            y[45])))
+        g1[3, 20] <- 1
+        g1[3, 22] <- (-params[4])
+        g1[4, 42] <- (-(T70 * T462))
+        g1[4, 43] <- (-(T70 * T52 * T499))
+        g1[4, 17] <- (-(T70 * T515))
+        g1[4, 44] <- (-(T70 * T538))
+        g1[4, 46] <- (-(T55 * y[48]))
+        g1[4, 48] <- (-(T55 * (y[46] - (params[3] + T66 * 2 * 
+            (y[48] - 1)))))
+        g1[4, 23] <- 1
+        g1[4, 49] <- (-(T55 * (1 - params[5])))
+        g1[5, 14] <- (-(y[23] * ((-(T74 * T77 * T403)) - (T86 + 
+            y[14] * y[21] * params[6] * T77/y[5]))))
+        g1[5, 42] <- (-(T100 * T469 + T99 * T471))
+        g1[5, 17] <- (-(T100 * T98 * T521))
+        g1[5, 44] <- (-(T100 * T98 * T543))
+        g1[5, 5] <- (-(y[23] * T689))
+        g1[5, 21] <- (-(y[23] * ((-(T74 * T403 * T696)) - y[14] * 
+            T703) + T100 * T94 * T710 + T99 * 2 * y[42] * T96 * 
+            T710))
+        g1[5, 47] <- (-(T100 * T94 * T723 + T99 * 2 * y[42] * 
+            T96 * T723))
+        g1[5, 23] <- (-(T83 - y[14] * T86))
+        g1[5, 49] <- (-(T100 * T98 * T52 * params[6]))
+        g1[6, 42] <- (-(y[50] * T125 * T127 * T476))
+        g1[6, 17] <- (-(y[25] * T111 * T114))
+        g1[6, 19] <- (-(y[50] * T129 * params[2] * params[14] * 
+            T579 * T580))
+        g1[6, 45] <- (-(y[50] * T129 * params[2] * params[14] * 
+            T580 * T642))
+        g1[6, 24] <- 1
+        g1[6, 50] <- (-(T125 * T129))
+        g1[6, 25] <- (-(y[17] * T111 * T114))
+        g1[6, 26] <- (-(y[25] * y[17] * T111 * T783))
+        g1[6, 27] <- (-(y[25] * T114 * y[17] * T814 + y[50] * 
+            T125 * T476 * T821))
+        g1[6, 51] <- (-(y[50] * T125 * T476 * T833))
+        g1[7, 12] <- (-(T146 * T144 * params[9] * y[38]))
+        g1[7, 42] <- (-(y[50] * T149 * T127 * T481))
+        g1[7, 19] <- (-(y[50] * T151 * params[2] * params[14] * 
+            T579 * T586))
+        g1[7, 45] <- (-(y[50] * T151 * params[2] * params[14] * 
+            T586 * T642))
+        g1[7, 24] <- 1
+        g1[7, 50] <- (-(T149 * T151))
+        g1[7, 25] <- (-(y[12] * params[9] * y[38] * T144 * T760))
+        g1[7, 27] <- (-(y[50] * T149 * T481 * T821))
+        g1[7, 51] <- (-(y[50] * T149 * T481 * T833))
+        g1[7, 28] <- (-(T146 * y[12] * params[9] * y[38] * T842))
+        g1[7, 38] <- (-(T146 * y[12] * params[9] * T144))
+        g1[8, 17] <- (-(y[33] * y[32]))
+        g1[8, 19] <- (-(y[53] * params[2] * params[13] * T593 * 
+            T594))
+        g1[8, 45] <- (-(y[53] * params[2] * params[13] * T594 * 
+            T654))
+        g1[8, 30] <- 1
+        g1[8, 53] <- (-T169)
+        g1[8, 32] <- (-(y[17] * y[33]))
+        g1[8, 33] <- (-(y[17] * y[32]))
+        g1[9, 17] <- (-(y[32] * y[29]))
+        g1[9, 19] <- (-(y[54] * y[29] * params[2] * params[13] * 
+            T593 * T599/y[52]))
+        g1[9, 45] <- (-(y[54] * y[29] * params[2] * params[13] * 
+            T599 * T654/y[52]))
+        g1[9, 29] <- (-(y[17] * y[32] + y[54] * T180/y[52]))
+        g1[9, 52] <- (-(y[54] * (-(y[29] * T180))/(y[52] * y[52])))
+        g1[9, 31] <- 1
+        g1[9, 54] <- (-(y[29] * T180/y[52]))
+        g1[9, 32] <- (-(y[17] * y[29]))
+        g1[10, 30] <- params[8]
+        g1[10, 31] <- (-(params[8] - 1))
+        g1[11, 14] <- (-(T199 * y[15]))
+        g1[11, 15] <- (-(y[14] * T199))
+        g1[11, 20] <- (-(y[15] * y[14] * (-(y[26] * T197))/(y[20] * 
+            y[20])))
+        g1[11, 22] <- y[8]/y[25]
+        g1[11, 25] <- (-(y[22] * y[8]))/(y[25] * y[25])
+        g1[11, 26] <- (-(y[15] * y[14] * T197/y[20]))
+        g1[11, 8] <- y[22]/y[25]
+        g1[12, 20] <- (-(T210 * T671))
+        g1[12, 26] <- (-(T211 * T792))
+        g1[12, 33] <- 1
+        g1[13, 14] <- (-(T218 * T417 * T418))
+        g1[13, 4] <- (-(T222 * T558))
+        g1[13, 19] <- (-(T222 * params[14] * T556 * T608))
+        g1[13, 6] <- (-(T218 * T418 * T773))
+        g1[13, 26] <- (-(T218 * T418 * T798))
+        g1[13, 28] <- (-((1 - params[14]) * get_power_deriv(y[28], 
+            1 - params[7], 1)))
+        g1[14, 4] <- (-(params[13] * T562 * T563))
+        g1[14, 19] <- (-(params[13] * T563 * T614))
+        g1[14, 29] <- (-((1 - params[13]) * get_power_deriv(y[29], 
+            1 - params[8], 1)))
+        g1[15, 14] <- (-(exp(x[it_, 5]) * T243 * T247 * T422 * 
+            T423 * T426))
+        g1[15, 3] <- (-(exp(x[it_, 5]) * T258 * T549))
+        g1[15, 18] <- T547
+        g1[15, 19] <- (-(exp(x[it_, 5]) * T243 * T426 * T621))
+        g1[15, 7] <- (-(exp(x[it_, 5]) * T243 * T426 * T877))
+        g1[15, 32] <- (-(exp(x[it_, 5]) * T243 * T426 * T888))
+        g1[15, 59] <- (-(T243 * T258 * exp(x[it_, 5])))
+        g1[16, 13] <- (-1)
+        g1[16, 14] <- (-(y[8] * T270 * T265 * T398))
+        g1[16, 15] <- (-(y[8] * T270 * T14 * T487))
+        g1[16, 21] <- (-1)
+        g1[16, 22] <- (-(y[8] * T14 * T265 * (params[3] + T66 * 
+            2 * (y[22] - 1))))
+        g1[16, 32] <- 1
+        g1[16, 8] <- (-(T14 * T265 * T270))
+        g1[17, 14] <- (-(T279 * T362 * y[16] * T398/y[35]))
+        g1[17, 16] <- (-(T279 * T14 * T362/y[35]))
+        g1[17, 22] <- (-(T279 * T14 * y[16] * y[8] * T738/y[35]))
+        g1[17, 25] <- (-(T14 * y[16] * T362 * T766/y[35]))
+        g1[17, 32] <- 1
+        g1[17, 8] <- (-(T279 * T14 * y[16] * y[22] * T738/y[35]))
+        g1[17, 35] <- (-((-(T279 * T14 * y[16] * T362 - params[21]))/(y[35] * 
+            y[35])))
+        g1[18, 25] <- (-y[36])
+        g1[18, 36] <- (-y[25])
+        g1[18, 37] <- 1
+        g1[19, 4] <- (-(y[9] * params[13] * T562 * T567))
+        g1[19, 19] <- (-(y[9] * params[13] * T567 * T614))
+        g1[19, 29] <- (-((1 - params[13]) * get_power_deriv(y[29], 
+            (-params[8]), 1)))
+        g1[19, 9] <- (-T291)
+        g1[19, 35] <- 1
+        g1[20, 14] <- (-(y[10] * params[14] * T215 * T417/y[19] * 
+            T442))
+        g1[20, 4] <- (-(y[10] * params[14] * T442 * T573))
+        g1[20, 19] <- (-(y[10] * params[14] * T442 * T631))
+        g1[20, 6] <- (-(y[10] * params[14] * T442 * T778))
+        g1[20, 26] <- (-(y[10] * params[14] * T442 * T803))
+        g1[20, 28] <- (-((1 - params[14]) * get_power_deriv(y[28], 
+            (-params[7]), 1)))
+        g1[20, 10] <- (-T301)
+        g1[20, 36] <- 1
+        g1[21, 14] <- y[34] * y[15] - y[21] * (y[14] * y[15] * 
+            (-(T74 * T77 * T403)) + T83 * y[15])
+        g1[21, 15] <- y[14] * y[34] - y[21] * y[14] * T83
+        g1[21, 5] <- (-(y[21] * y[14] * y[15] * (-(T74 * T403 * 
+            T679))))
+        g1[21, 21] <- (-(T83 * y[14] * y[15] + y[21] * y[14] * 
+            y[15] * (-(T74 * T403 * T696))))
+        g1[21, 8] <- (-(1 - params[5]))
+        g1[21, 34] <- y[14] * y[15]
+        g1[22, 25] <- y[26] * T204
+        g1[22, 26] <- y[25] * T204
+        g1[22, 32] <- (-1)
+        g1[22, 39] <- 1
+        g1[23, 26] <- (-((-y[27])/(y[26] * y[26])))
+        g1[23, 27] <- (-(1/y[26]))
+        g1[23, 28] <- 1
+        g1[24, 1] <- (-(params[22] * 1/y[1]))
+        g1[24, 12] <- 1/y[12]
+        g1[24, 55] <- (-1)
+        g1[25, 11] <- (-(params[23] * 1/y[11]))
+        g1[25, 38] <- 1/y[38]
+        g1[25, 56] <- (-1)
+        g1[26, 15] <- 1/y[15]
+        g1[26, 57] <- (-1)
+        g1[27, 16] <- 1/y[16]
+        g1[27, 58] <- (-1)
+        g1[28, 14] <- 1
+        g1[28, 15] <- (-(T351 * T496))
+        g1[28, 16] <- (-(T352 * T508))
+        return(g1)
+    }
+}
+<bytecode: 0x000000000c2c5270>
+<environment: 0x000000000ab07dd0>

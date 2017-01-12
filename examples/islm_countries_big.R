@@ -1,8 +1,7 @@
 library(dynr)
 
-param_file <- "islm_country_params.csv"
-fit_file <- "islm_countries_fit.csv"
-output_file <- "islm_countries_result.csv"
+param_file <- "input/islm_country_params.csv"
+fit_file <- "input/islm_countries_fit.csv"
 
 # read parameters
 param_data <- as.matrix(read.csv(param_file, row.names = 1))
@@ -12,14 +11,14 @@ params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
 # read fit targets
-fit_targets <- as.regts(read.csv("islm_countries_fit.csv", row.names = 1))
+fit_targets <- as.regts(read.csv("input/islm_countries_fit.csv", row.names = 1))
 
 system.time(
-    mdl <- compile_model("islm_countries_big.mod",
-                         fit_mod_file = "islm_countries.fmod",
+    mdl <- compile_model("mod/islm_countries_big.mod",
+                         fit_mod_file = "fmod/islm_countries.fmod",
                          bytecode = FALSE)
 )
-print(mline,dl)
+print(mdl)
 
 mdl$set_params(params)
 
@@ -43,5 +42,3 @@ print(mdl$get_endo_data(names = colnames(fit_targets)))
 
 print(mdl$get_endo_data("y_.."))
 plot(mdl$get_endo_data(names = c("y_nl", "y_be")), type = "o")
-
-write.csv(as.data.frame(mdl$get_endo_data()), file = output_file)
