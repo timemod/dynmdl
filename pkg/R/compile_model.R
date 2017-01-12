@@ -10,23 +10,26 @@
 #' @importFrom Rcpp sourceCpp
 #' @useDynLib dynr
 compile_model <- function(mod_file, bytecode = TRUE,
-                          fit_mod_file) {
+                          fit_mod_file, debug = FALSE) {
     if (!file.exists(mod_file)) {
         stop(paste("ERROR: Could not open file:", mod_file))
     }
     if (has_fit_block(mod_file)) {
-        return (FitMod$new(mod_file, bytecode, fit_mod_file))
+        return (FitMod$new(mod_file, bytecode, fit_mod_file, debug))
     } else {
         if (!missing(fit_mod_file)) {
-            warning("fit_mod_file specified, but no fit block in mod file")
+            warning("fit_mod_file specified, but no fit block in mod file found")
         }
         return (DynMod$new(mod_file, bytecode))
     }
 }
 
 # Returns true if model mod_file contains a fit block
+# Note that the fit block should be in the main mod file.
 has_fit_block <- function(mod_file) {
-    fit_command <- "fit;"
+    # TODO: fit_command is also used in create_fit_mod. Is there a way to store
+    # this data? Otherwise we could create a function get_fit_command().
+    fit_command <- "%$fit$"
     fit <- FALSE
     con <- file(mod_file, "r")
     while (TRUE) {

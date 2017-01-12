@@ -1,5 +1,9 @@
 # Constructs a mod file for the fit procedure based on a mod file with
-# special #FIT tags.
+# special %$fit$ block in the mod file.
+# The function assumes that there is a single fit block, 
+# and that both the fit block and the model block are in the
+# main mod file. Macro preprocessor directives @#if, @#for etc. should be
+# repeated in the fit block
 # @param mod_file the filename of the mod file with #FIT tags
 # @param fit_mod the name of the file used for the fit procedure
 # @return a list with the names of the auxiliary variables
@@ -12,12 +16,8 @@ create_fitmod <- function(mod_file, fit_mod, debug = FALSE) {
     }
 
     if (debug) {
-        tmp_mod          <- "tmp.mod"
         fit_control_file <- "fit_control_file.mod"
         expanded_file    <- "expanded.mod"
-        if (file.exists(tmp_mod)) {
-            unlink(tmp_mod)
-        }
         if (file.exists(fit_control_file)) {
             unlink(fit_control_file)
         }
@@ -25,22 +25,19 @@ create_fitmod <- function(mod_file, fit_mod, debug = FALSE) {
             unlink(expanded_file)
         }
     } else {
-        tmp_mod          <- tempfile()
         fit_control_file <- tempfile()
         expanded_file    <- tempfile()
     }
 
-    convert_mod(mod_file, tmp_mod, step1 = TRUE,
-                       fit_control_file = fit_control_file)
-    
+    create_fit_control_file(mod_file, fit_control_file)
     run_macro(fit_control_file, expanded_file)
 
-    # analyse #FIT line to find a list of residuals
+    # analyse expaned file line to find a list of residuals
     fit_txt <- paste(readLines(expanded_file), collapse = " ")
-    m <- gregexpr("residuals([^;]+)", fit_txt, perl = TRUE)
+    m <- gregexpr("varexo([^;]+)", fit_txt, perl = TRUE)
     ma <- regmatches(fit_txt, m)
     residuals <- strsplit(ma[[1]], split = " ")
-    residuals <- setdiff(unlist(residuals), "residuals")
+    residuals <- setdiff(unlist(residuals), "varexo")
 
     if (!debug) {
         unlink(expanded_file)
@@ -48,14 +45,10 @@ create_fitmod <- function(mod_file, fit_mod, debug = FALSE) {
 
     # run the Dynare parser to obtain the first order 
     # conditions for the fit procedure
-    fit_cond <- get_fit_conditions(tmp_mod, residuals)
+    fit_cond <- get_fit_conditions(mod_file, residuals)
     
-    if (!debug) {
-        unlink(tmp_mod)
-    }
-
     # finally, create the mod file for the fit procedure
-    convert_mod(mod_file, fit_mod, step1 = FALSE, fit_cond = fit_cond)
+    convert_mod(mod_file, fit_mod, fit_cond = fit_cond)
 
     # return information about the fit variables
     with (fit_cond, {
@@ -67,29 +60,53 @@ create_fitmod <- function(mod_file, fit_mod, debug = FALSE) {
 }
 
 
-convert_mod <- function(input_file, output_file, step1, 
-                        fit_control_file = NULL,
-                        fit_cond = NULL) {
+create_fit_control_file <- function(mod_file, fit_control_file) {
 
     # read the original model file, and process the fit block.
-    # if step1 = TRUE, then the output file will be used
-    # to compute the first order conditions
+    fit_command <- "%$fit$"
+    fit_end <- "%$endfit$"
 
-    # in the first step, the residuals are exogenous, in the second step
-    # endogenous
-    if (step1) {
-        res_var = "varexo"
-    } else {
-        res_var = "var      "
+    input <- file(mod_file, "r")
+    output <- file(fit_control_file, open = "a")
+
+    while (TRUE) {
+        line <- readLines(input, n = 1)
+        if (length(line) == 0 ) {
+            break
+        }
+        if (startsWith(trimws(line, "left"), "@#define")) {
+            writeLines(line, con = output)
+        }
+        if (startsWith(trimws(line, "left"), fit_command)) {
+            line <- readLines(input, n = 1)
+            line <- trimws(line)
+            while (!startsWith(line, fit_end)) {
+                # remove comment:
+                line <- stri_split_fixed(line, "%", n = 2)[[1]][1]
+                writeLines(line, con = output)
+                line <- readLines(input, n = 1)
+                if (length(line) == 0) {
+                    stop(paste("Error: fit block in model file not", 
+                              "closed with %$endfit block"))
+                    break
+                }
+                line <- trimws(line)
+            }
+            break;
+        }
     }
+    close(input)
+    close(output)
+    return(invisible(NULL))
+}
 
-    fit_tag <- "fit;"
+convert_mod <- function(input_file, output_file, fit_cond) {
+
+    fit_command <- "%$fit$"
+    fit_end     <- "%$endfit$"
 
     input <- file(input_file, "r")
     output <- file(output_file, open = "a")
-    if (step1) {
-        fit_control_output <- file(fit_control_file, open = "a")
-    }
 
     # initialisation
     fit_block_found <- FALSE
@@ -101,49 +118,26 @@ convert_mod <- function(input_file, output_file, step1,
         if (length(line) == 0 ) {
             break
         }
-        if (step1 && startsWith(trimws(line, "left"), "@#define")) {
-            writeLines(line, con = fit_control_output)
-        }
-        if (!fit_block_found && startsWith(trimws(line, "left"), fit_tag)) {
-            if (!step1) {
-                writeLines(c("",
+        if (!fit_block_found && startsWith(trimws(line, "left"), fit_command)) {
+             writeLines(c("",
              "% Parameters for the standard deviation for the fit procedure:"),
                            con = output)
-                param_lines <- paste("parameters", paste(fit_cond$sigmas,
+            param_lines <- paste("parameters", paste(fit_cond$sigmas,
                                     collapse = " "), ";", "")
-                writeLines(strwrap(param_lines, width = 80), con = output)
-                writeLines("", con = output)
-            }
-            fit_line <- gsub(fit_tag, "", line)
-            ready <- FALSE
-            while (!ready) {
-                if (endsWith(trimws(fit_line, "right"), "end;")) {
-                   fit_line <- gsub("end;", "", fit_line)
-                   ready <- TRUE
-                } 
-                if (nchar(fit_line) > 0) {
-                    parts <- stri_split_fixed(fit_line, "%", n = 2)[[1]]
-                    fit_statement <- parts[1]
-                    tmp <- gsub("residuals", res_var, fit_statement)
-                    if (length(parts) == 2) {
-                        tmp <- paste(tmp, "%", parts[2])
-                    }
-                    writeLines(tmp, con = output)
-                    if (step1) {
-                        writeLines(fit_statement, con = fit_control_output)
-                    }
+            writeLines(strwrap(param_lines, width = 80), con = output)
+            writeLines("", con = output)
+            line <- readLines(input, n = 1)
+            line <- trimws(line)
+            while (!startsWith(line, fit_end)) {
+                writeLines(gsub("varexo", "var   ", line), con = output)
+                line <- readLines(input, n = 1)
+                if (length(line) == 0) {
+                    break
                 }
-                if (!ready) {
-                   fit_line <- readLines(input, n = 1)
-                   if (length(fit_line) == 0 ) {
-                       break
-                   }
-               }
+                line <- trimws(line)
             }
             fit_block_found <- TRUE
-        } else if (step1) {
-            writeLines(line, con = output)
-        } else if (!model_block_found && startsWith(line, "model")) {
+        } else if (!model_block_found && startsWith(trimws(line, "left"), "model")) {
             in_model <- TRUE
             lambda_lines <- paste("var", 
                               paste(fit_cond$l_vars, collapse = " "), ";", "")
@@ -175,9 +169,5 @@ convert_mod <- function(input_file, output_file, step1,
     }
     close(input)
     close(output)
-    if (step1) {
-        close(fit_control_output)
-    }
-
     return(invisible(NULL))
 }

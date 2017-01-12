@@ -6,12 +6,12 @@ var y_@{co} yd_@{co} t_@{co} c_@{co} i_@{co} md_@{co} r_@{co}
 varexo g_@{co} ms_@{co};              
 @#endfor
 
-fit;
+%$fit$
 @#for co in countries
-residuals ut_@{co} ui_@{co} uc_@{co} umd_@{co};
+varexo ut_@{co} ui_@{co} uc_@{co} umd_@{co};
 sigma_ut_@{co} = 6; sigma_uc_@{co} = 5; sigma_ui_@{co} = 21; sigma_umd_@{co} = 2;
 @#endfor
-end;
+%$endfit$
 
 @#for co in countries
 parameters c0_@{co} c1_@{co} c2_@{co} c3_@{co} c4_@{co} c5_@{co};

@@ -60,11 +60,11 @@
 FitMod <- R6Class("FitMod",
     inherit = DynMod,
     public = list(
-        initialize = function(mod_file, bytecode, fit_mod_file) {
+        initialize = function(mod_file, bytecode, fit_mod_file, debug = FALSE) {
             if (missing(fit_mod_file)) {
                 fit_mod_file <- tempfile()
             }
-            private$fit_info <- create_fitmod(mod_file, fit_mod_file)
+            private$fit_info <- create_fitmod(mod_file, fit_mod_file, debug)
             super$initialize(fit_mod_file, bytecode)
             if (missing(fit_mod_file)) {
                 unlink(fit_mod_file)

@@ -80,11 +80,11 @@ var d       //preference shock
     phi     //labor disutility shock
     F;      //firm profits
  
-fit;
-residuals epsd epsphi epsmu_I epsA epsm;
+%$fit$
+varexo epsd epsphi epsmu_I epsA epsm;
 sigma_epsd = exp(-1.51); sigma_epsphi = exp(-2.36); sigma_epsmu_I = exp(-5.43);
 sigma_epsA = exp(-3.97); sigma_epsm = exp(-5.85);
-end;
+%$endfit$
 
 predetermined_variables k;
 
