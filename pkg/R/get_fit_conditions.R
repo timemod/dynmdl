@@ -55,7 +55,8 @@ get_fit_conditions <- function(mod_file, residuals) {
     mult_lagrange <- function(x, l_names) {
         # multiply a column of derivatives with the
         # lagrange multipliers
-        return (ifelse(nchar(x) > 0, paste(l_names, x, sep = " * "), x))
+        return (ifelse(nchar(x) > 0, paste(l_names, paste0("(", x, ")"),
+                                           sep = " * "), x))
     }
 
     # replace [d] with () in exo_deriv

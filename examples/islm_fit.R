@@ -27,6 +27,7 @@ print(mdl$get_fit_targets())
 
 
 mdl$solve(control = list(trace = TRUE))
+quit()
 print(mdl$get_endo_data())
 print(mdl$get_exo_data())
 print(mdl$get_residuals())

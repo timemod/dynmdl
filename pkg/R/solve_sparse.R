@@ -5,20 +5,44 @@
 #               typically as one of the  matrix classes of package Matrix
 solve_sparse <- function(x, fun, jacfun, ... , control) {
     solved <- FALSE
+    cond <- NA
+    if (control$trace) {
+        cat(sprintf("\nIteration report\n"))
+        cat(sprintf("----------------\n"))
+        cat(sprintf("%5s%20s%20s%20s\n", "Iter", "inv. cond. jac.", "Largest |f|", 
+                "Eq. largest |f|"))
+    }
     for (iter in 0:control$maxiter) {
         fval <- fun(x, ...)
-        err <- max(abs(fval))
+        fval_abs <- abs(fval)
+        err <- max(fval_abs)
+        ieq <- which.max(fval_abs)
         if (control$trace) {
-            cat(sprintf("Iteration: %d Largest |f| %g\n", iter, err))
+            if (iter == 0) {
+                cat(sprintf("%5d%20s%20.3e%20d\n", iter, "", err, ieq))
+            } else {
+                cat(sprintf("%5d%20.2e%20.3e%20d\n", iter, cond, err, ieq))
+            }
         }
-        if (err < control$ftol) {
+        if (iter > 0 && cond < control$cndtol) {
+            stop(sprintf("The inverse condition of the matrix is less than %g\n", 
+                         control$cndtol))
+        }
+        if (is.na(err)) {
+            warning("NAs generated during function evalution")
+            break
+        } else if (err < control$ftol) {
             solved <- TRUE
             break
         } else {
             jac <- jacfun(x, ...)
+            cond <- 1 / Matrix::condest(jac)$est
             ret <- Matrix::solve(jac, fval)
             x <- x - as.numeric(ret)
         }
+    }
+    if (control$trace) {
+        cat("\n")
     }
 
     # TODO: line search for bad convergence

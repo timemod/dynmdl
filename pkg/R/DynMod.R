@@ -397,7 +397,7 @@ DynMod <- R6Class("DynMod",
         },
         solve = function(control = list()) {
             control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE,
-                             silent = FALSE)
+                             cndtol = 1e-12, silent = FALSE)
             control_[names(control)] <- control
 
             # preparations
