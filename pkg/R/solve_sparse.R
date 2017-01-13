@@ -9,8 +9,8 @@ solve_sparse <- function(x, fun, jacfun, ... , control) {
     if (control$trace) {
         cat(sprintf("\nIteration report\n"))
         cat(sprintf("----------------\n"))
-        cat(sprintf("%5s%20s%20s%20s\n", "Iter", "inv. cond. jac.", "Largest |f|", 
-                "Eq. largest |f|"))
+        cat(sprintf("%5s%20s%20s%20s\n", "Iter", "inv. cond. jac.",
+                    "Largest |f|", "Index largest |f|"))
     }
     for (iter in 0:control$maxiter) {
         fval <- fun(x, ...)

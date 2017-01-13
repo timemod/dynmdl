@@ -34,9 +34,11 @@ create_fitmod <- function(mod_file, fit_mod, debug = FALSE) {
 
     # analyse expaned file line to find a list of residuals
     fit_txt <- paste(readLines(expanded_file), collapse = " ")
+    fit_txt <- gsub("\\$.+?\\$", "", fit_txt) # remove latex names
+    fit_txt <- gsub("\\(.+?\\)", "", fit_txt) # remove long names
     m <- gregexpr("varexo([^;]+)", fit_txt, perl = TRUE)
     ma <- regmatches(fit_txt, m)
-    residuals <- strsplit(ma[[1]], split = " ")
+    residuals <- strsplit(ma[[1]], split = "\\s+")
     residuals <- setdiff(unlist(residuals), "varexo")
 
     if (!debug) {
