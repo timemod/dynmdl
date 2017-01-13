@@ -16,22 +16,29 @@ solve_sparse <- function(x, fun, jacfun, ... , control) {
         fval <- fun(x, ...)
         fval_abs <- abs(fval)
         err <- max(fval_abs)
-        ieq <- which.max(fval_abs)
-        if (control$trace) {
+        if (is.na(err)) {
+            i <- which(is.na(fval))[1]
             if (iter == 0) {
-                cat(sprintf("%5d%20s%20.3e%20d\n", iter, "", err, ieq))
+                stop(sprintf(paste("Initial value of function contains",
+                    "non-finite values (starting at index=%d)\n"), i))
             } else {
-                cat(sprintf("%5d%20.2e%20.3e%20d\n", iter, cond, err, ieq))
+                stop(sprintf(paste("Function value contains",
+                    "non-finite values (starting at index=%d)\n"), i))
+            }
+        }
+        if (control$trace) {
+            i <- which.max(fval_abs)
+            if (iter == 0) {
+                cat(sprintf("%5d%20s%20.3e%20d\n", iter, "", err, i))
+            } else  {
+                cat(sprintf("%5d%20.2e%20.3e%20d\n", iter, cond, err, i))
             }
         }
         if (iter > 0 && cond < control$cndtol) {
             stop(sprintf("The inverse condition of the matrix is less than %g\n", 
                          control$cndtol))
         }
-        if (is.na(err)) {
-            warning("NAs generated during function evalution")
-            break
-        } else if (err < control$ftol) {
+        if (err < control$ftol) {
             solved <- TRUE
             break
         } else {
