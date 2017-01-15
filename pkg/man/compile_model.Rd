@@ -4,7 +4,7 @@
 \alias{compile_model}
 \title{Compile a Dynare model and return a \code{\link{DynMod}}}
 \usage{
-compile_model(mod_file, bytecode = TRUE, fit_mod_file)
+compile_model(mod_file, bytecode = TRUE, fit_mod_file, debug = FALSE)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}

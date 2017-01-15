@@ -1,8 +1,10 @@
 # Solve a non-linear system using the Matrix package
 # param x: initial guess
 # param fun: a function of x returning a vector of functional values
-# param jacfun: a function that returns the Jacobian of the systems of equations,
-#               typically as one of the  matrix classes of package Matrix
+# param jacfun: a function that returns the Jacobian of the systems of
+#               equations, yypically as one of the  matrix classes of package Matrix
+# param ...    arguments passed to fun and jacfun
+# param control control parameters
 solve_sparse <- function(x, fun, jacfun, ... , control) {
     solved <- FALSE
     cond <- NA

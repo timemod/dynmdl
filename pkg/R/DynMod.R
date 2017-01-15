@@ -395,27 +395,33 @@ DynMod <- R6Class("DynMod",
             cat("\n")
             return (invisible(self))
         },
-        solve = function(control = list()) {
+        solve = function(control = list(), force_stacked_time = FALSE) {
+
             control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE,
                              cndtol = 1e-12, silent = FALSE)
             control_[names(control)] <- control
 
-            # preparations
-            lags <- private$get_lags()
-            leads <- private$get_leads()
-            nper <- length_range(private$model_period)
-            x <- private$get_solve_endo()
-
-            ret <- solve_sparse(x, private$get_residuals,
-                                private$get_jac, lags = lags,
-                                leads = leads, nper = nper,
-                                control = control_)
-
-            private$solve_out <- list(solved = ret$solved, iter = ret$iter,
-                                      residuals = ret$fval)
-
+            if (private$max_endo_lead > 0 || force_stacked_time ) {
+                # preparations
+                nper <- length_range(private$model_period)
+                lags <- private$get_lags()
+                leads <- private$get_leads()
+                x <- private$get_solve_endo()
+                ret <- solve_sparse(x, private$get_residuals,
+                                    private$get_jac, lags = lags,
+                                    leads = leads, nper = nper,
+                                    control = control_)
+                private$solve_out <- list(solved = ret$solved, iter = ret$iter,
+                                          residuals = ret$fval)
+            } else {
+                ret <- solve_backward_model(private$model_period,
+                                     private$endo_data,
+                                     private$exo_data, private$params,
+                                     private$lead_lag_incidence,
+                                     private$f_dynamic)
+            }
             private$endo_data[private$model_period, ] <-
-                                 t(matrix(ret$x, nrow = private$endo_count))
+                    t(matrix(ret$x, nrow = private$endo_count))
             return (invisible(self))
         },
         solve_perturbation = function() {
