@@ -1,4 +1,4 @@
-@#define countries = ["nl", "uk", "be", "ge", "fr", "es", "dk", "us", "it", "ch", "se", "no", "fi", "ir", "in", "jp", "ru", "pt", "po", "au"]
+@#define countries = ["nl", "uk", "be", "ge", "fr", "es", "dk", "us", "it", "ch", "se", "no", "fi", "ir", "in", "jp", "ru", "pt", "po", "au", "co_1", "co_2", "co_3", "co_4", "co_5", "co_6", "co_7", "co_8", "co_9", "co_10", "co_11", "co_12", "co_13", "co_14", "co_15", "co_16", "co_17", "co_18", "co_19", "co_20", "co_21", "co_22", "co_23", "co_24", "co_25", "co_26", "co_27", "co_28", "co_29", "co_30", "co_31", "co_32", "co_33", "co_34", "co_35", "co_36", "co_37", "co_38", "co_39", "co_40"]
 
 
 @#for co in countries
