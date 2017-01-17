@@ -1633,7 +1633,11 @@ StaticModel::writeStaticCFile(const string &func_name) const
 
   if (external_functions_table.get_total_number_of_unique_model_block_external_functions())
     // External Matlab function, implies Static function will call mex
+#ifdef USE_R
     output << "#include \"mex.h\"" << endl;
+#else
+    dyn_error("dynr does not support external Matlab functions yet")
+#endif
   else
     output << "#include <stdlib.h>" << endl;
 
@@ -1651,6 +1655,7 @@ StaticModel::writeStaticCFile(const string &func_name) const
   writePowerDeriv(output, true);
   output.close();
 
+#ifndef USE_R
   output.open(filename_mex.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
@@ -1718,6 +1723,7 @@ StaticModel::writeStaticCFile(const string &func_name) const
          << "  Static(y, x, nb_row_x, params, residual, g1, v2);" << endl
          << "}" << endl << endl;
   output.close();
+#endif
 }
 
 void

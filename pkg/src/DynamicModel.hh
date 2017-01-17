@@ -84,7 +84,6 @@ private:
   void writeDynamicJuliaFile(const string &dynamic_basename) const;
   //! Writes dynamic model file (C version)
   /*! \todo add third derivatives handling */
-  void writeDynamicCFile(const string &dynamic_basename, const int order) const;
   //! Writes dynamic model file when SparseDLL option is on
   void writeSparseDynamicMFile(const string &dynamic_basename, const string &basename) const;
   //! Writes the dynamic model equations and its derivatives
@@ -202,6 +201,7 @@ private:
   vector<pair<int, int> > endo_max_leadlag_block, other_endo_max_leadlag_block, exo_max_leadlag_block, exo_det_max_leadlag_block, max_leadlag_block;
 
 public:
+  void writeDynamicCFile(const string &dynamic_basename, const int order) const;
   DynamicModel(SymbolTable &symbol_table_arg, NumericalConstants &num_constants_arg, ExternalFunctionsTable &external_functions_table_argx);
   //! Adds a variable node
   /*! This implementation allows for non-zero lag */

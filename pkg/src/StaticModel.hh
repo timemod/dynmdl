@@ -49,8 +49,6 @@ private:
   //! Writes static model file (standard Matlab version)
   void writeStaticMFile(const string &static_basename) const;
 
-  //! Writes static model file (C version)
-  void writeStaticCFile(const string &func_name) const;
 
   //! Writes static model file (Julia version)
   void writeStaticJuliaFile(const string &basename) const;
@@ -154,6 +152,10 @@ protected:
   vector<pair<int, int> > endo_max_leadlag_block, other_endo_max_leadlag_block, exo_max_leadlag_block, exo_det_max_leadlag_block, max_leadlag_block;
 
 public:
+
+  //! Writes static model file (C version)
+  void writeStaticCFile(const string &func_name) const;
+
   StaticModel(SymbolTable &symbol_table_arg, NumericalConstants &num_constants, ExternalFunctionsTable &external_functions_table_arg);
 
   //! Writes information on block decomposition when relevant

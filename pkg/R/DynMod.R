@@ -162,8 +162,8 @@ setOldClass("regts")
 
 DynMod <- R6Class("DynMod",
     public = list(
-        initialize = function(mod_file, bytecode) {
-            model_info <- compile_model_(mod_file)
+        initialize = function(mod_file, bytecode, use_dll, dll_dir) {
+            model_info <- compile_model_(mod_file, use_dll, dll_dir)
             private$f_static <- function(y, x, params, jac = FALSE) {}
             body(private$f_static) <- parse(text = paste0("{",
                                 model_info$static_function_body, "}"))

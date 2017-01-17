@@ -891,6 +891,15 @@ ModFile::writeExternalFilesC(const string &basename, FileOutputType output) cons
     }
 }
 
+#ifdef USE_R
+void
+ModFile::writeCFilesForR(const string &basename) const {
+    int dum = 1;
+    dynamic_model.writeDynamicCFile(basename + "/f_dynamic", dum);
+    static_model.writeStaticCFile(basename + "/f_");
+}
+#endif
+
 void
 ModFile::writeModelC(const string &basename) const
 {

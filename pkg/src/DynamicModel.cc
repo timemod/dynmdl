@@ -1620,7 +1620,11 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
 
   if (external_functions_table.get_total_number_of_unique_model_block_external_functions())
     // External Matlab function, implies Dynamic function will call mex
+#ifdef USE_R
     mDynamicModelFile << "#include \"mex.h\"" << endl;
+#else 
+    dyn_error("In dynr, external functions are not yet supported\n");
+#endif
   else
     mDynamicModelFile << "#include <stdlib.h>" << endl;
 
@@ -1636,6 +1640,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   writePowerDeriv(mDynamicModelFile, true);
   mDynamicModelFile.close();
 
+#ifndef USE_R
   mDynamicMexFile.open(filename_mex.c_str(), ios::out | ios::binary);
   if (!mDynamicMexFile.is_open())
     {
@@ -1721,6 +1726,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
                   << "  Dynamic(y, x, nb_row_x, params, steady_state, it_, residual, g1, v2, v3);" << endl
                   << "}" << endl;
   mDynamicMexFile.close();
+#endif
 }
 
 string

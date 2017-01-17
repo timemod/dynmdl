@@ -8,19 +8,25 @@
 #' @return an \code{DynMod} object
 #' @export
 #' @importFrom Rcpp sourceCpp
+#' @importFrom tools file_path_sans_ext
 #' @useDynLib dynr
-compile_model <- function(mod_file, bytecode = TRUE,
-                          fit_mod_file, debug = FALSE) {
+compile_model <- function(mod_file, bytecode = TRUE, use_dll = FALSE,
+                          dll_dir = file_path_sans_ext(basename(mod_file)),  fit_mod_file, debug = FALSE) {
+
+
     if (!file.exists(mod_file)) {
         stop(paste("ERROR: Could not open file:", mod_file))
     }
+    if (use_dll) {
+        dir.create(dll_dir, showWarnings = FALSE)
+    }
     if (has_fit_block(mod_file)) {
-        return (FitMod$new(mod_file, bytecode, fit_mod_file, debug))
+        return (FitMod$new(mod_file, bytecode, use_dll, dll_dir, fit_mod_file, debug))
     } else {
         if (!missing(fit_mod_file)) {
             warning("fit_mod_file specified, but no fit block in mod file found")
         }
-        return (DynMod$new(mod_file, bytecode))
+        return (DynMod$new(mod_file, bytecode, use_dll, dll_dir))
     }
 }
 

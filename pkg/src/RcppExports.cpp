@@ -6,13 +6,15 @@
 using namespace Rcpp;
 
 // compile_model_
-Rcpp::List compile_model_(std::string modfile);
-RcppExport SEXP dynr_compile_model_(SEXP modfileSEXP) {
+Rcpp::List compile_model_(std::string modfile, bool use_dll, std::string dll_dir);
+RcppExport SEXP dynr_compile_model_(SEXP modfileSEXP, SEXP use_dllSEXP, SEXP dll_dirSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
-    rcpp_result_gen = Rcpp::wrap(compile_model_(modfile));
+    Rcpp::traits::input_parameter< bool >::type use_dll(use_dllSEXP);
+    Rcpp::traits::input_parameter< std::string >::type dll_dir(dll_dirSEXP);
+    rcpp_result_gen = Rcpp::wrap(compile_model_(modfile, use_dll, dll_dir));
     return rcpp_result_gen;
 END_RCPP
 }
