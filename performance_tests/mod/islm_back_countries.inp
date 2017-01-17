@@ -1,5 +1,3 @@
-@#define countries = ["nl", "uk", "be", "ge", "fr", "es", "dk", "us", "it", "ch", "se", "no", "fi", "ir", "in", "jp", "ru", "pt", "po", "au"]
-
 @#for co in countries
 var y_@{co} yd_@{co} t_@{co} c_@{co} i_@{co} md_@{co} r_@{co}
     x_@{co} imp_@{co};

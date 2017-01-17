@@ -35,6 +35,7 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
         lags <- data[lag_indices + (iper - 1) * nendo]
         cur_indices <- (1:nendo) + (iper - 1 + max_lag) * nendo
         start <- data[cur_indices]
+
         out <- nleqslv(start, fn = f, jac = jac, method = "Newton", lags = lags,
                        iper = iper)
         if (out$termcd != 1) {
@@ -42,7 +43,7 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
         } else {
             cat(sprintf("Convergence for %s in %d iterations\n", per_txt, out$iter))
         }
-
+        
         itr_tot <- itr_tot + out$iter
         data[cur_indices] <- out$x
     }
