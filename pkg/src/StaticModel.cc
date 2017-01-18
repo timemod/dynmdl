@@ -1253,7 +1253,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
       jacobianHelper(jacobian_output, eq, symbol_table.getTypeSpecificID(symb_id), output_type);
       jacobian_output << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
-      if (IS_R(output_type)) {
+      if (IS_R(output_type) || output_type == oCStaticModel) {
           jacobian_output << ";";
       }
       jacobian_output << endl;
@@ -1464,34 +1464,35 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
    } else if  (output_type == oRStaticModel) {
 
-      StaticOutput << model_local_vars_output.str()
-                    << "if (!jac) {" << endl 
+      StaticOutput << "f_static <- function(y, x, params) {" << endl
+                    << model_local_vars_output.str()
                     << INDENT(1) << "residual <- numeric(" <<  equations.size() << ")" <<  endl
                     << model_output.str()
-                    << INDENT(1) <<  "return (residual)" << endl
-                    << "} else {" << endl << endl
+                    << INDENT(1) <<  "return(residual)" << endl
+                    << "}" << endl << endl
+                    << "jac_static <- function(y, x, params) {" << endl
                     << INDENT(1) << "g1 <- matrix(0, " << equations.size()  << ", "
                     << symbol_table.endo_nbr() << ")" << endl << endl
+                    << model_local_vars_output.str()
+                    << INDENT(1) << "residual <- numeric(" <<  equations.size() << ")" <<  endl
                     << jacobian_output.str()
-                    << endl
-                    << "return (g1)"  << endl
+                    << endl << INDENT(1) << "return(g1);"  << endl
                     << "}" << endl;
 
-   } else if (output_type == oCStaticModel)
-    {
-      StaticOutput << "void Static(double *y, double *x, int nb_row_x, double *params, double *residual, double *g1, double *v2)" << endl
-                   << "{" << endl
+   } else if (output_type == oCStaticModel) {
+      StaticOutput << "void f_static(double *y, double *x, int nb_row_x, double *params, double *residual) {" << endl
+                   << endl
                    << "  double lhs, rhs;" << endl
                    << endl
                    << "  /* Residual equations */" << endl
                    << model_local_vars_output.str()
                    << model_output.str()
+                   << endl << "  return;" << endl << "}" << endl << endl;
+      StaticOutput << "void jac_static(double *y, double *x, int nb_row_x, double *params, double *g1) {" << endl
                    << "  /* Jacobian  */" << endl
-                   << "  if (g1 == NULL)" << endl
-                   << "    return;" << endl
-                   << endl
+                   << model_local_vars_output.str()
                    << jacobian_output.str()
-                   << endl;
+                   << "  return;" << endl;
 
       if (second_derivatives.size())
         StaticOutput << "  /* Hessian for endogenous and exogenous variables */" << endl
@@ -1611,7 +1612,7 @@ void
 StaticModel::writeStaticCFile(const string &func_name) const
 {
   // Writing comments and function definition command
-  string filename = func_name + "_static.c";
+  string filename = func_name + "static.c";
   string filename_mex = func_name + "_static_mex.c";
 
   ofstream output;

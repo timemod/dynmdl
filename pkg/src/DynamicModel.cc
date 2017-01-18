@@ -2189,7 +2189,7 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
       jacobianHelper(jacobian_output, eq, getDynJacobianCol(var), output_type);
       jacobian_output << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
-      if (IS_R(output_type)) {
+      if (IS_R(output_type) || output_type == oCDynamicModel) {
           jacobian_output << ";";
       }
       jacobian_output << endl;
@@ -2401,35 +2401,36 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
 
     } else if  (output_type == oRDynamicModel) {
 
-      DynamicOutput << model_local_vars_output.str()
-                    << "if (!jac) {" << endl 
+      DynamicOutput << "f_dynamic <- function(y, x, params, it_) {" << endl
+                    << model_local_vars_output.str()
                     << INDENT(1) << "residual <- numeric(" <<  nrows << ")" <<  endl
                     << model_output.str()
-                    << INDENT(1) <<  "return (residual)" << endl
-                    << "} else {" << endl << endl
-                    << endl
-                    << "g1 <- matrix(0, " << nrows << ", " << dynJacobianColsNbr << ")" << endl << endl
+                    << INDENT(1) <<  "return(residual)" << endl
+                    << "}" << endl << endl
+                    << "jac_dynamic <- function(y, x, params, it_) {" << endl
+                    << model_local_vars_output.str()
+                    << INDENT(1) << "g1 <- matrix(0, " << nrows << ", " << dynJacobianColsNbr << ")" << endl << endl
                     << jacobian_output.str()
                     << endl
-                    << "return (g1)"  << endl
+                    << INDENT(1) << "return(g1)"  << endl
                     << "}" << endl;
 
     } else if (output_type == oCDynamicModel) {
 
-      DynamicOutput << "void Dynamic(double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, double *g1, double *v2, double *v3)" << endl
+      DynamicOutput << "void f_dynamic(double *y, double *x, int nb_row_x, double *params, int it_, double *residual)" << endl
                     << "{" << endl
                     << "  double lhs, rhs;" << endl
                     << endl
                     << "  /* Residual equations */" << endl
                     << model_local_vars_output.str()
                     << model_output.str()
+                    << endl << "  return;" << endl << "}" << endl << endl
                     << "  /* Jacobian  */" << endl
-                    << "  if (g1 == NULL)" << endl
-                    << "    return;" << endl
-                    << endl
-                    << jacobian_output.str()
-                    << endl;
-
+                    << "void jac_static(double *y, double *x, int nb_row_x, double *params, double *g1) {" << endl
+                    << "  /* Jacobian  */" << endl
+                   << jacobian_output.str()
+                   << endl << "  return;" << endl << "}" << endl;
+#ifndef USE_R
       if (second_derivatives.size())
         DynamicOutput << "  /* Hessian for endogenous and exogenous variables */" << endl
                       << "  if (v2 == NULL)" << endl
@@ -2447,6 +2448,7 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
                       << endl;
 
       DynamicOutput << "}" << endl << endl;
+#endif
     }
   else
     {
@@ -5329,7 +5331,7 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
     writeDynamicModel(dynout, oRDynamicModel);
 
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
-                              Rcpp::Named("dynamic_function_body") = Rcpp::String(dynout.str()),
+                              Rcpp::Named("dynamic_functions") = Rcpp::String(dynout.str()),
                               Rcpp::Named("max_endo_lag")  = max_endo_lag,
                               Rcpp::Named("max_endo_lead") = max_endo_lead,
                               Rcpp::Named("max_exo_lag")   = max_exo_lag,

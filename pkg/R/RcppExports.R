@@ -13,8 +13,8 @@ get_residuals_ <- function(endos, icols, exo_data, params, f_dynamic, n_endo, np
     .Call('dynr_get_residuals_', PACKAGE = 'dynr', endos, icols, exo_data, params, f_dynamic, n_endo, nper, max_lag)
 }
 
-get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params, f_dynamic, n_endo, nper, max_lag) {
-    .Call('dynr_get_triplet_jac', PACKAGE = 'dynr', endos, lead_lag_incidence, tshift, exo_data, params, f_dynamic, n_endo, nper, max_lag)
+get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag) {
+    .Call('dynr_get_triplet_jac', PACKAGE = 'dynr', endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag)
 }
 
 run_macro <- function(modfile, new_modfile) {

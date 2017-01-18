@@ -1,7 +1,7 @@
 # construct the solution of the linear state space model.
 # also computes the eigenvalues.
 solve_first_order <- function(ss, lead_lag_incidence, static_exos,
-                             static_endos, params, f_dynamic,
+                             static_endos, params, jac_dynamic,
                              only_eigval = FALSE, debug = FALSE) {
 
     if (is.null(ss)) {
@@ -26,7 +26,7 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
     endos <- rep(static_endos, nper)
     y <- endos[which(lead_lag_incidence != 0)]
     it <- max_lag + 1
-    jacobia <- f_dynamic(y, exos, params, it, jac = TRUE)
+    jacobia <- jac_dynamic(y, exos, params, it)
     jacobia <- jacobia[, ss$reorder_jacobian_columns, drop = FALSE]
 
     if (ss$nstatic) {

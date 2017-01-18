@@ -18,6 +18,7 @@ setOldClass("regts")
 #' @importFrom methods new
 #' @importFrom methods as
 #' @importFrom Matrix Matrix
+#' @importFrom nleqslv nleqslv
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -164,13 +165,12 @@ DynMod <- R6Class("DynMod",
     public = list(
         initialize = function(mod_file, bytecode, use_dll, dll_dir) {
             model_info <- compile_model_(mod_file, use_dll, dll_dir)
-            private$f_static <- function(y, x, params, jac = FALSE) {}
-            body(private$f_static) <- parse(text = paste0("{",
-                                model_info$static_function_body, "}"))
-
-            private$f_dynamic <- function(y, x, params, it_, jac = FALSE) {}
-            body(private$f_dynamic) <- parse(text = paste0("{",
-                        model_info$dynamic_model$dynamic_function_body, "}"))
+            eval(parse(text = model_info$static_functions))
+            eval(parse(text = model_info$dynamic_model$dynamic_functions))
+            private$f_static <- f_static
+            private$jac_static <- jac_static
+            private$f_dynamic<- f_dynamic
+            private$jac_dynamic <- jac_dynamic
 
             if (bytecode) {
                 private$f_static <- compiler::cmpfun(private$f_static)
@@ -354,16 +354,16 @@ DynMod <- R6Class("DynMod",
         },
         solve_steady = function(start = self$get_static_endos(),
                                 init_data = TRUE, control = NULL) {
-            f <- function(x) {
-                return (private$f_static(x, private$exos, private$params))
-            }
-            jac <- function(x) {
-                return (private$f_static(x, private$exos, private$params,
-                                         jac = TRUE))
-            }
 
-            out <- nleqslv::nleqslv(start, fn = f, jac = jac,
-                                    method = "Newton", control = control)
+            f <- function(endos) {
+                return(private$f_static(endos, private$exos, private$params))
+            }
+            jac <- function(endos) {
+                return(private$jac_static(endos, private$exos, private$params))
+            }
+            out <- nleqslv(start, fn = f, jac = jac, method = "Newton",
+                           control = control)
+
             if (out$termcd != 1) {
                 stop(paste("Error solving the steady state.\n",
                            out$message))
@@ -385,7 +385,7 @@ DynMod <- R6Class("DynMod",
                                              private$lead_lag_incidence,
                                              private$exos, private$endos,
                                              private$params,
-                                             private$f_dynamic,
+                                             private$jac_dynamic,
                                              only_eigval = TRUE, debug = FALSE)
             cat("EIGENVALUES:\n")
             cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
@@ -418,7 +418,8 @@ DynMod <- R6Class("DynMod",
                                      private$endo_data,
                                      private$exo_data, private$params,
                                      private$lead_lag_incidence,
-                                     private$f_dynamic)
+                                     private$f_dynamic, private$jac_dynamic,
+                                     control = control_)
             }
             private$endo_data[private$model_period, ] <-
                     t(matrix(ret$x, nrow = private$endo_count))
@@ -438,7 +439,7 @@ DynMod <- R6Class("DynMod",
 
             private$ss <- solve_first_order(private$ss, private$lead_lag_incidence,
                                     private$exos, private$endos,
-                                    private$params, private$f_dynamic,
+                                    private$params, private$jac_dynamic,
                                     only_eigval = FALSE, debug = FALSE)
 
             private$endo_data <- solve_perturbation_(private$ss,
@@ -486,7 +487,9 @@ DynMod <- R6Class("DynMod",
         max_lag  = NA_integer_,
         lead_lag_incidence = NULL,
         f_static = NULL,
+        jac_static = NULL,
         f_dynamic = NULL,
+        jac_dynamic = NULL,
         model_period = NULL,
         data_period =  NULL,
         endo_data = NULL,
@@ -584,7 +587,7 @@ DynMod <- R6Class("DynMod",
             tshift  <- -private$max_endo_lag : private$max_endo_lead
             mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
                                         tshift, private$exo_data, private$params,
-                                        private$f_dynamic,
+                                        private$jac_dynamic,
                                         private$endo_count,
                                         nper, private$max_lag)
             n <- nper * private$endo_count
@@ -618,8 +621,10 @@ DynMod <- R6Class("DynMod",
                 print(private$param_names)
                 cat("Lead lag incidence matrix:\n")
                 print(private$lead_lag_incidence)
-                cat("\nstatic function and Jacobian:\n")
+                cat("\nstatic function:\n")
                 print(private$f_static)
+                cat("\nstatic Jacobian:\n")
+                print(private$jac_static)
                 cat("\ndynamic function and Jacobian:\n")
                 print(private$f_dynamic)
             }
