@@ -216,12 +216,9 @@ DynMod <- R6Class("DynMod",
                     return(res)
                 }
                 private$jac_dynamic <- function(y, x, params, it) {
-                    nrow_exo <- nrow(private$exo_data)
-                    jac <- matrix(0, nrow = private$endo_count,
-                                  ncol = private$njac_cols)
-                    .Call("jac_dynamic_", y, x, params, it - 1, nrow_exo,
-                          jac)
-                    return(jac)
+                    .Call("jac_dynamic_", y, x, params, it - 1, private$nrow_exo,
+                          private$jac)
+                    return(private$jac)
                 }
             } else {
                 eval(parse(text = model_info$static_functions))
@@ -436,6 +433,10 @@ DynMod <- R6Class("DynMod",
                              cndtol = 1e-12, silent = FALSE)
             control_[names(control)] <- control
 
+            private$nrow_exo <- nrow(private$exo_data)
+            private$jac <- matrix(0, nrow = private$endo_count,
+                          ncol = private$njac_cols)
+
             if (private$max_endo_lead > 0 || force_stacked_time ) {
                 # preparations
                 nper <- length_range(private$model_period)
@@ -503,6 +504,17 @@ DynMod <- R6Class("DynMod",
                 stop(paste("Eigen values not available. Calculate the eigenvalues",
                            "with method check()."))
             }
+        },
+        time_functions = function() {
+
+            private$nrow_exo <- nrow(private$exo_data)
+            private$jac <- matrix(0, nrow = private$endo_count,
+                                  ncol = private$njac_cols)
+
+            time_functions(private$model_period, private$endo_data,
+                           private$exo_data, private$params,
+                           private$lead_lag_incidence,
+                           private$f_dynamic, private$jac_dynamic)
         }
     ),
     private = list(
@@ -534,7 +546,8 @@ DynMod <- R6Class("DynMod",
         ss = NULL,
         period_error_msg = paste("The model period is not set.",
                             "Set the model period with set_period()."),
-
+        nrow_exo = NA_integer_,
+        jac = NULL,
         set_data_= function(data, names, names_missing, type = c("endo", "exo"),
                             update_mode = c("update", "updval")) {
             # generic function to set or update the endogenous or exogenous

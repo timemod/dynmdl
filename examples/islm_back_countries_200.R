@@ -20,6 +20,8 @@ print(system.time(
 
 mdl$set_period("2017Q1/2022Q4")
 
+mdl$time_functions()
+
 # set lags
 mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 mdl$set_endo_values(1100, names = "yd_nl", period = "2016Q4")

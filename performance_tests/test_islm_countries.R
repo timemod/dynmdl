@@ -12,13 +12,13 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
-run_series <- function(nextra_countries, bytecode, force_stacked_time) {
+run_series <- function(nextra_countries, force_stacked_time) {
     times <- character(0)
     for (nextra in nextra_countries) {
         mod_file <- paste0("mod/islm_back_countries_",
                            as.character(nextra), ".mod")
         create_islm_country_model(basis_mod_file, mod_file, nextra)
-        mdl <- compile_model(mod_file, bytecode = bytecode)
+        mdl <- compile_model(mod_file)
         mdl$set_period("2017Q1/2019Q4")
         mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 
@@ -31,20 +31,14 @@ run_series <- function(nextra_countries, bytecode, force_stacked_time) {
 
 
 time_table <- data.frame(nextra_countries)
-for (bytecode in c(TRUE, FALSE)) {
-    for (force_stacked_time in c(TRUE, FALSE)) {
-        times <- run_series(nextra_countries, bytecode = bytecode,
-                            force_stacked_time = force_stacked_time)
-        if (bytecode) {
-            colname <- "bytecode"
-        } else {
-            colname <- "no_bytecode"
-        }
-        if (force_stacked_time) {
-            colname <- paste(colname, "_stacked_time", sep = "_")
-        }
-        time_table[, colname] <- times
+for (force_stacked_time in c(TRUE, FALSE)) {
+    times <- run_series(nextra_countries, force_stacked_time = force_stacked_time)
+    if (force_stacked_time) {
+        colname <- "stacked_time"
+    } else {
+        colname <- "backwards"
     }
+    time_table[, colname] <- times
 }
 
 

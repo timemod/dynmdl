@@ -41,8 +41,8 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
         cur_indices <- (1:nendo) + (iper - 1 + max_lag) * nendo
         start <- data[cur_indices]
 
-        out <- nleqslv(start, fn = f, jac = jac, method = "Newton", lags = lags,
-                       iper = iper)
+        out <- nleqslv(start, fn = f, jac = jac, method = "Newton",
+                       lags = lags, iper = iper)
 
         if (!control$silent) {
             if (out$termcd != 1) {
