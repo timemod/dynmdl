@@ -23,6 +23,10 @@ mdl$set_period("2017Q1/2022Q4")
 mdl$time_functions()
 #quit()
 
+write.csv(as.data.frame(mdl$get_endo_data()), "islm_back_countries_200_endo.csv")
+write.csv(as.data.frame(mdl$get_exo_data()), "islm_back_countries_200_exo.csv")
+quit()
+
 # set lags
 mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 mdl$set_endo_values(1100, names = "yd_nl", period = "2016Q4")

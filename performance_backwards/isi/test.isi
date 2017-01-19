@@ -1,0 +1,9 @@
+cmpmdl("islm_back_countries_200");
+readmdl("islm_back_countries_200");
+
+setmdp(period = 2017.1q..2022.4q);
+
+read_ts_csv(file = "inp/islm_back_countries_200_endo.csv"; dest = mws);
+read_ts_csv(file = "inp/islm_back_countries_200_exo.csv"; dest = mws);
+
+solve;
