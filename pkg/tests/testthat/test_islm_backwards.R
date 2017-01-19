@@ -47,4 +47,10 @@ test_that("solve", {
         "No explosive roots. solve_first_order cannot handle this situation yet.")
 })
 
-
+test_that("solve with the stacked time method", {
+    mdl2 <- mdl$clone()
+    mdl2$set_endo_data(dynare_endo[lag_per])
+    mdl2$set_exo_data(dynare_exo)
+    mdl2$solve(control = list(silent = TRUE), force_stacked_time = TRUE)
+    expect_equal(dynare_endo, mdl2$get_endo_data())
+})

@@ -1480,7 +1480,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
                     << "}" << endl;
 
    } else if (output_type == oCStaticModel) {
-      StaticOutput << "void f_static(double *y, double *x, int nb_row_x, double *params, double *residual) {" << endl
+      StaticOutput << "void f_static(double *y, double *x, double *params, double *residual) {" << endl
                    << endl
                    << "  double lhs, rhs;" << endl
                    << endl
@@ -1488,7 +1488,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
                    << model_local_vars_output.str()
                    << model_output.str()
                    << endl << "  return;" << endl << "}" << endl << endl;
-      StaticOutput << "void jac_static(double *y, double *x, int nb_row_x, double *params, double *g1) {" << endl
+      StaticOutput << "void jac_static(double *y, double *x, double *params, double *g1) {" << endl
                    << "  /* Jacobian  */" << endl
                    << model_local_vars_output.str()
                    << jacobian_output.str()

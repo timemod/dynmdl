@@ -164,18 +164,8 @@ setOldClass("regts")
 DynMod <- R6Class("DynMod",
     public = list(
         initialize = function(mod_file, bytecode, use_dll, dll_dir) {
-            model_info <- compile_model_(mod_file, use_dll, dll_dir)
-            eval(parse(text = model_info$static_functions))
-            eval(parse(text = model_info$dynamic_model$dynamic_functions))
-            private$f_static <- f_static
-            private$jac_static <- jac_static
-            private$f_dynamic<- f_dynamic
-            private$jac_dynamic <- jac_dynamic
 
-            if (bytecode) {
-                private$f_static <- compiler::cmpfun(private$f_static)
-                private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
-            }
+            model_info <- compile_model_(mod_file, use_dll, dll_dir)
 
             with(model_info, {
                 private$endo_names         <- names(endos)
@@ -201,6 +191,51 @@ DynMod <- R6Class("DynMod",
                    -private$max_endo_lag : private$max_endo_lead)
             rownames(private$lead_lag_incidence) <- names(model_info$endos)
 
+            private$njac_cols <- length(which(private$lead_lag_incidence != 0)) +
+                                        private$exo_count
+
+            if (use_dll) {
+
+                compile_c_functions (dll_dir)
+                private$f_static <- function(y, x, params) {
+                    res <- numeric(private$endo_count)
+                    .Call("f_static_", y, x, params, res)
+                    return(res)
+                }
+                private$jac_static <- function(y, x, params) {
+                    jac <- matrix(0, nrow = private$endo_count,
+                                  ncol = private$endo_count)
+                    .Call("jac_static_", y, x, params, jac)
+                    return(jac)
+                }
+                private$f_dynamic <- function(y, x, params, it) {
+                    nrow_exo <- nrow(private$exo_data)
+                    res <- numeric(private$endo_count)
+                    .Call("f_dynamic_", y, x, params, it - 1, nrow_exo,
+                          res)
+                    return(res)
+                }
+                private$jac_dynamic <- function(y, x, params, it) {
+                    nrow_exo <- nrow(private$exo_data)
+                    jac <- matrix(0, nrow = private$endo_count,
+                                  ncol = private$njac_cols)
+                    .Call("jac_dynamic_", y, x, params, it - 1, nrow_exo,
+                          jac)
+                    return(jac)
+                }
+            } else {
+                eval(parse(text = model_info$static_functions))
+                eval(parse(text = model_info$dynamic_model$dynamic_functions))
+                private$f_static    <- f_static
+                private$jac_static  <- jac_static
+                private$f_dynamic   <- f_dynamic
+                private$jac_dynamic <- jac_dynamic
+
+                if (bytecode) {
+                    private$f_static <- compiler::cmpfun(private$f_static)
+                    private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
+                }
+            }
         },
         print = function(short = TRUE) {
             cat("DynMod object\n")
@@ -486,6 +521,7 @@ DynMod <- R6Class("DynMod",
         max_exo_lead =  NA_integer_,
         max_lag  = NA_integer_,
         lead_lag_incidence = NULL,
+        njac_cols = NA_integer_,
         f_static = NULL,
         jac_static = NULL,
         f_dynamic = NULL,

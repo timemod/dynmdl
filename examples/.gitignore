@@ -1,3 +1,6 @@
 *.pdf
 *.fmod
 islm_countries_result.csv
+islm/
+islm_back_countries/
+islm_back_countries_200/
