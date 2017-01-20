@@ -19,7 +19,7 @@ run_series <- function(nextra_countries, bytecode, force_stacked_time) {
                            as.character(nextra), ".mod")
         create_islm_country_model(basis_mod_file, mod_file, nextra)
         mdl <- compile_model(mod_file, use_dll = TRUE)
-        mdl$set_period("2017Q1/2019Q4")
+        mdl$set_period("2017Q1/2021Q2")
         mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 
         t <- system.time(mdl$solve(control = list(trace = TRUE),

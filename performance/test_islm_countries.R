@@ -2,7 +2,7 @@ library(dynr)
 source("create_islm_country_model.R")
 
 param_file <- "input/islm_country_params.csv"
-basis_mod_file <- "mod/islm_back_countries.inp"
+basis_mod_file <- "mod/islm_countries.inp"
 nextra_countries <- c(10, 100, 200)
 
 # read parameters
@@ -15,7 +15,7 @@ names(params) <- as.character(param_names)
 run_series <- function(nextra_countries, force_stacked_time) {
     times <- character(0)
     for (nextra in nextra_countries) {
-        mod_file <- paste0("mod/islm_back_countries_",
+        mod_file <- paste0("mod/islm_countries_",
                            as.character(nextra), ".mod")
         create_islm_country_model(basis_mod_file, mod_file, nextra)
         mdl <- compile_model(mod_file)
@@ -31,15 +31,7 @@ run_series <- function(nextra_countries, force_stacked_time) {
 
 
 time_table <- data.frame(nextra_countries)
-for (force_stacked_time in c(TRUE, FALSE)) {
-    times <- run_series(nextra_countries, force_stacked_time = force_stacked_time)
-    if (force_stacked_time) {
-        colname <- "stacked_time"
-    } else {
-        colname <- "backwards"
-    }
-    time_table[, colname] <- times
-}
-
+times <- run_series(nextra_countries, force_stacked_time = force_stacked_time)
+time_table[, "cpu time"] <- times
 
 print(time_table)

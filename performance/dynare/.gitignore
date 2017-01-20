@@ -1,0 +1,6 @@
+*_dynamic.m
+*_static.m
+*_set_auxiliary_variables.m
+*_results.mat
+*.log
+islm_countries*.m

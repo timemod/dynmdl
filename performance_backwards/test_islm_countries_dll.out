@@ -19,7 +19,7 @@ Iteration report
  Iter     inv. cond. jac.         Largest |f|   Index largest |f|
     0                               2.100e+02                   8
     1            1.25e-05           8.504e+01                1647
-    2            1.25e-05           2.608e-01                 828
+    2            1.61e-05           2.608e-01                 828
     3            1.19e-05           1.578e-05                1101
     4            1.19e-05           9.095e-12                2728
 
@@ -45,9 +45,9 @@ Iteration report
  Iter     inv. cond. jac.         Largest |f|   Index largest |f|
     0                               2.100e+02                   8
     1            3.07e-06           8.506e+01                6507
-    2            3.08e-06           2.685e-01                3258
-    3            2.92e-06           1.625e-05                4341
-    4            2.93e-06           1.419e-10                5413
+    2            4.02e-06           2.685e-01                3258
+    3            2.93e-06           1.625e-05                4341
+    4            2.93e-06           1.419e-10               18409
 
 Convergence after 4 iterations
 Starting Dynare (version 4.6-unstable).
@@ -70,10 +70,10 @@ Iteration report
 ----------------
  Iter     inv. cond. jac.         Largest |f|   Index largest |f|
     0                               2.100e+02                   8
-    1            1.67e-06           8.506e+01               11907
-    2            1.67e-06           2.697e-01                5958
+    1            1.66e-06           8.506e+01               11907
+    2            2.19e-06           2.697e-01                5958
     3            1.59e-06           1.632e-05                7941
-    4            1.59e-06           5.093e-10               23795
+    4            1.59e-06           4.511e-10               23795
 
 Convergence after 4 iterations
 Starting Dynare (version 4.6-unstable).
@@ -92,7 +92,7 @@ mdl_function_file :
 
 gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_10/mdl_functions.c -o islm_back_countries_10/mdl_functions.o gcc -std=gnu99 -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o islm_back_countries_10/mdl_functions.so islm_back_countries_10/mdl_functions.o islm_back_countries_10/f_static.o islm_back_countries_10/f_dynamic.o -L/usr/lib/R/lib -lRDone
 
-Solving backwards model for period 2017Q1/2019Q4
+Solving backwards model for period 2017Q1/2021Q2
 Convergence for 2017Q1 in 4 iterations
 Convergence for 2017Q2 in 4 iterations
 Convergence for 2017Q3 in 4 iterations
@@ -105,7 +105,13 @@ Convergence for 2019Q1 in 4 iterations
 Convergence for 2019Q2 in 3 iterations
 Convergence for 2019Q3 in 3 iterations
 Convergence for 2019Q4 in 3 iterations
-Total number of iterations: 45
+Convergence for 2020Q1 in 3 iterations
+Convergence for 2020Q2 in 3 iterations
+Convergence for 2020Q3 in 3 iterations
+Convergence for 2020Q4 in 3 iterations
+Convergence for 2021Q1 in 3 iterations
+Convergence for 2021Q2 in 3 iterations
+Total number of iterations: 63
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
 Found 1083 equation(s).
@@ -122,7 +128,7 @@ mdl_function_file :
 
 gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_100/mdl_functions.c -o islm_back_countries_100/mdl_functions.o gcc -std=gnu99 -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o islm_back_countries_100/mdl_functions.so islm_back_countries_100/mdl_functions.o islm_back_countries_100/f_static.o islm_back_countries_100/f_dynamic.o -L/usr/lib/R/lib -lRDone
 
-Solving backwards model for period 2017Q1/2019Q4
+Solving backwards model for period 2017Q1/2021Q2
 Convergence for 2017Q1 in 4 iterations
 Convergence for 2017Q2 in 4 iterations
 Convergence for 2017Q3 in 4 iterations
@@ -135,7 +141,13 @@ Convergence for 2019Q1 in 4 iterations
 Convergence for 2019Q2 in 3 iterations
 Convergence for 2019Q3 in 3 iterations
 Convergence for 2019Q4 in 3 iterations
-Total number of iterations: 45
+Convergence for 2020Q1 in 3 iterations
+Convergence for 2020Q2 in 3 iterations
+Convergence for 2020Q3 in 3 iterations
+Convergence for 2020Q4 in 3 iterations
+Convergence for 2021Q1 in 3 iterations
+Convergence for 2021Q2 in 3 iterations
+Total number of iterations: 63
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
 Found 1983 equation(s).
@@ -152,7 +164,7 @@ mdl_function_file :
 
 gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_200/mdl_functions.c -o islm_back_countries_200/mdl_functions.o gcc -std=gnu99 -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o islm_back_countries_200/mdl_functions.so islm_back_countries_200/mdl_functions.o islm_back_countries_200/f_static.o islm_back_countries_200/f_dynamic.o -L/usr/lib/R/lib -lRDone
 
-Solving backwards model for period 2017Q1/2019Q4
+Solving backwards model for period 2017Q1/2021Q2
 Convergence for 2017Q1 in 4 iterations
 Convergence for 2017Q2 in 4 iterations
 Convergence for 2017Q3 in 4 iterations
@@ -165,8 +177,14 @@ Convergence for 2019Q1 in 4 iterations
 Convergence for 2019Q2 in 3 iterations
 Convergence for 2019Q3 in 3 iterations
 Convergence for 2019Q4 in 3 iterations
-Total number of iterations: 45
+Convergence for 2020Q1 in 3 iterations
+Convergence for 2020Q2 in 3 iterations
+Convergence for 2020Q3 in 3 iterations
+Convergence for 2020Q4 in 3 iterations
+Convergence for 2021Q1 in 3 iterations
+Convergence for 2021Q2 in 3 iterations
+Total number of iterations: 63
   nextra_countries stacked_time         backwards
-1               10         1.02 0.567999999999997
-2              100        7.024             9.456
-3              200       24.632            45.284
+1               10        1.408 0.652000000000004
+2              100       12.564            13.704
+3              200       47.088             62.08

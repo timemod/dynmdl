@@ -1,0 +1,121 @@
+GNU Octave, version 3.8.1
+Copyright (C) 2014 John W. Eaton and others.
+This is free software; see the source code for copying conditions.
+There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  For details, type 'warranty'.
+
+Octave was configured for "x86_64-pc-linux-gnu".
+
+Additional information about Octave is available at http://www.octave.org.
+
+Please contribute if you find this software useful.
+For more information, visit http://www.octave.org/get-involved.html
+
+Read http://www.octave.org/bugs.html to learn how to submit bug reports.
+For information about changes from previous versions, type 'news'.
+
+
+Configuring Dynare ...
+[mex] Generalized QZ.
+[mex] Sylvester equation solution.
+[mex] Kronecker products.
+[mex] Sparse kronecker products.
+[mex] Local state space iteration (second order).
+[mex] Bytecode evaluation.
+[mex] k-order perturbation solver.
+[mex] k-order solution simulation.
+[mex] Quasi Monte-Carlo sequence (Sobol).
+[mex] Markov Switching SBVAR.
+
+Starting Dynare (version 4.4.1).
+Starting preprocessing of the model file ...
+Found 273 equation(s).
+Evaluating expressions...done
+Computing static model derivatives:
+ - order 1
+Computing dynamic model derivatives:
+ - order 1
+Processing outputs ...done
+Preprocessing completed.
+Starting MATLAB/Octave computing.
+
+-----------------------------------------------------
+MODEL SIMULATION:
+
+
+Simulation concluded successfully after 5 iterations.
+Total time of simulation        :      1.123
+Convergency obtained.
+-----------------------------------------------------
+
+Total computing time : 0h00m02s
+
+Configuring Dynare ...
+[mex] Generalized QZ.
+[mex] Sylvester equation solution.
+[mex] Kronecker products.
+[mex] Sparse kronecker products.
+[mex] Local state space iteration (second order).
+[mex] Bytecode evaluation.
+[mex] k-order perturbation solver.
+[mex] k-order solution simulation.
+[mex] Quasi Monte-Carlo sequence (Sobol).
+[mex] Markov Switching SBVAR.
+
+Starting Dynare (version 4.4.1).
+Starting preprocessing of the model file ...
+Found 1083 equation(s).
+Evaluating expressions...done
+Computing static model derivatives:
+ - order 1
+Computing dynamic model derivatives:
+ - order 1
+Processing outputs ...done
+Preprocessing completed.
+Starting MATLAB/Octave computing.
+
+-----------------------------------------------------
+MODEL SIMULATION:
+
+
+Simulation concluded successfully after 5 iterations.
+Total time of simulation        :      6.868
+Convergency obtained.
+-----------------------------------------------------
+
+Total computing time : 0h00m13s
+
+Configuring Dynare ...
+[mex] Generalized QZ.
+[mex] Sylvester equation solution.
+[mex] Kronecker products.
+[mex] Sparse kronecker products.
+[mex] Local state space iteration (second order).
+[mex] Bytecode evaluation.
+[mex] k-order perturbation solver.
+[mex] k-order solution simulation.
+[mex] Quasi Monte-Carlo sequence (Sobol).
+[mex] Markov Switching SBVAR.
+
+Starting Dynare (version 4.4.1).
+Starting preprocessing of the model file ...
+Found 1983 equation(s).
+Evaluating expressions...done
+Computing static model derivatives:
+ - order 1
+Computing dynamic model derivatives:
+ - order 1
+Processing outputs ...done
+Preprocessing completed.
+Starting MATLAB/Octave computing.
+
+-----------------------------------------------------
+MODEL SIMULATION:
+
+
+Simulation concluded successfully after 5 iterations.
+Total time of simulation        :     18.196
+Convergency obtained.
+-----------------------------------------------------
+
+Total computing time : 0h00m38s
