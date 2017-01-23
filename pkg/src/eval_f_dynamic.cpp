@@ -75,8 +75,9 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
                 int ivt = it + var_info.shift;
                 double value = jt(ieq, ideriv);
                 if (ivt >= 0 && ivt < nper && value != 0) {
-                    rows.push_back(ieq + it * n_endo);
-                    columns.push_back(id + ivt * n_endo);
+                    // add 1 because the index origin in R is 1.
+                    rows.push_back(ieq + it * n_endo + 1);
+                    columns.push_back(id + ivt * n_endo + 1);
                     values.push_back(value);
                 }
             }

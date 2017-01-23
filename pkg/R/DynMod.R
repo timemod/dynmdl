@@ -15,9 +15,8 @@ setOldClass("regts")
 #' @importFrom regts regperiod_range
 #' @importFrom regts regrange_intersect
 #' @importFrom regts regts
-#' @importFrom methods new
-#' @importFrom methods as
 #' @importFrom Matrix Matrix
+#' @importFrom Matrix sparseMatrix
 #' @importFrom nleqslv nleqslv
 #' @export
 #' @keywords data
@@ -635,14 +634,19 @@ DynMod <- R6Class("DynMod",
             nper <- length_range(private$model_period)
             tshift  <- -private$max_endo_lag : private$max_endo_lead
             mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
-                                        tshift, private$exo_data, private$params,
-                                        private$jac_dynamic,
-                                        private$endo_count,
-                                        nper, private$max_lag)
+                                        tshift, private$exo_data,
+                                        private$params, private$jac_dynamic,
+                                        private$endo_count, nper,
+                                        private$max_lag)
             n <- nper * private$endo_count
-            jac <- new("dgTMatrix", i = mat_info$rows, j = mat_info$columns,
-                       x = mat_info$values, Dim = as.integer(rep(n, 2)))
-            return (as(jac, "dgCMatrix"))
+            # NOTE: the function sparseMatrix of the Matrix package
+            # only works correctly when package methods has been attached.
+            # Therefore "methods" is added to Depends in the DESCRIPTION file.
+            # Possibly, in the Matrix package one of functions of methods is
+            # not imported from.
+            return(sparseMatrix(i = mat_info$rows, j = mat_info$columns,
+                                x = mat_info$values,
+                                dims = as.integer(rep(n, 2))))
         },
         print_info = function(short) {
             cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
