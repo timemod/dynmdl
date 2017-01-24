@@ -37,8 +37,6 @@ ExprNode.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
             NumericalConstants.hh NumericalInitialization.hh Statement.hh \
             StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
             WarningConsolidation.hh dyn_error.hh dynout.hh location.hh
-ExprNode.o : CodeInterpreter.hh ExprNode.hh ExternalFunctionsTable.hh \
-            SymbolTable.hh
 ExternalFunctionsTable.o : CodeInterpreter.hh ExprNode.hh \
                           ExternalFunctionsTable.hh SymbolTable.hh dyn_error.hh
 MinimumFeedbackSet.o : MinimumFeedbackSet.hh dynout.hh
@@ -115,12 +113,6 @@ parse.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
          ParsingDriver.hh Shocks.hh SigmaeInitialization.hh Statement.hh \
          StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
          WarningConsolidation.hh dynout.hh location.hh parse.hh run_dynare.hh
-parse.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh DynamicModel.hh \
-         ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
-         ModFile.hh ModelTree.hh NumericalConstants.hh \
-         NumericalInitialization.hh Statement.hh StaticModel.hh \
-         SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
-         WarningConsolidation.hh location.hh
 parse_macro.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
                DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
                ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \

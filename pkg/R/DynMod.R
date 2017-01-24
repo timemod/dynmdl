@@ -18,6 +18,7 @@ setOldClass("regts")
 #' @importFrom Matrix Matrix
 #' @importFrom Matrix sparseMatrix
 #' @importFrom nleqslv nleqslv
+#' @importFrom umfpackr umf_solve_nl
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -428,7 +429,7 @@ DynMod <- R6Class("DynMod",
         },
         solve = function(control = list(), force_stacked_time = FALSE) {
 
-            control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE,
+            control_ <- list(ftol = 1e-8, maxiter = 20, trace = TRUE,
                              cndtol = 1e-12, silent = FALSE)
             control_[names(control)] <- control
 
@@ -442,7 +443,11 @@ DynMod <- R6Class("DynMod",
                 lags <- private$get_lags()
                 leads <- private$get_leads()
                 x <- private$get_solve_endo()
-                ret <- solve_sparse(x, private$get_residuals,
+                #ret <- solve_sparse(x, private$get_residuals,
+                #                    private$get_jac, lags = lags,
+                #                    leads = leads, nper = nper,
+                #                    control = control_)
+                ret <- umf_solve_nl(x, private$get_residuals,
                                     private$get_jac, lags = lags,
                                     leads = leads, nper = nper,
                                     control = control_)
