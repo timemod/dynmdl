@@ -5,6 +5,7 @@
 #               equations, yypically as one of the  matrix classes of package Matrix
 # param ...    arguments passed to fun and jacfun
 # param control control parameters
+#' @importFrom umfpackr umf_solve
 solve_sparse <- function(x, fun, jacfun, ... , control) {
     solved <- FALSE
     cond <- NA
@@ -45,9 +46,10 @@ solve_sparse <- function(x, fun, jacfun, ... , control) {
             break
         } else {
             jac <- jacfun(x, ...)
-            cond <- 1 / Matrix::condest(jac)$est
-            ret <- Matrix::solve(jac, fval)
-            x <- x - as.numeric(ret)
+            #cond <- 1 / Matrix::condest(jac)$est
+            # TODO: estimate the Matrix condition with UMFPACK
+            cond <- 1
+            x <- x - umf_solve(jac, fval)
         }
     }
     if (control$trace) {
