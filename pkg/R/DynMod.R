@@ -429,7 +429,7 @@ DynMod <- R6Class("DynMod",
         },
         solve = function(control = list(), force_stacked_time = FALSE) {
 
-            control_ <- list(ftol = 1e-8, maxiter = 20, trace = TRUE,
+            control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE,
                              cndtol = 1e-12, silent = FALSE)
             control_[names(control)] <- control
 
@@ -443,14 +443,10 @@ DynMod <- R6Class("DynMod",
                 lags <- private$get_lags()
                 leads <- private$get_leads()
                 x <- private$get_solve_endo()
-                #ret <- solve_sparse(x, private$get_residuals,
-                #                    private$get_jac, lags = lags,
-                #                    leads = leads, nper = nper,
-                #                    control = control_)
                 ret <- umf_solve_nl(x, private$get_residuals,
                                     private$get_jac, lags = lags,
                                     leads = leads, nper = nper,
-                                    control = control_)
+                                   control = control_)
                 private$solve_out <- list(solved = ret$solved, iter = ret$iter,
                                           residuals = ret$fval)
             } else {

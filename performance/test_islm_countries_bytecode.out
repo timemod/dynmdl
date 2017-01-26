@@ -56,6 +56,6 @@ Iteration report
     3                 nan           1.324e-05                3974
     4                 nan           4.802e-10               11895
   nextra_countries cpu time
-1               10    1.288
-2              100    8.936
-3              200   19.792
+1               10    1.064
+2              100    8.364
+3              200     18.5

@@ -12,7 +12,7 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
-run_series <- function(nextra_countries, force_stacked_time) {
+run_series <- function(nextra_countries) {
     times <- character(0)
     for (nextra in nextra_countries) {
         mod_file <- paste0("mod/islm_countries_",
@@ -22,8 +22,7 @@ run_series <- function(nextra_countries, force_stacked_time) {
         mdl$set_period("2017Q1/2021Q2")
         mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 
-        t <- system.time(mdl$solve(control = list(trace = TRUE),
-                      force_stacked_time = force_stacked_time))
+        t <- system.time(mdl$solve(control = list(trace = TRUE)))
         times <- c(times, t["sys.self"] + t["user.self"])
     }
     return(times)
@@ -31,7 +30,7 @@ run_series <- function(nextra_countries, force_stacked_time) {
 
 
 time_table <- data.frame(nextra_countries)
-times <- run_series(nextra_countries, force_stacked_time = force_stacked_time)
+times <- run_series(nextra_countries)
 time_table[, "cpu time"] <- times
 
 print(time_table)
