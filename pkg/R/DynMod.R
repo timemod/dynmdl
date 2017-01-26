@@ -427,8 +427,10 @@ DynMod <- R6Class("DynMod",
             cat("\n")
             return (invisible(self))
         },
-        solve = function(control = list(), force_stacked_time = FALSE) {
-
+        solve = function(control = list(), force_stacked_time = FALSE,
+                         solver = c("umfpackr", "nleqslv")) {
+    
+            solver <- match.arg(solver)
             control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE,
                              cndtol = 1e-12, silent = FALSE)
             control_[names(control)] <- control
@@ -439,6 +441,10 @@ DynMod <- R6Class("DynMod",
 
             if (private$max_endo_lead > 0 || force_stacked_time ) {
                 # preparations
+                if (solver != "umfpackr") {
+                    stop(paste("For forward looking models only the umfpackr",
+                               "solver is allowed"))
+                }
                 nper <- length_range(private$model_period)
                 lags <- private$get_lags()
                 leads <- private$get_leads()
@@ -451,11 +457,13 @@ DynMod <- R6Class("DynMod",
                                           residuals = ret$fval)
             } else {
                 ret <- solve_backward_model(private$model_period,
-                                     private$endo_data,
-                                     private$exo_data, private$params,
-                                     private$lead_lag_incidence,
-                                     private$f_dynamic, private$jac_dynamic,
-                                     control = control_)
+                                            private$endo_data,
+                                            private$exo_data, private$params,
+                                            private$lead_lag_incidence,
+                                            private$f_dynamic, 
+                                            private$jac_dynamic,
+                                            control = control_, 
+                                            solver = solver)
             }
             private$endo_data[private$model_period, ] <-
                     t(matrix(ret$x, nrow = private$endo_count))

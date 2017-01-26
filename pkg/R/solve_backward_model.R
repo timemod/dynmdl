@@ -4,9 +4,11 @@
 # param jacfun: a function that returns the Jacobian of the systems of equations,
 #               typically as one of the  matrix classes of package Matrix
 #' @importFrom nleqslv nleqslv
+#' @importFrom umfpackr umf_solve_nl
+#' @importFrom solvers as
 solve_backward_model <- function(model_period, endo_data, exo_data, params,
                                  lead_lag_incidence, f_dynamic, jac_dynamic,
-                                 control) {
+                                 control, solver) {
 
     start_per <- start_period(model_period)
     nper <- length_range(model_period)
@@ -22,9 +24,18 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
     f <- function(x, lags, iper) {
         return (f_dynamic(c(lags, x), exo_data, params, iper + max_lag))
     }
-    jac <- function(x, lags, iper) {
-        return (jac_dynamic(c(lags, x), exo_data, params,
-                            iper + max_lag)[, jac_cols])
+
+    if (solver == "nleqslv") {
+        jac <- function(x, lags, iper) {
+            return(jac_dynamic(c(lags, x), exo_data, params,
+                                iper + max_lag)[, jac_cols])
+        }
+    } else {
+        jac <- function(x, lags, iper) {
+            j <- jac_dynamic(c(lags, x), exo_data, params,
+                            iper + max_lag)[, jac_cols, drop = FALSE]
+            return(as(j, "dgCMatrix"))
+        }
     }
 
     itr_tot <- 0
@@ -41,18 +52,26 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
         cur_indices <- (1:nendo) + (iper - 1 + max_lag) * nendo
         start <- data[cur_indices]
 
-        out <- nleqslv(start, fn = f, jac = jac, method = "Newton",
+        if (solver == "nleqslv") {
+            out <- nleqslv(start, fn = f, jac = jac, method = "Newton",
                        lags = lags, iper = iper)
-
+            error <- out$termcd != 1
+        } else {
+            out <- umf_solve_nl(start, fn = f, jac = jac, lags = lags,
+                                iper = iper, control = list(silent = TRUE))
+            error <- !out$solved
+        }
         if (!control$silent) {
-            if (out$termcd != 1) {
-                cat(sprintf("No convergence for %s in %d iterations\n", per_txt,
-                               out$iter))
-                error <- TRUE
-                break
-            } else
-                cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
-                            out$iter))
+            if (error) {
+                cat(sprintf("No convergence for %s in %d iterations\n", 
+                            per_txt, out$iter))
+            } else {
+                 cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
+                             out$iter))
+            }
+        }
+        if (error) {
+            break
         }
 
         itr_tot <- itr_tot + out$iter
