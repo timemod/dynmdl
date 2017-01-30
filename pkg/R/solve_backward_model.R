@@ -5,7 +5,7 @@
 #               typically as one of the  matrix classes of package Matrix
 #' @importFrom nleqslv nleqslv
 #' @importFrom umfpackr umf_solve_nl
-#' @importFrom solvers as
+#' @importFrom methods as
 solve_backward_model <- function(model_period, endo_data, exo_data, params,
                                  lead_lag_incidence, f_dynamic, jac_dynamic,
                                  control, solver) {
@@ -32,9 +32,11 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
         }
     } else {
         jac <- function(x, lags, iper) {
-            j <- jac_dynamic(c(lags, x), exo_data, params,
-                            iper + max_lag)[, jac_cols, drop = FALSE]
-            return(as(j, "dgCMatrix"))
+            mat_info <- get_jac_backwards(x, lags, jac_cols, exo_data, 
+                                          params, jac_dynamic, 1L, max_lag)
+            return(sparseMatrix(i = mat_info$rows, j = mat_info$columns,
+                                x = mat_info$values,
+                                dims = as.integer(rep(nendo, 2))))
         }
     }
 
@@ -46,6 +48,7 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
     }
 
     error <- FALSE
+
     for (iper in 1:nper) {
         per_txt <- as.character(start_per + (iper - 1))
         lags <- data[lag_indices + (iper - 1) * nendo]

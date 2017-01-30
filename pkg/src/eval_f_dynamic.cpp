@@ -87,3 +87,46 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
                         Rcpp::Named("columns") = columns_r,
                         Rcpp::Named("values") = values_r);
     }
+
+// [[Rcpp::export]]
+List get_jac_backwards(NumericVector endos, NumericVector lags,
+                       NumericVector cols, 
+                       SEXP exo_data, SEXP params, Function jac_dynamic,
+                       int it, int max_lag) {
+
+    int nlags  = lags.size();
+    int nendo = endos.size();
+    int nx = nlags + nendo;
+    NumericVector x(nx);
+    for (int i = 0; i < nlags; i++) {
+        x[i] = lags[i];
+    }
+    for (int i = 0; i < nendo; i++) {
+        x[i + nlags] = endos[i];
+    }
+
+    NumericMatrix jt  = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
+        
+    vector<int> rows; 
+    vector<int> columns;
+    vector<double> values;
+    for (int ieq = 0; ieq < nendo; ieq++) {
+        for (size_t ideriv = 0; ideriv < nendo;  ideriv++) {
+            double value = jt(ieq, cols[ideriv] - 1);
+            if (value != 0) {
+               // add 1 because the index origin in R is 1
+                rows.push_back(ieq + 1);
+                columns.push_back(ideriv + 1);
+                values.push_back(value);
+            }
+        }
+    }
+
+    Rcpp::IntegerVector rows_r(rows.begin(), rows.end());
+    Rcpp::IntegerVector columns_r(columns.begin(), columns.end());
+    Rcpp::NumericVector values_r(values.begin(), values.end());
+
+    return List::create(Rcpp::Named("rows") = rows_r,
+                        Rcpp::Named("columns") = columns_r,
+                        Rcpp::Named("values") = values_r);
+}

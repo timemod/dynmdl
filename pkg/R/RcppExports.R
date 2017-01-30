@@ -17,6 +17,10 @@ get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params,
     .Call('dynr_get_triplet_jac', PACKAGE = 'dynr', endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag)
 }
 
+get_jac_backwards <- function(endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag) {
+    .Call('dynr_get_jac_backwards', PACKAGE = 'dynr', endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag)
+}
+
 run_macro <- function(modfile, new_modfile) {
     invisible(.Call('dynr_run_macro', PACKAGE = 'dynr', modfile, new_modfile))
 }
