@@ -3,7 +3,7 @@ source("create_islm_country_model.R")
 
 param_file <- "input/islm_country_params.csv"
 basis_mod_file <- "mod/islm_back_countries.inp"
-nextra_countries <- c(10, 100, 200)
+nextra_countries <- c(10, 100, 200, 500)
 
 # read parameters
 param_data <- as.matrix(read.csv(param_file, row.names = 1))
@@ -24,7 +24,7 @@ run_series <- function(nextra_countries, bytecode, force_stacked_time) {
 
         t <- system.time(mdl$solve(control = list(trace = TRUE),
                       force_stacked_time = force_stacked_time))
-        times <- c(times, t["sys.self"] + t["user.self"])
+        times <- c(times, t["elapsed"])
     }
     return(times)
 }
