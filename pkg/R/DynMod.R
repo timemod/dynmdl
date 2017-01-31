@@ -413,6 +413,8 @@ DynMod <- R6Class("DynMod",
         },
         check = function() {
             self$solve_steady(init_data = FALSE)
+            private$jac <- matrix(0, nrow = private$endo_count,
+                          ncol = private$njac_cols)
             private$ss  <- solve_first_order(private$ss,
                                              private$lead_lag_incidence,
                                              private$exos, private$endos,
@@ -477,6 +479,9 @@ DynMod <- R6Class("DynMod",
         },
         solve_perturbation = function() {
             self$solve_steady(init_data = FALSE)
+
+            private$jac <- matrix(0, nrow = private$endo_count,
+                          ncol = private$njac_cols)
 
             # solve_perturbation does not works for exogenous lags and leads.
             # For perturbation approaches, Dynare substitutes

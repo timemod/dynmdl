@@ -2428,8 +2428,9 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
                     << "  /* Jacobian  */" << endl
                     << "void jac_dynamic(double *y, double *x, int nb_row_x, double *params, int it_, double *g1) {" << endl
                     << "  /* Jacobian  */" << endl
-                   << jacobian_output.str()
-                   << endl << "  return;" << endl << "}" << endl;
+                    << model_local_vars_output.str()
+                    << jacobian_output.str()
+                    << endl << "  return;" << endl << "}" << endl;
 #ifndef USE_R
       if (second_derivatives.size())
         DynamicOutput << "  /* Hessian for endogenous and exogenous variables */" << endl
