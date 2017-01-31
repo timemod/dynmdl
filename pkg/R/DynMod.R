@@ -453,8 +453,12 @@ DynMod <- R6Class("DynMod",
                                     private$get_jac, lags = lags,
                                     leads = leads, nper = nper,
                                    control = control_)
-                private$solve_out <- list(solved = ret$solved, iter = ret$iter,
-                                          residuals = ret$fval)
+                if (!control_$silent) {
+                    cat(sprintf("Total time function eval. : %g\n", ret$t_f))
+                    cat(sprintf("Total time Jacobian.      : %g\n", ret$t_jac))
+                    cat(sprintf("Total time LU fact.       : %g\n", ret$t_lu))
+                    cat(sprintf("Total time solve          : %g\n", ret$t_solve))
+                }
             } else {
                 ret <- solve_backward_model(private$model_period,
                                             private$endo_data,
@@ -467,6 +471,8 @@ DynMod <- R6Class("DynMod",
             }
             private$endo_data[private$model_period, ] <-
                     t(matrix(ret$x, nrow = private$endo_count))
+
+            self$solve_out <- ret
             return (invisible(self))
         },
         solve_perturbation = function() {
@@ -523,7 +529,8 @@ DynMod <- R6Class("DynMod",
                            private$exo_data, private$params,
                            private$lead_lag_incidence,
                            private$f_dynamic, private$jac_dynamic)
-        }
+        },
+        solve_out = NULL
     ),
     private = list(
         exo_count = NA_integer_,
@@ -550,7 +557,6 @@ DynMod <- R6Class("DynMod",
         data_period =  NULL,
         endo_data = NULL,
         exo_data = NULL,
-        solve_out = NULL,
         ss = NULL,
         period_error_msg = paste("The model period is not set.",
                             "Set the model period with set_period()."),

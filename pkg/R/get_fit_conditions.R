@@ -5,7 +5,7 @@
 #' @importFrom gsubfn gsubfn
 # @return a list with information about the derivatives
 get_fit_conditions <- function(mod_file, residuals) {
-    
+
     # regular expressions:
     lag_pattern <- "\\[(-?\\d+)\\]"
 
@@ -35,7 +35,7 @@ get_fit_conditions <- function(mod_file, residuals) {
     exo_deriv <- model_info$dynamic_model$derivatives[, -(1:length(endo_names))]
     colnames(exo_deriv) <- model_info$exo_names
     res_deriv <- exo_deriv[, residuals, drop = FALSE]
-    
+
     # handle **
     fpow <- function(x) {
         return (gsub("\\*\\*", "^", x))
@@ -76,7 +76,7 @@ get_fit_conditions <- function(mod_file, residuals) {
     }
     res_deriv <- apply(res_deriv, MARGIN = c(1,2), FUN = handle_lags_res)
 
-    res_deriv <- apply(res_deriv, MARGIN = 2, FUN = mult_lagrange, 
+    res_deriv <- apply(res_deriv, MARGIN = 2, FUN = mult_lagrange,
                        l_names = l_vars)
     endo_deriv <- apply(endo_deriv, MARGIN = 2, FUN = mult_lagrange,
                         l_names = paste0(l_vars, "[0]"))

@@ -41,6 +41,10 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
     }
 
     itr_tot <- 0
+    t_f     <- 0
+    t_jac   <- 0
+    t_lu    <- 0
+    t_solve <- 0
 
     if (!control$silent) {
         cat(sprintf("\nSolving backwards model for period %s\n",
@@ -63,6 +67,10 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
             out <- umf_solve_nl(start, fn = f, jac = jac, lags = lags,
                                 iper = iper, control = list(silent = TRUE))
             error <- !out$solved
+            t_f     <- t_f     + out$t_f
+            t_jac   <- t_jac   + out$t_jac
+            t_lu    <- t_lu    + out$t_lu
+            t_solve <- t_solve + out$t_solve
         }
         if (!control$silent) {
             if (error) {
@@ -83,6 +91,10 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
 
     if (!control$silent) {
         cat(sprintf("Total number of iterations: %d\n", itr_tot))
+        cat(sprintf("Total time function eval. : %g\n", t_f))
+        cat(sprintf("Total time Jacobian.      : %g\n", t_jac))
+        cat(sprintf("Total time LU fact.       : %g\n", t_lu))
+        cat(sprintf("Total time solve          : %g\n", t_solve))
     }
 
     if (error) {
@@ -91,5 +103,6 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
 
     # update data
     x <- data[(1 : (nper * nendo)) + max_lag * nendo]
-    return (list(solved = !error, itr_tot = itr_tot, x = x))
+    return (list(solved = !error, itr_tot = itr_tot, x = x,
+                 t_f = t_f, t_jac = t_jac, t_lu = t_lu, t_jac = t_jac))
 }
