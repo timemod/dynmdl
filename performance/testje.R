@@ -11,16 +11,15 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
     
-nextra = 200
+nextra <- 100
 mod_file <- paste0("mod/islm_countries_",
                    as.character(nextra), ".mod")
 create_islm_country_model(basis_mod_file, mod_file, nextra)
 mdl <- compile_model(mod_file, use_dll = TRUE)
-mdl$set_period("2017Q1/2021Q2")
+mdl$set_period("2017Q1/2066Q4")
 #mdl$set_period("2017Q1/2017Q1")
 mdl$time_functions()
 mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 
 t <- system.time(mdl$solve(control = list(trace = TRUE)))
 print(t)
-

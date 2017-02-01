@@ -1,5 +1,3 @@
 extend_path
 
-dynare islm_countries_10  noclearall
 dynare islm_countries_100 noclearall
-dynare islm_countries_200 noclearall

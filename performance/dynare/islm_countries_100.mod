@@ -4,4 +4,4 @@ initval;
 y_nl = 1300;
 end;
 
-simul(periods=18);
+simul(periods=200);

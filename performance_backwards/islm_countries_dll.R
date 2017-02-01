@@ -14,6 +14,7 @@ names(params) <- as.character(param_names)
 
 run_series <- function(nextra_countries, bytecode, force_stacked_time) {
     times <- character(0)
+    nendo <- numeric(0)
     for (nextra in nextra_countries) {
         mod_file <- paste0("mod/islm_back_countries_",
                            as.character(nextra), ".mod")
@@ -25,21 +26,24 @@ run_series <- function(nextra_countries, bytecode, force_stacked_time) {
         t <- system.time(mdl$solve(control = list(trace = TRUE),
                       force_stacked_time = force_stacked_time))
         times <- c(times, t["elapsed"])
+        nendo <- c(nendo, length(mdl$get_endo_names()))
+
     }
-    return(times)
+    return(list(times = times, neq = nendo))
 }
 
 
 time_table <- data.frame(nextra_countries)
 for (force_stacked_time in c(TRUE, FALSE)) {
-    times <- run_series(nextra_countries, bytecode = bytecode,
+    ret <- run_series(nextra_countries, bytecode = bytecode,
                         force_stacked_time = force_stacked_time)
     if (force_stacked_time) {
         colname <- "stacked_time"
     } else {
         colname <- "backwards"
     }
-    time_table[, colname] <- times
+    time_table[, colname] <- ret$times
+    time_table[, "neq"] <- ret$neq
 }
 
 print(time_table)
