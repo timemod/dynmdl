@@ -1,0 +1,82 @@
+Starting Dynare (version 4.6-unstable).
+Starting preprocessing of the model file ...
+Found 273 equation(s).
+Evaluating expressions...done
+Computing static model derivatives:
+ - order 1
+Computing dynamic model derivatives:
+ - order 1
+ - order 2
+Preprocessing completed.
+Compiling C functions ...
+c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_10/mdl_functions.c -o islm_countries_10/mdl_functions.o c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o islm_countries_10/mdl_functions.dll tmp.def islm_countries_10/mdl_functions.o islm_countries_10/f_static.o islm_countries_10/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
+
+Iteration report
+----------------
+ Iter     inv. cond. jac.         Largest |f|   Index largest |f|
+    0                               2.100e+02                   7
+    1            1.46e-05           8.513e+01                 827
+    2            9.84e-07           2.120e-01                 554
+    3            4.79e-06           1.281e-05                 554
+    4            4.79e-06           9.095e-12                3000
+Convergence after 4 iterations
+Total time function eval. : 0.032
+Total time Jacobian.      : 3.463
+Total time LU fact.       : 0.8
+Total time solve          : 0.048
+Starting Dynare (version 4.6-unstable).
+Starting preprocessing of the model file ...
+Found 633 equation(s).
+Evaluating expressions...done
+Computing static model derivatives:
+ - order 1
+Computing dynamic model derivatives:
+ - order 1
+ - order 2
+Preprocessing completed.
+Compiling C functions ...
+c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_50/mdl_functions.c -o islm_countries_50/mdl_functions.o c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o islm_countries_50/mdl_functions.dll tmp.def islm_countries_50/mdl_functions.o islm_countries_50/f_static.o islm_countries_50/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
+
+Iteration report
+----------------
+ Iter     inv. cond. jac.         Largest |f|   Index largest |f|
+    0                               2.100e+02                   7
+    1            1.87e-06           8.514e+01                1907
+    2            2.58e-06           2.169e-01                1274
+    3            8.95e-06           1.309e-05                1274
+    4            8.95e-06           4.002e-11                6961
+Convergence after 4 iterations
+Total time function eval. : 0.078
+Total time Jacobian.      : 24.519
+Total time LU fact.       : 17.209
+Total time solve          : 0.219
+Starting Dynare (version 4.6-unstable).
+Starting preprocessing of the model file ...
+Found 1083 equation(s).
+Evaluating expressions...done
+Computing static model derivatives:
+ - order 1
+Computing dynamic model derivatives:
+ - order 1
+ - order 2
+Preprocessing completed.
+Compiling C functions ...
+c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_100/mdl_functions.c -o islm_countries_100/mdl_functions.o c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o islm_countries_100/mdl_functions.dll tmp.def islm_countries_100/mdl_functions.o islm_countries_100/f_static.o islm_countries_100/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
+
+Iteration report
+----------------
+ Iter     inv. cond. jac.         Largest |f|   Index largest |f|
+    0                               2.100e+02                   7
+    1            2.63e-05           8.515e+01                3257
+    2            5.31e-06           2.185e-01                2174
+    3            5.32e-06           1.318e-05                2174
+    4            5.32e-06           1.710e-10              202519
+Convergence after 4 iterations
+Total time function eval. : 0.221
+Total time Jacobian.      : 80.506
+Total time LU fact.       : 94.253
+Total time solve          : 0.528
+  nextra_countries  neq cpu time
+1               10  273     4.41
+2               50  633    42.12
+3              100 1083   175.66

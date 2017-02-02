@@ -66,6 +66,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_jac_backwards
+List get_jac_backwards(NumericVector endos, NumericVector lags, NumericVector cols, SEXP exo_data, SEXP params, Function jac_dynamic, int it, int max_lag);
+RcppExport SEXP dynr_get_jac_backwards(SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP itSEXP, SEXP max_lagSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lags(lagsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cols(colsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type exo_data(exo_dataSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< Function >::type jac_dynamic(jac_dynamicSEXP);
+    Rcpp::traits::input_parameter< int >::type it(itSEXP);
+    Rcpp::traits::input_parameter< int >::type max_lag(max_lagSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_jac_backwards(endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag));
+    return rcpp_result_gen;
+END_RCPP
+}
 // run_macro
 void run_macro(std::string modfile, std::string new_modfile);
 RcppExport SEXP dynr_run_macro(SEXP modfileSEXP, SEXP new_modfileSEXP) {

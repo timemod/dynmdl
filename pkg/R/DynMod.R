@@ -18,6 +18,7 @@ setOldClass("regts")
 #' @importFrom Matrix Matrix
 #' @importFrom Matrix sparseMatrix
 #' @importFrom nleqslv nleqslv
+#' @importFrom umfpackr umf_solve_nl
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -421,7 +422,9 @@ DynMod <- R6Class("DynMod",
             return (invisible(self))
         },
         check = function() {
+
             self$solve_steady(init_data = FALSE)
+
             if (private$use_dll) private$prepare_solve()
             private$ss  <- solve_first_order(private$ss,
                                              private$lead_lag_incidence,
@@ -438,8 +441,10 @@ DynMod <- R6Class("DynMod",
             if (private$use_dll) private$clean_after_solve()
             return (invisible(self))
         },
-        solve = function(control = list(), force_stacked_time = FALSE) {
+        solve = function(control = list(), force_stacked_time = FALSE,
+                         solver = c("umfpackr", "nleqslv")) {
 
+            solver <- match.arg(solver)
             control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE,
                              cndtol = 1e-12, silent = FALSE)
             control_[names(control)] <- control
@@ -448,23 +453,33 @@ DynMod <- R6Class("DynMod",
 
             if (private$max_endo_lead > 0 || force_stacked_time ) {
                 # preparations
+                if (solver != "umfpackr") {
+                    stop(paste("For forward looking models only the umfpackr",
+                               "solver is allowed"))
+                }
                 nper <- length_range(private$model_period)
                 lags <- private$get_lags()
                 leads <- private$get_leads()
                 x <- private$get_solve_endo()
-                ret <- solve_sparse(x, private$get_residuals,
+                ret <- umf_solve_nl(x, private$get_residuals,
                                     private$get_jac, lags = lags,
                                     leads = leads, nper = nper,
-                                    control = control_)
-                private$solve_out <- list(solved = ret$solved, iter = ret$iter,
-                                          residuals = ret$fval)
+                                   control = control_)
+                if (!control_$silent) {
+                    cat(sprintf("Total time function eval. : %g\n", ret$t_f))
+                    cat(sprintf("Total time Jacobian.      : %g\n", ret$t_jac))
+                    cat(sprintf("Total time LU fact.       : %g\n", ret$t_lu))
+                    cat(sprintf("Total time solve          : %g\n", ret$t_solve))
+                }
             } else {
                 ret <- solve_backward_model(private$model_period,
-                                     private$endo_data,
-                                     private$exo_data, private$params,
-                                     private$lead_lag_incidence,
-                                     private$f_dynamic, private$jac_dynamic,
-                                     control = control_)
+                                            private$endo_data,
+                                            private$exo_data, private$params,
+                                            private$lead_lag_incidence,
+                                            private$f_dynamic,
+                                            private$jac_dynamic,
+                                            control = control_,
+                                            solver = solver)
             }
 
             if (private$use_dll) private$clean_after_solve()
@@ -472,6 +487,7 @@ DynMod <- R6Class("DynMod",
                     t(matrix(ret$x, nrow = private$endo_count))
 
 
+            self$solve_out <- ret
             return (invisible(self))
         },
         solve_perturbation = function() {
@@ -528,8 +544,10 @@ DynMod <- R6Class("DynMod",
                            private$exo_data, private$params,
                            private$lead_lag_incidence,
                            private$f_dynamic, private$jac_dynamic)
-            if (private$use_dll) private$clean_after_solve()
-        }
+            self$solve_out <- NULL
+            return(invisible(NULL))
+        },
+        solve_out = NULL
     ),
     private = list(
         exo_count = NA_integer_,
@@ -556,7 +574,6 @@ DynMod <- R6Class("DynMod",
         data_period =  NULL,
         endo_data = NULL,
         exo_data = NULL,
-        solve_out = NULL,
         ss = NULL,
         use_dll = FALSE,
         dll_file = NA_character_,

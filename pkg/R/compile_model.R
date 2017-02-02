@@ -10,8 +10,9 @@
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
 #' @useDynLib dynr
-compile_model <- function(mod_file, bytecode = TRUE, use_dll = FALSE,
-                          dll_dir = file_path_sans_ext(basename(mod_file)),  fit_mod_file, debug = FALSE) {
+compile_model <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
+                          dll_dir = file_path_sans_ext(basename(mod_file)), 
+                          fit_mod_file, debug = FALSE) {
 
 
     if (!file.exists(mod_file)) {
