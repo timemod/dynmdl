@@ -166,6 +166,8 @@ DynMod <- R6Class("DynMod",
 
             model_info <- compile_model_(mod_file, use_dll, dll_dir)
 
+            private$use_dll <- use_dll
+
             with(model_info, {
                 private$endo_names         <- names(endos)
                 private$exo_names          <- names(exos)
@@ -194,27 +196,29 @@ DynMod <- R6Class("DynMod",
                                         private$exo_count
 
             if (use_dll) {
-
-                compile_c_functions (dll_dir)
+                private$dll_file <- compile_c_functions (dll_dir)
                 private$f_static <- function(y, x, params) {
                     res <- numeric(private$endo_count)
                     .Call("f_static_", y, x, params, res)
                     return(res)
                 }
                 private$jac_static <- function(y, x, params) {
-                    jac <- matrix(0, nrow = private$endo_count,
-                                  ncol = private$endo_count)
-                    .Call("jac_static_", y, x, params, jac)
-                    return(jac)
+                    # NOTE: creating a new jac_steady every function call is
+                    # inefficient, therefore use private$jac_static that is
+                    # created just before solve_steady is called.
+                    .Call("jac_static_", y, x, params, private$jac_steady)
+                    return(private$jac_steady)
                 }
                 private$f_dynamic <- function(y, x, params, it) {
-                    nrow_exo <- nrow(private$exo_data)
                     res <- numeric(private$endo_count)
-                    .Call("f_dynamic_", y, x, params, it - 1, nrow_exo,
+                    .Call("f_dynamic_", y, x, params, it - 1, private$nrow_exo,
                           res)
                     return(res)
                 }
                 private$jac_dynamic <- function(y, x, params, it) {
+                    # NOTE: creating a new jac every function call is
+                    # inefficient, therefore use private$jac that is
+                    # created just before solve is called.
                     .Call("jac_dynamic_", y, x, params, it - 1, private$nrow_exo,
                           private$jac)
                     return(private$jac)
@@ -386,14 +390,19 @@ DynMod <- R6Class("DynMod",
         solve_steady = function(start = self$get_static_endos(),
                                 init_data = TRUE, control = NULL) {
 
+
             f <- function(endos) {
                 return(private$f_static(endos, private$exos, private$params))
             }
             jac <- function(endos) {
                 return(private$jac_static(endos, private$exos, private$params))
             }
+
+            if (private$use_dll) private$prepare_solve_steady()
+            # ToDO: use umfpackr?
             out <- nleqslv(start, fn = f, jac = jac, method = "Newton",
                            control = control)
+            if (private$use_dll) private$clean_after_solve_steady()
 
             if (out$termcd != 1) {
                 stop(paste("Error solving the steady state.\n",
@@ -408,10 +417,12 @@ DynMod <- R6Class("DynMod",
                                                 nrow = nper)
             }
 
+
             return (invisible(self))
         },
         check = function() {
             self$solve_steady(init_data = FALSE)
+            if (private$use_dll) private$prepare_solve()
             private$ss  <- solve_first_order(private$ss,
                                              private$lead_lag_incidence,
                                              private$exos, private$endos,
@@ -424,6 +435,7 @@ DynMod <- R6Class("DynMod",
                 cat(sprintf("%16g%16g%16g\n", Mod(eigv), Re(eigv), Im(eigv)))
             }
             cat("\n")
+            if (private$use_dll) private$clean_after_solve()
             return (invisible(self))
         },
         solve = function(control = list(), force_stacked_time = FALSE) {
@@ -432,9 +444,7 @@ DynMod <- R6Class("DynMod",
                              cndtol = 1e-12, silent = FALSE)
             control_[names(control)] <- control
 
-            private$nrow_exo <- nrow(private$exo_data)
-            private$jac <- matrix(0, nrow = private$endo_count,
-                          ncol = private$njac_cols)
+            if (private$use_dll) private$prepare_solve()
 
             if (private$max_endo_lead > 0 || force_stacked_time ) {
                 # preparations
@@ -456,12 +466,19 @@ DynMod <- R6Class("DynMod",
                                      private$f_dynamic, private$jac_dynamic,
                                      control = control_)
             }
+
+            if (private$use_dll) private$clean_after_solve()
             private$endo_data[private$model_period, ] <-
                     t(matrix(ret$x, nrow = private$endo_count))
+
+
             return (invisible(self))
         },
         solve_perturbation = function() {
+
             self$solve_steady(init_data = FALSE)
+
+            if (private$use_dll) private$prepare_solve()
 
             # solve_perturbation does not works for exogenous lags and leads.
             # For perturbation approaches, Dynare substitutes
@@ -482,6 +499,7 @@ DynMod <- R6Class("DynMod",
                                             private$exo_data, private$endo_data,
                                             private$exos, private$endos)
 
+            if (private$use_dll) private$clean_after_solve()
             return (invisible(self))
         },
         get_jacob = function(sparse = TRUE) {
@@ -505,15 +523,12 @@ DynMod <- R6Class("DynMod",
             }
         },
         time_functions = function() {
-
-            private$nrow_exo <- nrow(private$exo_data)
-            private$jac <- matrix(0, nrow = private$endo_count,
-                                  ncol = private$njac_cols)
-
+            if (private$use_dll) private$prepare_solve()
             time_functions(private$model_period, private$endo_data,
                            private$exo_data, private$params,
                            private$lead_lag_incidence,
                            private$f_dynamic, private$jac_dynamic)
+            if (private$use_dll) private$clean_after_solve()
         }
     ),
     private = list(
@@ -543,10 +558,13 @@ DynMod <- R6Class("DynMod",
         exo_data = NULL,
         solve_out = NULL,
         ss = NULL,
+        use_dll = FALSE,
+        dll_file = NA_character_,
         period_error_msg = paste("The model period is not set.",
                             "Set the model period with set_period()."),
         nrow_exo = NA_integer_,
         jac = NULL,
+        jac_steady = NULL,
         set_data_= function(data, names, names_missing, type = c("endo", "exo"),
                             update_mode = c("update", "updval")) {
             # generic function to set or update the endogenous or exogenous
@@ -647,6 +665,30 @@ DynMod <- R6Class("DynMod",
             return(sparseMatrix(i = mat_info$rows, j = mat_info$columns,
                                 x = mat_info$values,
                                 dims = as.integer(rep(n, 2))))
+        },
+        prepare_solve = function() {
+            private$nrow_exo <- nrow(private$exo_data)
+            private$jac <- matrix(0, nrow = private$endo_count,
+                              ncol = private$njac_cols)
+            dyn.load(private$dll_file)
+            return(invisible(NULL))
+        },
+        clean_after_solve = function() {
+            private$nrow_exo <- NULL
+            private$jac <- NULL
+            dyn.unload(private$dll_file)
+            return(invisible(NULL))
+        },
+        prepare_solve_steady = function() {
+            private$jac_steady <- matrix(0, nrow = private$endo_count,
+                                         ncol = private$endo_count)
+            dyn.load(private$dll_file)
+            return(invisible(NULL))
+        },
+        clean_after_solve_steady = function() {
+            private$jac_steady <- NULL
+            dyn.unload(private$dll_file)
+            return(invisible(NULL))
         },
         print_info = function(short) {
             cat(sprintf("%-60s%d\n", "Number of endogenous variables:",

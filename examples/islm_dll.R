@@ -8,7 +8,7 @@ mdl <- compile_model("mod/islm.mod", use_dll = TRUE)
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2019Q3")
 
-# set lags 
+# set lags
 mdl$set_endo_values(1200, names = "y", period = "2016Q4")
 mdl$set_endo_values(1000, names = "yd", period = "2016Q4")
 
@@ -18,3 +18,9 @@ mdl$solve(control = list(trace = TRUE))
 
 print(mdl$get_endo_data())
 plot(mdl$get_endo_data("r"), type = "o")
+
+save(mdl, file = "mdl.RData")
+rm(list = ls())
+load("mdl.RData")
+mdl$solve(control = list(trace = TRUE))
+unlink("mdl.RData")

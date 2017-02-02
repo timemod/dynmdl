@@ -1,3 +1,5 @@
+# this function compiled the c function on directory dll_dir,
+# and returns the path of the generated shared library
 compile_c_functions <- function(dll_dir) {
 
     cat("Compiling C functions ...\n")
@@ -38,10 +40,11 @@ compile_c_functions <- function(dll_dir) {
     cat("Done\n")
 
 
+
     if (is_windows) {
         dll_ext <- "dll"
     } else {
         dll_ext <- "so"
     }
-    dyn.load(file.path(dll_dir, paste("mdl_functions", dll_ext, sep = ".")))
+    return(file.path(dll_dir, paste("mdl_functions", dll_ext, sep = ".")))
 }
