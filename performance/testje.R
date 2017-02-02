@@ -11,7 +11,7 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
-nextra <- 10
+nextra <- 50
 mod_file <- paste0("mod/islm_countries_",
                    as.character(nextra), ".mod")
 create_islm_country_model(basis_mod_file, mod_file, nextra)

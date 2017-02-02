@@ -33,7 +33,7 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
                      IntegerVector tshift, SEXP exo_data,
                      SEXP params, Function jac_dynamic, int n_endo,
                      int nper, int max_lag) {
-    
+        
     int nendo = max(lead_lag_incidence);
     int *jac_var_id = new int[nendo];
     int *jac_shift  = new int[nendo];
@@ -59,11 +59,11 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
     vector<double> values;
         
     for (int it = 0; it < nper; it++) {
-        for (size_t i = 0; i < nendo; i++) {
+        for (int i = 0; i < nendo; i++) {
             x(i) = endos(icols[i] + it * n_endo);
         }
-        NumericMatrix jt  = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
-        for (size_t ideriv = 0; ideriv < nendo;  ideriv++) {
+        NumericMatrix jt = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
+        for (int ideriv = 0; ideriv < nendo;  ideriv++) {
             int id = jac_var_id[ideriv];
             int ivt = it + jac_shift[ideriv];
             for (int ieq = 0; ieq < n_endo; ieq++) {
@@ -78,7 +78,9 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
         }
     }
 
-    delete[] jac_var_id, jac_shift, icols;
+    delete[] jac_var_id;
+    delete[] jac_shift;
+    delete[] icols;
     
     Rcpp::IntegerVector rows_r(rows.begin(), rows.end());
     Rcpp::IntegerVector columns_r(columns.begin(), columns.end());
@@ -111,7 +113,7 @@ List get_jac_backwards(NumericVector endos, NumericVector lags,
     vector<int> columns;
     vector<double> values;
     for (int ieq = 0; ieq < nendo; ieq++) {
-        for (size_t ideriv = 0; ideriv < nendo;  ideriv++) {
+        for (int ideriv = 0; ideriv < nendo;  ideriv++) {
             double value = jt(ieq, cols[ideriv] - 1);
             if (value != 0) {
                // add 1 because the index origin in R is 1

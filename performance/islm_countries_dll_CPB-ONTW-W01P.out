@@ -9,7 +9,7 @@ Computing dynamic model derivatives:
  - order 2
 Preprocessing completed.
 Compiling C functions ...
-c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_10/mdl_functions.c -o islm_countries_10/mdl_functions.o c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o islm_countries_10/mdl_functions.dll tmp.def islm_countries_10/mdl_functions.o islm_countries_10/f_static.o islm_countries_10/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
+c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_10/mdl_functions.c -o islm_countries_10/mdl_functions.o c:/Rtools/mingw_64/bin/g++  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -mtune=core2 -c islm_countries_10/get_triplet_jac_new.cpp -o islm_countries_10/get_triplet_jac_new.o c:/Rtools/mingw_64/bin/g++ -shared -s -static-libgcc -o islm_countries_10/mdl_functions.dll tmp.def islm_countries_10/mdl_functions.o islm_countries_10/get_triplet_jac_new.o islm_countries_10/f_static.o islm_countries_10/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
 
 Iteration report
 ----------------
@@ -20,10 +20,10 @@ Iteration report
     3            4.79e-06           1.281e-05                 554
     4            4.79e-06           9.095e-12                3000
 Convergence after 4 iterations
-Total time function eval. : 0.032
-Total time Jacobian.      : 3.463
-Total time LU fact.       : 0.8
-Total time solve          : 0.048
+Total time function eval. : 0.03
+Total time Jacobian.      : 0.454
+Total time LU fact.       : 0.765
+Total time solve          : 0.063
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
 Found 633 equation(s).
@@ -35,7 +35,7 @@ Computing dynamic model derivatives:
  - order 2
 Preprocessing completed.
 Compiling C functions ...
-c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_50/mdl_functions.c -o islm_countries_50/mdl_functions.o c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o islm_countries_50/mdl_functions.dll tmp.def islm_countries_50/mdl_functions.o islm_countries_50/f_static.o islm_countries_50/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
+c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_50/mdl_functions.c -o islm_countries_50/mdl_functions.o c:/Rtools/mingw_64/bin/g++  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -mtune=core2 -c islm_countries_50/get_triplet_jac_new.cpp -o islm_countries_50/get_triplet_jac_new.o c:/Rtools/mingw_64/bin/g++ -shared -s -static-libgcc -o islm_countries_50/mdl_functions.dll tmp.def islm_countries_50/mdl_functions.o islm_countries_50/get_triplet_jac_new.o islm_countries_50/f_static.o islm_countries_50/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
 
 Iteration report
 ----------------
@@ -47,9 +47,9 @@ Iteration report
     4            8.95e-06           4.002e-11                6961
 Convergence after 4 iterations
 Total time function eval. : 0.078
-Total time Jacobian.      : 24.519
-Total time LU fact.       : 17.209
-Total time solve          : 0.219
+Total time Jacobian.      : 1.157
+Total time LU fact.       : 16.751
+Total time solve          : 0.232
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
 Found 1083 equation(s).
@@ -61,7 +61,7 @@ Computing dynamic model derivatives:
  - order 2
 Preprocessing completed.
 Compiling C functions ...
-c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_100/mdl_functions.c -o islm_countries_100/mdl_functions.o c:/Rtools/mingw_64/bin/gcc -shared -s -static-libgcc -o islm_countries_100/mdl_functions.dll tmp.def islm_countries_100/mdl_functions.o islm_countries_100/f_static.o islm_countries_100/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
+c:/Rtools/mingw_64/bin/gcc  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -std=gnu99 -mtune=core2 -c islm_countries_100/mdl_functions.c -o islm_countries_100/mdl_functions.o c:/Rtools/mingw_64/bin/g++  -I"c:/PROGRA~1/R/R-33~1.2/include" -DNDEBUG     -I"d:/Compiler/gcc-4.9.3/local330/include"     -O2 -Wall  -mtune=core2 -c islm_countries_100/get_triplet_jac_new.cpp -o islm_countries_100/get_triplet_jac_new.o c:/Rtools/mingw_64/bin/g++ -shared -s -static-libgcc -o islm_countries_100/mdl_functions.dll tmp.def islm_countries_100/mdl_functions.o islm_countries_100/get_triplet_jac_new.o islm_countries_100/f_static.o islm_countries_100/f_dynamic.o -Ld:/Compiler/gcc-4.9.3/local330/lib/x64 -Ld:/Compiler/gcc-4.9.3/local330/lib -Lc:/PROGRA~1/R/R-33~1.2/bin/x64 -lRDone
 
 Iteration report
 ----------------
@@ -72,11 +72,11 @@ Iteration report
     3            5.32e-06           1.318e-05                2174
     4            5.32e-06           1.710e-10              202519
 Convergence after 4 iterations
-Total time function eval. : 0.221
-Total time Jacobian.      : 80.506
-Total time LU fact.       : 94.253
-Total time solve          : 0.528
+Total time function eval. : 0.218
+Total time Jacobian.      : 2.36
+Total time LU fact.       : 92.58
+Total time solve          : 0.516
   nextra_countries  neq cpu time
-1               10  273     4.41
-2               50  633    42.12
-3              100 1083   175.66
+1               10  273     1.34
+2               50  633    18.27
+3              100 1083    95.82
