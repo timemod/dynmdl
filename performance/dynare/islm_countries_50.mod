@@ -1,4 +1,4 @@
-@#include "../mod/islm_countries_10.mod"
+@#include "../mod/islm_countries_50.mod"
 
 initval;
 y_nl = 1300;

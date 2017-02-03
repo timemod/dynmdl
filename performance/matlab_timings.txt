@@ -1,0 +1,8 @@
+10    2.2 s
+50   13.7 s
+100  52   s
+
+
+Block optimalisation does not work.
+
+
