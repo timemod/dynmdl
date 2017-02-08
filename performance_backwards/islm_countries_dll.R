@@ -13,7 +13,9 @@ params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
 run_series <- function(nextra_countries) {
-    times <- character(0)
+    user_times    <- numeric(0)
+    sys_times     <- numeric(0)
+    elapsed_times <- numeric(0)
     nendo <- numeric(0)
     for (nextra in nextra_countries) {
         mod_file <- paste0("mod/islm_back_countries_",
@@ -24,17 +26,18 @@ run_series <- function(nextra_countries) {
         mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 
         t <- system.time(mdl$solve(control = list(trace = TRUE)))
-        times <- c(times, t["elapsed"])
+        user_times <- c(user_times, t["user.self"])
+        sys_times <- c(sys_times, t["sys.self"])
+        elapsed_times <- c(elapsed_times, t["elapsed"])
         nendo <- c(nendo, length(mdl$get_endo_names()))
 
     }
-    return(list(times = times, neq = nendo))
+    return(data.frame(neq = nendo, user_times = user_times,
+                      sys_times = sys_times, elapsed_times = elapsed_times))
 }
 
-
-time_table <- data.frame(nextra_countries)
-    ret <- run_series(nextra_countries)
-    time_table[, "neq"] <- ret$neq
-    time_table[, "time"] <- ret$times
-
+ret  <- run_series(nextra_countries)
+time_table <- data.frame(nextra_countries = nextra_countries)
+time_table <- cbind(time_table, ret)
+rownames(time_table) <- NULL
 print(time_table)
