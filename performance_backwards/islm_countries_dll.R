@@ -34,7 +34,7 @@ run_series <- function(nextra_countries) {
 
 time_table <- data.frame(nextra_countries)
     ret <- run_series(nextra_countries)
-    time_table[, "time"] <- ret$times
     time_table[, "neq"] <- ret$neq
+    time_table[, "time"] <- ret$times
 
 print(time_table)

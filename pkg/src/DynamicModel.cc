@@ -2179,20 +2179,20 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, jacobian_output, output_type, tef_terms);
   }
+  int ideriv = 0;
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
-       it != first_derivatives.end(); it++)
-    {
+       it != first_derivatives.end(); it++) {
       int eq = it->first.first;
       int var = it->first.second;
       expr_t d1 = it->second;
-
-      jacobianHelper(jacobian_output, eq, getDynJacobianCol(var), output_type);
+      jacobianHelper(jacobian_output, ideriv, eq, getDynJacobianCol(var), output_type);
       jacobian_output << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
       if (IS_R(output_type) || output_type == oCDynamicModel) {
           jacobian_output << ";";
       }
       jacobian_output << endl;
+      ideriv++;
     }
 
   // Writing Hessian
@@ -2401,6 +2401,9 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
 
     } else if  (output_type == oRDynamicModel) {
 
+
+      int nnz = first_derivatives.size();
+
       DynamicOutput << "f_dynamic <- function(y, x, params, it_) {" << endl
                     << model_local_vars_output.str()
                     << INDENT(1) << "residual <- numeric(" <<  nrows << ")" <<  endl
@@ -2409,10 +2412,12 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
                     << "}" << endl << endl
                     << "jac_dynamic <- function(y, x, params, it_) {" << endl
                     << model_local_vars_output.str()
-                    << INDENT(1) << "g1 <- matrix(0, " << nrows << ", " << dynJacobianColsNbr << ")" << endl << endl
+                    << INDENT(1) << "rows   <- integer(" << nnz << ")" << endl
+                    << INDENT(1) << "cols   <- integer(" << nnz << ")" << endl
+                    << INDENT(1) << "values <- integer(" << nnz << ")" << endl << endl
                     << jacobian_output.str()
                     << endl
-                    << INDENT(1) << "return(g1)"  << endl
+                    << INDENT(1) << "return(list(rows = rows, cols = cols, values = values))"  << endl
                     << "}" << endl;
 
     } else if (output_type == oCDynamicModel) {
@@ -2426,7 +2431,8 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
                     << model_output.str()
                     << endl << "  return;" << endl << "}" << endl << endl
                     << "  /* Jacobian  */" << endl
-                    << "void jac_dynamic(double *y, double *x, int nb_row_x, double *params, int it_, double *g1) {" << endl
+                    << "void jac_dynamic(double *y, double *x, int nb_row_x, double *params, int it_," << endl
+                    << "                 int *rows, int *cols, double *values) {" << endl
                     << "  /* Jacobian  */" << endl
                     << model_local_vars_output.str()
                     << jacobian_output.str()
@@ -5332,11 +5338,12 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
     writeDynamicModel(dynout, oRDynamicModel);
 
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
-                              Rcpp::Named("dynamic_functions") = Rcpp::String(dynout.str()),
-                              Rcpp::Named("max_endo_lag")  = max_endo_lag,
-                              Rcpp::Named("max_endo_lead") = max_endo_lead,
-                              Rcpp::Named("max_exo_lag")   = max_exo_lag,
-                              Rcpp::Named("max_exo_lead")  = max_exo_lead
+                              Rcpp::Named("jac_size")           = first_derivatives.size(),
+                              Rcpp::Named("dynamic_functions")  = Rcpp::String(dynout.str()),
+                              Rcpp::Named("max_endo_lag")       = max_endo_lag,
+                              Rcpp::Named("max_endo_lead")      = max_endo_lead,
+                              Rcpp::Named("max_exo_lag")        = max_exo_lag,
+                              Rcpp::Named("max_exo_lead")       = max_exo_lead
                              );
 }
 

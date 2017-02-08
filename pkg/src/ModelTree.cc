@@ -1653,6 +1653,41 @@ ModelTree::jacobianHelper(ostream &output, int eq_nb, int col_nb, ExprNodeOutput
   output << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
 
+
+#ifdef USE_R
+void ModelTree::jacobianHelper(ostream &output, int ideriv, int eq_nb, 
+                               int col_nb, ExprNodeOutputType output_type) const {
+
+  int shift = IS_R(output_type) ? 1 : 0;
+
+  // rows
+  output << "rows" << LEFT_ARRAY_SUBSCRIPT(output_type);
+  output << ideriv + shift;
+  output << RIGHT_ARRAY_SUBSCRIPT(output_type);
+  output << ASSIGNMENT_OPERATOR(output_type);
+  output << eq_nb + 1;
+  if (output_type == oCDynamicModel) {
+      output << ";";
+  }
+  output << endl;
+    
+  // columns
+  output << "cols" << LEFT_ARRAY_SUBSCRIPT(output_type);
+  output << ideriv + shift;
+  output << RIGHT_ARRAY_SUBSCRIPT(output_type);
+  output << ASSIGNMENT_OPERATOR(output_type);
+  output << col_nb + 1;
+  if (output_type == oCDynamicModel) {
+      output << ";";
+  }
+  output << endl;
+
+  // values
+  output << "values" << LEFT_ARRAY_SUBSCRIPT(output_type);
+  output << ideriv + shift << RIGHT_ARRAY_SUBSCRIPT(output_type);
+}
+#endif
+
 void
 ModelTree::sparseHelper(int order, ostream &output, int row_nb, int col_nb, ExprNodeOutputType output_type) const
 {

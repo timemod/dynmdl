@@ -22,7 +22,7 @@ time_functions <- function(model_period, endo_data, exo_data, params,
     }
     jac <- function(x, lags, iper) {
         return (jac_dynamic(c(lags, x), exo_data, params,
-                            iper + max_lag)[, jac_cols])
+                            iper + max_lag))
     }
 
     lags <- data[lag_indices]

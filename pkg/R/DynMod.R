@@ -181,6 +181,7 @@ DynMod <- R6Class("DynMod",
                 private$max_exo_lag        <- dynamic_model$max_exo_lag
                 private$max_exo_lead       <- dynamic_model$max_exo_lead
                 private$lead_lag_incidence <- dynamic_model$lead_lag_incidence
+                private$jac_dynamic_size   <- dynamic_model$jac_size
             })
 
             private$exo_count  <- length(private$exos)
@@ -221,7 +222,7 @@ DynMod <- R6Class("DynMod",
                     # inefficient, therefore use private$jac that is
                     # created just before solve is called.
                     .Call("jac_dynamic_", y, x, params, it - 1, private$nrow_exo,
-                          private$jac)
+                       private$jac$rows, private$jac$cols, private$jac$values)
                     return(private$jac)
                 }
             } else {
@@ -431,6 +432,8 @@ DynMod <- R6Class("DynMod",
                                              private$exos, private$endos,
                                              private$params,
                                              private$jac_dynamic,
+                                             private$endo_count,
+                                             private$njac_cols,
                                              only_eigval = TRUE, debug = FALSE)
             cat("EIGENVALUES:\n")
             cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
@@ -476,6 +479,7 @@ DynMod <- R6Class("DynMod",
                                             private$endo_data,
                                             private$exo_data, private$params,
                                             private$lead_lag_incidence,
+                                            private$njac_cols,
                                             private$f_dynamic,
                                             private$jac_dynamic,
                                             control = control_,
@@ -508,6 +512,7 @@ DynMod <- R6Class("DynMod",
             private$ss <- solve_first_order(private$ss, private$lead_lag_incidence,
                                     private$exos, private$endos,
                                     private$params, private$jac_dynamic,
+                                    private$endo_count, private$njac_cols,
                                     only_eigval = FALSE, debug = FALSE)
 
             private$endo_data <- solve_perturbation_(private$ss,
@@ -570,6 +575,7 @@ DynMod <- R6Class("DynMod",
         jac_static = NULL,
         f_dynamic = NULL,
         jac_dynamic = NULL,
+        jac_dynamic_size = NA_integer_,
         model_period = NULL,
         data_period =  NULL,
         endo_data = NULL,
@@ -685,8 +691,9 @@ DynMod <- R6Class("DynMod",
         },
         prepare_solve = function() {
             private$nrow_exo <- nrow(private$exo_data)
-            private$jac <- matrix(0, nrow = private$endo_count,
-                              ncol = private$njac_cols)
+            private$jac  <- list(rows   = integer(private$jac_dynamic_size),
+                                 cols   = integer(private$jac_dynamic_size),
+                                 values = numeric(private$jac_dynamic_size))
             dyn.load(private$dll_file)
             return(invisible(NULL))
         },
@@ -720,6 +727,8 @@ DynMod <- R6Class("DynMod",
                         private$max_exo_lead))
             cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
                         private$max_exo_lag))
+            cat(sprintf("%-60s%d\n", "Number of nonzeros dyn. jac:",
+                        private$jac_dynamic_size))
             if (!is.null(private$model_period)) {
                 cat(sprintf("%-60s%s\n", "Model period:",
                             as.character(private$model_period)))
@@ -737,8 +746,10 @@ DynMod <- R6Class("DynMod",
                 print(private$f_static)
                 cat("\nstatic Jacobian:\n")
                 print(private$jac_static)
-                cat("\ndynamic function and Jacobian:\n")
+                cat("\ndynamic function:\n")
                 print(private$f_dynamic)
+                cat("\ndynamic jacobian:\n")
+                print(private$jac_dynamic)
             }
         }
     )

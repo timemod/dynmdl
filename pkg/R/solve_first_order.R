@@ -2,7 +2,8 @@
 # also computes the eigenvalues.
 solve_first_order <- function(ss, lead_lag_incidence, static_exos,
                              static_endos, params, jac_dynamic,
-                             only_eigval = FALSE, debug = FALSE) {
+                             nendo, njac_cols, only_eigval = FALSE,
+                             debug = FALSE) {
 
     if (is.null(ss)) {
         ss <- init_state_space(length(static_exos), lead_lag_incidence, debug)
@@ -27,6 +28,9 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
     y <- endos[which(lead_lag_incidence != 0)]
     it <- max_lag + 1
     jacobia <- jac_dynamic(y, exos, params, it)
+    jacobia <- sparseMatrix(i = jacobia$rows, j = jacobia$cols,
+                            x = jacobia$values, dims = c(nendo, njac_cols))
+    jacobia <- as(jacobia, "matrix")
     jacobia <- jacobia[, ss$reorder_jacobian_columns, drop = FALSE]
 
     if (ss$nstatic) {

@@ -1,4 +1,5 @@
 library(dynr)
+library(testthat)
 
 context("ISLM model")
 

@@ -7,9 +7,9 @@
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom methods as
 solve_backward_model <- function(model_period, endo_data, exo_data, params,
-                                 lead_lag_incidence, f_dynamic, jac_dynamic,
+                                 lead_lag_incidence, njac_cols, f_dynamic, jac_dynamic,
                                  control, solver) {
-
+    
     start_per <- start_period(model_period)
     nper <- length_range(model_period)
     nendo <- ncol(endo_data)
@@ -33,10 +33,10 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
     } else {
         jac <- function(x, lags, iper) {
             mat_info <- get_jac_backwards(x, lags, jac_cols, exo_data, 
-                                          params, jac_dynamic, 1L, max_lag)
+                                          params, jac_dynamic, iper, max_lag)
             return(sparseMatrix(i = mat_info$rows, j = mat_info$columns,
                                 x = mat_info$values,
-                                dims = as.integer(rep(nendo, 2))))
+                               dims = as.integer(rep(nendo, 2))))
         }
     }
 

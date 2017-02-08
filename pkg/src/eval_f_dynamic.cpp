@@ -62,18 +62,24 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
         for (int i = 0; i < nendo; i++) {
             x(i) = endos(icols[i] + it * n_endo);
         }
-        NumericMatrix jt = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
-        for (int ideriv = 0; ideriv < nendo;  ideriv++) {
-            int id = jac_var_id[ideriv];
-            int ivt = it + jac_shift[ideriv];
-            for (int ieq = 0; ieq < n_endo; ieq++) {
-                double value = jt(ieq, ideriv);
-                if (ivt >= 0 && ivt < nper && value != 0) {
-                    // add 1 because the index origin in R is 1
-                    rows.push_back(ieq + it * n_endo + 1);
-                    columns.push_back(id + ivt * n_endo + 1);
-                    values.push_back(value);
-                }
+        List jac_data = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
+        IntegerVector rows_t   = jac_data[0];
+        IntegerVector cols_t   = jac_data[1];
+        NumericVector values_t = jac_data[2];
+        for (int ideriv = 0; ideriv < rows_t.size();  ideriv++) {
+            int ieq  = rows_t[ideriv] - 1;
+            int icol = cols_t[ideriv] - 1;
+            if (icol >= nendo) {
+                continue;
+            }
+            int id  = jac_var_id[icol];
+            int ivt = it + jac_shift[icol];
+            double value = values_t[ideriv];
+            if (ivt >= 0 && ivt < nper && value != 0) {
+                // add 1 because the index origin in R is 1
+                rows.push_back(ieq + it * n_endo + 1);
+                columns.push_back(id + ivt * n_endo + 1);
+                values.push_back(value);
             }
         }
     }
@@ -107,28 +113,36 @@ List get_jac_backwards(NumericVector endos, NumericVector lags,
         x[i + nlags] = endos[i];
     }
 
-    NumericMatrix jt  = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
-        
+    List jac_data = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
+    IntegerVector rows_t   = jac_data[0];
+    IntegerVector cols_t   = jac_data[1];
+    NumericVector values_t = jac_data[2];
+
     vector<int> rows; 
     vector<int> columns;
     vector<double> values;
-    for (int ieq = 0; ieq < nendo; ieq++) {
-        for (int ideriv = 0; ideriv < nendo;  ideriv++) {
-            double value = jt(ieq, cols[ideriv] - 1);
-            if (value != 0) {
-               // add 1 because the index origin in R is 1
-                rows.push_back(ieq + 1);
-                columns.push_back(ideriv + 1);
-                values.push_back(value);
-            }
+
+    for (int ideriv = 0; ideriv < rows_t.size();  ideriv++) {
+        int ieq  = rows_t[ideriv];
+        int icol = cols_t[ideriv];
+        int ic = icol - nlags;
+        if (ic < 1 || ic >  nendo) {
+             continue;
+        }
+        double value = values_t[ideriv];
+        if (value != 0) {
+            // add 1 because the index origin in R is 1
+            rows.push_back(ieq);
+            columns.push_back(ic);
+            values.push_back(value);
         }
     }
-
+        
     Rcpp::IntegerVector rows_r(rows.begin(), rows.end());
     Rcpp::IntegerVector columns_r(columns.begin(), columns.end());
     Rcpp::NumericVector values_r(values.begin(), values.end());
 
-    return List::create(Rcpp::Named("rows") = rows_r,
+    return List::create(Rcpp::Named("rows")    = rows_r,
                         Rcpp::Named("columns") = columns_r,
-                        Rcpp::Named("values") = values_r);
+                        Rcpp::Named("values")  = values_r);
 }
