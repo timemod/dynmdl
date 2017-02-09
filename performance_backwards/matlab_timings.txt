@@ -1,4 +1,17 @@
-N 
+Matlab
+--------
+
+N   normal       bytecode 
+10   2 s
+100  4 s 
 500 85 s.
 
-Block optimalisation / byte code does not work.
+bytecode werkt niet
+
+Octave
+-------
+
+N   normal
+10   2 s
+100  15 s 
+500 crashed

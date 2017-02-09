@@ -1,12 +1,14 @@
 Matlab
 -------
 N    normal         bytecode
-100  12,9 s         4 s
-500  250,6 s        24 s
+10    0,34           1 s
+100   12,9 s         4 s
+200   37 s           5 s
+500   250,6 s        16 s
+1000                 49 s
 
-
-Block optimalisation does not work.
-
+Blokdecompositie levert een dramatische reductie in rekentijd op,
+maar dat is logisch voor zo'n simpel model.
 
 Octave
 -------
@@ -14,5 +16,7 @@ Octave
 De bytecode options does not work (Octave crashes)
 
 N 
+10  3,7
 100 44,6
+200 97,8
 500 Octave crashes

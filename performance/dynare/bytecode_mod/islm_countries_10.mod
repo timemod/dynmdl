@@ -1,4 +1,4 @@
-@#define countries = ["co_1", "co_2", "co_3", "co_4", "co_5", "co_6", "co_7", "co_8", "co_9", "co_10", "co_11", "co_12", "co_13", "co_14", "co_15", "co_16", "co_17", "co_18", "co_19", "co_20", "co_21", "co_22", "co_23", "co_24", "co_25", "co_26", "co_27", "co_28", "co_29", "co_30", "co_31", "co_32", "co_33", "co_34", "co_35", "co_36", "co_37", "co_38", "co_39", "co_40", "co_41", "co_42", "co_43", "co_44", "co_45", "co_46", "co_47", "co_48", "co_49", "co_50", "co_51", "co_52", "co_53", "co_54", "co_55", "co_56", "co_57", "co_58", "co_59", "co_60", "co_61", "co_62", "co_63", "co_64", "co_65", "co_66", "co_67", "co_68", "co_69", "co_70", "co_71", "co_72", "co_73", "co_74", "co_75", "co_76", "co_77", "co_78", "co_79", "co_80", "co_81", "co_82", "co_83", "co_84", "co_85", "co_86", "co_87", "co_88", "co_89", "co_90", "co_91", "co_92", "co_93", "co_94", "co_95", "co_96", "co_97", "co_98", "co_99", "co_100"]
+@#define countries = ["co_1", "co_2", "co_3", "co_4", "co_5", "co_6", "co_7", "co_8", "co_9", "co_10"]
 @#for co in countries
 var y_@{co} yd_@{co} t_@{co} c_@{co} i_@{co} md_@{co} r_@{co};
 varexo g_@{co} ms_@{co};              
@@ -20,7 +20,7 @@ m0_@{co} = 75; m1_@{co} = 0.23; m2_@{co} = -35; m3_@{co} = -1.5;
 t0_@{co} = -15; t1_@{co} = 0.22;
 @#endfor
 
-model(bytecode, block, mfs = 1);
+model(bytecode);
 @#for co in countries
 y_@{co} = c_@{co} + i_@{co} + g_@{co};
 yd_@{co} = y_@{co} - t_@{co};
