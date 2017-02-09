@@ -26,6 +26,6 @@ yd_data <- mdl$get_data(pattern = "^yd_.*")
 yd_data[ , ] <- 980
 mdl$set_data(yd_data)
 
-mdl$set_data(regts(1300,  period = "2016Q4"), names = "y_nl")
+mdl$set_data(regts(1300,  period = "2016Q4"), names = "y_co_1")
 
 mdl$solve()

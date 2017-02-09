@@ -1,21 +1,3 @@
-? normal countries
-$expa(CO; nl, uk, be, ge, fr, es, dk, us, it, ch, se, no, fi, ir, in, jp, ru, pt, po, au)
-
-param c0_CO 100 c1_CO 0.28 c2_CO 0.32 c3_CO 0.10 c4_CO -20 c5_CO 1;
-param i0_CO 100 i1_CO 0.12 i2_CO 0.08 i3_CO 0.04 i4_CO  40 i5_CO -1.5;
-param m0_CO 75 m1_CO 0.23 m2_CO -35 m3_CO -1.5;
-param t0_CO -15 t1_CO 0.22;
-
-ident y_CO = c_CO + i_CO + g_CO;
-ident yd_CO = y_CO - t_CO;
-ident t_CO = t0_CO + t1_CO * y_CO;
-ident c_CO = c0_CO + c1_CO * yd_CO(-1) + c2_CO * yd_CO + c3_CO * yd_CO(-2) 
-             + c4_CO * r_CO + c5_CO * r_CO**2;
-ident i_CO = i0_CO + i1_CO * y_CO(-1) + i2_CO * y_CO + i3_CO * y_CO(-2) 
-             + i4_CO * r_CO + i5_CO * r_CO**2;
-ident md_CO = m0_CO + m1_CO * y_CO + m2_CO * r_CO + m3_CO * r_CO**2;
-ident r_CO = r_CO + (md_CO - ms_CO) / ms_CO;
-
 ? extra countries
 $expa(CO; 1/500)
 

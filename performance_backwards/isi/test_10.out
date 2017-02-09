@@ -1,0 +1,237 @@
+Isis Model Compiler 3.00
+Compiling model...
+      70 equations processed
+Ordering equations...
+Checking redundant feedback variables
+       0 redundant feedback variables detected
+Generating feedback variable ordering
+Writing MIF file...
+Writing cross-reference file...
+End compilation
+Reading mif file islm_back_countries_10.mif ...
+Model with    70 equations read
+Feedback ordering generated ...
+IsisModel object
+Model index:                                                1
+Number of variables:                                        90
+Maximum lag:                                                2
+Maximum lead:                                               0
+ 
+Model Solve Options
+Solution period               2017Q1/2066Q4
+Simulation mode               dynamic
+Feedback starting values      current period
+Maximum iterations per period 50
+Relaxation minimum            0.500E-01
+           maximum            1.00
+           shrinkage          0.500
+Criteria stepback             1.30
+          matrix              0.900
+Maximum updates Newtom matrix per period                 10
+Maximum number of linesearches with old Jacobian         5
+Criterion for linesearch decisions etc.                  geometric
+ 
+   6 steps for Newton matrix at iteration   0 (1/condscal =  1.10E-01)
+Convergence for 2017Q1 in    7 iterations
+Convergence for 2017Q2 in    8 iterations
+Convergence for 2017Q3 in    8 iterations
+Convergence for 2017Q4 in    8 iterations
+Convergence for 2018Q1 in   10 iterations
+Convergence for 2018Q2 in   10 iterations
+Convergence for 2018Q3 in   10 iterations
+Convergence for 2018Q4 in   12 iterations
+Convergence for 2019Q1 in   11 iterations
+Convergence for 2019Q2 in    9 iterations
+Convergence for 2019Q3 in    9 iterations
+Convergence for 2019Q4 in    9 iterations
+Convergence for 2020Q1 in    9 iterations
+Convergence for 2020Q2 in    8 iterations
+Convergence for 2020Q3 in    8 iterations
+Convergence for 2020Q4 in    7 iterations
+Convergence for 2021Q1 in    7 iterations
+Convergence for 2021Q2 in    7 iterations
+Convergence for 2021Q3 in    7 iterations
+Convergence for 2021Q4 in    7 iterations
+Convergence for 2022Q1 in    7 iterations
+Convergence for 2022Q2 in    7 iterations
+Convergence for 2022Q3 in    6 iterations
+Convergence for 2022Q4 in    7 iterations
+Convergence for 2023Q1 in    6 iterations
+Convergence for 2023Q2 in    6 iterations
+Convergence for 2023Q3 in    6 iterations
+Convergence for 2023Q4 in    6 iterations
+Convergence for 2024Q1 in    6 iterations
+Convergence for 2024Q2 in    6 iterations
+Convergence for 2024Q3 in    6 iterations
+Convergence for 2024Q4 in    6 iterations
+Convergence for 2025Q1 in    6 iterations
+Convergence for 2025Q2 in    6 iterations
+Convergence for 2025Q3 in    5 iterations
+Convergence for 2025Q4 in    6 iterations
+Convergence for 2026Q1 in    6 iterations
+Convergence for 2026Q2 in    6 iterations
+Convergence for 2026Q3 in    6 iterations
+Convergence for 2026Q4 in    6 iterations
+Convergence for 2027Q1 in    6 iterations
+Convergence for 2027Q2 in    6 iterations
+Convergence for 2027Q3 in    6 iterations
+Convergence for 2027Q4 in    5 iterations
+Convergence for 2028Q1 in    6 iterations
+Convergence for 2028Q2 in    5 iterations
+Convergence for 2028Q3 in    6 iterations
+Convergence for 2028Q4 in    5 iterations
+Convergence for 2029Q1 in    6 iterations
+Convergence for 2029Q2 in    5 iterations
+Convergence for 2029Q3 in    5 iterations
+Convergence for 2029Q4 in    5 iterations
+Convergence for 2030Q1 in    5 iterations
+Convergence for 2030Q2 in    5 iterations
+Convergence for 2030Q3 in    5 iterations
+Convergence for 2030Q4 in    5 iterations
+Convergence for 2031Q1 in    5 iterations
+Convergence for 2031Q2 in    5 iterations
+Convergence for 2031Q3 in    6 iterations
+Convergence for 2031Q4 in    6 iterations
+Convergence for 2032Q1 in    5 iterations
+Convergence for 2032Q2 in    6 iterations
+Convergence for 2032Q3 in    5 iterations
+Convergence for 2032Q4 in    5 iterations
+Convergence for 2033Q1 in    5 iterations
+Convergence for 2033Q2 in    5 iterations
+Convergence for 2033Q3 in    5 iterations
+Convergence for 2033Q4 in    5 iterations
+Convergence for 2034Q1 in    5 iterations
+Convergence for 2034Q2 in    5 iterations
+Convergence for 2034Q3 in    5 iterations
+Convergence for 2034Q4 in    5 iterations
+Convergence for 2035Q1 in    5 iterations
+Convergence for 2035Q2 in    5 iterations
+Convergence for 2035Q3 in    5 iterations
+Convergence for 2035Q4 in    5 iterations
+Convergence for 2036Q1 in    5 iterations
+Convergence for 2036Q2 in    5 iterations
+Convergence for 2036Q3 in    5 iterations
+Convergence for 2036Q4 in    5 iterations
+Convergence for 2037Q1 in    5 iterations
+Convergence for 2037Q2 in    5 iterations
+Convergence for 2037Q3 in    5 iterations
+Convergence for 2037Q4 in    5 iterations
+Convergence for 2038Q1 in    5 iterations
+Convergence for 2038Q2 in    5 iterations
+Convergence for 2038Q3 in    5 iterations
+Convergence for 2038Q4 in    5 iterations
+Convergence for 2039Q1 in    5 iterations
+Convergence for 2039Q2 in    5 iterations
+Convergence for 2039Q3 in    5 iterations
+Convergence for 2039Q4 in    5 iterations
+Convergence for 2040Q1 in    5 iterations
+Convergence for 2040Q2 in    5 iterations
+Convergence for 2040Q3 in    5 iterations
+Convergence for 2040Q4 in    5 iterations
+Convergence for 2041Q1 in    5 iterations
+Convergence for 2041Q2 in    5 iterations
+Convergence for 2041Q3 in    5 iterations
+Convergence for 2041Q4 in    5 iterations
+Convergence for 2042Q1 in    5 iterations
+Convergence for 2042Q2 in    5 iterations
+Convergence for 2042Q3 in    5 iterations
+Convergence for 2042Q4 in    5 iterations
+Convergence for 2043Q1 in    5 iterations
+Convergence for 2043Q2 in    5 iterations
+Convergence for 2043Q3 in    5 iterations
+Convergence for 2043Q4 in    5 iterations
+Convergence for 2044Q1 in    5 iterations
+Convergence for 2044Q2 in    5 iterations
+Convergence for 2044Q3 in    5 iterations
+Convergence for 2044Q4 in    5 iterations
+Convergence for 2045Q1 in    5 iterations
+Convergence for 2045Q2 in    5 iterations
+Convergence for 2045Q3 in    5 iterations
+Convergence for 2045Q4 in    5 iterations
+Convergence for 2046Q1 in    4 iterations
+Convergence for 2046Q2 in    5 iterations
+Convergence for 2046Q3 in    5 iterations
+Convergence for 2046Q4 in    5 iterations
+Convergence for 2047Q1 in    5 iterations
+Convergence for 2047Q2 in    5 iterations
+Convergence for 2047Q3 in    5 iterations
+Convergence for 2047Q4 in    5 iterations
+Convergence for 2048Q1 in    5 iterations
+Convergence for 2048Q2 in    5 iterations
+Convergence for 2048Q3 in    5 iterations
+Convergence for 2048Q4 in    5 iterations
+Convergence for 2049Q1 in    5 iterations
+Convergence for 2049Q2 in    5 iterations
+Convergence for 2049Q3 in    5 iterations
+Convergence for 2049Q4 in    5 iterations
+Convergence for 2050Q1 in    5 iterations
+Convergence for 2050Q2 in    5 iterations
+Convergence for 2050Q3 in    4 iterations
+Convergence for 2050Q4 in    5 iterations
+Convergence for 2051Q1 in    5 iterations
+Convergence for 2051Q2 in    6 iterations
+Convergence for 2051Q3 in    5 iterations
+Convergence for 2051Q4 in    5 iterations
+Convergence for 2052Q1 in    5 iterations
+Convergence for 2052Q2 in    5 iterations
+Convergence for 2052Q3 in    5 iterations
+Convergence for 2052Q4 in    5 iterations
+Convergence for 2053Q1 in    5 iterations
+Convergence for 2053Q2 in    5 iterations
+Convergence for 2053Q3 in    5 iterations
+Convergence for 2053Q4 in    5 iterations
+Convergence for 2054Q1 in    5 iterations
+Convergence for 2054Q2 in    5 iterations
+Convergence for 2054Q3 in    5 iterations
+Convergence for 2054Q4 in    5 iterations
+Convergence for 2055Q1 in    5 iterations
+Convergence for 2055Q2 in    4 iterations
+Convergence for 2055Q3 in    4 iterations
+Convergence for 2055Q4 in    5 iterations
+Convergence for 2056Q1 in    4 iterations
+Convergence for 2056Q2 in    5 iterations
+Convergence for 2056Q3 in    5 iterations
+Convergence for 2056Q4 in    5 iterations
+Convergence for 2057Q1 in    5 iterations
+Convergence for 2057Q2 in    5 iterations
+Convergence for 2057Q3 in    5 iterations
+Convergence for 2057Q4 in    4 iterations
+Convergence for 2058Q1 in    4 iterations
+Convergence for 2058Q2 in    5 iterations
+Convergence for 2058Q3 in    5 iterations
+Convergence for 2058Q4 in    6 iterations
+Convergence for 2059Q1 in    5 iterations
+Convergence for 2059Q2 in    4 iterations
+Convergence for 2059Q3 in    5 iterations
+Convergence for 2059Q4 in    4 iterations
+Convergence for 2060Q1 in    5 iterations
+Convergence for 2060Q2 in    5 iterations
+Convergence for 2060Q3 in    5 iterations
+Convergence for 2060Q4 in    5 iterations
+Convergence for 2061Q1 in    4 iterations
+Convergence for 2061Q2 in    4 iterations
+Convergence for 2061Q3 in    5 iterations
+Convergence for 2061Q4 in    5 iterations
+Convergence for 2062Q1 in    5 iterations
+Convergence for 2062Q2 in    5 iterations
+Convergence for 2062Q3 in    5 iterations
+Convergence for 2062Q4 in    5 iterations
+Convergence for 2063Q1 in    5 iterations
+Convergence for 2063Q2 in    5 iterations
+Convergence for 2063Q3 in    5 iterations
+Convergence for 2063Q4 in    5 iterations
+Convergence for 2064Q1 in    4 iterations
+Convergence for 2064Q2 in    5 iterations
+Convergence for 2064Q3 in    5 iterations
+Convergence for 2064Q4 in    5 iterations
+Convergence for 2065Q1 in    4 iterations
+Convergence for 2065Q2 in    5 iterations
+Convergence for 2065Q3 in    4 iterations
+Convergence for 2065Q4 in    5 iterations
+Convergence for 2066Q1 in    5 iterations
+Convergence for 2066Q2 in    5 iterations
+Convergence for 2066Q3 in    5 iterations
+Convergence for 2066Q4 in    5 iterations
+Total number of iterations 1096
+Solve model used     0.20 Cpu secs
+ 

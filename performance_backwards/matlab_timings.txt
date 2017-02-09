@@ -1,0 +1,4 @@
+N 
+500 85 s.
+
+Block optimalisation / byte code does not work.

@@ -1,6 +1,6 @@
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
-Found 273 equation(s).
+Found 70 equation(s).
 Evaluating expressions...done
 Computing static model derivatives:
  - order 1
@@ -12,19 +12,18 @@ Preprocessing completed.
 Iteration report
 ----------------
  Iter     inv. cond. jac.         Largest |f|   Index largest |f|
-    0                               2.100e+02                   7
-    1            1.46e-05           8.513e+01                 827
-    2            9.84e-07           2.120e-01                 554
-    3            4.79e-06           1.281e-05                 554
-    4            4.79e-06           9.095e-12                3000
-Convergence after 4 iterations
-Total time function eval. : 5.5
-Total time Jacobian.      : 3.657
-Total time LU fact.       : 0.78
-Total time solve          : 0.048
+    0                               1.582e+02                   3
+    1            1.76e-02           6.356e-01                  11
+    2            1.81e-02           1.632e-04                  11
+    3            1.81e-02           1.120e-11                  12
+Convergence after 3 iterations
+Total time function eval. : 1.316
+Total time Jacobian.      : 0.688
+Total time LU fact.       : 0.047
+Total time solve          : 0.015
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
-Found 633 equation(s).
+Found 350 equation(s).
 Evaluating expressions...done
 Computing static model derivatives:
  - order 1
@@ -36,19 +35,18 @@ Preprocessing completed.
 Iteration report
 ----------------
  Iter     inv. cond. jac.         Largest |f|   Index largest |f|
-    0                               2.100e+02                   7
-    1            1.87e-06           8.514e+01                1907
-    2            2.58e-06           2.169e-01                1274
-    3            8.95e-06           1.309e-05                1274
-    4            8.95e-06           4.002e-11                6961
-Convergence after 4 iterations
-Total time function eval. : 14.687
-Total time Jacobian.      : 17.688
-Total time LU fact.       : 16.516
-Total time solve          : 0.236
+    0                               1.582e+02                   3
+    1            1.76e-02           6.356e-01                  11
+    2            1.81e-02           1.632e-04                  11
+    3            1.81e-02           1.120e-11                  12
+Convergence after 3 iterations
+Total time function eval. : 7.745
+Total time Jacobian.      : 4.469
+Total time LU fact.       : 0.265
+Total time solve          : 0.016
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
-Found 1083 equation(s).
+Found 700 equation(s).
 Evaluating expressions...done
 Computing static model derivatives:
  - order 1
@@ -60,17 +58,16 @@ Preprocessing completed.
 Iteration report
 ----------------
  Iter     inv. cond. jac.         Largest |f|   Index largest |f|
-    0                               2.100e+02                   7
-    1            2.63e-05           8.515e+01                3257
-    2            5.31e-06           2.185e-01                2174
-    3            5.32e-06           1.318e-05                2174
-    4            5.32e-06           1.710e-10              202519
-Convergence after 4 iterations
-Total time function eval. : 29.814
-Total time Jacobian.      : 51.187
-Total time LU fact.       : 93.987
-Total time solve          : 0.531
-  nextra_countries  neq cpu time
-1               10  273       10
-2               50  633    49.16
-3              100 1083   175.63
+    0                               1.582e+02                   3
+    1            1.76e-02           6.356e-01                  11
+    2            1.81e-02           1.632e-04                  11
+    3            1.81e-02           1.120e-11                  12
+Convergence after 3 iterations
+Total time function eval. : 16.923
+Total time Jacobian.      : 11.451
+Total time LU fact.       : 0.531
+Total time solve          : 0.03
+  ncountries neq user_times sys_times elapsed_times
+1         10  70       2.07      0.02          2.08
+2         50 350      12.32      0.09         12.49
+3        100 700      28.81      0.07         28.96

@@ -1,6 +1,6 @@
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
-Found 273 equation(s).
+Found 70 equation(s).
 Evaluating expressions...done
 Computing static model derivatives:
  - order 1
@@ -8,19 +8,17 @@ Computing dynamic model derivatives:
  - order 1
  - order 2
 Preprocessing completed.
-Compiling C functions ...
-gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_10/mdl_functions.c -o islm_back_countries_10/mdl_functions.o g++ -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_10/get_triplet_jac_new.cpp -o islm_back_countries_10/get_triplet_jac_new.o g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o islm_back_countries_10/mdl_functions.so islm_back_countries_10/mdl_functions.o islm_back_countries_10/get_triplet_jac_new.o islm_back_countries_10/f_static.o islm_back_countries_10/f_dynamic.o -L/usr/lib/R/lib -lRDone
 
 Solving backwards model for period 2017Q1/2066Q4
-Convergence for 2017Q1 in 4 iterations
-Convergence for 2017Q2 in 4 iterations
-Convergence for 2017Q3 in 4 iterations
-Convergence for 2017Q4 in 4 iterations
-Convergence for 2018Q1 in 4 iterations
-Convergence for 2018Q2 in 4 iterations
-Convergence for 2018Q3 in 4 iterations
-Convergence for 2018Q4 in 4 iterations
-Convergence for 2019Q1 in 4 iterations
+Convergence for 2017Q1 in 3 iterations
+Convergence for 2017Q2 in 3 iterations
+Convergence for 2017Q3 in 3 iterations
+Convergence for 2017Q4 in 3 iterations
+Convergence for 2018Q1 in 3 iterations
+Convergence for 2018Q2 in 3 iterations
+Convergence for 2018Q3 in 3 iterations
+Convergence for 2018Q4 in 3 iterations
+Convergence for 2019Q1 in 3 iterations
 Convergence for 2019Q2 in 3 iterations
 Convergence for 2019Q3 in 3 iterations
 Convergence for 2019Q4 in 3 iterations
@@ -212,14 +210,14 @@ Convergence for 2066Q1 in 3 iterations
 Convergence for 2066Q2 in 3 iterations
 Convergence for 2066Q3 in 3 iterations
 Convergence for 2066Q4 in 3 iterations
-Total number of iterations: 609
-Total time function eval. : 0.04469
-Total time Jacobian.      : 0.64832
-Total time LU fact.       : 0.191595
-Total time solve          : 0.01924
+Total number of iterations: 600
+Total time function eval. : 1.241
+Total time Jacobian.      : 1.351
+Total time LU fact.       : 0.048
+Total time solve          : 0
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
-Found 633 equation(s).
+Found 350 equation(s).
 Evaluating expressions...done
 Computing static model derivatives:
  - order 1
@@ -227,19 +225,17 @@ Computing dynamic model derivatives:
  - order 1
  - order 2
 Preprocessing completed.
-Compiling C functions ...
-gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_50/mdl_functions.c -o islm_back_countries_50/mdl_functions.o g++ -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_50/get_triplet_jac_new.cpp -o islm_back_countries_50/get_triplet_jac_new.o g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o islm_back_countries_50/mdl_functions.so islm_back_countries_50/mdl_functions.o islm_back_countries_50/get_triplet_jac_new.o islm_back_countries_50/f_static.o islm_back_countries_50/f_dynamic.o -L/usr/lib/R/lib -lRDone
 
 Solving backwards model for period 2017Q1/2066Q4
-Convergence for 2017Q1 in 4 iterations
-Convergence for 2017Q2 in 4 iterations
-Convergence for 2017Q3 in 4 iterations
-Convergence for 2017Q4 in 4 iterations
-Convergence for 2018Q1 in 4 iterations
-Convergence for 2018Q2 in 4 iterations
-Convergence for 2018Q3 in 4 iterations
-Convergence for 2018Q4 in 4 iterations
-Convergence for 2019Q1 in 4 iterations
+Convergence for 2017Q1 in 3 iterations
+Convergence for 2017Q2 in 3 iterations
+Convergence for 2017Q3 in 3 iterations
+Convergence for 2017Q4 in 3 iterations
+Convergence for 2018Q1 in 3 iterations
+Convergence for 2018Q2 in 3 iterations
+Convergence for 2018Q3 in 3 iterations
+Convergence for 2018Q4 in 3 iterations
+Convergence for 2019Q1 in 3 iterations
 Convergence for 2019Q2 in 3 iterations
 Convergence for 2019Q3 in 3 iterations
 Convergence for 2019Q4 in 3 iterations
@@ -431,14 +427,14 @@ Convergence for 2066Q1 in 3 iterations
 Convergence for 2066Q2 in 3 iterations
 Convergence for 2066Q3 in 3 iterations
 Convergence for 2066Q4 in 3 iterations
-Total number of iterations: 609
-Total time function eval. : 0.055188
-Total time Jacobian.      : 0.773418
-Total time LU fact.       : 0.424722
-Total time solve          : 0.041586
+Total number of iterations: 600
+Total time function eval. : 7.042
+Total time Jacobian.      : 5.641
+Total time LU fact.       : 0.203
+Total time solve          : 0.016
 Starting Dynare (version 4.6-unstable).
 Starting preprocessing of the model file ...
-Found 1083 equation(s).
+Found 700 equation(s).
 Evaluating expressions...done
 Computing static model derivatives:
  - order 1
@@ -446,19 +442,17 @@ Computing dynamic model derivatives:
  - order 1
  - order 2
 Preprocessing completed.
-Compiling C functions ...
-gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_100/mdl_functions.c -o islm_back_countries_100/mdl_functions.o g++ -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_100/get_triplet_jac_new.cpp -o islm_back_countries_100/get_triplet_jac_new.o g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o islm_back_countries_100/mdl_functions.so islm_back_countries_100/mdl_functions.o islm_back_countries_100/get_triplet_jac_new.o islm_back_countries_100/f_static.o islm_back_countries_100/f_dynamic.o -L/usr/lib/R/lib -lRDone
 
 Solving backwards model for period 2017Q1/2066Q4
-Convergence for 2017Q1 in 4 iterations
-Convergence for 2017Q2 in 4 iterations
-Convergence for 2017Q3 in 4 iterations
-Convergence for 2017Q4 in 4 iterations
-Convergence for 2018Q1 in 4 iterations
-Convergence for 2018Q2 in 4 iterations
-Convergence for 2018Q3 in 4 iterations
-Convergence for 2018Q4 in 4 iterations
-Convergence for 2019Q1 in 4 iterations
+Convergence for 2017Q1 in 3 iterations
+Convergence for 2017Q2 in 3 iterations
+Convergence for 2017Q3 in 3 iterations
+Convergence for 2017Q4 in 3 iterations
+Convergence for 2018Q1 in 3 iterations
+Convergence for 2018Q2 in 3 iterations
+Convergence for 2018Q3 in 3 iterations
+Convergence for 2018Q4 in 3 iterations
+Convergence for 2019Q1 in 3 iterations
 Convergence for 2019Q2 in 3 iterations
 Convergence for 2019Q3 in 3 iterations
 Convergence for 2019Q4 in 3 iterations
@@ -650,452 +644,12 @@ Convergence for 2066Q1 in 3 iterations
 Convergence for 2066Q2 in 3 iterations
 Convergence for 2066Q3 in 3 iterations
 Convergence for 2066Q4 in 3 iterations
-Total number of iterations: 609
-Total time function eval. : 0.071316
-Total time Jacobian.      : 0.773411
-Total time LU fact.       : 0.613572
-Total time solve          : 0.069193
-Starting Dynare (version 4.6-unstable).
-Starting preprocessing of the model file ...
-Found 1983 equation(s).
-Evaluating expressions...done
-Computing static model derivatives:
- - order 1
-Computing dynamic model derivatives:
- - order 1
- - order 2
-Preprocessing completed.
-Compiling C functions ...
-gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_200/mdl_functions.c -o islm_back_countries_200/mdl_functions.o g++ -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_200/get_triplet_jac_new.cpp -o islm_back_countries_200/get_triplet_jac_new.o g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o islm_back_countries_200/mdl_functions.so islm_back_countries_200/mdl_functions.o islm_back_countries_200/get_triplet_jac_new.o islm_back_countries_200/f_static.o islm_back_countries_200/f_dynamic.o -L/usr/lib/R/lib -lRDone
-
-Solving backwards model for period 2017Q1/2066Q4
-Convergence for 2017Q1 in 4 iterations
-Convergence for 2017Q2 in 4 iterations
-Convergence for 2017Q3 in 4 iterations
-Convergence for 2017Q4 in 4 iterations
-Convergence for 2018Q1 in 4 iterations
-Convergence for 2018Q2 in 4 iterations
-Convergence for 2018Q3 in 4 iterations
-Convergence for 2018Q4 in 4 iterations
-Convergence for 2019Q1 in 4 iterations
-Convergence for 2019Q2 in 3 iterations
-Convergence for 2019Q3 in 3 iterations
-Convergence for 2019Q4 in 3 iterations
-Convergence for 2020Q1 in 3 iterations
-Convergence for 2020Q2 in 3 iterations
-Convergence for 2020Q3 in 3 iterations
-Convergence for 2020Q4 in 3 iterations
-Convergence for 2021Q1 in 3 iterations
-Convergence for 2021Q2 in 3 iterations
-Convergence for 2021Q3 in 3 iterations
-Convergence for 2021Q4 in 3 iterations
-Convergence for 2022Q1 in 3 iterations
-Convergence for 2022Q2 in 3 iterations
-Convergence for 2022Q3 in 3 iterations
-Convergence for 2022Q4 in 3 iterations
-Convergence for 2023Q1 in 3 iterations
-Convergence for 2023Q2 in 3 iterations
-Convergence for 2023Q3 in 3 iterations
-Convergence for 2023Q4 in 3 iterations
-Convergence for 2024Q1 in 3 iterations
-Convergence for 2024Q2 in 3 iterations
-Convergence for 2024Q3 in 3 iterations
-Convergence for 2024Q4 in 3 iterations
-Convergence for 2025Q1 in 3 iterations
-Convergence for 2025Q2 in 3 iterations
-Convergence for 2025Q3 in 3 iterations
-Convergence for 2025Q4 in 3 iterations
-Convergence for 2026Q1 in 3 iterations
-Convergence for 2026Q2 in 3 iterations
-Convergence for 2026Q3 in 3 iterations
-Convergence for 2026Q4 in 3 iterations
-Convergence for 2027Q1 in 3 iterations
-Convergence for 2027Q2 in 3 iterations
-Convergence for 2027Q3 in 3 iterations
-Convergence for 2027Q4 in 3 iterations
-Convergence for 2028Q1 in 3 iterations
-Convergence for 2028Q2 in 3 iterations
-Convergence for 2028Q3 in 3 iterations
-Convergence for 2028Q4 in 3 iterations
-Convergence for 2029Q1 in 3 iterations
-Convergence for 2029Q2 in 3 iterations
-Convergence for 2029Q3 in 3 iterations
-Convergence for 2029Q4 in 3 iterations
-Convergence for 2030Q1 in 3 iterations
-Convergence for 2030Q2 in 3 iterations
-Convergence for 2030Q3 in 3 iterations
-Convergence for 2030Q4 in 3 iterations
-Convergence for 2031Q1 in 3 iterations
-Convergence for 2031Q2 in 3 iterations
-Convergence for 2031Q3 in 3 iterations
-Convergence for 2031Q4 in 3 iterations
-Convergence for 2032Q1 in 3 iterations
-Convergence for 2032Q2 in 3 iterations
-Convergence for 2032Q3 in 3 iterations
-Convergence for 2032Q4 in 3 iterations
-Convergence for 2033Q1 in 3 iterations
-Convergence for 2033Q2 in 3 iterations
-Convergence for 2033Q3 in 3 iterations
-Convergence for 2033Q4 in 3 iterations
-Convergence for 2034Q1 in 3 iterations
-Convergence for 2034Q2 in 3 iterations
-Convergence for 2034Q3 in 3 iterations
-Convergence for 2034Q4 in 3 iterations
-Convergence for 2035Q1 in 3 iterations
-Convergence for 2035Q2 in 3 iterations
-Convergence for 2035Q3 in 3 iterations
-Convergence for 2035Q4 in 3 iterations
-Convergence for 2036Q1 in 3 iterations
-Convergence for 2036Q2 in 3 iterations
-Convergence for 2036Q3 in 3 iterations
-Convergence for 2036Q4 in 3 iterations
-Convergence for 2037Q1 in 3 iterations
-Convergence for 2037Q2 in 3 iterations
-Convergence for 2037Q3 in 3 iterations
-Convergence for 2037Q4 in 3 iterations
-Convergence for 2038Q1 in 3 iterations
-Convergence for 2038Q2 in 3 iterations
-Convergence for 2038Q3 in 3 iterations
-Convergence for 2038Q4 in 3 iterations
-Convergence for 2039Q1 in 3 iterations
-Convergence for 2039Q2 in 3 iterations
-Convergence for 2039Q3 in 3 iterations
-Convergence for 2039Q4 in 3 iterations
-Convergence for 2040Q1 in 3 iterations
-Convergence for 2040Q2 in 3 iterations
-Convergence for 2040Q3 in 3 iterations
-Convergence for 2040Q4 in 3 iterations
-Convergence for 2041Q1 in 3 iterations
-Convergence for 2041Q2 in 3 iterations
-Convergence for 2041Q3 in 3 iterations
-Convergence for 2041Q4 in 3 iterations
-Convergence for 2042Q1 in 3 iterations
-Convergence for 2042Q2 in 3 iterations
-Convergence for 2042Q3 in 3 iterations
-Convergence for 2042Q4 in 3 iterations
-Convergence for 2043Q1 in 3 iterations
-Convergence for 2043Q2 in 3 iterations
-Convergence for 2043Q3 in 3 iterations
-Convergence for 2043Q4 in 3 iterations
-Convergence for 2044Q1 in 3 iterations
-Convergence for 2044Q2 in 3 iterations
-Convergence for 2044Q3 in 3 iterations
-Convergence for 2044Q4 in 3 iterations
-Convergence for 2045Q1 in 3 iterations
-Convergence for 2045Q2 in 3 iterations
-Convergence for 2045Q3 in 3 iterations
-Convergence for 2045Q4 in 3 iterations
-Convergence for 2046Q1 in 3 iterations
-Convergence for 2046Q2 in 3 iterations
-Convergence for 2046Q3 in 3 iterations
-Convergence for 2046Q4 in 3 iterations
-Convergence for 2047Q1 in 3 iterations
-Convergence for 2047Q2 in 3 iterations
-Convergence for 2047Q3 in 3 iterations
-Convergence for 2047Q4 in 3 iterations
-Convergence for 2048Q1 in 3 iterations
-Convergence for 2048Q2 in 3 iterations
-Convergence for 2048Q3 in 3 iterations
-Convergence for 2048Q4 in 3 iterations
-Convergence for 2049Q1 in 3 iterations
-Convergence for 2049Q2 in 3 iterations
-Convergence for 2049Q3 in 3 iterations
-Convergence for 2049Q4 in 3 iterations
-Convergence for 2050Q1 in 3 iterations
-Convergence for 2050Q2 in 3 iterations
-Convergence for 2050Q3 in 3 iterations
-Convergence for 2050Q4 in 3 iterations
-Convergence for 2051Q1 in 3 iterations
-Convergence for 2051Q2 in 3 iterations
-Convergence for 2051Q3 in 3 iterations
-Convergence for 2051Q4 in 3 iterations
-Convergence for 2052Q1 in 3 iterations
-Convergence for 2052Q2 in 3 iterations
-Convergence for 2052Q3 in 3 iterations
-Convergence for 2052Q4 in 3 iterations
-Convergence for 2053Q1 in 3 iterations
-Convergence for 2053Q2 in 3 iterations
-Convergence for 2053Q3 in 3 iterations
-Convergence for 2053Q4 in 3 iterations
-Convergence for 2054Q1 in 3 iterations
-Convergence for 2054Q2 in 3 iterations
-Convergence for 2054Q3 in 3 iterations
-Convergence for 2054Q4 in 3 iterations
-Convergence for 2055Q1 in 3 iterations
-Convergence for 2055Q2 in 3 iterations
-Convergence for 2055Q3 in 3 iterations
-Convergence for 2055Q4 in 3 iterations
-Convergence for 2056Q1 in 3 iterations
-Convergence for 2056Q2 in 3 iterations
-Convergence for 2056Q3 in 3 iterations
-Convergence for 2056Q4 in 3 iterations
-Convergence for 2057Q1 in 3 iterations
-Convergence for 2057Q2 in 3 iterations
-Convergence for 2057Q3 in 3 iterations
-Convergence for 2057Q4 in 3 iterations
-Convergence for 2058Q1 in 3 iterations
-Convergence for 2058Q2 in 3 iterations
-Convergence for 2058Q3 in 3 iterations
-Convergence for 2058Q4 in 3 iterations
-Convergence for 2059Q1 in 3 iterations
-Convergence for 2059Q2 in 3 iterations
-Convergence for 2059Q3 in 3 iterations
-Convergence for 2059Q4 in 3 iterations
-Convergence for 2060Q1 in 3 iterations
-Convergence for 2060Q2 in 3 iterations
-Convergence for 2060Q3 in 3 iterations
-Convergence for 2060Q4 in 3 iterations
-Convergence for 2061Q1 in 3 iterations
-Convergence for 2061Q2 in 3 iterations
-Convergence for 2061Q3 in 3 iterations
-Convergence for 2061Q4 in 3 iterations
-Convergence for 2062Q1 in 3 iterations
-Convergence for 2062Q2 in 3 iterations
-Convergence for 2062Q3 in 3 iterations
-Convergence for 2062Q4 in 3 iterations
-Convergence for 2063Q1 in 3 iterations
-Convergence for 2063Q2 in 3 iterations
-Convergence for 2063Q3 in 3 iterations
-Convergence for 2063Q4 in 3 iterations
-Convergence for 2064Q1 in 3 iterations
-Convergence for 2064Q2 in 3 iterations
-Convergence for 2064Q3 in 3 iterations
-Convergence for 2064Q4 in 3 iterations
-Convergence for 2065Q1 in 3 iterations
-Convergence for 2065Q2 in 3 iterations
-Convergence for 2065Q3 in 3 iterations
-Convergence for 2065Q4 in 3 iterations
-Convergence for 2066Q1 in 3 iterations
-Convergence for 2066Q2 in 3 iterations
-Convergence for 2066Q3 in 3 iterations
-Convergence for 2066Q4 in 3 iterations
-Total number of iterations: 609
-Total time function eval. : 0.098096
-Total time Jacobian.      : 0.959028
-Total time LU fact.       : 1.15824
-Total time solve          : 0.131683
-Starting Dynare (version 4.6-unstable).
-Starting preprocessing of the model file ...
-Found 4683 equation(s).
-Evaluating expressions...done
-Computing static model derivatives:
- - order 1
-Computing dynamic model derivatives:
- - order 1
- - order 2
-Preprocessing completed.
-Compiling C functions ...
-gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_500/mdl_functions.c -o islm_back_countries_500/mdl_functions.o g++ -I/usr/share/R/include -DNDEBUG      -fpic  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -g  -c islm_back_countries_500/get_triplet_jac_new.cpp -o islm_back_countries_500/get_triplet_jac_new.o g++ -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o islm_back_countries_500/mdl_functions.so islm_back_countries_500/mdl_functions.o islm_back_countries_500/get_triplet_jac_new.o islm_back_countries_500/f_static.o islm_back_countries_500/f_dynamic.o -L/usr/lib/R/lib -lRDone
-
-Solving backwards model for period 2017Q1/2066Q4
-Convergence for 2017Q1 in 4 iterations
-Convergence for 2017Q2 in 4 iterations
-Convergence for 2017Q3 in 4 iterations
-Convergence for 2017Q4 in 4 iterations
-Convergence for 2018Q1 in 4 iterations
-Convergence for 2018Q2 in 4 iterations
-Convergence for 2018Q3 in 4 iterations
-Convergence for 2018Q4 in 4 iterations
-Convergence for 2019Q1 in 4 iterations
-Convergence for 2019Q2 in 3 iterations
-Convergence for 2019Q3 in 3 iterations
-Convergence for 2019Q4 in 3 iterations
-Convergence for 2020Q1 in 3 iterations
-Convergence for 2020Q2 in 3 iterations
-Convergence for 2020Q3 in 3 iterations
-Convergence for 2020Q4 in 3 iterations
-Convergence for 2021Q1 in 3 iterations
-Convergence for 2021Q2 in 3 iterations
-Convergence for 2021Q3 in 3 iterations
-Convergence for 2021Q4 in 3 iterations
-Convergence for 2022Q1 in 3 iterations
-Convergence for 2022Q2 in 3 iterations
-Convergence for 2022Q3 in 3 iterations
-Convergence for 2022Q4 in 3 iterations
-Convergence for 2023Q1 in 3 iterations
-Convergence for 2023Q2 in 3 iterations
-Convergence for 2023Q3 in 3 iterations
-Convergence for 2023Q4 in 3 iterations
-Convergence for 2024Q1 in 3 iterations
-Convergence for 2024Q2 in 3 iterations
-Convergence for 2024Q3 in 3 iterations
-Convergence for 2024Q4 in 3 iterations
-Convergence for 2025Q1 in 3 iterations
-Convergence for 2025Q2 in 3 iterations
-Convergence for 2025Q3 in 3 iterations
-Convergence for 2025Q4 in 3 iterations
-Convergence for 2026Q1 in 3 iterations
-Convergence for 2026Q2 in 3 iterations
-Convergence for 2026Q3 in 3 iterations
-Convergence for 2026Q4 in 3 iterations
-Convergence for 2027Q1 in 3 iterations
-Convergence for 2027Q2 in 3 iterations
-Convergence for 2027Q3 in 3 iterations
-Convergence for 2027Q4 in 3 iterations
-Convergence for 2028Q1 in 3 iterations
-Convergence for 2028Q2 in 3 iterations
-Convergence for 2028Q3 in 3 iterations
-Convergence for 2028Q4 in 3 iterations
-Convergence for 2029Q1 in 3 iterations
-Convergence for 2029Q2 in 3 iterations
-Convergence for 2029Q3 in 3 iterations
-Convergence for 2029Q4 in 3 iterations
-Convergence for 2030Q1 in 3 iterations
-Convergence for 2030Q2 in 3 iterations
-Convergence for 2030Q3 in 3 iterations
-Convergence for 2030Q4 in 3 iterations
-Convergence for 2031Q1 in 3 iterations
-Convergence for 2031Q2 in 3 iterations
-Convergence for 2031Q3 in 3 iterations
-Convergence for 2031Q4 in 3 iterations
-Convergence for 2032Q1 in 3 iterations
-Convergence for 2032Q2 in 3 iterations
-Convergence for 2032Q3 in 3 iterations
-Convergence for 2032Q4 in 3 iterations
-Convergence for 2033Q1 in 3 iterations
-Convergence for 2033Q2 in 3 iterations
-Convergence for 2033Q3 in 3 iterations
-Convergence for 2033Q4 in 3 iterations
-Convergence for 2034Q1 in 3 iterations
-Convergence for 2034Q2 in 3 iterations
-Convergence for 2034Q3 in 3 iterations
-Convergence for 2034Q4 in 3 iterations
-Convergence for 2035Q1 in 3 iterations
-Convergence for 2035Q2 in 3 iterations
-Convergence for 2035Q3 in 3 iterations
-Convergence for 2035Q4 in 3 iterations
-Convergence for 2036Q1 in 3 iterations
-Convergence for 2036Q2 in 3 iterations
-Convergence for 2036Q3 in 3 iterations
-Convergence for 2036Q4 in 3 iterations
-Convergence for 2037Q1 in 3 iterations
-Convergence for 2037Q2 in 3 iterations
-Convergence for 2037Q3 in 3 iterations
-Convergence for 2037Q4 in 3 iterations
-Convergence for 2038Q1 in 3 iterations
-Convergence for 2038Q2 in 3 iterations
-Convergence for 2038Q3 in 3 iterations
-Convergence for 2038Q4 in 3 iterations
-Convergence for 2039Q1 in 3 iterations
-Convergence for 2039Q2 in 3 iterations
-Convergence for 2039Q3 in 3 iterations
-Convergence for 2039Q4 in 3 iterations
-Convergence for 2040Q1 in 3 iterations
-Convergence for 2040Q2 in 3 iterations
-Convergence for 2040Q3 in 3 iterations
-Convergence for 2040Q4 in 3 iterations
-Convergence for 2041Q1 in 3 iterations
-Convergence for 2041Q2 in 3 iterations
-Convergence for 2041Q3 in 3 iterations
-Convergence for 2041Q4 in 3 iterations
-Convergence for 2042Q1 in 3 iterations
-Convergence for 2042Q2 in 3 iterations
-Convergence for 2042Q3 in 3 iterations
-Convergence for 2042Q4 in 3 iterations
-Convergence for 2043Q1 in 3 iterations
-Convergence for 2043Q2 in 3 iterations
-Convergence for 2043Q3 in 3 iterations
-Convergence for 2043Q4 in 3 iterations
-Convergence for 2044Q1 in 3 iterations
-Convergence for 2044Q2 in 3 iterations
-Convergence for 2044Q3 in 3 iterations
-Convergence for 2044Q4 in 3 iterations
-Convergence for 2045Q1 in 3 iterations
-Convergence for 2045Q2 in 3 iterations
-Convergence for 2045Q3 in 3 iterations
-Convergence for 2045Q4 in 3 iterations
-Convergence for 2046Q1 in 3 iterations
-Convergence for 2046Q2 in 3 iterations
-Convergence for 2046Q3 in 3 iterations
-Convergence for 2046Q4 in 3 iterations
-Convergence for 2047Q1 in 3 iterations
-Convergence for 2047Q2 in 3 iterations
-Convergence for 2047Q3 in 3 iterations
-Convergence for 2047Q4 in 3 iterations
-Convergence for 2048Q1 in 3 iterations
-Convergence for 2048Q2 in 3 iterations
-Convergence for 2048Q3 in 3 iterations
-Convergence for 2048Q4 in 3 iterations
-Convergence for 2049Q1 in 3 iterations
-Convergence for 2049Q2 in 3 iterations
-Convergence for 2049Q3 in 3 iterations
-Convergence for 2049Q4 in 3 iterations
-Convergence for 2050Q1 in 3 iterations
-Convergence for 2050Q2 in 3 iterations
-Convergence for 2050Q3 in 3 iterations
-Convergence for 2050Q4 in 3 iterations
-Convergence for 2051Q1 in 3 iterations
-Convergence for 2051Q2 in 3 iterations
-Convergence for 2051Q3 in 3 iterations
-Convergence for 2051Q4 in 3 iterations
-Convergence for 2052Q1 in 3 iterations
-Convergence for 2052Q2 in 3 iterations
-Convergence for 2052Q3 in 3 iterations
-Convergence for 2052Q4 in 3 iterations
-Convergence for 2053Q1 in 3 iterations
-Convergence for 2053Q2 in 3 iterations
-Convergence for 2053Q3 in 3 iterations
-Convergence for 2053Q4 in 3 iterations
-Convergence for 2054Q1 in 3 iterations
-Convergence for 2054Q2 in 3 iterations
-Convergence for 2054Q3 in 3 iterations
-Convergence for 2054Q4 in 3 iterations
-Convergence for 2055Q1 in 3 iterations
-Convergence for 2055Q2 in 3 iterations
-Convergence for 2055Q3 in 3 iterations
-Convergence for 2055Q4 in 3 iterations
-Convergence for 2056Q1 in 3 iterations
-Convergence for 2056Q2 in 3 iterations
-Convergence for 2056Q3 in 3 iterations
-Convergence for 2056Q4 in 3 iterations
-Convergence for 2057Q1 in 3 iterations
-Convergence for 2057Q2 in 3 iterations
-Convergence for 2057Q3 in 3 iterations
-Convergence for 2057Q4 in 3 iterations
-Convergence for 2058Q1 in 3 iterations
-Convergence for 2058Q2 in 3 iterations
-Convergence for 2058Q3 in 3 iterations
-Convergence for 2058Q4 in 3 iterations
-Convergence for 2059Q1 in 3 iterations
-Convergence for 2059Q2 in 3 iterations
-Convergence for 2059Q3 in 3 iterations
-Convergence for 2059Q4 in 3 iterations
-Convergence for 2060Q1 in 3 iterations
-Convergence for 2060Q2 in 3 iterations
-Convergence for 2060Q3 in 3 iterations
-Convergence for 2060Q4 in 3 iterations
-Convergence for 2061Q1 in 3 iterations
-Convergence for 2061Q2 in 3 iterations
-Convergence for 2061Q3 in 3 iterations
-Convergence for 2061Q4 in 3 iterations
-Convergence for 2062Q1 in 3 iterations
-Convergence for 2062Q2 in 3 iterations
-Convergence for 2062Q3 in 3 iterations
-Convergence for 2062Q4 in 3 iterations
-Convergence for 2063Q1 in 3 iterations
-Convergence for 2063Q2 in 3 iterations
-Convergence for 2063Q3 in 3 iterations
-Convergence for 2063Q4 in 3 iterations
-Convergence for 2064Q1 in 3 iterations
-Convergence for 2064Q2 in 3 iterations
-Convergence for 2064Q3 in 3 iterations
-Convergence for 2064Q4 in 3 iterations
-Convergence for 2065Q1 in 3 iterations
-Convergence for 2065Q2 in 3 iterations
-Convergence for 2065Q3 in 3 iterations
-Convergence for 2065Q4 in 3 iterations
-Convergence for 2066Q1 in 3 iterations
-Convergence for 2066Q2 in 3 iterations
-Convergence for 2066Q3 in 3 iterations
-Convergence for 2066Q4 in 3 iterations
-Total number of iterations: 609
-Total time function eval. : 0.345459
-Total time Jacobian.      : 1.34738
-Total time LU fact.       : 2.86351
-Total time solve          : 0.314737
-  nextra_countries  neq user_times sys_times elapsed_times
-1               10  273      1.212     0.004         1.223
-2               50  633      1.656     0.004         1.666
-3              100 1083      2.496     0.004         2.529
-4              200 1983      3.800     0.008         3.860
-5              500 4683      7.192     0.004         7.251
+Total number of iterations: 600
+Total time function eval. : 17.091
+Total time Jacobian.      : 11.482
+Total time LU fact.       : 0.327
+Total time solve          : 0.032
+  ncountries neq user_times sys_times elapsed_times
+1         10  70       2.71      0.01          2.82
+2         50 350      13.00      0.06         13.22
+3        100 700      29.44      0.17         29.78

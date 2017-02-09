@@ -1,5 +1,9 @@
 *_dynamic.m
+*_dynamic.bin
+*_dynamic.cod
 *_static.m
+*_static.bin
+*_static.cod
 *_set_auxiliary_variables.m
 *_results.mat
 *.log

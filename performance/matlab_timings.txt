@@ -1,8 +1,18 @@
-10    2.2 s
-50   13.7 s
-100  52   s
+Matlab
+-------
+N    normal         bytecode
+100  12,9 s         4 s
+500  250,6 s        24 s
 
 
 Block optimalisation does not work.
 
 
+Octave
+-------
+
+De bytecode options does not work (Octave crashes)
+
+N 
+100 44,6
+500 Octave crashes

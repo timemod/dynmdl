@@ -9,7 +9,7 @@
 solve_backward_model <- function(model_period, endo_data, exo_data, params,
                                  lead_lag_incidence, njac_cols, f_dynamic, jac_dynamic,
                                  control, solver) {
-    
+
     start_per <- start_period(model_period)
     nper <- length_range(model_period)
     nendo <- ncol(endo_data)
@@ -64,8 +64,11 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
                        lags = lags, iper = iper)
             error <- out$termcd != 1
         } else {
+            control_ <- control
+            control_["silent"] <- TRUE
+            control_["trace"] <- FALSE
             out <- umf_solve_nl(start, fn = f, jac = jac, lags = lags,
-                                iper = iper, control = list(silent = TRUE))
+                                iper = iper, control = control_)
             error <- !out$solved
             t_f     <- t_f     + out$t_f
             t_jac   <- t_jac   + out$t_jac
