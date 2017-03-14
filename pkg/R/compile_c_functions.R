@@ -1,12 +1,12 @@
-# this function compiled the c function on directory dll_dir,
-# and returns the path of the generated shared library
+# this function compiled the c functions
+# in directory dll_dir and returns the 
+# path name of the generated dll file
 compile_c_functions <- function(dll_dir) {
 
     cat("Compiling C functions ...\n")
 
     dll_ext <- system("R CMD config SHLIB_EXT", intern = TRUE)
     dll_file <- file.path(dll_dir, paste0("mdl_functions", dll_ext))
-    unlink(dll_file)
 
     mdl_function_file <- system.file("c_wrappers", "mdl_functions.c",
                                      package = "dynmod")

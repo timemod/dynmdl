@@ -20,6 +20,7 @@ setOldClass("regts")
 #' @importFrom nleqslv nleqslv
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom compiler compile
+#' @importFrom utils zip
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -157,9 +158,16 @@ setOldClass("regts")
 
 DynMod <- R6Class("DynMod",
     public = list(
-        initialize = function(mod_file, bytecode, use_dll, dll_dir) {
-
-            model_info <- compile_model_(mod_file, use_dll, dll_dir)
+        initialize = function(mod_file, bytecode, use_dll) {
+            if (use_dll) {
+                private$dll_dir <- tempdir()
+                reg.finalizer(self,
+                              function(e) {
+                                  #unlink(private$dll_dir, recursive = TRUE)
+                              },
+                              onexit = TRUE)
+            } 
+            model_info <- compile_model_(mod_file, use_dll, private$dll_dir)
 
             private$use_dll <- use_dll
 
@@ -180,8 +188,10 @@ DynMod <- R6Class("DynMod",
 
             private$exo_count  <- length(private$exos)
             private$endo_count <- length(private$endo_names)
-            private$max_lag    <- max(private$max_endo_lag,  private$max_exo_lag)
-            private$max_lead   <- max(private$max_endo_lead, private$max_exo_lead)
+            private$max_lag    <- max(private$max_endo_lag, 
+                                      private$max_exo_lag)
+            private$max_lead   <- max(private$max_endo_lead, 
+                                      private$max_exo_lead)
 
             # add column names and row names to the lead lag incidence matrix
             colnames(private$lead_lag_incidence) <- as.character(
@@ -192,7 +202,7 @@ DynMod <- R6Class("DynMod",
                                         private$exo_count
 
             if (use_dll) {
-                private$dll_file <- compile_c_functions (dll_dir)
+                private$dll_file <- compile_c_functions(private$dll_dir)
                 private$f_static <- function(y, x, params) {
                     res <- numeric(private$endo_count)
                     .Call("f_static_", y, x, params, res)
@@ -565,6 +575,21 @@ DynMod <- R6Class("DynMod",
             self$solve_out <- NULL
             return(invisible(NULL))
         },
+        write_mdl = function(file) {
+            cat(private$dll_file)
+            cwd <- getwd()
+            setwd(private$dll_dir)
+            zip("dll.zip", basename(private$dll_file))
+            setwd(cwd)
+            zip_file <- file.path(private$dll_dir, "dll.zip")
+            size <- file.info(zip_file)$size
+            dll_data <- readBin(zip_file, what = "raw", n = size)
+            #unlink(zip_file)
+            serialized_mdl <- list(dll_data = dll_data)
+            saveRDS(serialized_mdl, file)
+            unlink(zip_file)
+            return (invisible(self))
+        },
         solve_out = NULL
     ),
     private = list(
@@ -595,6 +620,7 @@ DynMod <- R6Class("DynMod",
         exo_data = NULL,
         ss = NULL,
         use_dll = FALSE,
+        dll_dir = NA_character_,
         dll_file = NA_character_,
         period_error_msg = paste("The model period is not set.",
                             "Set the model period with set_period()."),

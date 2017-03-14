@@ -6,8 +6,6 @@
 #' @param  use_dll if \code{TRUE}, then the  functions used to calculate the
 #' residuals and Jacobian are converted to C code that is subsequently
 #' converted to a dynamically linked library.
-#' @param dll_dir the directory in which the shared library will be created created
-#' if \code{use_dll} is \code{TRUE}
 #' @param fit_mod_file the name of the generated fit mod file. If not specified,
 #' then the fit mod file is destroyed after the model has been parsed.
 #' @param debug If \code{TRUE}, then some print statements
@@ -19,23 +17,19 @@
 #' @importFrom tools file_path_sans_ext
 #' @useDynLib dynmod
 create_mod <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
-                       dll_dir = file_path_sans_ext(basename(mod_file)), 
                        fit_mod_file, debug = FALSE) {
 
 
     if (!file.exists(mod_file)) {
         stop(paste("ERROR: Could not open file:", mod_file))
     }
-    if (use_dll) {
-        dir.create(dll_dir, showWarnings = FALSE)
-    }
     if (has_fit_block(mod_file)) {
-        return (FitMod$new(mod_file, bytecode, use_dll, dll_dir, fit_mod_file, debug))
+        return (FitMod$new(mod_file, bytecode, use_dll, fit_mod_file, debug))
     } else {
         if (!missing(fit_mod_file)) {
             warning("fit_mod_file specified, but no fit block in mod file found")
         }
-        return (DynMod$new(mod_file, bytecode, use_dll, dll_dir))
+        return (DynMod$new(mod_file, bytecode, use_dll))
     }
 }
 
