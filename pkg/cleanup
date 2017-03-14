@@ -1,4 +1,2 @@
 #!/bin/sh
-rm -rf config.* src/Makevars
-
 rm src/macro/*.o

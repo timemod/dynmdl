@@ -70,11 +70,11 @@ cat(readLines('islm.mod'), sep = '\n')
 
 # The `DynMod` class
 
-The function `compile_model` creates a `DynMod` object from 
+The function `create_mod` creates a `DynMod` object from 
 the mod file.
 
 ```{r}
-mdl <- compile_model("islm.mod")
+mdl <- create_mod("islm.mod")
 mdl
 ```
 
