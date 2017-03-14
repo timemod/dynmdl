@@ -14,8 +14,8 @@ names(params) <- as.character(param_names)
 fit_targets <- as.regts(read.csv("input/islm_countries_fit.csv", row.names = 1))
 print(fit_targets)
 
-mdl <- compile_model("mod/islm_countries.mod", 
-                     fit_mod_file = "fmod/islm_countries.fmod")
+mdl <- create_mod("mod/islm_countries.mod", 
+                  fit_mod_file = "fmod/islm_countries.fmod")
 print(mdl)
 
 mdl$set_params(params)

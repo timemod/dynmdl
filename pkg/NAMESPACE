@@ -2,7 +2,7 @@
 
 export(DynMod)
 export(FitMod)
-export(compile_model)
+export(create_mod)
 importFrom(Matrix,Matrix)
 importFrom(Matrix,sparseMatrix)
 importFrom(R6,R6Class)

@@ -1,18 +1,24 @@
-#' Compile a Dynare model and return a \code{\link{DynMod}}
+#' Creates a \code{\link{DynMod}} object from a mod file
 #'
 #' @param mod_file the name of the model file (including extension .mod)
 #' @param bytecode If \code{TRUE}, then the functions used to calculate the
-#' residuals and jacobian are compiled
-#' @param fit_mod_file the name of the fit mode file. If not specified,
+#' residuals and Jacobian are byte compiled
+#' @param  use_dll if \code{TRUE}, then the  functions used to calculate the
+#' residuals and Jacobian are converted to C code that is subsequently
+#' converted to a dynamically linked library.
+#' @param dll_dir the directory in which the shared library will be created created
+#' if \code{use_dll} is \code{TRUE}
+#' @param fit_mod_file the name of the generated fit mod file. If not specified,
 #' then the fit mod file is destroyed after the model has been parsed.
-#' @return an \code{DynMod} object
+#' @return an \code{DynMod} object or, if the mod file contains a
+#' fit block, a \code{\link{FitMod}} object.
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
 #' @useDynLib dynmod
-compile_model <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
-                          dll_dir = file_path_sans_ext(basename(mod_file)), 
-                          fit_mod_file, debug = FALSE) {
+create_mod <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
+                       dll_dir = file_path_sans_ext(basename(mod_file)), 
+                       fit_mod_file, debug = FALSE) {
 
 
     if (!file.exists(mod_file)) {

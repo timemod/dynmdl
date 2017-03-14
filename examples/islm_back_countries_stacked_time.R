@@ -9,7 +9,7 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
-mdl <- compile_model("mod/islm_back_countries.mod", bytecode = FALSE)
+mdl <- create_mod("mod/islm_back_countries.mod", bytecode = FALSE)
 print(mdl)
 
 mdl$set_params(params)

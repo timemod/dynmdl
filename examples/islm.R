@@ -2,7 +2,7 @@
 
 library(dynmod)
 
-mdl <- compile_model("mod/islm.mod")
+mdl <- create_mod("mod/islm.mod")
 #print(mdl, short = FALSE)
 
 mdl$solve_steady(control = list(trace = TRUE))

@@ -54,20 +54,13 @@ setOldClass("regts")
 #' block in the  \code{mod} file. There is no setter for the static values:
 #' you can only modify them by calling function \code{solve_steady}}
 #'
-#' \item{\code{set_period(period)}}{Sets the model period. \code{period}
-#' is a \code{\link{regperiod_range}} object or an object that can be coerced
-#' to a \code{regperiod_range}. The model period is the longest period for which
-#' the model may be solved. This method also allocates storage for
-#' all model timeseries.  Model timeseries are
-#' available for the so called 'model data period', which is
-#' the model period extended with a lag and lead period. This method
-#' also initialises all model timeseries with static values
-#' of the exogenous and endogenous model variables.}
+#' \item{\code{\link{init_data}}}{Initializes the model data}
 #'
-#' \item{\code{get_period()}}{Returns the model period}
+#' \item{\code{\link{set_period}}}{Sets the model period}
 #'
-#' \item{\code{get_data_period()}}{Returns the data period, i.e. the model period
-#'  extended with the lag end lead period}
+#' \item{\code{\link{get_period}}}{Returns the model period}
+#'
+#' \item{\code{\link{get_data_period}}}{Returns the model data period}
 #'
 #' \item{\code{get_lag_period()}}{Returns the lag period}
 #'
@@ -278,23 +271,42 @@ DynMod <- R6Class("DynMod",
         get_static_endos = function() {
             return (private$endos)
         },
-        set_period = function(period) {
-            period <- as.regperiod_range(period)
-            private$model_period <-  period
-            private$data_period <- regperiod_range(
-                                       start_period(period) - private$max_lag,
-                                       end_period(period) + private$max_lead)
-            nper <- length_range(private$data_period)
+        init_data = function(data_period)  {
+            data_period <- as.regperiod_range(data_period)
+            private$data_period <- data_period
+            nper <- length_range(data_period)
             endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
             private$endo_data <- regts(endo_mat,
-                                       start = start_period(private$data_period),
+                                       start = start_period(data_period),
                                        names = names(private$endos))
             if (private$exo_count > 0) {
                 exo_mat <- matrix(rep(private$exos, each = nper), nrow = nper)
                 private$exo_data <- regts(exo_mat,
-                                          start = start_period(private$data_period),
+                                          start = start_period(data_period),
                                           names = names(private$exos))
             }
+
+            # update the model period
+            private$model_period <- regperiod_range(
+                 start_period(data_period) + private$max_lag,
+                 end_period(data_period)   - private$max_lead)
+
+        },
+        set_period = function(period) {
+            period <- as.regperiod_range(period)
+            private$model_period <-  period
+            if (is.null(private$data_period)) {
+                data_period <- regperiod_range(
+                                  start_period(period) - private$max_lag,
+                                  end_period(period)   + private$max_lead)
+                self$init_data(data_period)
+            } else  {
+                private$check_model_period(period) 
+            }
+
+            private$data_period <- regperiod_range(
+                                       start_period(period) - private$max_lag,
+                                       end_period(period) + private$max_lead)
             return (invisible(self))
         },
         get_period = function() {
@@ -712,6 +724,20 @@ DynMod <- R6Class("DynMod",
         clean_after_solve_steady = function() {
             private$jac_steady <- NULL
             dyn.unload(private$dll_file)
+            return(invisible(NULL))
+        },
+        check_model_period = function(period) {
+
+            ps <- start_period(period) + private$max_lag
+            pe <- end_period(period)   - private$max_lead
+
+            if ((start_period(period) < ps)  || (end_period(period)   > pe)) { 
+                stop(paste0("The specified period (", period, 
+                            ") is not compatible with the data period (",
+                            private$data_period, "). The period",
+                            " should lie within the range ",
+                            regperiod_range(ps, pe), "."))
+            }
             return(invisible(NULL))
         },
         print_info = function(short) {

@@ -8,7 +8,7 @@ mod_file <- "mod/simple1.mod"
 # compile the model
 # TODO: capturing output does not work yet, probably we do not use
 # Rcout
-report <- capture_output(mdl <- compile_model(mod_file))
+report <- capture_output(mdl <- create_mod(mod_file))
 
 mdl$set_period("2015/2060")
 data_per <- mdl$get_data_period()

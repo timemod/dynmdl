@@ -44,20 +44,13 @@ static endos are initialized with zeros and the values in the \code{initval}
 block in the  \code{mod} file. There is no setter for the static values:
 you can only modify them by calling function \code{solve_steady}}
 
-\item{\code{set_period(period)}}{Sets the model period. \code{period}
-is a \code{\link{regperiod_range}} object or an object that can be coerced
-to a \code{regperiod_range}. The model period is the longest period for which
-the model may be solved. This method also allocates storage for
-all model timeseries.  Model timeseries are
-available for the so called 'model data period', which is
-the model period extended with a lag and lead period. This method
-also initialises all model timeseries with static values
-of the exogenous and endogenous model variables.}
+\item{\code{\link{init_data}}}{Initializes the model data}
 
-\item{\code{get_period()}}{Returns the model period}
+\item{\code{\link{set_period}}}{Sets the model period}
 
-\item{\code{get_data_period()}}{Returns the data period, i.e. the model period
- extended with the lag end lead period}
+\item{\code{\link{get_period}}}{Returns the model period}
+
+\item{\code{\link{get_data_period}}}{Returns the model data period}
 
 \item{\code{get_lag_period()}}{Returns the lag period}
 

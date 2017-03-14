@@ -44,7 +44,7 @@ help:
 	@echo "   mkpkg     - builds source package and checks with --as-cran"
 	@echo "   bin       - builds binary package in ./tmp"
 	@echo "   install   - install package in .libPaths()[1]"
-        @echo "   installv  - install package with vignettes in .libPaths()[1]"
+	@echo "   installv  - install package with vignettes in .libPaths()[1]"
 	@echo "   uninstall - uninstall package from .libPaths()[1]"
 	@echo "   clean     - cleans up everything"
 	@echo "   flags     - display R config flags and some macros"
