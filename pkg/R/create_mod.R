@@ -10,6 +10,8 @@
 #' if \code{use_dll} is \code{TRUE}
 #' @param fit_mod_file the name of the generated fit mod file. If not specified,
 #' then the fit mod file is destroyed after the model has been parsed.
+#' @param debug If \code{TRUE}, then some print statements
+#' are executed.
 #' @return an \code{DynMod} object or, if the mod file contains a
 #' fit block, a \code{\link{FitMod}} object.
 #' @export

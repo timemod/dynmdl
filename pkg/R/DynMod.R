@@ -19,6 +19,7 @@ setOldClass("regts")
 #' @importFrom Matrix sparseMatrix
 #' @importFrom nleqslv nleqslv
 #' @importFrom umfpackr umf_solve_nl
+#' @importFrom compiler compile
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,

@@ -12,7 +12,7 @@ RoxygenNote: 6.0.1
 LinkingTo: Rcpp, BH
 Imports: Rcpp, nleqslv, Matrix, methods, compiler, R6, geigen, gsubfn,
          tools, stringi, umfpackr
-Depends: regts, methods
+Depends: regts
 Suggests: testthat,
     knitr,
     rmarkdown

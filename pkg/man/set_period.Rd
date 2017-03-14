@@ -41,6 +41,6 @@ object, or an object that can be coerced to
 }
 
 \examples{
-mdl <- islm_mdl()
+mdl <- islm_mod()
 mdl$set_period("2017Q2/2021Q3")
 }
