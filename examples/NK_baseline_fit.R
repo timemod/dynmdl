@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 
 period <- regperiod_range("2017Q1", "2019Q3")
 fit_target_csv <- "input/NK_baseline_fit_targets.csv"

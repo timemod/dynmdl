@@ -9,7 +9,7 @@
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
-#' @useDynLib dynr
+#' @useDynLib dynmod
 compile_model <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
                           dll_dir = file_path_sans_ext(basename(mod_file)), 
                           fit_mod_file, debug = FALSE) {

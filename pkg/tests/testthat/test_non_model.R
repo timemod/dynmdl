@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 context("non existing mod file")
 
 test_that("compile_model gives an error", {

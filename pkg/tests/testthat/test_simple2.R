@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 
 context("simple model expanded to a model with 4 equations")
 

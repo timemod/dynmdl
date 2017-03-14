@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 
 mdl <- compile_model("mod/islm_back.mod")
 print(mdl)

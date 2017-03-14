@@ -1,6 +1,6 @@
 # Example for the IFN model
 
-library(dynr)
+library(dynmod)
 
 mod_file <- "mod/ifn.mod"
 input_file <- "input/ifn_input.csv"

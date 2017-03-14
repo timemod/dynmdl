@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 context("ISLM model with local variables")
 
 nperiods <- 18

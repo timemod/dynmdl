@@ -1,6 +1,6 @@
 # Basic example of the ISLM model with lags
 
-library(dynr)
+library(dynmod)
 
 mdl <- compile_model("mod/islm.mod", use_dll = TRUE)
 #print(mdl, short = FALSE)

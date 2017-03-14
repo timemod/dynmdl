@@ -366,7 +366,7 @@ ModFile::transformPass(bool nostrict)
   else
     {
       // In deterministic models, create auxiliary vars for leads and lags endogenous greater than 2, only on endos (useless on exos)
-      /* For package dynr, it is not requited to substitute
+      /* For package dynmod, it is not requited to substitute
        * lags and leads > 2 */
       /*
       dynamic_model.substituteEndoLeadGreaterThanTwo(true);

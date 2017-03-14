@@ -1623,7 +1623,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
 #ifdef USE_R
     mDynamicModelFile << "#include \"mex.h\"" << endl;
 #else 
-    dyn_error("In dynr, external functions are not yet supported\n");
+    dyn_error("In dynmod, external functions are not yet supported\n");
 #endif
   else
     mDynamicModelFile << "#include <stdlib.h>" << endl;

@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 source("create_islm_country_model.R")
 
 basis_mod_file <- "mod/islm_back_countries.inp"

@@ -5,7 +5,7 @@
 #' @docType class
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib dynr
+#' @useDynLib dynmod
 #' @importFrom regts start_period
 #' @importFrom regts regperiod_range
 #' @importFrom regts regts

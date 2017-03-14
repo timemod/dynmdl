@@ -1,4 +1,4 @@
-Package: dynr
+Package: dynmod
 Type: Package
 Title: Parse a Dynare model an generate R code
 Version: 0.1.0
@@ -8,7 +8,7 @@ Description: A Dynare parser.
 SystemRequirements: GNU make
 License: GPL (>= 2)
 LazyData: TRUE
-RoxygenNote: 6.0.0
+RoxygenNote: 6.0.1
 LinkingTo: Rcpp, BH
 Imports: Rcpp, nleqslv, Matrix, methods, compiler, R6, geigen, gsubfn,
          tools, stringi, umfpackr

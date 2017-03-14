@@ -7,7 +7,7 @@ setOldClass("regts")
 #' @docType class
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib dynr
+#' @useDynLib dynmod
 #' @importFrom regts start_period
 #' @importFrom regts end_period
 #' @importFrom regts as.regperiod_range
@@ -503,7 +503,7 @@ DynMod <- R6Class("DynMod",
             # solve_perturbation does not works for exogenous lags and leads.
             # For perturbation approaches, Dynare substitutes
             # these lags and leads by creating auxiliary variables and
-            # equations. dynr does not do that.
+            # equations. dynmod does not do that.
             if (private$max_exo_lag > 0 || private$max_exo_lead > 0) {
                 stop(paste("Method solve_perturbation does not work for models",
                            "with exogenous lags or leads"))

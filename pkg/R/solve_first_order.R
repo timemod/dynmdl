@@ -15,7 +15,7 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
     # solve_first_order does not works for endogenous
     # lags or leads > 1. For perturbation approaches, Dynare substitutes
     # these lags and leads by creating auxiliary variables and
-    # equations. dynr does not do that.
+    # equations. dynmod does not do that.
     if (max_lag > 1 || max_lead > 1) {
         stop(paste("Function solve_first_order does not work for models",
                    "with max_lag > 1 or max_lead > 1"))

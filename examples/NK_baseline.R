@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 
 mdl <- compile_model("mod/NK_baseline.mod", bytecode = FALSE)
 

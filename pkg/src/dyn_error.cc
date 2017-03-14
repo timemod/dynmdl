@@ -1,4 +1,4 @@
-// error handling for dynr
+// error handling for dynmod
 
 #include <iostream>
 using namespace std;

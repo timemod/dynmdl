@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 
 param_file <- "input/islm_country_params.csv"
 

@@ -5,7 +5,7 @@
 # The endogenous variables ut, ui, uc and umd are the residuals
 # of the fit procedure.
 
-library(dynr)
+library(dynmod)
 
 period <- regperiod_range("2017Q1", "2019Q3")
 

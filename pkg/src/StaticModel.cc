@@ -1637,7 +1637,7 @@ StaticModel::writeStaticCFile(const string &func_name) const
 #ifdef USE_R
     output << "#include \"mex.h\"" << endl;
 #else
-    dyn_error("dynr does not support external Matlab functions yet")
+    dyn_error("dynmod does not support external Matlab functions yet")
 #endif
   else
     output << "#include <stdlib.h>" << endl;

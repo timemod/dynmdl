@@ -1,4 +1,4 @@
-library(dynr)
+library(dynmod)
 library(testthat)
 
 context("ISLM model with dll option")

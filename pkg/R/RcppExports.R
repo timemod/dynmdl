@@ -2,26 +2,26 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 compile_model_ <- function(modfile, use_dll, dll_dir) {
-    .Call('dynr_compile_model_', PACKAGE = 'dynr', modfile, use_dll, dll_dir)
+    .Call('dynmod_compile_model_', PACKAGE = 'dynmod', modfile, use_dll, dll_dir)
 }
 
 compute_derivatives <- function(modfile) {
-    .Call('dynr_compute_derivatives', PACKAGE = 'dynr', modfile)
+    .Call('dynmod_compute_derivatives', PACKAGE = 'dynmod', modfile)
 }
 
 get_residuals_ <- function(endos, icols, exo_data, params, f_dynamic, n_endo, nper, max_lag) {
-    .Call('dynr_get_residuals_', PACKAGE = 'dynr', endos, icols, exo_data, params, f_dynamic, n_endo, nper, max_lag)
+    .Call('dynmod_get_residuals_', PACKAGE = 'dynmod', endos, icols, exo_data, params, f_dynamic, n_endo, nper, max_lag)
 }
 
 get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag) {
-    .Call('dynr_get_triplet_jac', PACKAGE = 'dynr', endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag)
+    .Call('dynmod_get_triplet_jac', PACKAGE = 'dynmod', endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag)
 }
 
 get_jac_backwards <- function(endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag) {
-    .Call('dynr_get_jac_backwards', PACKAGE = 'dynr', endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag)
+    .Call('dynmod_get_jac_backwards', PACKAGE = 'dynmod', endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag)
 }
 
 run_macro <- function(modfile, new_modfile) {
-    invisible(.Call('dynr_run_macro', PACKAGE = 'dynr', modfile, new_modfile))
+    invisible(.Call('dynmod_run_macro', PACKAGE = 'dynmod', modfile, new_modfile))
 }
 
