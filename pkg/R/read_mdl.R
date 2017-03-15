@@ -14,7 +14,6 @@
 read_mdl <- function(file) {
     cat(paste("Reading model from", file, "\n"))
     ser <- readRDS(file)
-    # TODO: check for fit model
     if (ser$use_dll) {
         dll_dir <- tempdir()
         dll_file <- file.path(dll_dir, ser$dll_basename)
@@ -27,8 +26,13 @@ read_mdl <- function(file) {
         dll_dir <- NA_character_
         dll_file <- NA_character_
     }
-    printobj(ser$bytecode)
-    mdl <- DynMdl$new(ser$model_info, ser$bytecode, ser$use_dll, dll_dir, dll_file)
+    if (ser$class == "FitMdl") {
+        mdl <- FitMdl$new(ser$model_info, ser$fit_info, ser$bytecode, ser$use_dll, 
+                          dll_dir, dll_file)
+    } else {
+        mdl <- DynMdl$new(ser$model_info, ser$bytecode, ser$use_dll, 
+                          dll_dir, dll_file)
+    }
     mdl$set_static_endos(ser$endos)
     mdl$set_static_exos(ser$exos)
     if (!is.null(ser$endo_data)) {

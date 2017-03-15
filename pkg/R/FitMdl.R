@@ -173,6 +173,10 @@ FitMdl <- R6Class("FitMdl",
         }
     ), 
     private = list(
-        fit_info = NULL
+        fit_info = NULL,
+        serialize_mdl = function() {
+            ser <- super$serialize_mdl()
+            return(c(ser, list(fit_info = private$fit_info)))
+        }
     )
 )
