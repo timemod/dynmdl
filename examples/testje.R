@@ -2,9 +2,8 @@
 
 library(dynmod)
 
-mdl <- create_mod("mod/islm.mod", use_dll = TRUE)
-mdl$write_mdl("aap.rds")
-quit()
+#mdl <- create_mod("mod/islm.mod", use_dll = TRUE)
+mdl <- create_mod("mod/islm.mod")
 #print(mdl, short = FALSE)
 
 mdl$solve_steady(control = list(trace = TRUE))
@@ -17,4 +16,5 @@ mdl$set_endo_values(1000, names = "yd", period = "2016Q4")
 #  set exogenous variables
 mdl$set_exo_values(280, names = "g", period = "2017Q1")
 mdl$solve(control = list(trace = TRUE))
-quit()
+
+mdl$write_mdl("aap.rds")

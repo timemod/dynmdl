@@ -19,17 +19,43 @@
 create_mod <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
                        fit_mod_file, debug = FALSE) {
 
-
     if (!file.exists(mod_file)) {
         stop(paste("ERROR: Could not open file:", mod_file))
     }
+    
+    if (use_dll) {
+        dll_dir <- tempdir()
+    } else {
+        dll_dir <- NA_character_
+    }
+
     if (has_fit_block(mod_file)) {
-        return (FitMod$new(mod_file, bytecode, use_dll, fit_mod_file, debug))
+        if (missing(fit_mod_file)) {
+            fit_mod_file <- tempfile()
+        }
+        fit_info   <- create_fitmod(mod_file, fit_mod_file, debug)
+        model_info <- compile_model_(fit_mod_file, use_dll, dll_dir)
+        if (missing(fit_mod_file)) {
+            unlink(fit_mod_file)
+        } 
+        if (use_dll) {
+            dll_file <- compile_c_functions(dll_dir)
+        } else {
+            dll_file <- NA_character_
+        }
+        return(FitMod$new(model_info, fit_info, bytecode, use_dll, dll_dir,
+                          dll_file, debug))
     } else {
         if (!missing(fit_mod_file)) {
             warning("fit_mod_file specified, but no fit block in mod file found")
         }
-        return (DynMod$new(mod_file, bytecode, use_dll))
+        model_info <- compile_model_(mod_file, use_dll, dll_dir)
+        if (use_dll) {
+            dll_file <- compile_c_functions(dll_dir)
+        } else {
+            dll_file <- NA_character_
+        }
+        return(DynMod$new(model_info, bytecode, use_dll, dll_dir, dll_file))
     }
 }
 

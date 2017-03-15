@@ -4,8 +4,7 @@
 \alias{create_mod}
 \title{Creates a \code{\link{DynMod}} object from a mod file}
 \usage{
-create_mod(mod_file, bytecode = FALSE, use_dll = FALSE,
-  dll_dir = file_path_sans_ext(basename(mod_file)), fit_mod_file,
+create_mod(mod_file, bytecode = FALSE, use_dll = FALSE, fit_mod_file,
   debug = FALSE)
 }
 \arguments{
@@ -17,9 +16,6 @@ residuals and Jacobian are byte compiled}
 \item{use_dll}{if \code{TRUE}, then the  functions used to calculate the
 residuals and Jacobian are converted to C code that is subsequently
 converted to a dynamically linked library.}
-
-\item{dll_dir}{the directory in which the shared library will be created created
-if \code{use_dll} is \code{TRUE}}
 
 \item{fit_mod_file}{the name of the generated fit mod file. If not specified,
 then the fit mod file is destroyed after the model has been parsed.}

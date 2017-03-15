@@ -155,21 +155,24 @@ setOldClass("regts")
 #' ordered with increasing absolute value}
 #'
 #' }
-
 DynMod <- R6Class("DynMod",
     public = list(
-        initialize = function(mod_file, bytecode, use_dll) {
+        initialize = function(model_info, bytecode, use_dll, dll_dir, dll_file) {
+
+            private$model_info <- model_info
+
             if (use_dll) {
-                private$dll_dir <- tempdir()
                 reg.finalizer(self,
                               function(e) {
                                   #unlink(private$dll_dir, recursive = TRUE)
                               },
                               onexit = TRUE)
             } 
-            model_info <- compile_model_(mod_file, use_dll, private$dll_dir)
 
+            private$bytecode <- bytecode
             private$use_dll <- use_dll
+            private$dll_dir <- dll_dir
+            private$dll_file <- dll_file
 
             with(model_info, {
                 private$endo_names         <- names(endos)
@@ -188,10 +191,8 @@ DynMod <- R6Class("DynMod",
 
             private$exo_count  <- length(private$exos)
             private$endo_count <- length(private$endo_names)
-            private$max_lag    <- max(private$max_endo_lag, 
-                                      private$max_exo_lag)
-            private$max_lead   <- max(private$max_endo_lead, 
-                                      private$max_exo_lead)
+            private$max_lag    <- max(private$max_endo_lag,  private$max_exo_lag)
+            private$max_lead   <- max(private$max_endo_lead, private$max_exo_lead)
 
             # add column names and row names to the lead lag incidence matrix
             colnames(private$lead_lag_incidence) <- as.character(
@@ -202,7 +203,6 @@ DynMod <- R6Class("DynMod",
                                         private$exo_count
 
             if (use_dll) {
-                private$dll_file <- compile_c_functions(private$dll_dir)
                 private$f_static <- function(y, x, params) {
                     res <- numeric(private$endo_count)
                     .Call("f_static_", y, x, params, res)
@@ -314,10 +314,6 @@ DynMod <- R6Class("DynMod",
             } else  {
                 private$check_model_period(period) 
             }
-
-            private$data_period <- regperiod_range(
-                                       start_period(period) - private$max_lag,
-                                       end_period(period) + private$max_lead)
             return (invisible(self))
         },
         get_period = function() {
@@ -576,23 +572,15 @@ DynMod <- R6Class("DynMod",
             return(invisible(NULL))
         },
         write_mdl = function(file) {
-            cat(private$dll_file)
-            cwd <- getwd()
-            setwd(private$dll_dir)
-            zip("dll.zip", basename(private$dll_file))
-            setwd(cwd)
-            zip_file <- file.path(private$dll_dir, "dll.zip")
-            size <- file.info(zip_file)$size
-            dll_data <- readBin(zip_file, what = "raw", n = size)
-            #unlink(zip_file)
-            serialized_mdl <- list(dll_data = dll_data)
-            saveRDS(serialized_mdl, file)
-            unlink(zip_file)
+            cat(paste("Writing model to", file, " ...\n"))
+            saveRDS(private$serialize_mdl(), file)
+            cat("Done\n")
             return (invisible(self))
         },
         solve_out = NULL
     ),
     private = list(
+        model_info = NULL,
         exo_count = NA_integer_,
         endo_count = NA_integer_,
         exo_names = NULL,
@@ -619,6 +607,7 @@ DynMod <- R6Class("DynMod",
         endo_data = NULL,
         exo_data = NULL,
         ss = NULL,
+        bytecode = FALSE,
         use_dll = FALSE,
         dll_dir = NA_character_,
         dll_file = NA_character_,
@@ -755,8 +744,8 @@ DynMod <- R6Class("DynMod",
         },
         check_model_period = function(period) {
 
-            ps <- start_period(period) + private$max_lag
-            pe <- end_period(period)   - private$max_lead
+            ps <- start_period(private$data_period) + private$max_lag
+            pe <- end_period(private$data_period)   - private$max_lead
 
             if ((start_period(period) < ps)  || (end_period(period)   > pe)) { 
                 stop(paste0("The specified period (", period, 
@@ -766,6 +755,36 @@ DynMod <- R6Class("DynMod",
                             regperiod_range(ps, pe), "."))
             }
             return(invisible(NULL))
+        },
+        serialize_mdl = function() {
+            if (private$use_dll) {
+                cwd <- getwd()
+                setwd(private$dll_dir)
+                zip("dll.zip", basename(private$dll_file))
+                setwd(cwd)
+                zip_file <- file.path(private$dll_dir, "dll.zip")
+                size <- file.info(zip_file)$size
+                dll_data <- readBin(zip_file, what = "raw", n = size)
+                unlink(zip_file)
+            }  else {
+                dll_data <- NULL
+            }
+            model_info <- private$model_info
+            model_info$params <- private$params
+            # TODO: write the contents of the mod file, the package version
+            # and the operating system to the rds file. If necessary,
+            # the model should be recompiled in read_mdl.
+            serialized_mdl <- list(class = class(self)[1],
+                                   model_info = model_info, 
+                                   bytecode = private$bytecode,
+                                   use_dll = private$use_dll, dll_data = dll_data,
+                                   dll_basename = basename(private$dll_file),
+                                   endos = private$endos,
+                                   exos = private$exos,
+                                   period = private$model_period,
+                                   endo_data = private$endo_data,
+                                   exo_data = private$exo_data)
+            return(serialized_mdl)
         },
         print_info = function(short) {
             cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
