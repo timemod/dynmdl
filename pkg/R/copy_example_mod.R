@@ -1,6 +1,6 @@
 #' Creates a copy of an example model file
 #'
-#' The package \code{dynmod} includes a number of example model files
+#' The package \code{dynmdl} includes a number of example model files
 #' that can be used to get started with this package. These files are
 #' located in the directory \code{models} of the package directory. This
 #' function can be used to copy the model file from this directory to
@@ -20,7 +20,7 @@
 #' unlink("islm.*")
 #' unlink("mod", recursive = TRUE)
 #' }
-#' @seealso \code{\link{create_mod}} and \code{\link{DynMod}}
+#' @seealso \code{\link{create_mdl}} and \code{\link{DynMdl}}
 #' @export
 copy_example_mod <- function(model_name,
                              filename = paste(model_name, "mod", sep = ".")) {
@@ -28,6 +28,6 @@ copy_example_mod <- function(model_name,
         stop(paste("Model", model_name, "is not an example model file"))
     }
     mdl_file <- system.file("models", paste(model_name, "mod", sep = "."),
-                            package = "dynmod")
+                            package = "dynmdl")
     file.copy(mdl_file, filename, overwrite = TRUE)
 }

@@ -1,8 +1,8 @@
-#' \code{\link{DynMod}} method: initializes the model data.
+#' \code{\link{DynMdl}} method: initializes the model data.
 #' @name init_data
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMod}} initializes the
+#' This method of R6 class \code{\link{DynMdl}} initializes the
 #' model data.
 #' 
 #' This method sets the model data period and initializes
@@ -29,11 +29,11 @@
 #' }
 NULL
 
-#' \code{\link{DynMod}} method: sets the model period
+#' \code{\link{DynMdl}} method: sets the model period
 #' @name set_period
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMod}} sets the model period.
+#' This method of R6 class \code{\link{DynMdl}} sets the model period.
 #' This is the default period used when solving the model.
 #' 
 #' If the model data has not already been initialized with method
@@ -54,7 +54,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{DynMod} object
+#' \code{mdl} is an \code{DynMdl} object
 #'
 #' @section Arguments:
 #'
@@ -69,11 +69,11 @@ NULL
 #' mdl$set_period("2017Q2/2021Q3")
 NULL
 
-#' \code{\link{DynMod}} method: returns the model period
+#' \code{\link{DynMdl}} method: returns the model period
 #' @name get_period
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMod}} returns the model period.
+#' This method of R6 class \code{\link{DynMdl}} returns the model period.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -81,16 +81,16 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{DynMod} object
+#' \code{mdl} is an \code{DynMdl} object
 #' @seealso
 #' \code{\link{set_period}}
 NULL
 
-#' \code{\link{DynMod}} method: returns the model data period
+#' \code{\link{DynMdl}} method: returns the model data period
 #' @name get_data_period
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMod}} returns the model data period.
+#' This method of R6 class \code{\link{DynMdl}} returns the model data period.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -98,7 +98,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{DynMod} object
+#' \code{mdl} is an \code{DynMdl} object
 #' @seealso
 #' \code{\link{set_period}}
 NULL

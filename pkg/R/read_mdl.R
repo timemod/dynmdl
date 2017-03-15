@@ -1,10 +1,10 @@
 #' Reads a model from a RDS file
 #'
 #' This function reads a model from an RDS file that has been written
-#' by method \code{\link{write_mdl}} of an \code{\link{DynMod}} or
-#' \code{\link{FitMod}} object.
+#' by method \code{\link{write_mdl}} of an \code{\link{DynMdl}} or
+#' \code{\link{FitMdl}} object.
 #' @param file the name of the RDS file
-#' @return a \code{\link{DynMod}} or \code{\link{FitMod}} object
+#' @return a \code{\link{DynMdl}} or \code{\link{FitMdl}} object
 #' @examples
 #' mdl <- islm_mod("2017Q1/2019Q2")
 #' mdl$write_mdl("islm_mod.rds")
@@ -28,7 +28,7 @@ read_mdl <- function(file) {
         dll_file <- NA_character_
     }
     printobj(ser$bytecode)
-    mdl <- DynMod$new(ser$model_info, ser$bytecode, ser$use_dll, dll_dir, dll_file)
+    mdl <- DynMdl$new(ser$model_info, ser$bytecode, ser$use_dll, dll_dir, dll_file)
     mdl$set_static_endos(ser$endos)
     mdl$set_static_exos(ser$exos)
     if (!is.null(ser$endo_data)) {

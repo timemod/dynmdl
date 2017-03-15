@@ -1,4 +1,4 @@
-# Auxiliary function for method solve_perturbation of class DynMod.
+# Auxiliary function for method solve_perturbation of class DynMdl.
 # This function constructs the path of the endogenous variables
 # based on the solution created by solve_first_order.
 # The perturbation approach currently only works for models with
@@ -27,7 +27,7 @@ solve_perturbation_  <- function(ss, max_lag, exo_data, endo_data, static_exos,
     if (sum(abs(exo_[check_per])) > .Machine$double.eps) {
         # Currentlty, only exogenous shocks in the first solution period are
         # allowed. Exogenous shocks at later times would requires
-        # so called deterministic exogenoeous variables. dynmod does not
+        # so called deterministic exogenoeous variables. dynmdl does not
         # support that.
         stop(paste("The perturbation approach currently only allows shocks",
                    "in the first period"))

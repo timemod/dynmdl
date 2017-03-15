@@ -1,6 +1,6 @@
 # Basic example of the ISLM model with lags
 
-library(dynmod)
+library(dynmdl)
 
 mdl <- read_mdl("aap.rds")
 print(mdl)

@@ -1,4 +1,4 @@
-// error handling for dynmod
+// error handling for dynmdl
 
 #include <iostream>
 using namespace std;

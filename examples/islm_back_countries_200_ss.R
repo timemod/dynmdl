@@ -1,4 +1,4 @@
-library(dynmod)
+library(dynmdl)
 
 param_file <- "input/islm_country_params.csv"
 
@@ -9,7 +9,7 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
-mdl <- create_mod("mod/islm_back_countries_200.mod", use_dll = TRUE)
+mdl <- create_mdl("mod/islm_back_countries_200.mod", use_dll = TRUE)
 print(mdl)
 
 mdl$set_params(params)

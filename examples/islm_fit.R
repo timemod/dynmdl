@@ -6,12 +6,12 @@
 # The endogenous variables ut, ui, uc and umd are the residuals
 # of the fit procedure.
 
-library(dynmod)
+library(dynmdl)
 
 period <- regperiod_range("2017Q1", "2022Q4")
 fit_target_csv <- "input/islm_fit_targets.csv"
 
-mdl <- create_mod("mod/islm_fit.mod", fit_mod_file = "fmod/islm_fit.fmod")
+mdl <- create_mdl("mod/islm_fit.mod", fit_mod_file = "fmod/islm_fit.fmod")
 print(mdl)
 
 mdl$solve_steady(control = list(trace = TRUE))

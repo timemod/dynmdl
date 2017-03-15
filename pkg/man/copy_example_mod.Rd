@@ -17,7 +17,7 @@ is \code{model_name} suffixed with extension \code{.mdl}.}
 \code{TRUE} is the copy was succesful
 }
 \description{
-The package \code{dynmod} includes a number of example model files
+The package \code{dynmdl} includes a number of example model files
 that can be used to get started with this package. These files are
 located in the directory \code{models} of the package directory. This
 function can be used to copy the model file from this directory to
@@ -35,5 +35,5 @@ unlink("mod", recursive = TRUE)
 }
 }
 \seealso{
-\code{\link{create_mod}} and \code{\link{DynMod}}
+\code{\link{create_mdl}} and \code{\link{DynMdl}}
 }

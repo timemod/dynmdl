@@ -1,4 +1,4 @@
 library(testthat)
-library(dynmod)
+library(dynmdl)
 
-test_check("dynr")
+test_check("dynmdl")

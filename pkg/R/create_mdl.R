@@ -1,4 +1,4 @@
-#' Creates a \code{\link{DynMod}} object from a mod file
+#' Creates a \code{\link{DynMdl}} object from a mod file
 #'
 #' @param mod_file the name of the model file (including extension .mod)
 #' @param bytecode If \code{TRUE}, then the functions used to calculate the
@@ -10,13 +10,13 @@
 #' then the fit mod file is destroyed after the model has been parsed.
 #' @param debug If \code{TRUE}, then some print statements
 #' are executed.
-#' @return an \code{DynMod} object or, if the mod file contains a
-#' fit block, a \code{\link{FitMod}} object.
+#' @return an \code{DynMdl} object or, if the mod file contains a
+#' fit block, a \code{\link{FitMdl}} object.
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
-#' @useDynLib dynmod
-create_mod <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
+#' @useDynLib dynmdl
+create_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
                        fit_mod_file, debug = FALSE) {
 
     if (!file.exists(mod_file)) {
@@ -33,7 +33,7 @@ create_mod <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
         if (missing(fit_mod_file)) {
             fit_mod_file <- tempfile()
         }
-        fit_info   <- create_fitmod(mod_file, fit_mod_file, debug)
+        fit_info   <- create_fit_mod(mod_file, fit_mod_file, debug)
         model_info <- compile_model_(fit_mod_file, use_dll, dll_dir)
         if (missing(fit_mod_file)) {
             unlink(fit_mod_file)
@@ -43,7 +43,7 @@ create_mod <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
         } else {
             dll_file <- NA_character_
         }
-        return(FitMod$new(model_info, fit_info, bytecode, use_dll, dll_dir,
+        return(FitMdl$new(model_info, fit_info, bytecode, use_dll, dll_dir,
                           dll_file, debug))
     } else {
         if (!missing(fit_mod_file)) {
@@ -55,7 +55,7 @@ create_mod <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
         } else {
             dll_file <- NA_character_
         }
-        return(DynMod$new(model_info, bytecode, use_dll, dll_dir, dll_file))
+        return(DynMdl$new(model_info, bytecode, use_dll, dll_dir, dll_file))
     }
 }
 

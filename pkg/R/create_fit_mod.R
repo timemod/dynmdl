@@ -7,9 +7,9 @@
 # @param mod_file the filename of the mod file with #FIT tags
 # @param fit_mod the name of the file used for the fit procedure
 # @return a list with the names of the auxiliary variables
-#' @useDynLib dynmod
+#' @useDynLib dynmdl
 #' @importFrom stringi stri_split_fixed
-create_fitmod <- function(mod_file, fit_mod, debug = FALSE) {
+create_fit_mod <- function(mod_file, fit_mod, debug = FALSE) {
     
     if (file.exists(fit_mod)) {
         unlink(fit_mod)

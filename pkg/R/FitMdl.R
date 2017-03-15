@@ -1,11 +1,11 @@
 #' An R6 class for a Dynare model with Fit targets
-#' This class is a subclass of a \code{\link{DynMod}} objects. It contains
+#' This class is a subclass of a \code{\link{DynMdl}} objects. It contains
 #' special methods for the fit procedure.
 #'
 #' @docType class
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib dynmod
+#' @useDynLib dynmdl
 #' @importFrom regts start_period
 #' @importFrom regts regperiod_range
 #' @importFrom regts regts
@@ -57,8 +57,8 @@
 #'  or an object that can be coerced to \code{regperiod_range}.}
 #' }
 
-FitMod <- R6Class("FitMod",
-    inherit = DynMod,
+FitMdl <- R6Class("FitMdl",
+    inherit = DynMdl,
     public = list(
         initialize = function(model_info, fit_info, bytecode, use_dll, dll_dir,
                               dll_file, debug = FALSE) {
@@ -66,7 +66,7 @@ FitMod <- R6Class("FitMod",
             private$fit_info <- fit_info
         }, 
         print = function(short = TRUE) {
-            cat("FitMod object\n")
+            cat("FitMdl object\n")
             cat("Information about the original model:\n")
             exo_count_orig  <- length(private$fit_info$orig_exos)
             endo_count_orig <- length(private$fit_info$orig_endos)

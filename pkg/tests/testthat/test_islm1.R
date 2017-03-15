@@ -1,4 +1,4 @@
-library(dynmod)
+library(dynmdl)
 library(testthat)
 
 context("ISLM model")
@@ -12,7 +12,7 @@ exo_name_file  <- file.path(dynare_dir, "islm_exo_names.txt")
 p1 <- regperiod("2011Q3")
 model_period <- regperiod_range(p1, p1 + nperiods - 1)
 
-report <- capture_output(mdl <- create_mod(mod_file))
+report <- capture_output(mdl <- create_mdl(mod_file))
 mdl$solve_steady()
 mdl$set_period(model_period)
 lag_per <- mdl$get_lag_period()

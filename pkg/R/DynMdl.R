@@ -7,7 +7,7 @@ setOldClass("regts")
 #' @docType class
 #' @importFrom R6 R6Class
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib dynmod
+#' @useDynLib dynmdl
 #' @importFrom regts start_period
 #' @importFrom regts end_period
 #' @importFrom regts as.regperiod_range
@@ -53,7 +53,7 @@ setOldClass("regts")
 #' the steady state values. Function \code{solve_steady} can be used
 #' to compute them. After compiling the model, the
 #' static endos are initialized with zeros and the values in the \code{initval}
-#' block in the  \code{mod} file. There is no setter for the static values:
+#' block in the  \code{mdl} file. There is no setter for the static values:
 #' you can only modify them by calling function \code{solve_steady}}
 #'
 #' \item{\code{\link{init_data}}}{Initializes the model data}
@@ -155,7 +155,7 @@ setOldClass("regts")
 #' ordered with increasing absolute value}
 #'
 #' }
-DynMod <- R6Class("DynMod",
+DynMdl <- R6Class("DynMdl",
     public = list(
         initialize = function(model_info, bytecode, use_dll, dll_dir, dll_file) {
 
@@ -244,7 +244,7 @@ DynMod <- R6Class("DynMod",
             }
         },
         print = function(short = TRUE) {
-            cat("DynMod object\n")
+            cat("DynMdl object\n")
             private$print_info(short)
             return (invisible(NULL))
         },
@@ -522,7 +522,7 @@ DynMod <- R6Class("DynMod",
             # solve_perturbation does not works for exogenous lags and leads.
             # For perturbation approaches, Dynare substitutes
             # these lags and leads by creating auxiliary variables and
-            # equations. dynmod does not do that.
+            # equations. dynmdl does not do that.
             if (private$max_exo_lag > 0 || private$max_exo_lead > 0) {
                 stop(paste("Method solve_perturbation does not work for models",
                            "with exogenous lags or leads"))
@@ -771,7 +771,7 @@ DynMod <- R6Class("DynMod",
             }
             model_info <- private$model_info
             model_info$params <- private$params
-            # TODO: write the contents of the mod file, the package version
+            # TODO: write the contents of the mdl file, the package version
             # and the operating system to the rds file. If necessary,
             # the model should be recompiled in read_mdl.
             serialized_mdl <- list(class = class(self)[1],

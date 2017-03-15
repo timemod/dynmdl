@@ -1,4 +1,4 @@
-library(dynmod)
+library(dynmdl)
 
 context("NK_baseline model")
 
@@ -19,7 +19,7 @@ eigval_file <- file.path(dynare_dir, "NK_baseline_eigval.csv")
 start_period <- regperiod("2015")
 
 # compile the model
-report <- capture_output(mdl <- create_mod(mod_file))
+report <- capture_output(mdl <- create_mdl(mod_file))
 
 # read in the dynare result, this is also used to determine the solution period
 endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,

@@ -1,4 +1,4 @@
-library(dynmod)
+library(dynmdl)
 source("create_islm_country_model.R")
 
 basis_mod_file <- "mod/islm_countries.inp"
@@ -13,7 +13,7 @@ run_series <- function(ncountries) {
         mod_file <- paste0("mod/islm_countries_",
                            as.character(nextra), ".mod")
         create_islm_country_model(basis_mod_file, mod_file, nextra)
-        mdl <- compile_model(mod_file, use_dll = FALSE)
+        mdl <- create_mdl(mod_file, use_dll = FALSE)
         mdl$set_period("2017Q1/2066Q4")
         mdl$set_endo_values(1300, names = "y_co_1", period = "2016Q4")
 

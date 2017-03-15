@@ -1,8 +1,8 @@
 # Basic example of the ISLM model with lags
 
-library(dynmod)
+library(dynmdl)
 
-mdl <- create_mod("mod/islm.mod", use_dll = TRUE)
+mdl <- create_mdl("mod/islm.mod", use_dll = TRUE)
 #print(mdl, short = FALSE)
 
 mdl$solve_steady(control = list(trace = TRUE))

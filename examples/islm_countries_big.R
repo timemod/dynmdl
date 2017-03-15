@@ -1,4 +1,4 @@
-library(dynmod)
+library(dynmdl)
 
 param_file <- "input/islm_country_params.csv"
 fit_file <- "input/islm_countries_fit.csv"
@@ -14,7 +14,7 @@ names(params) <- as.character(param_names)
 fit_targets <- as.regts(read.csv("input/islm_countries_fit.csv", row.names = 1))
 
 system.time(
-    mdl <- create_mod("mod/islm_countries_big.mod",
+    mdl <- create_mdl("mod/islm_countries_big.mod",
                       fit_mod_file = "fmod/islm_countries.fmod",
                       bytecode = FALSE)
 )

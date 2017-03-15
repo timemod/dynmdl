@@ -9,9 +9,9 @@ compile_c_functions <- function(dll_dir) {
     dll_file <- file.path(dll_dir, paste0("mdl_functions", dll_ext))
 
     mdl_function_file <- system.file("c_wrappers", "mdl_functions.c",
-                                     package = "dynmod")
+                                     package = "dynmdl")
     triplet_jac_file <- system.file("c_wrappers", "get_triplet_jac_new.cpp",
-                                     package = "dynmod")
+                                     package = "dynmdl")
 
     file.copy(mdl_function_file, file.path(dll_dir, "mdl_functions.c"),
               overwrite = TRUE)

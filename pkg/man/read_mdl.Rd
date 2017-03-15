@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_mdl.R
 \name{read_mdl}
 \alias{read_mdl}
-\title{Reads a model from an RDS file}
+\title{Reads a model from a RDS file}
 \usage{
 read_mdl(file)
 }
@@ -10,11 +10,12 @@ read_mdl(file)
 \item{file}{the name of the RDS file}
 }
 \value{
-a \code{\link{IsisMdl}} object
+a \code{\link{DynMdl}} or \code{\link{FitMdl}} object
 }
 \description{
 This function reads a model from an RDS file that has been written
-by method \code{\link{write_mdl}} of an \code{\link{IsisMdl}} object.
+by method \code{\link{write_mdl}} of an \code{\link{DynMdl}} or
+\code{\link{FitMdl}} object.
 }
 \examples{
 mdl <- islm_mod("2017Q1/2019Q2")

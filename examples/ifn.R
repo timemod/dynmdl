@@ -1,11 +1,11 @@
 # Example for the IFN model
 
-library(dynmod)
+library(dynmdl)
 
 mod_file <- "mod/ifn.mod"
 input_file <- "input/ifn_input.csv"
 
-mdl <- create_mod(mod_file)
+mdl <- create_mdl(mod_file)
 
 input_df <- read.csv(input_file)
 nperiods <- nrow(input_df) - 2  # subtract maximum lead and lag
