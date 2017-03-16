@@ -10,6 +10,9 @@
 #' then the fit mod file is destroyed after the model has been parsed.
 #' @param debug If \code{TRUE}, then some print statements
 #' are executed.
+#' @param dll_dir the directory where the dynamically linked library is stored.
+#' Primarily used for testing.
+#' Only used if argument \code{use_dll} is \code{TRUE}.
 #' @return an \code{DynMdl} object or, if the mod file contains a
 #' fit block, a \code{\link{FitMdl}} object.
 #' @export
@@ -17,14 +20,17 @@
 #' @importFrom tools file_path_sans_ext
 #' @useDynLib dynmdl
 create_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
-                       fit_mod_file, debug = FALSE) {
+                       fit_mod_file, debug = FALSE, dll_dir) {
 
     if (!file.exists(mod_file)) {
         stop(paste("ERROR: Could not open file:", mod_file))
     }
     
     if (use_dll) {
-        dll_dir <- tempdir()
+        if (missing(dll_dir)) {
+            dll_dir <- tempfile()
+        }
+        dir.create(dll_dir)
     } else {
         dll_dir <- NA_character_
     }
@@ -35,6 +41,8 @@ create_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
         }
         fit_info   <- create_fit_mod(mod_file, fit_mod_file, debug)
         model_info <- compile_model_(fit_mod_file, use_dll, dll_dir)
+        params <- model_info$params
+        model_info$params <- NULL
         if (missing(fit_mod_file)) {
             unlink(fit_mod_file)
         } 
@@ -43,19 +51,21 @@ create_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
         } else {
             dll_file <- NA_character_
         }
-        return(FitMdl$new(model_info, fit_info, bytecode, use_dll, dll_dir,
-                          dll_file, debug))
+        return(FitMdl$new(model_info, fit_info, params, bytecode, use_dll,
+                          dll_dir, dll_file, debug))
     } else {
         if (!missing(fit_mod_file)) {
             warning("fit_mod_file specified, but no fit block in mod file found")
         }
         model_info <- compile_model_(mod_file, use_dll, dll_dir)
+        params <- model_info$params
+        model_info$params <- NULL
         if (use_dll) {
             dll_file <- compile_c_functions(dll_dir)
         } else {
             dll_file <- NA_character_
         }
-        return(DynMdl$new(model_info, bytecode, use_dll, dll_dir, dll_file))
+        return(DynMdl$new(model_info, params, bytecode, use_dll, dll_dir, dll_file))
     }
 }
 

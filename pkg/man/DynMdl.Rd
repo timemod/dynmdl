@@ -142,5 +142,5 @@ ordered with increasing absolute value}
 
 }
 }
-
 \keyword{data}
+

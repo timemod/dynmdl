@@ -15,7 +15,7 @@ mdl$get_period()
 
 \code{mdl} is an \code{DynMdl} object
 }
-
 \seealso{
 \code{\link{set_period}}
 }
+

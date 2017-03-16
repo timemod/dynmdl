@@ -5,7 +5,7 @@
 \title{Creates a \code{\link{DynMdl}} object from a mod file}
 \usage{
 create_mdl(mod_file, bytecode = FALSE, use_dll = FALSE, fit_mod_file,
-  debug = FALSE)
+  debug = FALSE, dll_dir)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -22,6 +22,10 @@ then the fit mod file is destroyed after the model has been parsed.}
 
 \item{debug}{If \code{TRUE}, then some print statements
 are executed.}
+
+\item{dll_dir}{the directory where the dynamically linked library is stored.
+Primarily used for testing.
+Only used if argument \code{use_dll} is \code{TRUE}.}
 }
 \value{
 an \code{DynMdl} object or, if the mod file contains a
@@ -30,3 +34,4 @@ fit block, a \code{\link{FitMdl}} object.
 \description{
 Creates a \code{\link{DynMdl}} object from a mod file
 }
+

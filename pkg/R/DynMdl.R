@@ -157,8 +157,9 @@ setOldClass("regts")
 #' }
 DynMdl <- R6Class("DynMdl",
     public = list(
-        initialize = function(model_info, bytecode, use_dll, dll_dir, dll_file) {
-
+        initialize = function(model_info, params, bytecode, use_dll, dll_dir,
+                              dll_file) {
+    
             private$model_info <- model_info
 
             if (use_dll) {
@@ -509,8 +510,6 @@ DynMdl <- R6Class("DynMdl",
             private$endo_data[private$model_period, ] <-
                     t(matrix(ret$x, nrow = private$endo_count))
 
-
-            self$solve_out <- ret
             return (invisible(self))
         },
         solve_perturbation = function() {
@@ -568,7 +567,6 @@ DynMdl <- R6Class("DynMdl",
                            private$exo_data, private$params,
                            private$lead_lag_incidence,
                            private$f_dynamic, private$jac_dynamic)
-            self$solve_out <- NULL
             return(invisible(NULL))
         },
         write_mdl = function(file) {
@@ -576,8 +574,7 @@ DynMdl <- R6Class("DynMdl",
             saveRDS(private$serialize_mdl(), file)
             cat("Done\n")
             return (invisible(self))
-        },
-        solve_out = NULL
+        }
     ),
     private = list(
         model_info = NULL,
@@ -726,7 +723,7 @@ DynMdl <- R6Class("DynMdl",
             return(invisible(NULL))
         },
         clean_after_solve = function() {
-            private$nrow_exo <- NULL
+            private$nrow_exo <- NA_integer_
             private$jac <- NULL
             dyn.unload(private$dll_file)
             return(invisible(NULL))
@@ -760,7 +757,7 @@ DynMdl <- R6Class("DynMdl",
             if (private$use_dll) {
                 cwd <- getwd()
                 setwd(private$dll_dir)
-                zip("dll.zip", basename(private$dll_file))
+                zip("dll.zip", basename(private$dll_file), extra = "-q")
                 setwd(cwd)
                 zip_file <- file.path(private$dll_dir, "dll.zip")
                 size <- file.info(zip_file)$size
@@ -769,16 +766,15 @@ DynMdl <- R6Class("DynMdl",
             }  else {
                 dll_data <- NULL
             }
-            model_info <- private$model_info
-            model_info$params <- private$params
             # TODO: write the contents of the mdl file, the package version
             # and the operating system to the rds file. If necessary,
             # the model should be recompiled in read_mdl.
             serialized_mdl <- list(class = class(self)[1],
-                                   model_info = model_info, 
+                                   model_info = private$model_info, 
                                    bytecode = private$bytecode,
                                    use_dll = private$use_dll, dll_data = dll_data,
                                    dll_basename = basename(private$dll_file),
+                                   params = private$params,
                                    endos = private$endos,
                                    exos = private$exos,
                                    period = private$model_period,

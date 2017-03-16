@@ -4,10 +4,15 @@
 \alias{read_mdl}
 \title{Reads a model from a RDS file}
 \usage{
-read_mdl(file)
+read_mdl(file, dll_dir)
 }
 \arguments{
 \item{file}{the name of the RDS file}
+
+\item{dll_dir}{the directory where the dynamically linked library is stored.
+Primarily used for testing.
+Only used if argument \code{use_dll} was \code{TRUE} (see function
+\code{\link{create_mdl}}.}
 }
 \value{
 a \code{\link{DynMdl}} or \code{\link{FitMdl}} object
@@ -25,3 +30,4 @@ mdl2 <- read_mdl("islm_mod.rds")
 \seealso{
 \code{\link{write_mod}}
 }
+

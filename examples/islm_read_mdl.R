@@ -2,7 +2,7 @@
 
 library(dynmdl)
 
-mdl <- create_mdl("mod/islm.mod", use_dll = TRUE)
+mdl <- create_mdl("mod/islm.mod", use_dll = TRUE, dll_dir = "aap")
 #mdl <- create_mdl("mod/islm.mod")
 #print(mdl, short = FALSE)
 
@@ -19,5 +19,10 @@ mdl$solve(control = list(trace = TRUE))
 
 mdl$write_mdl("aap.rds")
 
-mdl <- read_mdl("aap.rds")
-mdl$solve(control = list(trace = TRUE))
+mdl2 <- read_mdl("aap.rds", dll_dir = "aap")
+mdl2$solve(control = list(trace = TRUE))
+
+all.equal(mdl, mdl2)
+
+unlink("aap", recursive = TRUE)
+

@@ -37,3 +37,4 @@ unlink("mod", recursive = TRUE)
 \seealso{
 \code{\link{create_mdl}} and \code{\link{DynMdl}}
 }
+

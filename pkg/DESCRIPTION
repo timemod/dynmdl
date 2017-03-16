@@ -8,12 +8,24 @@ Description: A Dynare parser.
 SystemRequirements: GNU make
 License: GPL (>= 2)
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
 LinkingTo: Rcpp, BH
-Imports: Rcpp, nleqslv, Matrix, compiler, R6, geigen, gsubfn,
-         tools, stringi, umfpackr
-Depends: regts, methods
-Suggests: testthat,
+Imports:
+    Rcpp,
+    nleqslv,
+    Matrix,
+    compiler,
+    R6,
+    geigen,
+    gsubfn,
+    tools,
+    stringi,
+    umfpackr
+Depends:
+    regts,
+    methods
+Suggests:
+    testthat,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
