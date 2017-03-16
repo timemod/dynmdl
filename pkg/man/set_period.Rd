@@ -27,7 +27,7 @@ mdl$set_period(period)
 
 }
 
-\code{mdl} is an \code{DynMdl} object
+\code{mdl} is a \code{DynMdl} object
 }
 
 \section{Arguments}{
@@ -40,7 +40,7 @@ object, or an object that can be coerced to
 }
 }
 \examples{
-mdl <- islm_mod()
+mdl <- islm_mdl()
 mdl$set_period("2017Q2/2021Q3")
 }
 

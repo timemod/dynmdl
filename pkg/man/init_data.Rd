@@ -22,7 +22,7 @@ mdl$init_data(data_period)
 
 }
 
-\code{mdl} is an \code{DynMdl} object
+\code{mdl} is a \code{DynMdl} object
 }
 
 \section{Arguments}{

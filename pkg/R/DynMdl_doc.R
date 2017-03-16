@@ -18,7 +18,7 @@
 #'
 #' }
 #'
-#' \code{mdl} is an \code{DynMdl} object
+#' \code{mdl} is a \code{DynMdl} object
 #'
 #' @section Arguments:
 #'
@@ -54,7 +54,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{DynMdl} object
+#' \code{mdl} is a \code{DynMdl} object
 #'
 #' @section Arguments:
 #'
@@ -65,7 +65,7 @@ NULL
 #' }
 #'
 #' @examples
-#' mdl <- islm_mod()
+#' mdl <- islm_mdl()
 #' mdl$set_period("2017Q2/2021Q3")
 NULL
 
@@ -81,7 +81,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{DynMdl} object
+#' \code{mdl} is a \code{DynMdl} object
 #' @seealso
 #' \code{\link{set_period}}
 NULL
@@ -98,10 +98,85 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{DynMdl} object
+#' \code{mdl} is a \code{DynMdl} object
 #' @seealso
 #' \code{\link{set_period}}
 NULL
+
+#' \code{\link{DynMdl}} methods: Retrieve timeseries from the model data
+#' @name get_data-methods
+#' @aliases get_endo_data get_exo_data
+#' @description
+#' These methods of R6 class \code{\link{DynMdl}} 
+#' can be used to retrieve timeseries from the model data.
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$get_endo_data(pattern, names, period = mdl$get_data_period())
+#'
+#' mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{names}}{a character vector with variable names}
+#' \item{\code{pattern}}{a regular expression}
+#' \item{\code{period}}{an \code{\link[regts]{regperiod_range}} object or an
+#' object that can be coerced to a \code{regperiod_range}}
+#' }
+#' @section Methods:
+#' \itemize{
+#' \item \code{get_endo_data}: Endogenous model variables
+#'
+#' \item \code{get_exo_data}: Exogenous model variables
+#' }
+#'
+NULL
+
+#' \code{\link{DynMdl}} method: transfers data from a timeseries 
+#' object to the model data
+#' @name set_data
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} 
+#' transfers data from a timeseries object to the model data
+#' (both endogenous and exogenous)
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$set_data(data, names = colnames(data), 
+#'              update_mode = c("update", "updval")
+#' 
+#' }
+#'
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#' 
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
+#'  object}
+#' \item{\code{names}}{a character vector with variable names. Defaults to the
+#' column names of \code{data}. If \code{data} does not have column names,
+#' then argument \code{names} is mandatory}
+#' \item{\code{update_mode}}{the update mode. See details.}
+#' }
+#'
+#' @section Details:
+#'
+#' The argument \code{update_mode} controls how the timeseries are updated:
+#' \describe{
+#' \item{\code{"update"}}{Model variables are updated with the 
+#' timeseries in \code{data}}
+#' \item{\code{"updval"}}{Model variables are updated with the non \code{NA}
+#' values in \code{data}}
+#' }
+#'
+NULL
+
 
 #' Writes the model to an RDS file
 #' @name write_mdl

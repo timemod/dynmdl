@@ -13,7 +13,7 @@ mdl$get_data_period()
 
 }
 
-\code{mdl} is an \code{DynMdl} object
+\code{mdl} is a \code{DynMdl} object
 }
 \seealso{
 \code{\link{set_period}}

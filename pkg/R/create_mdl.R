@@ -1,4 +1,8 @@
-#' Creates a \code{\link{DynMdl}} object from a mod file
+#' Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file
+#'
+#' Creates a \code{\link{DynMdl}} object from a mod file. If the mod file
+#' contains a fit block, then this function returns a \code{\link{FitMdl}} 
+#' object, which is an extension of a \code{DynMdl} object.
 #'
 #' @param mod_file the name of the model file (including extension .mod)
 #' @param bytecode If \code{TRUE}, then the functions used to calculate the

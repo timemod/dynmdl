@@ -68,15 +68,6 @@ setOldClass("regts")
 #'
 #' \item{\code{get_lead_period()}}{Returns the lead period}
 #'
-#' \item{\code{set_exo_data(data, names = colnames(data), update_mode = c("update", "updval"))}}{
-#' Sets the values of the exogenous variables. \code{data} is a
-#' \code{regts} or \code{ts}. With argument \code{names} the names of the
-#' timeseries in \code{data} can be specified. This argument
-#' is mandatary if \code{data} does not have column names.
-#' If \code{update_mode} is
-#' \code{"updval"}, then the values are only replaced by non NA values in
-#' \code{data}}
-#'
 #' \item{\code{set_exo_values(value, names = NULL, period = self$get_data_period())}}{Sets the value(s)
 #' of one more exogenous variables. \code{value} can be any R object
 #' that can be coerced to a numeric. \code{period} is the period
@@ -90,14 +81,6 @@ setOldClass("regts")
 #'  or an object that can be coerced to \code{regperiod_range}.}
 
 #'
-#' \item{\code{set_endo_data(data, names = colnames(data), update_mode = c("update", "updval"))}}{
-#' Sets the values of the endogenous variables. \code{data} is a
-#' \code{regts} or \code{ts}. With argument \code{names} the names of the
-#' timeseries in \code{data} can be specified. This argument
-#' is mandatary if \code{data} does not have column names.
-#' If \code{update_mode} is
-#' \code{"updval"}, then the values are only replaced by non NA values in
-#' \code{data}}
 #'
 #' \item{\code{set_endo_values(value, names = NULL,  period = self$get_data_period())}}{
 #' Sets the value(s) of one more endogenous variables. \code{value} can be any R object
@@ -105,22 +88,11 @@ setOldClass("regts")
 #' for which endogenous variable is modified. If argument \code{period}
 #' is missing then the data period is used.}
 #'
-#' \item{\code{set_data(data, names, update_mode = c("update", "updval"))}}{
-#' Sets the values of the all model variables (both endogenous and exogenouys).
-#' \code{data} is a
-#' \code{regts} or \code{ts}. With argument \code{names} the names of the
-#' timeseries in \code{data} can be specified. This argument
-#' is mandatary if \code{data} does not have column names.
-#' If \code{update_mode} is
-#' \code{"updval"}, then the values are only replaced by non NA values in
-#' \code{data}}
+#' \item{\code{\link{set_data}}}{Transfer timeseries to the model data}
 #'
-#' \item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{
-#' Returns the endogenous data.
-#' \code{pattern} is a regular expression,  \code{names} a list of variables
-#'  and \code{period} an \code{\link[regts]{regperiod_range}} object
-#'  or an object that can be coerced to \code{regperiod_range}.}
-
+#' \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
+#'
+#' \item{\code{\link{get_exo_data}}}{Returns the exogenous model data}
 #'
 #' \item{\code{solve_steady(start = self$get_static_endos(), init_data = TRUE,
 #' control = NULL)}}{
@@ -339,11 +311,6 @@ DynMdl <- R6Class("DynMdl",
                 return (NULL)
             }
         },
-        set_exo_data = function(data, names = colnames(data),
-                                update_mode = "update") {
-            return (private$set_data_(data, names, names_missing = missing(names),
-                              type = "exo", update_mode = update_mode))
-        },
         set_exo_values = function(value, names = private$exo_names,
                                   period = private$data_period) {
             names <- intersect(names, private$exo_names)
@@ -371,10 +338,6 @@ DynMdl <- R6Class("DynMdl",
                 return (private$exo_data[period, names, drop = FALSE])
             }
         },
-        set_endo_data = function(data, names = colnames(data), update_mode = "update") {
-            return (private$set_data_(data, names, names_missing = missing(names),
-                              type = "endo", update_mode = update_mode))
-        },
         set_endo_values = function(value, names = private$endo_names,
                                    period = private$data_period) {
             names <- intersect(names, private$endo_names)
@@ -387,7 +350,9 @@ DynMdl <- R6Class("DynMdl",
             private$endo_data[period, names] <- value
             return (invisible(self))
         },
-        set_data = function(data, names = colnames(data), update_mode = "update")  {
+        set_data = function(data, names = colnames(data), 
+                            update_mode = c("update", "updval")) {
+            update_mode <- match.arg(update_mode)
             private$set_data_(data, names, names_missing = missing(names),
                               type = "exo", update_mode = update_mode)
             private$set_data_(data, names, names_missing = missing(names),
@@ -613,13 +578,11 @@ DynMdl <- R6Class("DynMdl",
         nrow_exo = NA_integer_,
         jac = NULL,
         jac_steady = NULL,
-        set_data_= function(data, names, names_missing, type = c("endo", "exo"),
-                            update_mode = c("update", "updval")) {
+        set_data_= function(data, names, names_missing, type, update_mode) {
             # generic function to set or update the endogenous or exogenous
             # variables
 
             if (is.null(private$model_period)) stop(private$period_error_msg)
-            update_mode <- match.arg(update_mode)
 
             per <- regrange_intersect(get_regperiod_range(data),
                                       private$data_period)
@@ -651,6 +614,10 @@ DynMdl <- R6Class("DynMdl",
                 names <- intersect(names, private$endo_names)
             } else  {
                 names <- intersect(names, private$exo_names)
+            }
+
+            if (length(names) == 0) {
+                return(invisible(self))
             }
 
             if (update_mode == "update") {

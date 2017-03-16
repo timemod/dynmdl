@@ -39,8 +39,8 @@ dynare_exo <- get_dynare_exo("islm_backwards_simul_exo.csv", mdl$get_data_period
 
 test_that("solve", {
     mdl2 <- mdl$clone()
-    mdl2$set_endo_data(dynare_endo[lag_per])
-    mdl2$set_exo_data(dynare_exo)
+    mdl2$set_data(dynare_endo[lag_per])
+    mdl2$set_data(dynare_exo)
     mdl2$solve(control = list(silent = TRUE))
     expect_equal(dynare_endo, mdl2$get_endo_data())
     expect_error(mdl2$solve_perturbation(),
@@ -49,8 +49,8 @@ test_that("solve", {
 
 test_that("solve with the stacked time method", {
     mdl2 <- mdl$clone()
-    mdl2$set_endo_data(dynare_endo[lag_per])
-    mdl2$set_exo_data(dynare_exo)
+    mdl2$set_data(dynare_endo[lag_per])
+    mdl2$set_data(dynare_exo)
     mdl2$solve(control = list(silent = TRUE), force_stacked_time = TRUE)
     expect_equal(dynare_endo, mdl2$get_endo_data())
 })

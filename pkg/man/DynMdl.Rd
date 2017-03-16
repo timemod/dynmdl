@@ -56,15 +56,6 @@ you can only modify them by calling function \code{solve_steady}}
 
 \item{\code{get_lead_period()}}{Returns the lead period}
 
-\item{\code{set_exo_data(data, names = colnames(data), update_mode = c("update", "updval"))}}{
-Sets the values of the exogenous variables. \code{data} is a
-\code{regts} or \code{ts}. With argument \code{names} the names of the
-timeseries in \code{data} can be specified. This argument
-is mandatary if \code{data} does not have column names.
-If \code{update_mode} is
-\code{"updval"}, then the values are only replaced by non NA values in
-\code{data}}
-
 \item{\code{set_exo_values(value, names = NULL, period = self$get_data_period())}}{Sets the value(s)
 of one more exogenous variables. \code{value} can be any R object
 that can be coerced to a numeric. \code{period} is the period
@@ -77,14 +68,6 @@ Returns the exogenous data.
  and \code{period} an \code{\link[regts]{regperiod_range}} object
  or an object that can be coerced to \code{regperiod_range}.}
 
-\item{\code{set_endo_data(data, names = colnames(data), update_mode = c("update", "updval"))}}{
-Sets the values of the endogenous variables. \code{data} is a
-\code{regts} or \code{ts}. With argument \code{names} the names of the
-timeseries in \code{data} can be specified. This argument
-is mandatary if \code{data} does not have column names.
-If \code{update_mode} is
-\code{"updval"}, then the values are only replaced by non NA values in
-\code{data}}
 
 \item{\code{set_endo_values(value, names = NULL,  period = self$get_data_period())}}{
 Sets the value(s) of one more endogenous variables. \code{value} can be any R object
@@ -92,21 +75,11 @@ that can be coerced to a numeric. \code{period} is the period
 for which endogenous variable is modified. If argument \code{period}
 is missing then the data period is used.}
 
-\item{\code{set_data(data, names, update_mode = c("update", "updval"))}}{
-Sets the values of the all model variables (both endogenous and exogenouys).
-\code{data} is a
-\code{regts} or \code{ts}. With argument \code{names} the names of the
-timeseries in \code{data} can be specified. This argument
-is mandatary if \code{data} does not have column names.
-If \code{update_mode} is
-\code{"updval"}, then the values are only replaced by non NA values in
-\code{data}}
+\item{\code{\link{set_data}}}{Transfer timeseries to the model data}
 
-\item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{
-Returns the endogenous data.
-\code{pattern} is a regular expression,  \code{names} a list of variables
- and \code{period} an \code{\link[regts]{regperiod_range}} object
- or an object that can be coerced to \code{regperiod_range}.}
+\item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
+
+\item{\code{\link{get_exo_data}}}{Returns the exogenous model data}
 
 \item{\code{solve_steady(start = self$get_static_endos(), init_data = TRUE,
 control = NULL)}}{

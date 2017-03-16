@@ -8,9 +8,9 @@ pkg/src/*.dll
 pkg/autom4te.cache
 pkg/config.*
 inst/doc
-dynmod.Rcheck
+dynmdl.Rcheck
 pkg.log
 pkg.pdf
-dynmod*tar.gz
-dynmod*zip
+dynmdl*tar.gz
+dynmdl*zip
 tmp/

@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_mdl.R
 \name{create_mdl}
 \alias{create_mdl}
-\title{Creates a \code{\link{DynMdl}} object from a mod file}
+\title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
 \usage{
 create_mdl(mod_file, bytecode = FALSE, use_dll = FALSE, fit_mod_file,
   debug = FALSE, dll_dir)
@@ -32,6 +32,8 @@ an \code{DynMdl} object or, if the mod file contains a
 fit block, a \code{\link{FitMdl}} object.
 }
 \description{
-Creates a \code{\link{DynMdl}} object from a mod file
+Creates a \code{\link{DynMdl}} object from a mod file. If the mod file
+contains a fit block, then this function returns a \code{\link{FitMdl}} 
+object, which is an extension of a \code{DynMdl} object.
 }
 

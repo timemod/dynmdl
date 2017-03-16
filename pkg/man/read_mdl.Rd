@@ -23,11 +23,11 @@ by method \code{\link{write_mdl}} of an \code{\link{DynMdl}} or
 \code{\link{FitMdl}} object.
 }
 \examples{
-mdl <- islm_mod("2017Q1/2019Q2")
+mdl <- islm_mdl("2017Q1/2019Q2")
 mdl$write_mdl("islm_mod.rds")
 mdl2 <- read_mdl("islm_mod.rds")
 }
 \seealso{
-\code{\link{write_mod}}
+\code{\link{write_mdl}}
 }
 

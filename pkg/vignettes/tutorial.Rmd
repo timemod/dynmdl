@@ -1,5 +1,5 @@
 ---
-title: "Tutorial for package `dynmod`"
+title: "Tutorial for package `dynmdl`"
 author: "Rob van Harrevelt"
 date: "`r Sys.Date()`"
 output:
@@ -19,7 +19,7 @@ vignette: >
 # Introduction
 
 In this tutorial I show how a simple model with rational expectations
-can be solved with package `dynmod`.
+can be solved with package `dynmdl`.
 The example model is a version of the ISLM model with rational expectations.
 This model contains the following variables:
 
@@ -50,7 +50,7 @@ PREPARATIONS
 -->
 ```{r echo = FALSE, message = FALSE}
 
-library(dynmod)
+library(dynmdl)
 
 # input/output chunks are separated
 # R inputlines start with >, outputlines with nothing
@@ -59,7 +59,7 @@ knitr::opts_chunk$set(collapse = FALSE, comment = "", prompt = TRUE)
 
 # The mod file
 
-`dynmod` uses the same mod file as Dynare. However, only the `var`, `varexo`,
+`dynmdl` uses the same mod file as Dynare. However, only the `var`, `varexo`,
 `parameters`, `model` and `initval` blocks are used. The other blocks in the
 mod file are ignored.
 
@@ -68,17 +68,17 @@ The mod file for the ISLM has the following contents:
 cat(readLines('islm.mod'), sep = '\n')
 ```
 
-# The `DynMod` class
+# The `DynMdl` class
 
-The function `create_mod` creates a `DynMod` object from 
+The function `create_mdl` creates a `DynMdl` object from 
 the mod file.
 
 ```{r}
-mdl <- create_mod("islm.mod")
+mdl <- create_mdl("islm.mod")
 mdl
 ```
 
-A `DynMod` object is an R6 class object. R6 
+A `DynMdl` object is an R6 class object. R6 
 classes behave quite differently than the more familiar S3 and S4 classes. 
 For example, for R6 classes methods are part of the object itself and not of 
 generic functions. R6 classes behave in a simular way as classes in
@@ -98,7 +98,7 @@ mdl$get_params("m0")
 ```
 Input for function `set_params()` is a named numerical vector.
 
-# Cloning a `DynMod` object
+# Cloning a `DynMdl` object
 
 Consider the following assignment:
 ```{r}
@@ -205,7 +205,7 @@ mdl$solve(control = list(trace = TRUE))
 plot(mdl$get_endo_data(names = 'y'), type = "o")
 ```
 
-The methods `set_endo_value()` and `set_exo_value` are useful for simple 
+The methods `set_endo_value()` and `set_exo_values()` are useful for simple 
 experiments,
 but for more typical applications the exogenous shocks and values of the
 endogenous variables are stored in a csv file. For example,

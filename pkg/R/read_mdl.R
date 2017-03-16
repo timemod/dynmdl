@@ -10,10 +10,11 @@
 #' \code{\link{create_mdl}}. 
 #' @return a \code{\link{DynMdl}} or \code{\link{FitMdl}} object
 #' @examples
-#' mdl <- islm_mod("2017Q1/2019Q2")
+#' mdl <- islm_mdl("2017Q1/2019Q2")
 #' mdl$write_mdl("islm_mod.rds")
 #' mdl2 <- read_mdl("islm_mod.rds")
-#' @seealso \code{\link{write_mod}} 
+#' @seealso \code{\link{write_mdl}} 
+#' @importFrom utils unzip
 #' @export
 read_mdl <- function(file, dll_dir) {
     cat(paste("Reading model from", file, "\n"))
@@ -46,8 +47,8 @@ read_mdl <- function(file, dll_dir) {
     if (!is.null(ser$endo_data)) {
         mdl$init_data(data_period = get_regperiod_range(ser$endo_data))
         mdl$set_period(ser$period)
-        mdl$set_endo_data(ser$endo_data)
-        mdl$set_exo_data(ser$exo_data)
+        mdl$set_data(ser$endo_data)
+        mdl$set_data(ser$exo_data)
     }
     cat("Done\n")
     return(mdl)

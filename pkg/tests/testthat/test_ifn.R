@@ -1,4 +1,5 @@
 library(dynmdl)
+library(testthat)
 
 context("IFN model")
 
