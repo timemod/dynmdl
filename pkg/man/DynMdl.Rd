@@ -62,20 +62,9 @@ that can be coerced to a numeric. \code{period} is the period
 for which endogenous variable is modified. If argument \code{period}
 is missing the exo period is used.}
 
-\item{\code{get_exo_data(names, period = self$get_data_period()}}{
-Returns the exogenous data.
-\code{pattern} is a regular expression,  \code{names} a list of variables
- and \code{period} an \code{\link[regts]{regperiod_range}} object
- or an object that can be coerced to \code{regperiod_range}.}
-
-
-\item{\code{set_endo_values(value, names = NULL,  period = self$get_data_period())}}{
-Sets the value(s) of one more endogenous variables. \code{value} can be any R object
-that can be coerced to a numeric. \code{period} is the period
-for which endogenous variable is modified. If argument \code{period}
-is missing then the data period is used.}
-
 \item{\code{\link{set_data}}}{Transfer timeseries to the model data}
+
+\item{\code{\link{set_values}}}{Sets the values of the model data}
 
 \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 
@@ -115,5 +104,5 @@ ordered with increasing absolute value}
 
 }
 }
-\keyword{data}
 
+\keyword{data}

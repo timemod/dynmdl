@@ -61,5 +61,5 @@ the endogenous data excluding the auxiliary endogenous variables
  or an object that can be coerced to \code{regperiod_range}.}
 }
 }
-\keyword{data}
 
+\keyword{data}

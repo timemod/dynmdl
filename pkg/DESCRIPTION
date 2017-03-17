@@ -8,7 +8,7 @@ Description: A Dynare parser.
 SystemRequirements: GNU make
 License: GPL (>= 2)
 LazyData: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 LinkingTo: Rcpp, BH
 Imports:
     Rcpp,

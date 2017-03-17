@@ -30,4 +30,3 @@ mdl2 <- read_mdl("islm_mod.rds")
 \seealso{
 \code{\link{write_mdl}}
 }
-

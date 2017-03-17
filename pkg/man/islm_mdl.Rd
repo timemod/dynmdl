@@ -20,4 +20,3 @@ with the steady state values.
 \examples{
 mdl <- islm_mdl("2017Q1/2019Q4")
 }
-

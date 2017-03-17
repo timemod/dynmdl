@@ -36,4 +36,3 @@ Creates a \code{\link{DynMdl}} object from a mod file. If the mod file
 contains a fit block, then this function returns a \code{\link{FitMdl}} 
 object, which is an extension of a \code{DynMdl} object.
 }
-

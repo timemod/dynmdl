@@ -74,21 +74,9 @@ setOldClass("regts")
 #' for which endogenous variable is modified. If argument \code{period}
 #' is missing the exo period is used.}
 #'
-#' \item{\code{get_exo_data(names, period = self$get_data_period()}}{
-#' Returns the exogenous data.
-#' \code{pattern} is a regular expression,  \code{names} a list of variables
-#'  and \code{period} an \code{\link[regts]{regperiod_range}} object
-#'  or an object that can be coerced to \code{regperiod_range}.}
-
-#'
-#'
-#' \item{\code{set_endo_values(value, names = NULL,  period = self$get_data_period())}}{
-#' Sets the value(s) of one more endogenous variables. \code{value} can be any R object
-#' that can be coerced to a numeric. \code{period} is the period
-#' for which endogenous variable is modified. If argument \code{period}
-#' is missing then the data period is used.}
-#'
 #' \item{\code{\link{set_data}}}{Transfer timeseries to the model data}
+#'
+#' \item{\code{\link{set_values}}}{Sets the values of the model data}
 #'
 #' \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 #'
@@ -221,11 +209,11 @@ DynMdl <- R6Class("DynMdl",
             private$print_info(short)
             return (invisible(NULL))
         },
-        get_endo_names = function() {
-            return (private$endo_names)
+        get_endo_names = function(pattern) {
+            return(private$endo_names)
         },
-        get_exo_names = function() {
-            return (private$exo_names)
+        get_exo_names = function(pattern) {
+            return(private$exo_names)
         },
         get_param_names = function() {
             return (private$param_names)
@@ -338,16 +326,10 @@ DynMdl <- R6Class("DynMdl",
                 return (private$exo_data[period, names, drop = FALSE])
             }
         },
-        set_endo_values = function(value, names = private$endo_names,
-                                   period = private$data_period) {
-            names <- intersect(names, private$endo_names)
-            if (!missing(period)) {
-                period <- as.regperiod_range(period)
-                per <- regrange_intersect(period, private$data_period)
-            } else {
-                per <- period
-            }
-            private$endo_data[period, names] <- value
+        set_values = function(value, names = NULL, pattern = NULL,
+                              period = private$data_period) {
+            private$set_values_(value, names, pattern, period, type = "endo")
+            private$set_values_(value, names, pattern, period, type = "exo")
             return (invisible(self))
         },
         set_data = function(data, names = colnames(data), 
@@ -638,6 +620,46 @@ DynMdl <- R6Class("DynMdl",
                 private$exo_data[per, names] <- new_data
             }
             return (invisible(self))
+        },
+        set_values_ = function(value, names, pattern, period, type) {
+            value <- as.numeric(value)
+            period <- as.regperiod_range(period)
+            nper <- length_range(period)
+            vlen <- length(value)
+            if (vlen != 1 && vlen < nper) {
+                stop(paste("Argument value should have length 1 or",
+                           "length ", nper))
+            }
+            period <- regrange_intersect(period, private$data_period)
+            if (type == "endo") {
+               mdl_names <- private$endo_names
+            } else {
+               mdl_names <- private$exo_names
+            }
+            if (is.null(pattern) && is.null(names)) {
+                names <- mdl_names
+            } else {
+                if (!is.null(names)) {
+                    names <- intersect(names, mdl_names)
+                }  else {
+                    names <- character(0)
+                }
+                if (!is.null(pattern)) {
+                    sel <- grep(pattern, mdl_names)
+                    names <- union(names, mdl_names[sel])
+                }
+            }
+            if (length(names) > 0) {
+                if (vlen > 1) {
+                    value <- value[1:length_range(period)]
+                }
+                if (type == "endo") {
+                    private$endo_data[period, names] <- value
+                } else {
+                    private$exo_data[period, names]  <- value
+                }
+            }
+            return(NULL)
         },
         get_lags = function() {
             lag_per <- self$get_lag_period()
