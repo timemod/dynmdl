@@ -35,6 +35,12 @@ create_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
             dll_dir <- tempfile()
         }
         dir.create(dll_dir)
+        if (.Platform$OS.type == "windows")  {
+            # on Windows, tempdir creates a filename with 
+            # backslashes. This should be replaced by a forward
+            # slash
+            dll_dir <- gsub("\\\\", .Platform$file.sep, dll_dir)
+        }
     } else {
         dll_dir <- NA_character_
     }
