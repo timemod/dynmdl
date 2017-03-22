@@ -178,7 +178,8 @@ NULL
 NULL
 
 #' \code{\link{DynMdl}} methods: Sets the values of the model data
-#' @name set_values
+#' @name set_values-methods
+#' @aliases set_values set_endo_values set_exo_values
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
 #' can be used to set the values of the model dataents
@@ -187,6 +188,10 @@ NULL
 #' @section Usage:
 #' \preformatted{
 #' mdl$set_values(value, names, pattern, period = mdl$get_data_period())
+#'
+#' mdl$set_endo_values(value, names, pattern, period = mdl$get_data_period())
+#'
+#' mdl$set_exo_values(value, names, pattern, period = mdl$get_data_period())
 #'
 #' }
 #'
@@ -202,6 +207,16 @@ NULL
 #' \item{\code{period}}{a \code{\link[regts]{regperiod_range}} object or an
 #' object that can be coerced to a \code{regperiod_range}}
 #' }
+#' @section Methods:
+#' \itemize{
+#' \item \code{set_values}: Endogenous and exogneous model variables
+#'
+#' \item \code{set_endo_values}: Endogenous model variables
+#'
+#' \item \code{set_exo_values}: Exogenous model variables
+#'
+#' }
+#'
 NULL
 
 

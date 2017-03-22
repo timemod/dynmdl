@@ -299,18 +299,6 @@ DynMdl <- R6Class("DynMdl",
                 return (NULL)
             }
         },
-        set_exo_values = function(value, names = private$exo_names,
-                                  period = private$data_period) {
-            names <- intersect(names, private$exo_names)
-            if (!missing(period)) {
-                period <- as.regperiod_range(period)
-                per <- regrange_intersect(period, private$data_period)
-            } else {
-                per <- period
-            }
-            private$exo_data[period, names] <- value
-            return (invisible(self))
-        },
         get_exo_data = function(pattern, names, period = private$data_period) {
             if (missing(pattern) && missing(names)) {
                 return (private$exo_data[period, ])
@@ -329,6 +317,16 @@ DynMdl <- R6Class("DynMdl",
         set_values = function(value, names = NULL, pattern = NULL,
                               period = private$data_period) {
             private$set_values_(value, names, pattern, period, type = "endo")
+            private$set_values_(value, names, pattern, period, type = "exo")
+            return (invisible(self))
+        },
+        set_endo_values = function(value, names = NULL, pattern = NULL,
+                              period = private$data_period) {
+            private$set_values_(value, names, pattern, period, type = "endo")
+            return (invisible(self))
+        },
+        set_exo_values = function(value, names = NULL, pattern = NULL,
+                              period = private$data_period) {
             private$set_values_(value, names, pattern, period, type = "exo")
             return (invisible(self))
         },
