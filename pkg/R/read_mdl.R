@@ -45,7 +45,7 @@ read_mdl <- function(file, dll_dir) {
     mdl$set_static_endos(ser$endos)
     mdl$set_static_exos(ser$exos)
     if (!is.null(ser$endo_data)) {
-        mdl$init_data(data_period = get_regperiod_range(ser$endo_data))
+        mdl$init_data(data_period = get_period_range(ser$endo_data))
         mdl$set_period(ser$period)
         mdl$set_data(ser$endo_data)
         mdl$set_data(ser$exo_data)

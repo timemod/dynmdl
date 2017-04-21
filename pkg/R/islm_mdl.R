@@ -17,7 +17,7 @@ islm_mdl  <- function(period = NULL) {
     mdl$solve_steady(control = list(trace = FALSE))
 
     if (!is.null(period)) {
-        period <- as.regperiod_range(period)
+        period <- as.period_range(period)
         mdl$set_period(period)
     }
     return(mdl)

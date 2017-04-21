@@ -7,7 +7,7 @@ time_functions <- function(model_period, endo_data, exo_data, params,
                           lead_lag_incidence, f_dynamic, jac_dynamic) {
 
     start_per <- start_period(model_period)
-    nper <- length_range(model_period)
+    nper <- nperiod(model_period)
     nendo <- ncol(endo_data)
 
     data <- t(endo_data)
