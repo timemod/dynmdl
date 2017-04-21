@@ -19,8 +19,8 @@ report <- capture_output(mdl <- create_mdl(mod_file))
 
 input_df <- read.csv(input_file)
 nperiods <- nrow(input_df) - 2  # subtract maximum lead and lag
-p1 <- regperiod("2015")
-model_period <- regperiod_range(p1, p1 + nperiods - 1)
+p1 <- period("2015")
+model_period <- period_range(p1, p1 + nperiods - 1)
 
 mdl$set_period(model_period)
 lag_per <- mdl$get_lag_period()

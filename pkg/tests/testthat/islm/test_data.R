@@ -3,7 +3,7 @@ library(testthat)
 
 context("Test for DynMod methods set_data and set_values.")
 
-period <- regperiod_range("2017Q1/2017Q2")
+period <- period_range("2017Q1/2017Q2")
 
 
 report <- capture_output(mdl <- islm_mdl(period))
@@ -12,7 +12,7 @@ data_period <- mdl$get_data_period()
 
 	
 update_mdl_data <- function(data, new_data) {
-    p <- regrange_intersect(data_period, get_regperiod_range(new_data))
+    p <- range_intersect(data_period, get_period_range(new_data))
     data[p, colnames(new_data)] <- new_data[p, ]
     return(data)
 }
@@ -34,7 +34,7 @@ test_that("set_data and set_values works correctly (1)", {
     mdl2$set_data(data)
 
     mdl3 <- mdl$clone()
-    p <- get_regperiod_range(data)
+    p <- get_period_range(data)
     mdl3$set_values(as.numeric(data[, "g"]), names = "g", period = p)
     mdl3$set_values(as.numeric(data[, "y"]), pattern = "^y.?", period = p)
     mdl3$set_values(as.numeric(data[, "t"]), names = "t", period = p)

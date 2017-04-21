@@ -11,12 +11,12 @@ report <- capture_output(mdl <- create_mdl(mod_file))
 
 mdl$set_period("2015/2017")
 data_per <- mdl$get_data_period()
-nper <- length_range(data_per)
+nper <- nperiod(data_per)
 lead_per <- mdl$get_lead_period()
 lag_per  <- mdl$get_lag_period()
 
 eigvals <- get_analytical_eigvals(mdl$get_params())
-y_ref_per <- regperiod_range(start_period(data_per), end_period(data_per) + 1)
+y_ref_per <- period_range(start_period(data_per), end_period(data_per) + 1)
 y_ref1 <- get_analytical_result(y0 = 1, x1 = 0, period = y_ref_per,
                                 mdl$get_params())
 y_ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = y_ref_per,

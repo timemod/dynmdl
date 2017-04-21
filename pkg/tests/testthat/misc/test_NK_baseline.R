@@ -16,7 +16,7 @@ endo_data_file <- file.path(dynare_dir, "NK_baseline_simul_endo.csv")
 stoch_endo_data_file <- file.path(dynare_dir, "NK_baseline_stoch_endo.csv")
 steady_data_file <- file.path(dynare_dir, "NK_baseline_steady.csv")
 eigval_file <- file.path(dynare_dir, "NK_baseline_eigval.csv")
-start_period <- regperiod("2015")
+start_period <- period("2015")
 
 # compile the model
 report <- capture_output(mdl <- create_mdl(mod_file))
@@ -26,7 +26,7 @@ endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
                        header = FALSE, sep = "")[[1]]
 endo_data <- t(as.matrix(read.csv(endo_data_file, header = FALSE)))
 nper <- nrow(endo_data) - 2 # minus maximum lag and lead
-model_period <- regperiod_range(start_period, start_period + nper - 1)
+model_period <- period_range(start_period, start_period + nper - 1)
 mdl$set_period(model_period)
 data_period <- mdl$get_data_period()
 dynare_result <- regts(endo_data, period = data_period, names = endo_names)
@@ -75,10 +75,10 @@ test_that("solve_perturbation (1) compare with dynare result", {
 
     # read in Dynare result (stoch_simul calculation)
     stoch_endo_data <- t(as.matrix(read.csv(stoch_endo_data_file, header = FALSE)))
-    stoch_per <- regperiod_range(start_period(model_period), end_period(data_period))
+    stoch_per <- period_range(start_period(model_period), end_period(data_period))
     dynare_stoch_result <- regts(stoch_endo_data, period = stoch_per, names = endo_names)
     dynare_stoch_result <- dynare_stoch_result +
-        rep(mdl$get_static_endos(), each = length_range(stoch_per))
+        rep(mdl$get_static_endos(), each = nperiod(stoch_per))
 
     expect_equal(mdl2$get_endo_data(period = stoch_per), dynare_stoch_result)
     mdl2$get_endo_data(period = stoch_per) - dynare_stoch_result
