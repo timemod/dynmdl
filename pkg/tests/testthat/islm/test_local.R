@@ -7,8 +7,8 @@ dynare_dir     <- "dynare/output"
 endo_name_file <- file.path(dynare_dir, "islm_endo_names.txt")
 exo_name_file  <- file.path(dynare_dir, "islm_exo_names.txt")
 
-p1 <- regperiod("2011Q3")
-model_period <- regperiod_range(p1, p1 + nperiods - 1)
+p1 <- period("2011Q3")
+model_period <- period_range(p1, p1 + nperiods - 1)
 
 report <- capture_output(mdl <- create_mdl(mod_file))
 mdl$solve_steady()

@@ -50,15 +50,15 @@ used in the fit procedure.}
 the exogenous data excluding the control variables of the
 fit procedure.
 \code{pattern} is a regular expression,  \code{names} a list of variables
- and \code{period} an \code{\link[regts]{regperiod_range}} object
- or an object that can be coerced to \code{regperiod_range}.}
+ and \code{period} an \code{\link[regts]{period_range}} object
+ or an object that can be coerced to \code{period_range}.}
 
 \item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{Returns
 the endogenous data excluding the auxiliary endogenous variables
  for the fit procedure (the residuals and the Lagrange multipliers).
 \code{pattern} is a regular expression,  \code{names} a list of variables
- and \code{period} an \code{\link[regts]{regperiod_range}} object
- or an object that can be coerced to \code{regperiod_range}.}
+ and \code{period} an \code{\link[regts]{period_range}} object
+ or an object that can be coerced to \code{period_range}.}
 }
 }
 

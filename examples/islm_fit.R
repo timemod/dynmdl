@@ -8,7 +8,7 @@
 
 library(dynmdl)
 
-period <- regperiod_range("2017Q1", "2022Q4")
+period <- period_range("2017Q1", "2022Q4")
 fit_target_csv <- "input/islm_fit_targets.csv"
 
 mdl <- create_mdl("mod/islm_fit.mod", fit_mod_file = "fmod/islm_fit.fmod")

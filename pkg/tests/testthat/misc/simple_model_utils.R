@@ -14,7 +14,7 @@ get_analytical_result <- function(y0, x1, period, params) {
         mu_2 <<- (1 + sqrt(1 - 4 * a * b)) / (2 * a)
     })
     y1 <- mu_1 * y0 + (1 / (params[['a']] * mu_2)) * x1
-    nper <- length_range(period)
+    nper <- nperiod(period)
     data <- c(y0, cumprod(c(y1, rep(mu_1, nper - 2))))
     return (regts(matrix(data, ncol = 1), period = period,
                   names = "y"))

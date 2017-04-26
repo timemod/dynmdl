@@ -7,7 +7,7 @@
 
 library(dynmdl)
 
-period <- regperiod_range("2017Q1", "2019Q3")
+period <- period_range("2017Q1", "2019Q3")
 
 mdl <- create_mdl("mod/islm_yearfit.mod", 
                   fit_mod_file = "fmod/islm_yearfit.fmod")

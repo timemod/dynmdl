@@ -1,5 +1,5 @@
 #' @importFrom methods setOldClass
-setOldClass("regperiod_range")
+setOldClass("period_range")
 setOldClass("regts")
 
 #' An R6 class for a Dynare model
@@ -10,10 +10,10 @@ setOldClass("regts")
 #' @useDynLib dynmdl
 #' @importFrom regts start_period
 #' @importFrom regts end_period
-#' @importFrom regts as.regperiod_range
-#' @importFrom regts length_range
-#' @importFrom regts regperiod_range
-#' @importFrom regts regrange_intersect
+#' @importFrom regts as.period_range
+#' @importFrom regts nperiod
+#' @importFrom regts period_range
+#' @importFrom regts range_intersect
 #' @importFrom regts regts
 #' @importFrom Matrix Matrix
 #' @importFrom Matrix sparseMatrix
@@ -244,9 +244,9 @@ DynMdl <- R6Class("DynMdl",
             return (private$endos)
         },
         init_data = function(data_period)  {
-            data_period <- as.regperiod_range(data_period)
+            data_period <- as.period_range(data_period)
             private$data_period <- data_period
-            nper <- length_range(data_period)
+            nper <- nperiod(data_period)
             endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
             private$endo_data <- regts(endo_mat,
                                        start = start_period(data_period),
@@ -259,16 +259,16 @@ DynMdl <- R6Class("DynMdl",
             }
 
             # update the model period
-            private$model_period <- regperiod_range(
+            private$model_period <- period_range(
                  start_period(data_period) + private$max_lag,
                  end_period(data_period)   - private$max_lead)
 
         },
         set_period = function(period) {
-            period <- as.regperiod_range(period)
+            period <- as.period_range(period)
             private$model_period <-  period
             if (is.null(private$data_period)) {
-                data_period <- regperiod_range(
+                data_period <- period_range(
                                   start_period(period) - private$max_lag,
                                   end_period(period)   + private$max_lead)
                 self$init_data(data_period)
@@ -286,7 +286,7 @@ DynMdl <- R6Class("DynMdl",
         get_lag_period = function() {
             if (private$max_lag > 0) {
                 p <- start_period(private$data_period)
-                return (regperiod_range(p, p + private$max_lag - 1))
+                return (period_range(p, p + private$max_lag - 1))
             } else {
                 return (NULL)
             }
@@ -294,7 +294,7 @@ DynMdl <- R6Class("DynMdl",
         get_lead_period = function() {
             if (private$max_lead > 0) {
                 p <- end_period(private$data_period)
-                return (regperiod_range(p - private$max_lead + 1, p))
+                return (period_range(p - private$max_lead + 1, p))
             } else {
                 return (NULL)
             }
@@ -379,7 +379,7 @@ DynMdl <- R6Class("DynMdl",
             private$endos <- out$x
             if (init_data && !is.null(private$endo_data)) {
                 # update the model data
-                nper <- length_range(private$data_period)
+                nper <- nperiod(private$data_period)
                 private$endo_data[ , ] <- matrix(rep(private$endos, each = nper),
                                                 nrow = nper)
             }
@@ -425,7 +425,7 @@ DynMdl <- R6Class("DynMdl",
                     stop(paste("For forward looking models only the umfpackr",
                                "solver is allowed"))
                 }
-                nper <- length_range(private$model_period)
+                nper <- nperiod(private$model_period)
                 lags <- private$get_lags()
                 leads <- private$get_leads()
                 x <- private$get_solve_endo()
@@ -489,7 +489,7 @@ DynMdl <- R6Class("DynMdl",
         get_jacob = function(sparse = TRUE) {
             lags  <- private$get_lags()
             leads <- private$get_leads()
-            nper <-length_range(private$model_period)
+            nper <-nperiod(private$model_period)
             x <- private$get_solve_endo()
             jac <- private$get_jac(x, lags, leads, nper)
             if (!sparse) {
@@ -564,7 +564,7 @@ DynMdl <- R6Class("DynMdl",
 
             if (is.null(private$model_period)) stop(private$period_error_msg)
 
-            per <- regrange_intersect(get_regperiod_range(data),
+            per <- range_intersect(get_period_range(data),
                                       private$data_period)
             if (NCOL(data) == 0) {
                 # TODO: warning?
@@ -621,14 +621,14 @@ DynMdl <- R6Class("DynMdl",
         },
         set_values_ = function(value, names, pattern, period, type) {
             value <- as.numeric(value)
-            period <- as.regperiod_range(period)
-            nper <- length_range(period)
+            period <- as.period_range(period)
+            nper <- nperiod(period)
             vlen <- length(value)
             if (vlen != 1 && vlen < nper) {
                 stop(paste("Argument value should have length 1 or",
                            "length ", nper))
             }
-            period <- regrange_intersect(period, private$data_period)
+            period <- range_intersect(period, private$data_period)
             if (type == "endo") {
                mdl_names <- private$endo_names
             } else {
@@ -649,7 +649,7 @@ DynMdl <- R6Class("DynMdl",
             }
             if (length(names) > 0) {
                 if (vlen > 1) {
-                    value <- value[1:length_range(period)]
+                    value <- value[1:nperiod(period)]
                 }
                 if (type == "endo") {
                     private$endo_data[period, names] <- value
@@ -675,7 +675,7 @@ DynMdl <- R6Class("DynMdl",
         # x is vector of endogenous variables in the solution period
         get_residuals = function(x, lags, leads, nper) {
             endos <- c(lags, x, leads)
-            nper <- length_range(private$model_period)
+            nper <- nperiod(private$model_period)
             return (get_residuals_(endos,
                                    which(private$lead_lag_incidence != 0) - 1,
                                    private$exo_data, private$params,
@@ -684,7 +684,7 @@ DynMdl <- R6Class("DynMdl",
         },
         get_jac = function(x, lags, leads, nper) {
             endos <- c(lags, x, leads)
-            nper <- length_range(private$model_period)
+            nper <- nperiod(private$model_period)
             tshift  <- -private$max_endo_lag : private$max_endo_lead
             mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
                                         tshift, private$exo_data,
@@ -736,7 +736,7 @@ DynMdl <- R6Class("DynMdl",
                             ") is not compatible with the data period (",
                             private$data_period, "). The period",
                             " should lie within the range ",
-                            regperiod_range(ps, pe), "."))
+                            period_range(ps, pe), "."))
             }
             return(invisible(NULL))
         },

@@ -23,9 +23,9 @@
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{data_period}}{\code{\link[regts]{regperiod_range}}
+#' \item{\code{data_period}}{\code{\link[regts]{period_range}}
 #' object, or an object that can be coerced to 
-#' \code{\link[regts]{regperiod_range}}}
+#' \code{\link[regts]{period_range}}}
 #' }
 NULL
 
@@ -59,9 +59,9 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{period}}{\code{\link[regts]{regperiod_range}}
+#' \item{\code{period}}{\code{\link[regts]{period_range}}
 #' object, or an object that can be coerced to 
-#' \code{\link[regts]{regperiod_range}}}
+#' \code{\link[regts]{period_range}}}
 #' }
 #'
 #' @examples
@@ -125,8 +125,8 @@ NULL
 #' \describe{
 #' \item{\code{names}}{a character vector with variable names}
 #' \item{\code{pattern}}{a regular expression}
-#' \item{\code{period}}{an \code{\link[regts]{regperiod_range}} object or an
-#' object that can be coerced to a \code{regperiod_range}}
+#' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
+#' object that can be coerced to a \code{period_range}}
 #' }
 #' @section Methods:
 #' \itemize{
@@ -204,8 +204,8 @@ NULL
 #' as the length of the range of \code{period}}
 #' \item{\code{names}}{a character vector with variable names}
 #' \item{\code{pattern}}{a regular expression}
-#' \item{\code{period}}{a \code{\link[regts]{regperiod_range}} object or an
-#' object that can be coerced to a \code{regperiod_range}}
+#' \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
+#' object that can be coerced to a \code{period_range}}
 #' }
 #' @section Methods:
 #' \itemize{

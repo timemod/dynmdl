@@ -10,8 +10,8 @@ dynare_dir     <- "dynare/output"
 endo_name_file <- file.path(dynare_dir, "islm_yearfit_endo_names.txt")
 endo_file <- file.path(dynare_dir, "islm_yearfit_endo.csv")
 
-p1 <- regperiod("2016Q1")
-model_period <- regperiod_range(p1, p1 + nperiods - 1)
+p1 <- period("2016Q1")
+model_period <- period_range(p1, p1 + nperiods - 1)
 
 unlink(fit_mod_file)
 report <- capture_output(mdl <- create_mdl(mod_file,
@@ -36,6 +36,6 @@ test_that("generated fit mod file equal to reference ", {
 })
 
 test_that("dynare result equal to dynr result", {
-    p <- get_regperiod_range(dynare_result)
+    p <- get_period_range(dynare_result)
     expect_equal(dynare_result, mdl$get_endo_data(period = p))
 })

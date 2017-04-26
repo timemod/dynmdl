@@ -5,7 +5,7 @@
 # - no exogenous lags and leads
 # - no endogenous lags and leads > 1
 # - only exogenous shocks in the first solution pertiod
-#' @importFrom regts get_regperiod_range
+#' @importFrom regts get_period_range
 solve_perturbation_  <- function(ss, max_lag, exo_data, endo_data, static_exos,
                                  static_endos) {
 
@@ -20,8 +20,8 @@ solve_perturbation_  <- function(ss, max_lag, exo_data, endo_data, static_exos,
 
     exo_ <- exo_data[ , ] - rep(static_exos, each = nrow(exo_data))
 
-    data_period <- get_regperiod_range(exo_data)
-    check_per <- regperiod_range(start_period(data_period) + max_lag + 1,
+    data_period <- get_period_range(exo_data)
+    check_per <- period_range(start_period(data_period) + max_lag + 1,
                                  end_period(data_period))
     # start_period(data_period) + max_lag + 1 is the second solution period
     if (sum(abs(exo_[check_per])) > .Machine$double.eps) {
@@ -42,7 +42,7 @@ solve_perturbation_  <- function(ss, max_lag, exo_data, endo_data, static_exos,
     }
 
     epsilon <- ss$ghu %*% t(exo_)
-    for (i in 2 : length_range(data_period)) {
+    for (i in 2 : nperiod(data_period)) {
         yhat <- t(endo_data[i - 1, ss$order_var[k2], drop = FALSE])
         endo_data[i, ss$order_var] <- ss$ghx %*% yhat  +
                                     epsilon[ , i, drop = FALSE]
