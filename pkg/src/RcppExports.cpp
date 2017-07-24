@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // compile_model_
 Rcpp::List compile_model_(std::string modfile, bool use_dll, std::string dll_dir);
-RcppExport SEXP dynmdl_compile_model_(SEXP modfileSEXP, SEXP use_dllSEXP, SEXP dll_dirSEXP) {
+RcppExport SEXP _dynmdl_compile_model_(SEXP modfileSEXP, SEXP use_dllSEXP, SEXP dll_dirSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // compute_derivatives
 Rcpp::List compute_derivatives(std::string modfile);
-RcppExport SEXP dynmdl_compute_derivatives(SEXP modfileSEXP) {
+RcppExport SEXP _dynmdl_compute_derivatives(SEXP modfileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -31,7 +31,7 @@ END_RCPP
 }
 // get_residuals_
 NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_data, SEXP params, Function f_dynamic, int n_endo, int nper, int max_lag);
-RcppExport SEXP dynmdl_get_residuals_(SEXP endosSEXP, SEXP icolsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP f_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {
+RcppExport SEXP _dynmdl_get_residuals_(SEXP endosSEXP, SEXP icolsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP f_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -49,7 +49,7 @@ END_RCPP
 }
 // get_triplet_jac
 List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, IntegerVector tshift, SEXP exo_data, SEXP params, Function jac_dynamic, int n_endo, int nper, int max_lag);
-RcppExport SEXP dynmdl_get_triplet_jac(SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {
+RcppExport SEXP _dynmdl_get_triplet_jac(SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -68,7 +68,7 @@ END_RCPP
 }
 // get_jac_backwards
 List get_jac_backwards(NumericVector endos, NumericVector lags, NumericVector cols, SEXP exo_data, SEXP params, Function jac_dynamic, int it, int max_lag);
-RcppExport SEXP dynmdl_get_jac_backwards(SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP itSEXP, SEXP max_lagSEXP) {
+RcppExport SEXP _dynmdl_get_jac_backwards(SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP itSEXP, SEXP max_lagSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -86,7 +86,7 @@ END_RCPP
 }
 // run_macro
 void run_macro(std::string modfile, std::string new_modfile);
-RcppExport SEXP dynmdl_run_macro(SEXP modfileSEXP, SEXP new_modfileSEXP) {
+RcppExport SEXP _dynmdl_run_macro(SEXP modfileSEXP, SEXP new_modfileSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
@@ -94,4 +94,19 @@ BEGIN_RCPP
     run_macro(modfile, new_modfile);
     return R_NilValue;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 3},
+    {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 1},
+    {"_dynmdl_get_residuals_", (DL_FUNC) &_dynmdl_get_residuals_, 8},
+    {"_dynmdl_get_triplet_jac", (DL_FUNC) &_dynmdl_get_triplet_jac, 9},
+    {"_dynmdl_get_jac_backwards", (DL_FUNC) &_dynmdl_get_jac_backwards, 8},
+    {"_dynmdl_run_macro", (DL_FUNC) &_dynmdl_run_macro, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_dynmdl(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }
