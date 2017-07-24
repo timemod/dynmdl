@@ -245,8 +245,21 @@ DynMdl <- R6Class("DynMdl",
     get_static_endos = function() {
       return (private$endos)
     },
-    init_data = function(data_period)  {
-      data_period <- as.period_range(data_period)
+    init_data = function(data_period, data)  {
+      if (missing(data_period)) {
+        if (!missing(data)) {
+          data_period <- get_period_range(data)
+        } else {
+          stop(paste("Argument data_period is mandatory if",
+                     "argument data has not been specified"))
+        }
+      } else {
+        data_period <- as.period_range(data_period)
+        if (is.na(data_period[1]) || is.na(data_period[2])) {
+          stop("data_period should have a lower and upper bound")
+        }
+      }
+      
       private$data_period <- data_period
       nper <- nperiod(data_period)
       endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
@@ -261,14 +274,24 @@ DynMdl <- R6Class("DynMdl",
       }
       
       # update the model period
-      private$model_period <- period_range(
-        start_period(data_period) + private$max_lag,
-        end_period(data_period)   - private$max_lead)
+      startp <- start_period(data_period) + private$max_lag
+      endp <- end_period(data_period) - private$max_lead
+      if (endp >= startp) {
+        private$model_period <- period_range(startp, endp)
+      } else {
+        stop(paste("The data period is too short. It should contain at least",
+                   private$maxlag + private$maxlead + 1, "periods"))
+      }
       
+      if (!missing(data)) {
+        self$set_data(data)
+      }
     },
     set_period = function(period) {
       period <- as.period_range(period)
-      private$model_period <-  period
+      if (is.na(period[1]) || is.na(period[2])) {
+        stop("period should have a lower and upper bound")
+      }
       if (is.null(private$data_period)) {
         data_period <- period_range(
           start_period(period) - private$max_lag,
@@ -277,7 +300,8 @@ DynMdl <- R6Class("DynMdl",
       } else  {
         private$check_model_period(period) 
       }
-      return (invisible(self))
+      private$model_period <-  period
+      return(invisible(self))
     },
     get_period = function() {
       return (private$model_period)
