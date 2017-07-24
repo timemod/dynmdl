@@ -15,7 +15,7 @@ endo_name_file <- file.path(dynare_dir, "ifn_endo_names.txt")
 exo_name_file  <- file.path(dynare_dir, "ifn_exo_names.txt")
 
 # compile the model
-report <- capture_output(mdl <- create_mdl(mod_file))
+report <- capture_output(mdl <- dyn_mdl(mod_file))
 
 input_df <- read.csv(input_file)
 nperiods <- nrow(input_df) - 2  # subtract maximum lead and lag

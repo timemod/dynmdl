@@ -9,7 +9,7 @@ library(dynmdl)
 
 period <- period_range("2017Q1", "2019Q3")
 
-mdl <- create_mdl("mod/islm_yearfit.mod", 
+mdl <- dyn_mdl("mod/islm_yearfit.mod", 
                   fit_mod_file = "fmod/islm_yearfit.fmod")
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period(period)

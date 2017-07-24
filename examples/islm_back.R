@@ -1,6 +1,6 @@
 library(dynmdl)
 
-mdl <- create_mdl("mod/islm_back.mod")
+mdl <- dyn_mdl("mod/islm_back.mod")
 print(mdl)
 
 mdl$solve_steady(control = list(trace = TRUE))

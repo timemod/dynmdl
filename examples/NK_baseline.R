@@ -1,6 +1,6 @@
 library(dynmdl)
 
-mdl <- create_mdl("mod/NK_baseline.mod", bytecode = FALSE)
+mdl <- dyn_mdl("mod/NK_baseline.mod", bytecode = FALSE)
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2019Q3")

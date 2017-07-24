@@ -6,7 +6,7 @@ source("simple_model_utils.R")
 mod_file <- "mod/simple1.mod"
 
 # compile the model
-report <- capture_output(mdl <- create_mdl(mod_file))
+report <- capture_output(mdl <- dyn_mdl(mod_file))
 
 mdl$set_period("2015/2060")
 data_per <- mdl$get_data_period()

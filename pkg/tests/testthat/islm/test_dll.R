@@ -12,7 +12,7 @@ exo_name_file  <- file.path(dynare_dir, "islm_exo_names.txt")
 p1 <- period("2011Q3")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
-report <- capture_output(mdl <- create_mdl(mod_file, use_dll = TRUE))
+report <- capture_output(mdl <- dyn_mdl(mod_file, use_dll = TRUE))
 mdl$solve_steady()
 mdl$set_period(model_period)
 lag_per <- mdl$get_lag_period()

@@ -22,7 +22,7 @@
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
-create_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
+dyn_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
                        fit_mod_file, debug = FALSE, dll_dir) {
   
   if (!file.exists(mod_file)) {

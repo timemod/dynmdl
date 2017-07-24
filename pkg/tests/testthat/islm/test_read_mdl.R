@@ -27,7 +27,7 @@ test_that("mdl and mdl2 are equal (after solving)", {
     expect_equal(mdl, mdl2)
 })
 
-report <- capture.output(mdl_dll <- create_mdl(mod_file, use_dll = TRUE,
+report <- capture.output(mdl_dll <- dyn_mdl(mod_file, use_dll = TRUE,
                                                dll_dir = dll_dir))
 mdl_dll$solve_steady()
 mdl_dll$set_period(period)

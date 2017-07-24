@@ -14,7 +14,7 @@ p1 <- period("2016Q1")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
 unlink(fit_mod_file)
-report <- capture_output(mdl <- create_mdl(mod_file,
+report <- capture_output(mdl <- dyn_mdl(mod_file,
                          fit_mod_file = fit_mod_file))
 
 mdl$solve_steady()

@@ -7,7 +7,7 @@
 #' @param dll_dir the directory where the dynamically linked library is stored.
 #' Primarily used for testing.
 #' Only used if argument \code{use_dll} was \code{TRUE} (see function
-#' \code{\link{create_mdl}}. 
+#' \code{\link{dyn_mdl}}. 
 #' @return a \code{\link{DynMdl}} or \code{\link{FitMdl}} object
 #' @examples
 #' mdl <- islm_mdl("2017Q1/2019Q2")

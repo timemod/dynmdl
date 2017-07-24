@@ -16,7 +16,7 @@ nextra <- 500
 mod_file <- paste0("mod/islm_back_countries_",
                    as.character(nextra), ".mod")
 create_islm_country_model(basis_mod_file, mod_file, nextra)
-mdl <- create_mdl(mod_file, use_dll = TRUE)
+mdl <- dyn_mdl(mod_file, use_dll = TRUE)
 mdl$set_period("2017Q1/2017Q1")
 mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 

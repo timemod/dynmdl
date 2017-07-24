@@ -9,16 +9,17 @@
 #' mdl <- islm_mdl("2017Q1/2019Q4")
 #' @export
 islm_mdl  <- function(period = NULL) {
-    mod_file <- tempfile(fileext = ".mod")
-    copy_example_mod("islm", mod_file)
-    mdl <- create_mdl(mod_file)
-    unlink(mod_file)
-
-    mdl$solve_steady(control = list(trace = FALSE))
-
-    if (!is.null(period)) {
-        period <- as.period_range(period)
-        mdl$set_period(period)
-    }
-    return(mdl)
+  mod_file <- tempfile(fileext = ".mod")
+  mdl_file <- system.file("models", "islm.mod",package = "dynmdl")
+  file.copy(mdl_file, mod_file, overwrite = TRUE)
+  mdl <- dyn_mdl(mod_file)
+  unlink(mod_file)
+  
+  mdl$solve_steady(control = list(trace = FALSE))
+  
+  if (!is.null(period)) {
+    period <- as.period_range(period)
+    mdl$set_period(period)
+  }
+  return(mdl)
 }

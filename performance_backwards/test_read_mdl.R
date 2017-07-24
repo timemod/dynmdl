@@ -17,7 +17,7 @@ mod_file <- paste0("mod/islm_back_countries_",
                    as.character(nextra), ".mod")
 create_islm_country_model(basis_mod_file, mod_file, nextra)
 print(system.time(
-mdl <- create_mdl(mod_file, use_dll = TRUE)
+mdl <- dyn_mdl(mod_file, use_dll = TRUE)
 ))
 print(system.time(
 mdl$write_mdl("aap.rds")
