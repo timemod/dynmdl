@@ -15,7 +15,10 @@ model_period <- period_range(p1, p1 + nperiods - 1)
 report <- capture_output(mdl <- dyn_mdl(mod_file))
 
 square <- function(x) {
-  return(x*x)
+  return(x * x)
+}
+multiply <- function(x, y) {
+  return(x * y)
 }
 
 print(mdl, short = FALSE)

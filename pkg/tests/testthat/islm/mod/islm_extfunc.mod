@@ -4,6 +4,7 @@ varexo g ms;               % exogenous variables
 
 % external function
 external_function(name = square);
+external_function(name = multiply, nargs = 2);
 
 %Setting parameter values
 parameters c0 c1 c2 c3 c4 c5;
@@ -21,8 +22,9 @@ y = c + i + g;
 yd = y - t;
 t = t0 + t1 * y;
 c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * square(r);
-i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + i5 * r^2;
-md = m0 + m1 * y + m2 * r + m3 * r^2;
+i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + 
+    i5 * multiply(square(r), yd) / yd;
+md = m0 + m1 * y + multiply(m2, r) + m3 * r^2;
 md = ms;
 end;
 
