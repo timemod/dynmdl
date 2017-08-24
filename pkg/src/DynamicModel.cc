@@ -2156,14 +2156,19 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
   ostringstream hessian_output;           // Used for storing Hessian equations
   ostringstream third_derivatives_output; // Used for storing third order derivatives equations
 
-  deriv_node_temp_terms_t tef_terms;
+  deriv_node_temp_terms_t tef_terms, tef_terms_tmp;
   temporary_terms_t temp_term_empty;
   temporary_terms_t temp_term_union = temporary_terms_res;
   temporary_terms_t temp_term_union_m_1;
 
   writeModelLocalVariables(model_local_vars_output, output_type, tef_terms);
 
-  writeTemporaryTerms(temporary_terms_res, temp_term_union_m_1, model_output, output_type, tef_terms);
+  // create a copy of ref_terms. writeTemporaryTerms checks which tef-terms have
+  // already been written, and those terms will only be written once.
+  // JacobianOutput also needs these temporary terms.
+  tef_terms_tmp = tef_terms;
+  writeTemporaryTerms(temporary_terms_res, temp_term_union_m_1, model_output, 
+                      output_type, tef_terms_tmp);
 
   writeModelEquations(model_output, output_type);
 
@@ -2406,18 +2411,18 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
 
       DynamicOutput << "f_dynamic <- function(y, x, params, it_) {" << endl
                     << model_local_vars_output.str()
-                    << INDENT(1) << "residual <- numeric(" <<  nrows << ")" <<  endl
+                    << "residual <- numeric(" <<  nrows << ")" <<  endl
                     << model_output.str()
-                    << INDENT(1) <<  "return(residual)" << endl
+                    << "return(residual)" << endl
                     << "}" << endl << endl
                     << "jac_dynamic <- function(y, x, params, it_) {" << endl
                     << model_local_vars_output.str()
-                    << INDENT(1) << "rows   <- integer(" << nnz << ")" << endl
-                    << INDENT(1) << "cols   <- integer(" << nnz << ")" << endl
-                    << INDENT(1) << "values <- integer(" << nnz << ")" << endl << endl
+                    << "rows   <- integer(" << nnz << ")" << endl
+                    << "cols   <- integer(" << nnz << ")" << endl
+                    << "values <- integer(" << nnz << ")" << endl << endl
                     << jacobian_output.str()
                     << endl
-                    << INDENT(1) << "return(list(rows = rows, cols = cols, values = values))"  << endl
+                    << "return(list(rows = rows, cols = cols, values = values))"  << endl
                     << "}" << endl;
 
     } else if (output_type == oCDynamicModel) {

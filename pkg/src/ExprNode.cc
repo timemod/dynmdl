@@ -317,9 +317,9 @@ NumConstNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<NumConstNode *>(this));
   if (it != temporary_terms.end())
     if (output_type == oMatlabDynamicModelSparse)
-      output << "    T" << idx << "(it_)";
+      output << "t" << idx << "(it_)";
     else
-      output << "    T" << idx;
+      output << "t" << idx;
   else
     output << datatree.num_constants.get(id);
 }
@@ -616,9 +616,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "    T" << idx << "(it_)";
+        output << "t" << idx << "(it_)";
       else
-        output << "    T" << idx;
+        output << "t" << idx;
       return;
     }
 
@@ -1848,9 +1848,9 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "    T" << idx << "(it_)";
+        output << "t" << idx << "(it_)";
       else
-        output << "    T" << idx;
+        output << "t" << idx;
       return;
     }
 
@@ -3059,9 +3059,9 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "T" << idx << "(it_)";
+        output << "t" << idx << "(it_)";
       else
-        output << "T" << idx;
+        output << "t" << idx;
       return;
     }
 
@@ -4191,7 +4191,7 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<TrinaryOpNode *>(this));
   if (it != temporary_terms.end())
     {
-      output << "T" << idx;
+      output << "t" << idx;
       return;
     }
 
@@ -5030,15 +5030,15 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "    T" << idx << "(it_)";
+        output << "t" << idx << "(it_)";
       else
-        output << "   T" << idx;
+        output << "t" << idx;
       return;
     }
 
   if (IS_C(output_type))
     output << "*";
-  output << "TEF_" << getIndxInTefTerms(symb_id, tef_terms);
+  output << "tef_" << getIndxInTefTerms(symb_id, tef_terms);
 }
 
 void
@@ -5079,7 +5079,7 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
                    << "double *TEF_" << indx << ";" << endl;
 
           output << "mxArray *plhs" << ending.str()<< "[nlhs"<< ending.str() << "];" << endl;
-          output << "int nrhs" << ending.str()<< " = " << arguments.size() << ";" << endl;
+          output << "int nrhs" << ending.str()<< ASSIGNMENT_OPERATOR(output_type) << arguments.size() << ";" << endl;
           writePrhs(output, output_type, temporary_terms, tef_terms, ending.str());
 
           output << "mexCallMATLAB("
@@ -5087,8 +5087,11 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
                  << "plhs" << ending.str() << ", "
                  << "nrhs" << ending.str() << ", "
                  << "prhs" << ending.str() << ", \""
-                 << datatree.symbol_table.getName(symb_id) << "\");" << endl;
-
+                 << datatree.symbol_table.getName(symb_id) << "\")";
+          if (!IS_R(output_type)) {
+              output << ";";
+          }
+          output << endl;
           if (symb_id == first_deriv_symb_id
               && symb_id == second_deriv_symb_id)
             output << "TEF_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl
@@ -5105,15 +5108,20 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
         {
           if (symb_id == first_deriv_symb_id
               && symb_id == second_deriv_symb_id)
-            output << "[TEF_" << indx << " TEFD_"<< indx << " TEFDD_"<< indx << "] = ";
+            output << "[tef_" << indx << " tefd_"<< indx << " tefdd_"<< indx
+                   << "]" << ASSIGNMENT_OPERATOR(output_type);
           else if (symb_id == first_deriv_symb_id)
-            output << "[TEF_" << indx << " TEFD_"<< indx << "] = ";
+            output << "[tef_" << indx << " tefd_"<< indx << "]" <<  ASSIGNMENT_OPERATOR(output_type);
           else
-            output << "TEF_" << indx << " = ";
+            output << "tef_" << indx << ASSIGNMENT_OPERATOR(output_type);
 
           output << datatree.symbol_table.getName(symb_id) << "(";
           writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
-          output << ");" << endl;
+          output << ")";
+          if (!IS_R(output_type)) {
+              output << ";";
+          }
+          output << endl;
         }
     }
 }
@@ -5220,9 +5228,9 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "    T" << idx << "(it_)";
+        output << "t" << idx << "(it_)";
       else
-        output << "    T" << idx;
+        output << "t" << idx;
       return;
     }
 
@@ -5232,16 +5240,16 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
   const int tmpIndx = inputIndex - 1 + ARRAY_SUBSCRIPT_OFFSET(output_type);
 
   if (first_deriv_symb_id == symb_id)
-    output << "TEFD_" << getIndxInTefTerms(symb_id, tef_terms)
+    output << "tefd_" << getIndxInTefTerms(symb_id, tef_terms)
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
   else if (first_deriv_symb_id == eExtFunNotSet)
     {
       if (IS_C(output_type))
         output << "*";
-      output << "TEFD_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
+      output << "tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
     }
   else
-    output << "TEFD_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
+    output << "tefd_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
 
@@ -5354,7 +5362,7 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
         output << "int nlhs" << ending.str() << " = 1;" << endl
                << "double *TEFD_def_" << indx << ";" << endl
                << "mxArray *plhs" << ending.str() << "[nlhs"<< ending.str() << "];" << endl
-               << "int nrhs" << ending.str() << " = " << arguments.size() << ";" << endl;
+               << "int nrhs" << ending.str() << ASSIGNMENT_OPERATOR(output_type) << arguments.size() << ";" << endl;
         writePrhs(output, output_type, temporary_terms, tef_terms, ending.str());
 
         output << "mexCallMATLAB("
@@ -5366,23 +5374,44 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
 
         output << "TEFD_def_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
       }
-  else
-    {
-      if (first_deriv_symb_id == eExtFunNotSet)
-        output << "TEFD_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex << " = jacob_element('"
-               << datatree.symbol_table.getName(symb_id) << "'," << inputIndex << ",{";
-      else
-        {
-          tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
-          output << "TEFD_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
-                 << " = " << datatree.symbol_table.getName(first_deriv_symb_id) << "(";
+  else {
+      if (first_deriv_symb_id == eExtFunNotSet) {
+        output << "tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" 
+               << inputIndex << ASSIGNMENT_OPERATOR(output_type) << "jacob_element(";
+        if (!IS_R(output_type)) {
+            output << "\"";
         }
+        output << datatree.symbol_table.getName(symb_id);
+        if (!IS_R(output_type)) {
+            output << "\"";
+        }
+        output << ", " << inputIndex << ", ";
+        if (IS_R(output_type)) {
+            output << " c(";
+        } else  {
+            output << " {";
+        }
+      } else {
+          tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
+          output << "tefd_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
+                 <<  ASSIGNMENT_OPERATOR(output_type) 
+                 << datatree.symbol_table.getName(first_deriv_symb_id) << "(";
+      }
 
       writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
 
-      if (first_deriv_symb_id == eExtFunNotSet)
-        output << "}";
-      output << ");" << endl;
+      if (first_deriv_symb_id == eExtFunNotSet) {
+        if (IS_R(output_type)) {
+            output << ")";
+        } else  {
+            output << "}";
+        }
+      }
+      output << ")";
+      if (!IS_R(output_type)) {
+          output << ";";
+      }
+      output << endl;
     }
 }
 
@@ -5532,9 +5561,9 @@ SecondDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "    T" << idx << "(it_)";
+        output << "t" << idx << "(it_)";
       else
-        output << "    T" << idx;
+        output << "t" << idx;
       return;
     }
 
@@ -5642,7 +5671,7 @@ SecondDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Ex
         output << "int nlhs" << ending.str() << " = 1;" << endl
                << "double *TEFDD_def_" << indx << ";" << endl
                << "mxArray *plhs" << ending.str() << "[nlhs"<< ending.str() << "];" << endl
-               << "int nrhs" << ending.str() << " = " << arguments.size() << ";" << endl;
+               << "int nrhs" << ending.str() << ASSIGNMENT_OPERATOR(output_type) << arguments.size() << ";" << endl;
         writePrhs(output, output_type, temporary_terms, tef_terms, ending.str());
 
         output << "mexCallMATLAB("
@@ -5664,7 +5693,7 @@ SecondDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Ex
         {
           tef_terms[make_pair(second_deriv_symb_id, arguments)] = (int) tef_terms.size();
           output << "TEFDD_def_" << getIndxInTefTerms(second_deriv_symb_id, tef_terms)
-                 << " = " << datatree.symbol_table.getName(second_deriv_symb_id) << "(";
+                 << ASSIGNMENT_OPERATOR(output_type) << datatree.symbol_table.getName(second_deriv_symb_id) << "(";
         }
 
       writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);

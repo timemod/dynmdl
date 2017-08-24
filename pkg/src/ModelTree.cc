@@ -1274,6 +1274,7 @@ ModelTree::writeTemporaryTerms(const temporary_terms_t &tt, const temporary_term
        it != tt.end(); it++)
     if (ttm1.find(*it) == ttm1.end())
       {
+
         if (dynamic_cast<AbstractExternalFunctionNode *>(*it) != NULL)
           (*it)->writeExternalFunctionOutput(output, output_type, tt2, tef_terms);
 
@@ -1283,7 +1284,7 @@ ModelTree::writeTemporaryTerms(const temporary_terms_t &tt, const temporary_term
           output << "  @inbounds const ";
 
         (*it)->writeOutput(output, output_type, tt, tef_terms);
-        output << " = ";
+        output << ASSIGNMENT_OPERATOR(output_type);
         (*it)->writeOutput(output, output_type, tt2, tef_terms);
 
         if (IS_C(output_type) || IS_MATLAB(output_type))

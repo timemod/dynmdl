@@ -20,7 +20,8 @@ Imports:
     gsubfn,
     tools,
     stringi,
-    umfpackr
+    umfpackr,
+    numDeriv
 Depends:
     regts,
     methods

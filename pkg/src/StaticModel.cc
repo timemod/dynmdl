@@ -268,7 +268,7 @@ StaticModel::writeModelEquationsOrdered_M(const string &static_basename) const
           tmp_output.str("");
           for (temporary_terms_inuse_t::const_iterator it = v_temporary_terms_inuse[block].begin();
                it != v_temporary_terms_inuse[block].end(); it++)
-            tmp_output << " T" << *it;
+            tmp_output << "t" << *it;
           output << "  global" << tmp_output.str() << ";\n";
         }
 
@@ -1219,14 +1219,18 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
   ostringstream third_derivatives_output;  // Used for storing third order derivatives equations
   ostringstream for_sym;
 
-  deriv_node_temp_terms_t tef_terms;
+  deriv_node_temp_terms_t tef_terms, tef_terms_tmp;
   temporary_terms_t temp_term_empty;
   temporary_terms_t temp_term_union = temporary_terms_res;
   temporary_terms_t temp_term_union_m_1;
 
   writeModelLocalVariables(model_local_vars_output, output_type, tef_terms);
 
-  writeTemporaryTerms(temporary_terms_res, temp_term_union_m_1, model_output, output_type, tef_terms);
+  // create a copy of ref_terms. writeTemporaryTerms checks which tef-terms have
+  // already been written, and those terms will only be written once.
+  // JacobianOutput also needs these temporary terms.
+  tef_terms_tmp = tef_terms;
+  writeTemporaryTerms(temporary_terms_res, temp_term_union_m_1, model_output, output_type, tef_terms_tmp);
 
   writeModelEquations(model_output, output_type);
 
@@ -1466,17 +1470,16 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
       StaticOutput << "f_static <- function(y, x, params) {" << endl
                     << model_local_vars_output.str()
-                    << INDENT(1) << "residual <- numeric(" <<  equations.size() << ")" <<  endl
+                    <<  "residual <- numeric(" <<  equations.size() << ")" <<  endl
                     << model_output.str()
-                    << INDENT(1) <<  "return(residual)" << endl
+                    <<   "return(residual)" << endl
                     << "}" << endl << endl
                     << "jac_static <- function(y, x, params) {" << endl
-                    << INDENT(1) << "g1 <- matrix(0, " << equations.size()  << ", "
-                    << symbol_table.endo_nbr() << ")" << endl << endl
+                    <<  "g1 <- matrix(0, " << equations.size()  << ", "
+                    << symbol_table.endo_nbr() << ")" << endl
                     << model_local_vars_output.str()
-                    << INDENT(1) << "residual <- numeric(" <<  equations.size() << ")" <<  endl
                     << jacobian_output.str()
-                    << endl << INDENT(1) << "return(g1);"  << endl
+                    << endl <<  "return(g1)"  << endl
                     << "}" << endl;
 
    } else if (output_type == oCStaticModel) {
@@ -2275,7 +2278,7 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
 
       paramsDerivsFile << "rp" << LEFT_ARRAY_SUBSCRIPT(output_type)
                        <<  eq+1 << ", " << param_col
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << " = ";
+                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(paramsDerivsFile, output_type, params_derivs_temporary_terms, tef_terms);
       paramsDerivsFile << ";" << endl;
     }
@@ -2297,7 +2300,7 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
 
       paramsDerivsFile << "gp" << LEFT_ARRAY_SUBSCRIPT(output_type)
                        << eq+1 << ", " << var_col << ", " << param_col
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << " = ";
+                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << ASSIGNMENT_OPERATOR(output_type);
       d2->writeOutput(paramsDerivsFile, output_type, params_derivs_temporary_terms, tef_terms);
       paramsDerivsFile << ";" << endl;
     }
