@@ -1,7 +1,7 @@
 # test compiling and running C-code, for internal usage only
 
 
-test_c_compilation <- function(dll_dir) {
+test_c_compilation <- function(dll_dir, x) {
   
   if (dir.exists(dll_dir)) {
     unlink(dll_dir, recursive = TRUE)
@@ -46,9 +46,7 @@ test_c_compilation <- function(dll_dir) {
   
   dyn.load(dll_file)
   
-  set.seed(123)
-  y <- rnorm(10)
-  .Call("f_static_", y, PACKAGE = "mdl_functions")
+  .Call("f_static_", x, PACKAGE = "mdl_functions")
   
   dyn.unload(dll_file)
   return(invisible(NULL))
