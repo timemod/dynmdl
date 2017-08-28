@@ -5012,19 +5012,20 @@ ExternalFunctionNode::compileExternalFunctionOutput(ostream &CompileCode, unsign
 void
 ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
                                   const temporary_terms_t &temporary_terms,
-                                  deriv_node_temp_terms_t &tef_terms) const
-{
+                                  deriv_node_temp_terms_t &tef_terms) const {
+
   if (output_type == oMatlabOutsideModel || output_type == oSteadyStateFile
-      || output_type == oCSteadyStateFile || output_type == oJuliaSteadyStateFile
-      || IS_LATEX(output_type))
-    {
-      string name = IS_LATEX(output_type) ? datatree.symbol_table.getTeXName(symb_id)
-        : datatree.symbol_table.getName(symb_id);
+     || output_type == oCSteadyStateFile || output_type == oJuliaSteadyStateFile
+     || output_type == oRDerivatives     || IS_LATEX(output_type)) {
+      string name = IS_LATEX(output_type) ? 
+          datatree.symbol_table.getTeXName(symb_id) : 
+          datatree.symbol_table.getName(symb_id);
       output << name << "(";
-      writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+      writeExternalFunctionArguments(output, output_type, temporary_terms, 
+                                     tef_terms);
       output << ")";
       return;
-    }
+   }
 
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<ExternalFunctionNode *>(this));
   if (it != temporary_terms.end())
@@ -5223,18 +5224,22 @@ FirstDerivExternalFunctionNode::composeDerivatives(const vector<expr_t> &dargs)
 void
 FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
                                             const temporary_terms_t &temporary_terms,
-                                            deriv_node_temp_terms_t &tef_terms) const
-{
+                                            deriv_node_temp_terms_t &tef_terms) const {
+
   assert(output_type != oMatlabOutsideModel);
 
-  if (IS_LATEX(output_type))
-    {
-      output << "\\frac{\\partial " << datatree.symbol_table.getTeXName(symb_id)
-             << "}{\\partial " << inputIndex << "}(";
+  if (output_type == oRDerivatives || IS_LATEX(output_type)) {
+      if (IS_LATEX(output_type)) {
+          output << "\\frac{\\partial " << datatree.symbol_table.getTeXName(symb_id)
+                 << "}{\\partial " << inputIndex << "}";
+      } else {
+          output <<  datatree.symbol_table.getName(symb_id) << "_d" << inputIndex;
+      }
+      output << "(";
       writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
       output << ")";
       return;
-    }
+  }
 
   // If current node is a temporary term
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<FirstDerivExternalFunctionNode *>(this));
