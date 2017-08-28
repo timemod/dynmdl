@@ -2,11 +2,11 @@ library(dynmdl)
 
 
 multiply <- function(x, y) {
-  return(x*y)
+  return(x * y)
 }
 
 multiply3 <- function(x, y, z) {
-  return(x*y*z)
+  return(x * y * z)
 }
 
 

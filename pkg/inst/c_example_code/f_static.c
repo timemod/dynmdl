@@ -3,45 +3,14 @@
 #include <Rinternals.h>
 #include <Rdefines.h>
 
+#include "call_R_function.h"
     
 void f_static(double *y) {
 
-  // Intialisation of variables for calling using functions
-  SEXP basePackage = PROTECT(eval(lang2( install("getNamespace"),
-      ScalarString(mkChar("base")) ),
-      R_GlobalEnv));
-  SEXP RCallBack = PROTECT(RCallBack = allocVector(LANGSXP, 3)); 
-  SETCAR(RCallBack, findFun( install("do.call"), basePackage));  
+  double *result = call_R_function("multiply", 2, y[0], y[1]);
+  Rprintf("\n\nResult of multiply: %g\n", *result);
 
-  // call multiply
-  SEXP args = PROTECT(allocVector(VECSXP, 2));
-  SET_VECTOR_ELT(args, 0, ScalarReal(y[0]));
-  SET_VECTOR_ELT(args, 1, ScalarReal(y[1]));
-
-  SETCADR(RCallBack, mkString("multiply"));
-  SETCADDR(RCallBack, args);
-
-  SEXP result = PROTECT(eval(RCallBack, basePackage));
-  Rprintf("\n\nResult of multiply: %g\n", asReal(result));
-
-  UNPROTECT(2);
-
-  // call multiply3
-  args = PROTECT(allocVector(VECSXP, 3));
-  SET_VECTOR_ELT(args, 0, ScalarReal(y[0]));
-  SET_VECTOR_ELT(args, 1, ScalarReal(y[1]));
-  SET_VECTOR_ELT(args, 2, ScalarReal(y[2]));
-
-  SETCADR(RCallBack, mkString("multiply3"));
-  SETCADDR(RCallBack, args);
-
-  result = PROTECT(eval(RCallBack, basePackage));
-  Rprintf("\n\nResult of multiply3: %g\n", asReal(result));
-
-  UNPROTECT(2);
-
-  Rprintf("\ny[0] = %g\n", y[0]);
-
-  UNPROTECT(2);
+  result = call_R_function("multiply3", 3, y[0], y[1], y[1]);
+  Rprintf("\n\nResult of multiply 3: %g\n", *result);
   return;
 }

@@ -14,11 +14,19 @@ test_c_compilation <- function(dll_dir, x) {
   
   mdl_function_file <- system.file("c_example_code", "mdl_functions.c",
                                    package = "dynmdl")
+  r_function_file <- system.file("c_example_code", "call_R_function.c",
+                                   package = "dynmdl")
+  r_function_header <- system.file("c_example_code", "call_R_function.h",
+                                 package = "dynmdl")
   c_file <- system.file("c_example_code", "f_static.c",  package = "dynmdl")
   
   ok <- file.copy(c_file, file.path(dll_dir, "f_static.c"), overwrite = TRUE)
-  ok <- file.copy(mdl_function_file, file.path(dll_dir, "mdl_functions.c"), overwrite = TRUE)
-  
+  ok <- file.copy(mdl_function_file, file.path(dll_dir, "mdl_functions.c"), 
+                  overwrite = TRUE)
+  ok <- file.copy(r_function_file, file.path(dll_dir, "call_R_function.c"), 
+                  overwrite = TRUE)
+  ok <- file.copy(r_function_header, file.path(dll_dir, "call_R_function.h"), 
+                  overwrite = TRUE)
 
   
   r_home <- R.home(component = "bin")
@@ -36,7 +44,9 @@ test_c_compilation <- function(dll_dir, x) {
                "-o", file.path(dll_dir, "f_static.o")))
   
   
-  source_file <- paste(dll_dir, c("mdl_functions.c", "f_static.c"), sep = .Platform$file.sep)
+  source_file <- paste(dll_dir, c("mdl_functions.c", "call_R_function.c",
+                                  "f_static.c"), 
+                                  sep = .Platform$file.sep)
   cmd <- paste(r_home, .Platform$file.sep,
                "R ", "CMD SHLIB ", paste(shQuote(source_file), collapse = " "),
                sep = "")
