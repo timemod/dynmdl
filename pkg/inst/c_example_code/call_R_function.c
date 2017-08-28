@@ -3,13 +3,24 @@
 #include <Rdefines.h>
 #include "call_R_function.h"
 
-double* call_R_function(const char *func_name, int narg, ...) {
 
+static SEXP RCallBack, basePackage;
+static double* result;
+
+void init_call_R(void) {
   // Intialisation of variables for calling using functions
-  SEXP basePackage = PROTECT(eval(lang2( install("getNamespace"),
+  basePackage = PROTECT(eval(lang2( install("getNamespace"),
       ScalarString(mkChar("base"))), R_GlobalEnv));
-  SEXP RCallBack = PROTECT(RCallBack = allocVector(LANGSXP, 3)); 
+  RCallBack = PROTECT(RCallBack = allocVector(LANGSXP, 3)); 
   SETCAR(RCallBack, findFun( install("do.call"), basePackage));  
+}
+
+void close_call_R(void) {
+    UNPROTECT(2);
+}
+
+
+void call_R_function(const char *func_name, int narg, ...) {
 
   va_list ap;
   int i;
@@ -27,9 +38,13 @@ double* call_R_function(const char *func_name, int narg, ...) {
   SETCADDR(RCallBack, args);
 
   // call R
-  SEXP result = PROTECT(eval(RCallBack, basePackage));
+  SEXP result_ = PROTECT(eval(RCallBack, basePackage));
 
-  UNPROTECT(4);
+  result = REAL(result_);
 
-  return(REAL(result));
+  UNPROTECT(2);
+}
+
+double get_result(int i) {
+    return(result[i]);
 }
