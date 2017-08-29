@@ -10,9 +10,9 @@ compile_c_functions <- function(dll_dir) {
 
     mdl_function_file <- system.file("c_wrappers", "mdl_functions.c",
                                      package = "dynmdl")
-    r_function_file <- system.file("c_example_code", "call_R_function.c",
+    r_function_file <- system.file("c_wrappers", "call_R_function.c",
                                    package = "dynmdl")
-    r_function_header <- system.file("c_example_code", "call_R_function.h",
+    r_function_header <- system.file("c_wrappers", "call_R_function.h",
                                      package = "dynmdl")
     triplet_jac_file <- system.file("c_wrappers", "get_triplet_jac_new.cpp",
                                      package = "dynmdl")

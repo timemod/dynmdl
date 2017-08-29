@@ -3,9 +3,7 @@
 #include <Rdefines.h>
 #include "call_R_function.h"
 
-
 static SEXP RCallBack, basePackage;
-static double* result;
 
 void init_call_R(void) {
   // Intialisation of variables for calling using functions
@@ -20,13 +18,14 @@ void close_call_R(void) {
 }
 
 
-void call_R_function(const char *func_name, int narg, ...) {
+void call_R_function(const char *func_name, int narg, double *value,
+                     double *jac, ...) {
 
   va_list ap;
   int i;
 
   // collect arguments
-  va_start(ap, narg);
+  va_start(ap, jac);
   SEXP args = PROTECT(allocVector(VECSXP, narg));
   for (i = 0; i < narg; i++) {
       double argval = va_arg(ap, double);
@@ -40,11 +39,18 @@ void call_R_function(const char *func_name, int narg, ...) {
   // call R
   SEXP result_ = PROTECT(eval(RCallBack, basePackage));
 
-  result = REAL(result_);
+  if (Rf_isList(result_)) {
+      SEXP value_ = VECTOR_ELT(result_, 0);
+      SEXP jac_ = VECTOR_ELT(result_, 1);
+      *value = REAL(value_)[0];
+      for (i = 0; i < length(jac_); i++) {
+        jac[i] = REAL(jac_)[i];
+      }
+      // currently we do nothing with the gradient (if supplied)
+  } else {
+    // the R function returns a single value
+    *value = REAL(result_)[0];
+  }
 
   UNPROTECT(2);
-}
-
-double get_result(int i) {
-    return(result[i]);
 }

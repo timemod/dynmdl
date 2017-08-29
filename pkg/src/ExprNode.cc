@@ -5037,8 +5037,6 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
       return;
     }
 
-  if (IS_C(output_type))
-    output << "*";
   output << "tef_" << getIndxInTefTerms(symb_id, tef_terms);
 }
 
@@ -5061,51 +5059,27 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
       int second_deriv_symb_id = datatree.external_functions_table.getSecondDerivSymbID(symb_id);
       assert(second_deriv_symb_id != eExtFunSetButNoNameProvided);
 
-      if (IS_C(output_type))
-        {
+      if (IS_C(output_type)) {
           stringstream ending;
           ending << "_tef_" << getIndxInTefTerms(symb_id, tef_terms);
           if (symb_id == first_deriv_symb_id
-              && symb_id == second_deriv_symb_id)
-            output << "int nlhs" << ending.str() << " = 3;" << endl
-                   << "double *TEF_" << indx << ", "
-                   << "*TEFD_" << indx << ", "
-                   << "*TEFDD_" << indx << ";" << endl;
-          else if (symb_id == first_deriv_symb_id)
-            output << "int nlhs" << ending.str() << " = 2;" << endl
-                   << "double *TEF_" << indx << ", "
-                   << "*TEFD_" << indx << "; " << endl;
-          else
-            output << "int nlhs" << ending.str() << " = 1;" << endl
-                   << "double *TEF_" << indx << ";" << endl;
-
-          output << "mxArray *plhs" << ending.str()<< "[nlhs"<< ending.str() << "];" << endl;
-          output << "int nrhs" << ending.str()<< ASSIGNMENT_OPERATOR(output_type) << arguments.size() << ";" << endl;
-          writePrhs(output, output_type, temporary_terms, tef_terms, ending.str());
-
-          output << "mexCallMATLAB("
-                 << "nlhs" << ending.str() << ", "
-                 << "plhs" << ending.str() << ", "
-                 << "nrhs" << ending.str() << ", "
-                 << "prhs" << ending.str() << ", \""
-                 << datatree.symbol_table.getName(symb_id) << "\")";
-          if (!IS_R(output_type)) {
-              output << ";";
+              && symb_id == second_deriv_symb_id) {
+            dyn_error("second derivatives for external function with C"
+                      "code not yet possible");
+          } else if (symb_id == first_deriv_symb_id) {
+            output << "double tef_" << indx << ", "
+                   << "tefd_" << indx << "[" << arguments.size() << "];" << endl;
+          } else {
+            output << "double tef_" << indx << ";" << endl;
           }
-          output << endl;
-          if (symb_id == first_deriv_symb_id
-              && symb_id == second_deriv_symb_id)
-            output << "TEF_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl
-                   << "TEFD_" << indx << " = mxGetPr(plhs" << ending.str() << "[1]);" << endl
-                   << "TEFDD_" << indx << " = mxGetPr(plhs" << ending.str() << "[2]);" << endl
-                   << "int TEFDD_" << indx << "_nrows = (int)mxGetM(plhs" << ending.str()<< "[2]);" << endl;
-          else if (symb_id == first_deriv_symb_id)
-            output << "TEF_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl
-                   << "TEFD_" << indx << " = mxGetPr(plhs" << ending.str() << "[1]);" << endl;
-          else
-            output << "TEF_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
-        }
-      else {
+
+          output << "call_R_function(\"" 
+                 << datatree.symbol_table.getName(symb_id) << "\","
+                 << arguments.size() << ", &tef_" << indx  << ", " 
+                 << "tefd_" << indx << ", ";
+          writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+          output << ");" << endl;
+    } else {
           if (symb_id == first_deriv_symb_id
               && symb_id == second_deriv_symb_id)
             output << "[tef_" << indx << " tefd_"<< indx << " tefdd_"<< indx
