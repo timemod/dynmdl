@@ -2436,8 +2436,11 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
                     << endl
                     << "  /* Residual equations */" << endl
                     << model_local_vars_output.str()
-                    << model_output.str()
-                    << endl << "  return;" << endl << "}" << endl << endl
+                    << model_output.str();
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << endl << endl << "close_call_R();" << endl;
+      }
+      DynamicOutput << endl << "return;" << endl << "}" << endl << endl
                     << "  /* Jacobian  */" << endl
                     << "void jac_dynamic(double *y, double *x, int nb_row_x, double *params, int it_," << endl
                     << "                 int *rows, int *cols, double *values) {" << endl
@@ -2448,10 +2451,7 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
       DynamicOutput << model_local_vars_output.str()
                     << jacobian_output.str() << endl;
       if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
-          DynamicOutput << endl << "close_call_R();" << endl << endl;
-      }
-      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
-          DynamicOutput << "close_call_R();" << endl << endl;
+          DynamicOutput << endl << "close_call_R();" << endl;
       }
       DynamicOutput  << endl << "return;" << endl << "}" << endl;
 #ifndef USE_R

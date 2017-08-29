@@ -32,6 +32,8 @@ dyn_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
   if (use_dll) {
     if (missing(dll_dir)) {
       dll_dir <- tempfile()
+    } else if (dir.exists(dll_dir)) {
+        unlink(dll_dir, recursive = TRUE)
     }
     dir.create(dll_dir)
     if (.Platform$OS.type == "windows")  {
