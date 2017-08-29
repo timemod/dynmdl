@@ -1621,7 +1621,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   if (external_functions_table.get_total_number_of_unique_model_block_external_functions())
     // External Matlab function, implies Dynamic function will call mex
 #ifdef USE_R
-    mDynamicModelFile << "#include \"mex.h\"" << endl;
+      mDynamicModelFile << "#include \"call_R_function.h\"" << endl;
 #else 
     dyn_error("In dynmdl, external functions are not yet supported\n");
 #endif
@@ -2428,8 +2428,11 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
     } else if (output_type == oCDynamicModel) {
 
       DynamicOutput << "void f_dynamic(double *y, double *x, int nb_row_x, double *params, int it_, double *residual)" << endl
-                    << "{" << endl
-                    << "  double lhs, rhs;" << endl
+                    << "{" << endl << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << "init_call_R();" << endl << endl;
+      }
+      DynamicOutput  << "double lhs, rhs;" << endl
                     << endl
                     << "  /* Residual equations */" << endl
                     << model_local_vars_output.str()
@@ -2438,10 +2441,19 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
                     << "  /* Jacobian  */" << endl
                     << "void jac_dynamic(double *y, double *x, int nb_row_x, double *params, int it_," << endl
                     << "                 int *rows, int *cols, double *values) {" << endl
-                    << "  /* Jacobian  */" << endl
-                    << model_local_vars_output.str()
-                    << jacobian_output.str()
-                    << endl << "  return;" << endl << "}" << endl;
+                    << "  /* Jacobian  */" << endl << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << "init_call_R();" << endl << endl;
+      }
+      DynamicOutput << model_local_vars_output.str()
+                    << jacobian_output.str() << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << endl << "close_call_R();" << endl << endl;
+      }
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << "close_call_R();" << endl << endl;
+      }
+      DynamicOutput  << endl << "return;" << endl << "}" << endl;
 #ifndef USE_R
       if (second_derivatives.size())
         DynamicOutput << "  /* Hessian for endogenous and exogenous variables */" << endl
