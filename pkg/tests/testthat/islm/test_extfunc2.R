@@ -15,10 +15,10 @@ model_period <- period_range(p1, p1 + nperiods - 1)
 report <- capture_output(mdl <- dyn_mdl(mod_file))
                          
 square <<- function(x) {
-  return(c(x * x, 2 * x))
+  return(list(x * x, 2 * x))
 }
 multiply <<- function(x, y) {
-  return(c(x * y, y,  x))
+  return(list(x * y, c(y,  x)))
 }
 
 mdl$solve_steady()

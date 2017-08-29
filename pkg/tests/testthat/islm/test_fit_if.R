@@ -11,7 +11,7 @@ ifelse_jac <<- function(x, y, z) {
 }
 
 ifelse_d1 <<- function(x, y, z) {
-  return(c(0, 0, 0, 0))
+  return(list(0, c(0, 0, 0)))
 }
 
 ifelse_d2 <<- function(x, y, z) {
@@ -20,7 +20,7 @@ ifelse_d2 <<- function(x, y, z) {
        } else {
          0
        }
-  return(c(val, 0, 0, 0))  
+  return(list(val, c(0, 0, 0)))  
 }
 
 ifelse_d3 <<- function(x, y, z) {
@@ -29,7 +29,7 @@ ifelse_d3 <<- function(x, y, z) {
   } else {
     1
   }
-  return(c(val, 0, 0, 0))  
+  return(list(val, c(0, 0, 0)))  
 }
 
 

@@ -10,6 +10,10 @@ compile_c_functions <- function(dll_dir) {
 
     mdl_function_file <- system.file("c_wrappers", "mdl_functions.c",
                                      package = "dynmdl")
+    r_function_file <- system.file("c_example_code", "call_R_function.c",
+                                   package = "dynmdl")
+    r_function_header <- system.file("c_example_code", "call_R_function.h",
+                                     package = "dynmdl")
     triplet_jac_file <- system.file("c_wrappers", "get_triplet_jac_new.cpp",
                                      package = "dynmdl")
 
@@ -17,6 +21,11 @@ compile_c_functions <- function(dll_dir) {
               overwrite = TRUE)
     file.copy(triplet_jac_file, file.path(dll_dir, "get_triplet_jac_new.cpp"),
               overwrite = TRUE)
+    ok <- file.copy(r_function_file, file.path(dll_dir, "call_R_function.c"), 
+                    overwrite = TRUE)
+    ok <- file.copy(r_function_header, file.path(dll_dir, "call_R_function.h"), 
+                    overwrite = TRUE)
+    
 
     r_home <- R.home(component = "bin")
     R <- file.path(r_home, "R")
@@ -34,6 +43,7 @@ compile_c_functions <- function(dll_dir) {
 
     source_file <- paste(dll_dir, c("mdl_functions.c",
                                     "get_triplet_jac_new.cpp",
+                                    "call_R_function.c",
                                     "f_static.c", "f_dynamic.c"),
                      sep = .Platform$file.sep)
     cmd <- paste(r_home, .Platform$file.sep,

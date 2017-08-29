@@ -13,11 +13,11 @@ p1 <- period("2016Q1")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
 square <<- function(x) {
-  return(c(x * x, 2 * x))
+  return(list(x * x, 2 * x))
 }
 
 square_d1 <<- function(x) {
-  return(square(x)[2])
+  return(square(x)[[2]])
 }
 
 square_d1_jac <<- function(x) {
@@ -25,11 +25,11 @@ square_d1_jac <<- function(x) {
 }
 
 multiply <<- function(x, y) {
-  return(c(x * y, y, x))
+  return(list(x * y, c(y, x)))
 }
 
 multiply_d1 <<- function(x, y) {
-  return(c(y, 0, 1))
+  return(list(y, c(0, 1)))
 }
 
 multiply_d2 <<- function(x, y) {

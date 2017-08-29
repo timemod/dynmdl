@@ -1484,18 +1484,31 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
    } else if (output_type == oCStaticModel) {
       StaticOutput << "void f_static(double *y, double *x, double *params, double *residual) {" << endl
-                   << endl
-                   << "  double lhs, rhs;" << endl
+                   << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          StaticOutput << "init_call_R();" << endl << endl;
+      }
+      StaticOutput  << "double lhs, rhs;" << endl
                    << endl
                    << "  /* Residual equations */" << endl
                    << model_local_vars_output.str()
-                   << model_output.str()
-                   << endl << "  return;" << endl << "}" << endl << endl;
+                   << model_output.str();
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          StaticOutput << endl << "close_call_R();" << endl << endl;
+      }
+      StaticOutput << endl << "return;" << endl << "}" << endl << endl;
+
       StaticOutput << "void jac_static(double *y, double *x, double *params, double *g1) {" << endl
-                   << "  /* Jacobian  */" << endl
-                   << model_local_vars_output.str()
-                   << jacobian_output.str()
-                   << "  return;" << endl;
+                   << "  /* Jacobian  */" << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          StaticOutput << "init_call_R();" << endl << endl;
+      }
+      StaticOutput  << model_local_vars_output.str()
+                   << jacobian_output.str();
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          StaticOutput << endl << "close_call_R();" << endl << endl;
+      }
+      StaticOutput << "return;" << endl;
 
       if (second_derivatives.size())
         StaticOutput << "  /* Hessian for endogenous and exogenous variables */" << endl
@@ -1638,7 +1651,7 @@ StaticModel::writeStaticCFile(const string &func_name) const
   if (external_functions_table.get_total_number_of_unique_model_block_external_functions())
     // External Matlab function, implies Static function will call mex
 #ifdef USE_R
-    output << "#include \"mex.h\"" << endl;
+    output << "#include \"call_R_function.h\"" << endl;
 #else
     dyn_error("dynmdl does not support external Matlab functions yet")
 #endif

@@ -15,7 +15,7 @@ model_period <- period_range(p1, p1 + nperiods - 1)
 report <- capture_output(mdl <- dyn_mdl(mod_file))
 
 square <<- function(x) {
-  return(x*x)
+  return(x * x)
 }
 square_jac <<- function(x) {
   return(2 * x)

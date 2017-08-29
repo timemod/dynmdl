@@ -21,7 +21,7 @@ model;
 y = c + i + g;
 yd = y - t;
 t = t0 + t1 * y;
-c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * square(r);
+c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * square(2 * r) / 4;
 i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + 
     i5 * multiply(square(r), yd) / yd;
 md = m0 + m1 * y + multiply(m2, r) + m3 * r^2;

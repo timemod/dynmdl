@@ -5129,11 +5129,11 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
           output << endl;
           if (IS_R(output_type)) {
               if (symb_id == first_deriv_symb_id && symb_id == second_deriv_symb_id) {
-                 output << "tef_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[1]" << endl;
-                 output << "tefdd_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[-1]" << endl;
+                 output << "tef_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[1]]" << endl;
+                 output << "tefdd_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[2]]" << endl;
               } else if (symb_id == first_deriv_symb_id) {
-                 output << "tef_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[1]" << endl;
-                 output << "tefd_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[-1]" << endl;
+                 output << "tef_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[1]]" << endl;
+                 output << "tefd_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[2]]" << endl;
               }
           }
         }
