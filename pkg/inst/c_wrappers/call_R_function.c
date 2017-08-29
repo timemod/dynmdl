@@ -39,8 +39,7 @@ void call_R_function(const char *func_name, int narg, double *value,
   // call R
   SEXP result_ = PROTECT(eval(RCallBack, basePackage));
   
-  if (isList(result_) || 1) {
-      //Rprintf("result_ is a list\n");
+  if (isNewList(result_)) {
       SEXP value_ = VECTOR_ELT(result_, 0);
       SEXP jac_ = VECTOR_ELT(result_, 1);
       *value = REAL(value_)[0];
@@ -49,7 +48,6 @@ void call_R_function(const char *func_name, int narg, double *value,
       }
       // currently we do nothing with the gradient (if supplied)
   } else {
-      //Rprintf("result_ is not a list\n");
       // the R function returns a single value
       *value = REAL(result_)[0];
   }
@@ -78,8 +76,8 @@ void call_R_function_jac(const char *func_name, int narg, double *jac, ...) {
   SEXP result_ = PROTECT(eval(RCallBack, basePackage));
 
   // collect Jacobian (currently we do nothing with second derivatives)
-  for (i = 0; i < length(result__); i++) {
-      jac[i] = REAL(jac_)[i];
+  for (i = 0; i < length(result_); i++) {
+      jac[i] = REAL(result_)[i];
   }
 
   UNPROTECT(2);

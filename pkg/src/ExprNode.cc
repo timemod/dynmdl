@@ -5349,36 +5349,16 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
 
         output << "TEFD_fdd_" <<  getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex
                << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
-      }
-    else
-      {
+   } else {
         tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
         int indx = getIndxInTefTerms(first_deriv_symb_id, tef_terms);
-        stringstream ending;
-        ending << "_tefd_def_" << indx;
         output << "double tefd_def_" << indx << "[" << arguments.size() << "];" << endl;
-        output << "call_R_function(\"" 
-                 << datatree.symbol_table.getName(first_deriv_symb_id) << "\","
-                 << arguments.size() << ", &tefd_def" << indx  << ", ";
-          if (symb_id == first_deriv_symb_id) {
-              output << "tefd_" << indx << ", ";
-          } else {
-              // argument jac is not used, use tef_ as dummy argument
-              output << "&tef_" << indx << ", ";
-          }
-          writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
-          output << ");" << endl;
-
-        output << "mexCallMATLAB("
-               << "nlhs" << ending.str() << ", "
-               << "plhs" << ending.str() << ", "
-               << "nrhs" << ending.str() << ", "
-               << "prhs" << ending.str() << ", \""
-               << datatree.symbol_table.getName(first_deriv_symb_id) << "\");" << endl;
-
-        output << "TEFD_def_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
-      }
-  else {
+        output << "call_R_function_jac(\"" 
+                 << datatree.symbol_table.getName(first_deriv_symb_id) << "\", "
+                 << arguments.size() << ", tefd_def_" << indx  << ", ";
+        writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+        output << ");" << endl;
+    } else {
       if (first_deriv_symb_id == eExtFunNotSet) {
         output << "tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" 
                << inputIndex << ASSIGNMENT_OPERATOR(output_type) << "jacob_element(";
