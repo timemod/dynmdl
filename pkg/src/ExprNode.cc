@@ -5236,18 +5236,15 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
 
   const int tmpIndx = inputIndex - 1 + ARRAY_SUBSCRIPT_OFFSET(output_type);
 
-  if (first_deriv_symb_id == symb_id)
+  if (first_deriv_symb_id == symb_id) {
     output << "tefd_" << getIndxInTefTerms(symb_id, tef_terms)
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
-  else if (first_deriv_symb_id == eExtFunNotSet)
-    {
-      if (IS_C(output_type))
-        output << "*";
+  } else if (first_deriv_symb_id == eExtFunNotSet) {
       output << "tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
-    }
-  else
+  } else {
     output << "tefd_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
+  }
 }
 
 void
@@ -5311,44 +5308,17 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
     return;
 
   if (IS_C(output_type))
-    if (first_deriv_symb_id == eExtFunNotSet)
-      {
-        stringstream ending;
-        ending << "_tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
-        output << "int nlhs" << ending.str() << " = 1;" << endl
-               << "double *TEFD_fdd_" <<  getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex << ";" << endl
-               << "mxArray *plhs" << ending.str() << "[nlhs"<< ending.str() << "];" << endl
-               << "int nrhs" << ending.str() << " = 3;" << endl
-               << "mxArray *prhs" << ending.str() << "[nrhs"<< ending.str() << "];" << endl
-               << "mwSize dims" << ending.str() << "[2];" << endl;
-
-        output << "dims" << ending.str() << "[0] = 1;" << endl
-               << "dims" << ending.str() << "[1] = " << arguments.size() << ";" << endl;
-
-        output << "prhs" << ending.str() << "[0] = mxCreateString(\"" << datatree.symbol_table.getName(symb_id) << "\");" << endl
-               << "prhs" << ending.str() << "[1] = mxCreateDoubleScalar(" << inputIndex << ");"<< endl
-               << "prhs" << ending.str() << "[2] = mxCreateCellArray(2, dims" << ending.str() << ");"<< endl;
-
-        int i = 0;
-        for (vector<expr_t>::const_iterator it = arguments.begin();
-             it != arguments.end(); it++)
-          {
-            output << "mxSetCell(prhs" << ending.str() << "[2], "
-                   << i++ << ", "
-                   << "mxCreateDoubleScalar("; // All external_function arguments are scalars
-            (*it)->writeOutput(output, output_type, temporary_terms, tef_terms);
-            output << "));" << endl;
-          }
-
-        output << "mexCallMATLAB("
-               << "nlhs" << ending.str() << ", "
-               << "plhs" << ending.str() << ", "
-               << "nrhs" << ending.str() << ", "
-               << "prhs" << ending.str() << ", \""
-               << "jacob_element\");" << endl;
-
-        output << "TEFD_fdd_" <<  getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex
-               << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
+    if (first_deriv_symb_id == eExtFunNotSet) {
+        // compute Jacobian by numerical differentiation
+        output << "double tefd_fdd_" <<  getIndxInTefTerms(symb_id, tef_terms) 
+               << "_" << inputIndex << ";" << endl;
+        output << "call_jacob_element(\""
+               << datatree.symbol_table.getName(symb_id) << "\", "
+               << arguments.size() << ", "
+               << inputIndex << ", &tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) 
+               << "_" << inputIndex << ", ";
+        writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+        output << ");" << endl;
    } else {
         tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
         int indx = getIndxInTefTerms(first_deriv_symb_id, tef_terms);

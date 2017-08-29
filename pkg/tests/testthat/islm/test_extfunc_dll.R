@@ -12,7 +12,7 @@ exo_name_file  <- file.path(dynare_dir, "islm_exo_names.txt")
 p1 <- period("2011Q3")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
-report <- capture_output(mdl <- dyn_mdl(mod_file, use_dll = TRUE, dll_dir = "aap"))
+report <- capture_output(mdl <- dyn_mdl(mod_file, use_dll = TRUE))
 
 square <<- function(x) {
   return(x * x)
