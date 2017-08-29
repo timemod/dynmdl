@@ -56,3 +56,31 @@ void call_R_function(const char *func_name, int narg, double *value,
 
   UNPROTECT(2);
 }
+
+void call_R_function_jac(const char *func_name, int narg, double *jac, ...) {
+
+  va_list ap;
+  int i;
+
+  // collect arguments
+  va_start(ap, jac);
+  SEXP args = PROTECT(allocVector(VECSXP, narg));
+  for (i = 0; i < narg; i++) {
+      double argval = va_arg(ap, double);
+      SET_VECTOR_ELT(args, i, ScalarReal(argval));
+  }
+  va_end(ap);
+
+  SETCADR(RCallBack, mkString(func_name));
+  SETCADDR(RCallBack, args);
+
+  // call R
+  SEXP result_ = PROTECT(eval(RCallBack, basePackage));
+
+  // collect Jacobian (currently we do nothing with second derivatives)
+  for (i = 0; i < length(result__); i++) {
+      jac[i] = REAL(jac_)[i];
+  }
+
+  UNPROTECT(2);
+}

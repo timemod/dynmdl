@@ -5075,8 +5075,13 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
 
           output << "call_R_function(\"" 
                  << datatree.symbol_table.getName(symb_id) << "\","
-                 << arguments.size() << ", &tef_" << indx  << ", " 
-                 << "tefd_" << indx << ", ";
+                 << arguments.size() << ", &tef_" << indx  << ", ";
+          if (symb_id == first_deriv_symb_id) {
+              output << "tefd_" << indx << ", ";
+          } else {
+              // argument jac is not used, use tef_ as dummy argument
+              output << "&tef_" << indx << ", ";
+          }
           writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
           output << ");" << endl;
     } else {
@@ -5351,11 +5356,18 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
         int indx = getIndxInTefTerms(first_deriv_symb_id, tef_terms);
         stringstream ending;
         ending << "_tefd_def_" << indx;
-        output << "int nlhs" << ending.str() << " = 1;" << endl
-               << "double *TEFD_def_" << indx << ";" << endl
-               << "mxArray *plhs" << ending.str() << "[nlhs"<< ending.str() << "];" << endl
-               << "int nrhs" << ending.str() << ASSIGNMENT_OPERATOR(output_type) << arguments.size() << ";" << endl;
-        writePrhs(output, output_type, temporary_terms, tef_terms, ending.str());
+        output << "double tefd_def_" << indx << "[" << arguments.size() << "];" << endl;
+        output << "call_R_function(\"" 
+                 << datatree.symbol_table.getName(first_deriv_symb_id) << "\","
+                 << arguments.size() << ", &tefd_def" << indx  << ", ";
+          if (symb_id == first_deriv_symb_id) {
+              output << "tefd_" << indx << ", ";
+          } else {
+              // argument jac is not used, use tef_ as dummy argument
+              output << "&tef_" << indx << ", ";
+          }
+          writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+          output << ");" << endl;
 
         output << "mexCallMATLAB("
                << "nlhs" << ending.str() << ", "
