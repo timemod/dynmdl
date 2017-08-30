@@ -34,35 +34,35 @@ dynare_result <- regts(endo_data, period = data_period, names = endo_names)
 mdl$solve_steady(control = list(trace = FALSE))
 
 test_that("solve_steady", {
-    #  read in dynare result, and compare
-    steady_endos <- read.csv(steady_data_file, header = FALSE, sep = "")[[1]]
-    names(steady_endos) <- endo_names
-    expect_equal(steady_endos, mdl$get_static_endos())
+  #  read in dynare result, and compare
+  steady_endos <- read.csv(steady_data_file, header = FALSE, sep = "")[[1]]
+  names(steady_endos) <- endo_names
+  expect_equal(steady_endos, mdl$get_static_endos())
 })
 
 test_that("eigenvalues", {
-    check_output <- capture_output(mdl$check())
-    eigvals <- mdl$get_eigval()
-    dynare_eigvals <- read.csv(eigval_file, header = FALSE, sep = ",")
-    i <- order(apply(dynare_eigvals, MARGIN = 1,
-                     FUN = function(x) sqrt(sum(x**2))))
-    # the last eigenvalues are Inf or almost infinite
-    expect_equal(Re(eigvals[1:19]), dynare_eigvals[i[1:19], 1])
+  check_output <- capture_output(mdl$check())
+  eigvals <- mdl$get_eigval()
+  dynare_eigvals <- read.csv(eigval_file, header = FALSE, sep = ",")
+  i <- order(apply(dynare_eigvals, MARGIN = 1,
+                   FUN = function(x) sqrt(sum(x**2))))
+  # the last eigenvalues are Inf or almost infinite
+  expect_equal(Re(eigvals[1:19]), dynare_eigvals[i[1:19], 1])
 })
 
 test_that("solve", {
-    mdl2 <- mdl$clone()
-    p <- start_period(model_period)
-    with (as.list(mdl2$get_params()), {
-        mdl2$set_values(exp(sigma_d), names = "epsd", period = p);
-        mdl2$set_values(exp(sigma_phi), names = "epsphi", period = p);
-        mdl2$set_values(exp(sigma_mu), names = "epsmu_I", period = p);
-        mdl2$set_values(exp(sigma_A), names = "epsA", period = p);
-        mdl2$set_values(exp(sigma_m), names = "epsm", period = p);
-    })
-    mdl2$solve(control = list(silent = TRUE, trace = FALSE))
-
-    expect_equal(mdl2$get_endo_data(), dynare_result)
+  mdl2 <- mdl$clone()
+  p <- start_period(model_period)
+  with (as.list(mdl2$get_params()), {
+    mdl2$set_exo_values(exp(sigma_d), names = "epsd", period = p);
+    mdl2$set_exo_values(exp(sigma_phi), names = "epsphi", period = p);
+    mdl2$set_exo_values(exp(sigma_mu), names = "epsmu_I", period = p);
+    mdl2$set_exo_values(exp(sigma_A), names = "epsA", period = p);
+    mdl2$set_exo_values(exp(sigma_m), names = "epsm", period = p);
+  })
+  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  
+  expect_equal(mdl2$get_endo_data(), dynare_result)
 })
 
 # 
@@ -74,7 +74,7 @@ test_that("solve", {
 #     mdl2 <- mdl$clone()
 #     p <- start_period(model_period)
 #     with (as.list(mdl2$get_params()), {
-#         mdl2$set_values(exp(sigma_d), names = "epsd", period = p);
+#         mdl2$set_exo_values(exp(sigma_d), names = "epsd", period = p);
 #     })
 #     mdl2$solve_perturbation()
 # 

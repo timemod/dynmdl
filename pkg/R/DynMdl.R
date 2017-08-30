@@ -45,10 +45,10 @@ setOldClass("regts")
 #' \item{\code{get_static_exos()}}{Returns the static values of
 #' the exogenous variables}
 #'
-#' \item{\code{set_static_endos(endos)}}{Sets the static values of
+#' \item{\code{set_static_endos}}{Sets the static values of
 #' the endos variables. These values are used to compute the steady state.}
 #'
-#' \item{\code{get_static_endos()}}{Returns the static values of
+#' \item{\code{get_static_endos}}{Returns the static values of
 #' the endogenous variables, i.e. the values that are supposed to be
 #' the steady state values. Function \code{solve_steady} can be used
 #' to compute them. After compiling the model, the
@@ -64,19 +64,21 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{get_data_period}}}{Returns the model data period}
 #'
-#' \item{\code{get_lag_period()}}{Returns the lag period}
+#' \item{\code{get_lag_period}}{Returns the lag period}
 #'
-#' \item{\code{get_lead_period()}}{Returns the lead period}
+#' \item{\code{get_lead_period}}{Returns the lead period}
 #'
-#' \item{\code{set_exo_values(value, names = NULL, period = self$get_data_period())}}{Sets the value(s)
-#' of one more exogenous variables. \code{value} can be any R object
-#' that can be coerced to a numeric. \code{period} is the period
-#' for which endogenous variable is modified. If argument \code{period}
-#' is missing the exo period is used.}
+#'\item{\code{set_endo_values}}{Sets the values of endogenous model variables}
+#'
+#' \item{\code{set_exo_values}}{Sets the values of exogenous model variables}
 #'
 #' \item{\code{\link{set_data}}}{Transfer timeseries to the model data}
 #'
-#' \item{\code{\link{set_values}}}{Sets the values of the model data}
+#' \item{\code{change_endo_data}}{Changes the values of endogenous model variables
+#' by applying a function}
+#'
+#' \item{\code{change_exo_data}}{Changes the values of exogenous model variables
+#' by applying a function}
 #'
 #' \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 #'
@@ -342,12 +344,6 @@ DynMdl <- R6Class("DynMdl",
         return (private$exo_data[period, names, drop = FALSE])
       }
     },
-    set_values = function(value, names = NULL, pattern = NULL,
-                          period = private$data_period) {
-      private$set_values_(value, names, pattern, period, type = "endo")
-      private$set_values_(value, names, pattern, period, type = "exo")
-      return (invisible(self))
-    },
     set_endo_values = function(value, names = NULL, pattern = NULL,
                                period = private$data_period) {
       private$set_values_(value, names, pattern, period, type = "endo")
@@ -381,6 +377,14 @@ DynMdl <- R6Class("DynMdl",
         }
         return (private$endo_data[period, names, drop = FALSE])
       }
+    },
+    change_endo_data = function(fun, names= NULL, pattern = NULL, 
+                                period = private$data_period , ...) {
+      return(private$change_data_(fun, names, pattern, period, "endo", ...))
+    },
+    change_exo_data = function(fun, names= NULL, pattern = NULL, 
+                               period = private$data_period , ...) {
+      return(private$change_data_(fun, names, pattern, period, "exo", ...))
     },
     solve_steady = function(start = self$get_static_endos(),
                             init_data = TRUE, control = NULL) {
@@ -589,11 +593,46 @@ DynMdl <- R6Class("DynMdl",
     nrow_exo = NA_integer_,
     jac = NULL,
     jac_steady = NULL,
-    set_data_= function(data, names, names_missing, type, upd_mode, fun) {
+    get_names_ = function(type, names, pattern) {
+      if (type == "endo") {
+        vnames <- private$endo_names
+      } else {
+        vnames <- private$exo_names
+      }
+      if (!is.null(names)) {
+        error_vars <- setdiff(names, vnames)
+        if (length(error_vars) > 0) {
+          if (type == "endo") {
+            type_txt <- "endogenous "
+          } else {
+            type_txt <- "exogenous "
+          }
+          if (length(error_vars) == 1) {
+            stop(paste0(error_vars, " is not an ", type_txt, "model variable"))
+          } else {
+            stop(paste0("The variables ", paste(error_vars, collapse = " "),
+                        " are no ", type_txt, "model variables"))
+          }
+        }
+      }
+      if (is.null(pattern) && is.null(names)) {
+        names <- vnames
+      } else if (!is.null(pattern)) {
+        sel <- grep(pattern, vnames)
+        pattern_names <- vnames[sel]
+        if (!is.null(names)) {
+          names <- union(pattern_names, names)
+        } else {
+          names <- pattern_names
+        }
+      }
+      return(names)
+    },
+    set_data_= function(data, names, names_missing, type, upd_mode = "upd", 
+                        fun) {
       # generic function to set or update the endogenous or exogenous
       # variables
       
-      if (is.null(private$model_period)) stop(private$period_error_msg)
       if (is.null(private$model_period)) stop(private$period_error_msg)
       if (!inherits(data, "ts")) {
         # we use inherits and not is.ts, because is.ts returns FALSE if
@@ -672,7 +711,7 @@ DynMdl <- R6Class("DynMdl",
     },
     set_values_ = function(value, names, pattern, period, type) {
       value <- as.numeric(value)
-      period <- as.period_range(period)
+      period <- private$convert_period_arg(period)
       nper <- nperiod(period)
       vlen <- length(value)
       if (vlen != 1 && vlen < nper) {
@@ -680,24 +719,7 @@ DynMdl <- R6Class("DynMdl",
                    "length ", nper))
       }
       period <- range_intersect(period, private$data_period)
-      if (type == "endo") {
-        mdl_names <- private$endo_names
-      } else {
-        mdl_names <- private$exo_names
-      }
-      if (is.null(pattern) && is.null(names)) {
-        names <- mdl_names
-      } else {
-        if (!is.null(names)) {
-          names <- intersect(names, mdl_names)
-        }  else {
-          names <- character(0)
-        }
-        if (!is.null(pattern)) {
-          sel <- grep(pattern, mdl_names)
-          names <- union(names, mdl_names[sel])
-        }
-      }
+      names <- private$get_names_(type, names, pattern)
       if (length(names) > 0) {
         if (vlen > 1) {
           value <- value[1:nperiod(period)]
@@ -709,6 +731,24 @@ DynMdl <- R6Class("DynMdl",
         }
       }
       return(NULL)
+    },
+    change_data_ = function(fun, names, pattern, period, type, ...) {
+      period <- private$convert_period_arg(period)
+      if (!is.function(fun)) {
+        stop("argument fun is not a function")
+      }
+      nper <- nperiod(period)
+      names <- private$get_names_(type, names, pattern)
+      if (type == "endo") {
+        data <- self$get_endo_data(names = names, period = period)
+      } else  { 
+        data <- self$get_exo_data(names = names, period = period)
+      }
+      for (c in seq_len(ncol(data))) {
+        data[, c] <- fun(data[, c], ...)
+      }
+      private$set_data_(data, names = names, names_missing = FALSE, 
+                        type = type)
     },
     get_lags = function() {
       lag_per <- self$get_lag_period()
@@ -813,6 +853,9 @@ DynMdl <- R6Class("DynMdl",
       # TODO: write the contents of the mdl file, the package version
       # and the operating system to the rds file. If necessary,
       # the model should be recompiled in read_mdl.
+      # We should not only copy the dll file, but also the C source code.
+      # In function, read_mdl, it should be possible to specify that the
+      # model is recompiled.
       serialized_mdl <- list(class = class(self)[1],
                              model_info = private$model_info, 
                              bytecode = private$bytecode,
@@ -863,6 +906,30 @@ DynMdl <- R6Class("DynMdl",
         cat("\ndynamic jacobian:\n")
         print(private$jac_dynamic)
       }
+    },
+    convert_period_arg = function(period, data_period = TRUE) {
+      if (is.null(private$model_period)) {
+        stop(private$period_error_msg)
+      }
+      period <- as.period_range(period)
+      if (frequency(period) != frequency(private$data_period)) {
+        stop(paste0("Period ", period, " has a different frequency than ",
+                    "the model period ", private$model_period, "."))
+      }
+      if (data_period) {
+        defaultp <- private$data_period
+      } else {
+        defaultp <- private$model_period
+      }
+      startp <- start_period(period)
+      if (is.null(startp)) {
+        startp <- start_period(defaultp)
+      }
+      endp <- end_period(period)
+      if (is.null(endp)) {
+        endp <- end_period(defaultp)
+      }
+      return(period_range(startp, endp))
     }
   )
 )

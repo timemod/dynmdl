@@ -33,10 +33,10 @@ the exogenous variables. These values are used to compute the steady state.}
 \item{\code{get_static_exos()}}{Returns the static values of
 the exogenous variables}
 
-\item{\code{set_static_endos(endos)}}{Sets the static values of
+\item{\code{set_static_endos}}{Sets the static values of
 the endos variables. These values are used to compute the steady state.}
 
-\item{\code{get_static_endos()}}{Returns the static values of
+\item{\code{get_static_endos}}{Returns the static values of
 the endogenous variables, i.e. the values that are supposed to be
 the steady state values. Function \code{solve_steady} can be used
 to compute them. After compiling the model, the
@@ -52,19 +52,21 @@ you can only modify them by calling function \code{solve_steady}}
 
 \item{\code{\link{get_data_period}}}{Returns the model data period}
 
-\item{\code{get_lag_period()}}{Returns the lag period}
+\item{\code{get_lag_period}}{Returns the lag period}
 
-\item{\code{get_lead_period()}}{Returns the lead period}
+\item{\code{get_lead_period}}{Returns the lead period}
 
-\item{\code{set_exo_values(value, names = NULL, period = self$get_data_period())}}{Sets the value(s)
-of one more exogenous variables. \code{value} can be any R object
-that can be coerced to a numeric. \code{period} is the period
-for which endogenous variable is modified. If argument \code{period}
-is missing the exo period is used.}
+\item{\code{set_endo_values}}{Sets the values of endogenous model variables}
+
+\item{\code{set_exo_values}}{Sets the values of exogenous model variables}
 
 \item{\code{\link{set_data}}}{Transfer timeseries to the model data}
 
-\item{\code{\link{set_values}}}{Sets the values of the model data}
+\item{\code{change_endo_data}}{Changes the values of endogenous model variables
+by applying a function}
+
+\item{\code{change_exo_data}}{Changes the values of exogenous model variables
+by applying a function}
 
 \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 

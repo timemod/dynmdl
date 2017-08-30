@@ -225,22 +225,20 @@ NULL
 #' mdl$set_data(shock, fun = `+`)
 #' #`+` is a primitive function that adds its two arguments.
 #'
-#' @seealso \code{\link{get_data}}, \code{\link{set_values}},
-#' \code{\link{change_data}}
-#'
+#' @seealso \code{\link{get_data-methods}}, 
+#' \code{\link{set_values-methods}} and
+#' \code{\link{change_data-methods}}
 NULL
 
 #' \code{\link{DynMdl}} methods: Sets the values of the model data
 #' @name set_values-methods
-#' @aliases set_values set_endo_values set_exo_values
+#' @aliases set_endo_values set_exo_values
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
-#' can be used to set the values of the model dataents
-#' (both endogenous and exogenous)
+#' can be used to set the values of the model data
 #'
 #' @section Usage:
 #' \preformatted{
-#' mdl$set_values(value, names, pattern, period = mdl$get_data_period())
 #'
 #' mdl$set_endo_values(value, names, pattern, period = mdl$get_data_period())
 #'
@@ -262,13 +260,62 @@ NULL
 #' }
 #' @section Methods:
 #' \itemize{
-#' \item \code{set_values}: Endogenous and exogneous model variables
-#'
 #' \item \code{set_endo_values}: Endogenous model variables
 #'
 #' \item \code{set_exo_values}: Exogenous model variables
 #'
 #' }
+#'
+NULL
+
+#' \code{\link{DynMdl}} methods: changes the endogenous or exogenous
+#' model data by applying a function.
+#' @name change_data-methods
+#' @aliases change_endo_data change_exo_data
+#' @description
+#' These methods of R6 class \code{\link{DynMdl}}
+#' changes the endogenous or exogenous
+#' model data by applying a function.
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$change_endo_data(fun, names, pattern, period = mdl$get_data_period(), ...)
+#'
+#' mdl$change_exo_data(fun names, pattern, period = mdl$get_data_period(), ...)
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{fun}}{a function applied each model timeseries specified with 
+#'  argument \code{names} or \code{pattern}}
+#' \item{\code{names}}{a character vector with variable names}
+#' \item{\code{pattern}}{a regular expression}
+#' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
+#' object that can be coerced to a \code{period_range}}
+#' \item{\code{...}}{arguments passed to \code{fun}}
+#' }
+#' @section Methods:
+#' \describe{
+#' \item{\code{changes_endo_data}}{Changes the endogenous model variables}
+#' \item{\code{change_exo_data}}{Changes the exogenous model variables}
+#' }
+#' @examples
+#' mdl <- islm_mdl(period = "2017Q1/2017Q3")
+#'
+#' # increase y and yd with 10% for the full data period
+#' mdl$change_endo_data(pattern = "^y.?$", fun = function(x) {x * 1.1})
+#' print(mdl$get_endo_data())
+#'
+#' # increase ms in 2017Q1 and 2017Q2 with 10 and 20, resp.
+#' mdl$change_exo_data(names = "ms", fun = function(x, dx) {x + dx},
+#'                 dx = c(10, 20), period = "2017Q1/2017Q2")
+#' print(mdl$get_exo_data())
+#'
+#' @seealso \code{\link{get_data-methods}}, \code{\link{set_data}} and
+#' \code{\link{set_values-methods}}
 #'
 NULL
 

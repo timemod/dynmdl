@@ -2,19 +2,16 @@
 % Please edit documentation in R/DynMdl_doc.R
 \name{set_values-methods}
 \alias{set_values-methods}
-\alias{set_values}
 \alias{set_endo_values}
 \alias{set_exo_values}
 \title{\code{\link{DynMdl}} methods: Sets the values of the model data}
 \description{
 This method of R6 class \code{\link{DynMdl}} 
-can be used to set the values of the model dataents
-(both endogenous and exogenous)
+can be used to set the values of the model data
 }
 \section{Usage}{
 
 \preformatted{
-mdl$set_values(value, names, pattern, period = mdl$get_data_period())
 
 mdl$set_endo_values(value, names, pattern, period = mdl$get_data_period())
 
@@ -41,8 +38,6 @@ object that can be coerced to a \code{period_range}}
 \section{Methods}{
 
 \itemize{
-\item \code{set_values}: Endogenous and exogneous model variables
-
 \item \code{set_endo_values}: Endogenous model variables
 
 \item \code{set_exo_values}: Exogenous model variables

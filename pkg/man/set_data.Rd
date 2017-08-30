@@ -97,6 +97,7 @@ mdl$set_data(shock, fun = `+`)
 
 }
 \seealso{
-\code{\link{get_data}}, \code{\link{set_values}},
-\code{\link{change_data}}
+\code{\link{get_data-methods}}, 
+\code{\link{set_values-methods}} and
+\code{\link{change_data-methods}}
 }
