@@ -8,16 +8,22 @@
 #' @examples
 #' mdl <- islm_mdl("2017Q1/2019Q4")
 #' @export
-islm_mdl  <- function(period = NULL) {
+islm_mdl <- function(period) {
+  
   mod_file <- tempfile(fileext = ".mod")
   mdl_file <- system.file("models", "islm.mod",package = "dynmdl")
   file.copy(mdl_file, mod_file, overwrite = TRUE)
   mdl <- dyn_mdl(mod_file)
   unlink(mod_file)
   
+  mdl$set_labels(c(i = "investment", c = "consumption", md = "money demand",
+                   t = "tax", r = "interest rate", y = "income", 
+                   yd = "disposable income",  g = "government spending",
+                   ms = "money supply"))
+  
   mdl$solve_steady(control = list(trace = FALSE))
   
-  if (!is.null(period)) {
+  if (!missing(period)) {
     period <- as.period_range(period)
     mdl$set_period(period)
   }

@@ -21,6 +21,10 @@ An R6 class for a Dynare model
 \item{\code{get_endo_names()}}{Returns the names of the endogenous variables.}
 \item{\code{get_exo_names()}}{Returns the names of the exogenous variables.}
 
+\item{\code{\link{set_labels}}}{Set labels for the model variables}
+
+\item{\code{\link{get_labels}}}{Returns the labels of the model variables.}
+
 \item{\code{get_param_names()}}{Returns the names of the parameters.}
 
 \item{\code{set_params()}}{Sets the parameters of the model.}

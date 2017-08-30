@@ -50,6 +50,9 @@ read_mdl <- function(file, dll_dir) {
         mdl$set_data(ser$endo_data)
         mdl$set_data(ser$exo_data)
     }
+    if (!is.null(ser$labels)) {
+      mdl$set_labels(ser$labels)
+    }
     cat("Done\n")
     return(mdl)
 }

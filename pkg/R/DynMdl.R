@@ -33,6 +33,10 @@ setOldClass("regts")
 #
 #' \item{\code{get_exo_names()}}{Returns the names of the exogenous variables.}
 #'
+#' \item{\code{\link{set_labels}}}{Set labels for the model variables}
+#'
+#' \item{\code{\link{get_labels}}}{Returns the labels of the model variables.}
+#'
 #' \item{\code{get_param_names()}}{Returns the names of the parameters.}
 #'
 #' \item{\code{set_params()}}{Sets the parameters of the model.}
@@ -221,6 +225,12 @@ DynMdl <- R6Class("DynMdl",
     get_exo_names = function(pattern) {
       return(private$exo_names)
     },
+    set_labels = function(labels) {
+      private$update_labels(labels)
+    },
+    get_labels = function() {
+      return(private$labels)
+    },
     get_param_names = function() {
       return (private$param_names)
     },
@@ -331,7 +341,7 @@ DynMdl <- R6Class("DynMdl",
     },
     get_exo_data = function(pattern, names, period = private$data_period) {
       if (missing(pattern) && missing(names)) {
-        return (private$exo_data[period, ])
+        ret <- private$exo_data[period, ]
       } else {
         if (missing(names)) {
           names <- grep(pattern, private$exo_names)
@@ -341,8 +351,9 @@ DynMdl <- R6Class("DynMdl",
             names <- union(names, grep(pattern, private$exo_names))
           }
         }
-        return (private$exo_data[period, names, drop = FALSE])
+        ret <- private$exo_data[period, names, drop = FALSE]
       }
+      return(update_ts_labels(ret, private$labels))
     },
     set_endo_values = function(value, names = NULL, pattern = NULL,
                                period = private$data_period) {
@@ -365,7 +376,7 @@ DynMdl <- R6Class("DynMdl",
     },
     get_endo_data = function(pattern, names, period = private$data_period) {
       if (missing(pattern) && missing(names)) {
-        return (private$endo_data[period, ])
+        ret <- private$endo_data[period, ]
       } else {
         if (missing(names)) {
           names <- grep(pattern, private$endo_names)
@@ -375,8 +386,9 @@ DynMdl <- R6Class("DynMdl",
             names <- union(names, grep(pattern, private$endo_names))
           }
         }
-        return (private$endo_data[period, names, drop = FALSE])
+        ret <- private$endo_data[period, names, drop = FALSE]
       }
+      return(update_ts_labels(ret, private$labels))
     },
     change_endo_data = function(fun, names= NULL, pattern = NULL, 
                                 period = private$data_period , ...) {
@@ -562,6 +574,7 @@ DynMdl <- R6Class("DynMdl",
     endo_count = NA_integer_,
     exo_names = NULL,
     endo_names = NULL,
+    labels = NULL,
     param_names = NULL,
     exos = NULL,
     endos = NULL,
@@ -667,6 +680,13 @@ DynMdl <- R6Class("DynMdl",
         colnames(data) <- names
       } else if (!names_missing) {
         colnames(data) <- names
+      }
+      
+      # handle labels
+      lbls <- ts_labels(data)
+      if (!is.null(lbls)) {
+        names(lbls) <- names
+        private$update_labels(lbls)
       }
       
       if (type == "endo") {
@@ -837,6 +857,16 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(NULL))
     },
+    update_labels = function(labels) {
+      names <- intersect(names(labels), union(private$endo_names, 
+                                              private$exo_names))
+      if (is.null(private$labels)) {
+        private$labels <-character(0)
+      }
+      private$labels[names] <- labels[names]
+      private$labels <- private$labels[order(names(private$labels))]
+      return(invisible(NULL))
+    },
     serialize_mdl = function() {
       if (private$use_dll) {
         cwd <- getwd()
@@ -864,6 +894,7 @@ DynMdl <- R6Class("DynMdl",
                              params = private$params,
                              endos = private$endos,
                              exos = private$exos,
+                             labels = private$labels,
                              period = private$model_period,
                              endo_data = private$endo_data,
                              exo_data = private$exo_data)

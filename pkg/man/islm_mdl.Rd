@@ -4,7 +4,7 @@
 \alias{islm_mdl}
 \title{Returns an example ISLM model}
 \usage{
-islm_mdl(period = NULL)
+islm_mdl(period)
 }
 \arguments{
 \item{period}{the model period for the ISLM model}

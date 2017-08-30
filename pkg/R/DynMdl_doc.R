@@ -158,7 +158,8 @@ NULL
 #'
 #' \describe{
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
-#'  object}
+#'  object. If \code{data} has labels, then \code{set_data} will also update
+#' the labels of the corresponding model variables}
 #' \item{\code{names}}{a character vector with variable names. Defaults to the
 #' column names of \code{data}. If \code{data} does not have column names,
 #' then argument \code{names} is mandatory}
@@ -358,4 +359,46 @@ NULL
 #' @examples
 #' mdl <- islm_mdl("2017Q1/2019Q2")
 #' mdl2 <- mdl$copy()
+NULL
+
+#' \code{\link{DynMdl}} method: Sets labels for the model variables.
+#' @name set_labels
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} sets labels
+#' for the model variables.
+#' @section Usage:
+#' \preformatted{
+#' mdl$set_labels(labels)
+#'
+#' }
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{labels}}{a named character vector.
+#' The names are the names of the model variables}
+#' }
+#' @examples
+#' mdl <- islm_mdl()
+#' mdl$set_labels(c(c = "Consumption", i = "investments"))
+#' @seealso 
+#' \code{\link{get_labels}}
+NULL
+
+#' \code{\link{DynMdl}} method: Returns the labels of the model variables.
+#' @name get_labels
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}}
+#' returns the labels of the model variables.
+#' @section Usage:
+#' \preformatted{
+#' mdl$get_labels()
+#'
+#' }
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#' @seealso
+#' \code{\link{set_labels}}
 NULL
