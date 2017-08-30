@@ -339,17 +339,15 @@ DynMdl <- R6Class("DynMdl",
         return (NULL)
       }
     },
-    get_exo_data = function(pattern, names, period = private$data_period) {
+    get_exo_data = function(pattern = NULL, names = NULL, 
+                            period = private$data_period) {
+      period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names)) {
         ret <- private$exo_data[period, ]
       } else {
-        if (missing(names)) {
-          names <- grep(pattern, private$exo_names)
-        } else {
-          names <- intersect(names, private$exo_names)
-          if (!missing(pattern)) {
-            names <- union(names, grep(pattern, private$exo_names))
-          }
+        names <- private$get_names_("exo", names, pattern)
+        if (length(names) == 0) {
+          return(NULL)
         }
         ret <- private$exo_data[period, names, drop = FALSE]
       }
@@ -374,17 +372,15 @@ DynMdl <- R6Class("DynMdl",
                         type = "endo", upd_mode = upd_mode, fun)
       return(invisible(self))
     },
-    get_endo_data = function(pattern, names, period = private$data_period) {
+    get_endo_data = function(pattern = NULL, names = NULL, 
+                             period = private$data_period) {
+      period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names)) {
         ret <- private$endo_data[period, ]
       } else {
-        if (missing(names)) {
-          names <- grep(pattern, private$endo_names)
-        } else {
-          names <- intersect(names, private$endo_names)
-          if (!missing(pattern)) {
-            names <- union(names, grep(pattern, private$endo_names))
-          }
+        names <- private$get_names_("endo", names, pattern)
+        if (length(names) == 0) {
+          return(NULL)
         }
         ret <- private$endo_data[period, names, drop = FALSE]
       }

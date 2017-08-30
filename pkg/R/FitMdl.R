@@ -109,21 +109,15 @@ FitMdl <- R6Class("FitMdl",
       super$set_data_(data, private$fit_info$fit_vars[cols], FALSE, 
                       type = "exo", upd_mode = "update")
     },
-    get_endo_data = function(pattern, names, period = private$data_period) {
-      endo_names <- private$fit_info$orig_endos
-      if (missing(pattern) && missing(names)) {
-        names <- endo_names
-      } else {
-        if (missing(names)) {
-          names <- grep(pattern, endo_names)
-        } else {
-          names <- intersect(names, endo_names)
-          if (!missing(pattern)) {
-            names <- union(names, grep(pattern, endo_names))
-          }
-        }
-      }
-      return (private$endo_data[period, names, drop = FALSE])
+    get_endo_data = function(pattern = NULL, names = NULL, 
+                             period = private$data_period) {
+      names <- private$get_names_("endo", names, pattern)
+      return(super$get_endo_data(period = period, names = names))
+    },
+    get_exo_data = function(pattern = NULL, names = NULL, 
+                            period = private$data_period) {
+      names <- private$get_names_("exo", names, pattern)
+      return(super$get_exo_data(period = period, names = names))
     },
     get_fit_targets = function() {
       fit_vars <- private$exo_data[private$model_period, private$fit_info$fit_vars]
@@ -154,22 +148,6 @@ FitMdl <- R6Class("FitMdl",
         names <- intersect(names, private$fit_info$l_vars)
       }
       return (private$endo_data[period, names, drop = FALSE])
-    },
-    get_exo_data = function(pattern, names, period = private$data_period) {
-      exo_names <- private$fit_info$orig_exos
-      if (missing(pattern) && missing(names)) {
-        names <- exo_names
-      } else {
-        if (missing(names)) {
-          names <- grep(pattern, exo_names)
-        } else {
-          names <- intersect(names, exo_names)
-          if (!missing(pattern)) {
-            names <- union(names, grep(pattern, exo_names))
-          }
-        }
-      }
-      return (private$exo_data[period, names, drop = FALSE])
     }
   ), 
   private = list(
@@ -177,6 +155,21 @@ FitMdl <- R6Class("FitMdl",
     serialize_mdl = function() {
       ser <- super$serialize_mdl()
       return(c(ser, list(fit_info = private$fit_info)))
+    },
+    get_names_ = function(type, names, pattern) {
+      if (type == "endo") {
+        vnames <- private$fit_info$orig_endos
+      } else {
+        vnames <- private$fit_info$orig_exos
+      }
+      if (is.null(pattern) && is.null(names)) {
+        names <- vnames
+      } else if (is.null(names)) {
+          names <- grep(pattern, vnames)
+      } else if (!is.null(pattern)) {
+          names <- union(names, grep(pattern, vnames))
+      }
+      return(names)
     }
   )
 )
