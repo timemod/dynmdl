@@ -96,18 +96,18 @@ FitMdl <- R6Class("FitMdl",
       
       # update endogenous variables
       #super$set_data_(data, names, missing(names), type = "endo",
-      #                update_mode = "updval")
+      #                upd_mode = "updval")
       
       cols <- match(names, private$fit_info$orig_endos)
       
       # set exogenous variables
       super$set_data_(data, private$fit_info$exo_vars[cols], FALSE,
-                      type = "exo", update_mode = "updval")
+                      type = "exo", upd_mode = "updval")
       
       # create fit vars
       data[] <- ifelse(is.na(data), 0, 1)
       super$set_data_(data, private$fit_info$fit_vars[cols], FALSE, 
-                      type = "exo", update_mode = "update")
+                      type = "exo", upd_mode = "update")
     },
     get_endo_data = function(pattern, names, period = private$data_period) {
       endo_names <- private$fit_info$orig_endos

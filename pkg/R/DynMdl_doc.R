@@ -148,7 +148,7 @@ NULL
 #' @section Usage:
 #' \preformatted{
 #' mdl$set_data(data, names = colnames(data), 
-#'              update_mode = c("update", "updval")
+#'              upd_mode = c("update", "updval"), fun)
 #' 
 #' }
 #'
@@ -162,18 +162,71 @@ NULL
 #' \item{\code{names}}{a character vector with variable names. Defaults to the
 #' column names of \code{data}. If \code{data} does not have column names,
 #' then argument \code{names} is mandatory}
-#' \item{\code{update_mode}}{the update mode. See details.}
+#' \item{\code{upd_mode}}{the update mode, a character string specifying
+#' how the timeseries are updated: \code{"upd"} (standard update, default) or
+#' \code{"updval"} (update only with valid numbers). See details.}
+#' \item{\code{fun}}{a function used to update the model data. This should
+#' be a function with two arguments. The original model data is passed to 
+#' the first argument of the function and \code{data} to the second argument.
+#' See the examples.}
 #' }
 #'
 #' @section Details:
 #'
-#' The argument \code{update_mode} controls how the timeseries are updated:
+#' Method \code{set_data} transfers data from a timeseries object to the
+#' model data. If \code{data} is a multivariate timeseries object, then
+#' each column is used to update the model variable with the same
+#' name as the column name. If \code{data} does not have column names,
+#' or if the column names do not correspond to the model variable names,
+#' then argument \code{names} should be specified.
+#'
+#' By default, all values in \code{data} are used to update the corresponding
+#' model variable. Sometimes it is desirable to skip the \code{NA} values
+#' in \code{data}. This can be achieved by selecting \code{"updval"} for argument
+#' \code{upd_mode}. Other non finite numbers (\code{NaN}, \code{Inf}, and
+#' \code{-Inf}) are also disregarded for this update mode.
+#' The argument \code{upd_mode} controls how the timeseries are updated:
 #' \describe{
 #' \item{\code{"update"}}{Model variables are updated with the 
 #' timeseries in \code{data}}
 #' \item{\code{"updval"}}{Model variables are updated with the non \code{NA}
 #' values in \code{data}}
 #' }
+#' 
+#' @examples
+#'
+#' mdl <- islm_mdl(period = "2017Q1/2017Q3")
+#'
+#' # create a multivariate regts object for exogenous variables g and md
+#' exo <- regts(matrix(c(200, 210, 220, 250, 260, 270), ncol = 2),
+#'              start = "2017Q1", names = c("g", "ms"))
+#'
+#' # set and print data
+#' mdl$set_data(exo)
+#' print(mdl$get_exo_data())
+#'
+#' # create a univariate regts object for exogenous variable ms,
+#' # with a missing value in 2017Q2
+#' ms <- regts(c(255, NA, 273), start = "2017Q1")
+#'
+#' # update with update mode updval (ignore NA)
+#' # note that here we have to specify argument names,
+#' # because ms does not have column names
+#' mdl$set_data(ms, names = "ms", upd_mode = "updval")
+#' print(mdl$get_exo_data())
+#'
+#' # in the next example, we use argument fun to apply an additive shock to the
+#' # exogenous variables g and ms.
+#' shock <- regts(matrix(c(-5, -10, -15, 3 , 6, 6), ncol = 2),
+#'              start = "2017Q1", names = c("g", "ms"))
+#' mdl$set_data(shock, fun = function(x1, x2) {x1 + x2})
+#'
+#' # the statement above can be more concisely written as
+#' mdl$set_data(shock, fun = `+`)
+#' #`+` is a primitive function that adds its two arguments.
+#'
+#' @seealso \code{\link{get_data}}, \code{\link{set_values}},
+#' \code{\link{change_data}}
 #'
 NULL
 
@@ -237,4 +290,25 @@ NULL
 #' mdl <- islm_mdl("2017Q1/2019Q2")
 #' mdl$write_mdl("islm_mdl.rds")
 #' @seealso \code{\link{read_mdl}} 
+NULL
+
+#' \code{\link{DynMdl}} method: Returns a copy of this \code{DynMdl} object
+#' @name copy
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}}
+#' returns a deep copy of an \code{DynMdl} object
+#' @section Usage:
+#' \preformatted{
+#' mdl$copy()
+#'
+#' }
+#' \code{mdl} is an \code{\link{IsisMdl}} object
+#'
+#' @section Details:
+#' \code{mdl$copy()} is  equivalent to \code{mdl$clone(deep = TRUE)}
+#'
+#' @examples
+#' mdl <- islm_mdl("2017Q1/2019Q2")
+#' mdl2 <- mdl$copy()
 NULL

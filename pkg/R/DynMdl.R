@@ -113,6 +113,8 @@ setOldClass("regts")
 #' \item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
 #' computed with functiomn \code{check()} of \code{solve_perturbation()},
 #' ordered with increasing absolute value}
+#' 
+#' \item{\code{\link{copy}}}{Returns a deep copy of the \code{IsisMdl} object}
 #'
 #' }
 DynMdl <- R6Class("DynMdl",
@@ -357,13 +359,13 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     set_data = function(data, names = colnames(data), 
-                        update_mode = c("update", "updval")) {
-      update_mode <- match.arg(update_mode)
+                        upd_mode = c("upd", "updval"), fun) {
+      upd_mode <- match.arg(upd_mode)
       private$set_data_(data, names, names_missing = missing(names),
-                        type = "exo", update_mode = update_mode)
+                        type = "exo", upd_mode = upd_mode, fun)
       private$set_data_(data, names, names_missing = missing(names),
-                        type = "endo", update_mode = update_mode)
-      return (invisible(self))
+                        type = "endo", upd_mode = upd_mode, fun)
+      return(invisible(self))
     },
     get_endo_data = function(pattern, names, period = private$data_period) {
       if (missing(pattern) && missing(names)) {
@@ -545,6 +547,9 @@ DynMdl <- R6Class("DynMdl",
       saveRDS(private$serialize_mdl(), file)
       cat("Done\n")
       return (invisible(self))
+    },
+    copy = function() {
+      return(self$clone(deep = TRUE))
     }
   ),
   private = list(
@@ -584,17 +589,26 @@ DynMdl <- R6Class("DynMdl",
     nrow_exo = NA_integer_,
     jac = NULL,
     jac_steady = NULL,
-    set_data_= function(data, names, names_missing, type, update_mode) {
+    set_data_= function(data, names, names_missing, type, upd_mode, fun) {
       # generic function to set or update the endogenous or exogenous
       # variables
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
+      if (is.null(private$model_period)) stop(private$period_error_msg)
+      if (!inherits(data, "ts")) {
+        # we use inherits and not is.ts, because is.ts returns FALSE if
+        # length(x) == 0
+        stop("Argument data is not a timeseries object")
+      }
+      if (frequency(data) != frequency(private$data_period)) {
+        stop(paste0("The frequency of data does not agree with the data",
+                    " period ", as.character(private$data_period), "."))
+      }
       
       per <- range_intersect(get_period_range(data),
                              private$data_period)
       if (NCOL(data) == 0) {
-        # TODO: warning?
-        return (invisible(NULL))
+        return(invisible(NULL))
       }
       if (is.null(names)) {
         if (names_missing) {
@@ -626,18 +640,29 @@ DynMdl <- R6Class("DynMdl",
         return(invisible(self))
       }
       
-      if (update_mode == "update") {
-        new_data <- data[per, names]
-      } else if (update_mode == "updval") {
-        data <- data[per, names, drop = FALSE]
+      data <- data[per, names, drop = FALSE]
+      
+      apply_fun <- !missing(fun)
+      if (upd_mode != "upd" || apply_fun) {
         if (type == "endo") {
-          new_data <- private$endo_data[per, names, drop = FALSE]
+          old_data <- private$endo_data[per, names, drop = FALSE]
         } else {
-          new_data <- private$exo_data[per, names, drop = FALSE]
+          old_data <- private$exo_data[per, names, drop = FALSE]
         }
-        sel <- !is.na(data)
-        new_data[sel] <- data[sel]
       }
+
+      if (apply_fun) {
+        new_data <- fun(old_data, data)
+      } else {
+        new_data <- data
+      }
+      
+      if (upd_mode == "updval") {
+        # restore old values when data is false
+        sel <- is.na(data)
+        new_data[sel] <- old_data[sel]
+      }
+      
       if (type == "endo") {
         private$endo_data[per, names] <- new_data
       } else {
