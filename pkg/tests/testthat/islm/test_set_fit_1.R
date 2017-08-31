@@ -27,10 +27,8 @@ test_that("set_fit update mode upd", {
  
   expect_equal(fit_mdl$get_fit(), fit_ordered)
   
-  # the model data should have been updated
-  expected_output <- mdl$get_endo_data()
-  expected_output <- update_ts(expected_output, fit, method = "updval")
-  expect_equal(fit_mdl$get_endo_data(), expected_output)
+  # the model data should not have changed
+  expect_equal(fit_mdl$get_endo_data(), mdl$get_endo_data())
   
   fit_mdl2 <- mdl$copy()
   fit_mdl2$set_fit(fit, upd_mode = "upd")
@@ -46,10 +44,8 @@ test_that("set_fit for update mode upd (second test)", {
   
   expect_equal(fit_mdl2$get_fit(), fit_combi)
   
-  expected_output <- mdl$get_endo_data()
-  expected_output <- update_ts(expected_output, fit, method = "updval")
-  expected_output <- update_ts(expected_output, fit2, method = "updval")
-  expect_equal(fit_mdl2$get_endo_data(), expected_output)
+  # the model data should not have changed
+  expect_equal(fit_mdl2$get_endo_data(), mdl$get_endo_data())
 })
 
 # 

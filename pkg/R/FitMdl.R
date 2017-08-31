@@ -96,10 +96,6 @@ FitMdl <- R6Class("FitMdl",
       } 
       data <- data[private$model_period, names, drop = FALSE]
       
-      # update endogenous variables
-      super$set_data_(data, names, missing(names), type = "endo",
-                      upd_mode = "updval")
-      
       cols <- match(names, private$fit_info$orig_endos)
       
       # set exogenous variables
