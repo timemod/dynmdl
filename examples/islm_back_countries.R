@@ -15,7 +15,7 @@ print(mdl)
 mdl$set_params(params)
 
 print(system.time(
-    mdl$solve_steady(control = list(trace = TRUE))
+  mdl$solve_steady(control = list(trace = TRUE))
 ))
 
 mdl$set_period("2017Q1/2022Q4")
@@ -25,7 +25,7 @@ mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")
 mdl$set_endo_values(1100, names = "yd_nl", period = "2016Q4")
 
 print(system.time(
-    mdl$solve(control = list(trace = TRUE))
+  mdl$solve(control = list(trace = TRUE))
 ))
 
 #mdl$solve(control = list(trace = TRUE), force_stacked_time = TRUE)

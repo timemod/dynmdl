@@ -12,9 +12,9 @@ exo_name_file  <- file.path(dynare_dir, "islm_exo_names.txt")
 p1 <- period("2011Q3")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
-report <- capture_output(mdl <- dyn_mdl(mod_file))
-mdl$solve_steady()
-mdl$set_period(model_period)
+report <- capture_output(mdl <- islm_mdl(period = model_period))
+labels <- mdl$get_labels()
+
 lag_per <- mdl$get_lag_period()
 
 get_dynare_endo <- function(endo_file, data_period) {
@@ -35,6 +35,8 @@ get_dynare_exo <- function(exo_file, data_period) {
 
 dynare_endo <- get_dynare_endo("islm_simul_endo.csv", mdl$get_data_period())
 dynare_exo <- get_dynare_exo("islm_simul_exo.csv", mdl$get_data_period())
+
+dynare_endo <- update_ts_labels(dynare_endo, labels)
 
 test_that("solve", {
   mdl2 <- mdl$clone()

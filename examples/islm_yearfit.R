@@ -14,7 +14,7 @@ mdl <- dyn_mdl("mod/islm_yearfit.mod",
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period(period)
 
-mdl$set_fit_targets(regts(1275, start = "2017Q4"), names = "y_year")
+mdl$set_fit(regts(1275, start = "2017Q4"), names = "y_year")
 mdl$solve(control = list(trace = TRUE))
 
 print(mdl$get_endo_data())

@@ -22,7 +22,7 @@ fit_targets <- as.regts(read.csv(fit_target_csv), time_column = 1)
 cat("fit targets:\n")
 print(fit_targets)
 
-mdl$set_fit_targets(fit_targets)
+mdl$set_fit(fit_targets)
 print(mdl$get_fit_targets())
 
 

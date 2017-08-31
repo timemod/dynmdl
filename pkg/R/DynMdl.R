@@ -120,7 +120,7 @@ setOldClass("regts")
 #' computed with functiomn \code{check()} of \code{solve_perturbation()},
 #' ordered with increasing absolute value}
 #' 
-#' \item{\code{\link{copy}}}{Returns a deep copy of the \code{IsisMdl} object}
+#' \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} object}
 #'
 #' }
 DynMdl <- R6Class("DynMdl",
@@ -854,13 +854,17 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(NULL))
     },
     update_labels = function(labels) {
-      names <- intersect(names(labels), union(private$endo_names, 
-                                              private$exo_names))
-      if (is.null(private$labels)) {
-        private$labels <-character(0)
+      if (is.null(labels)) {
+        private$labels <- NULL
+      } else {
+        names <- intersect(names(labels), union(private$endo_names, 
+                                                private$exo_names))
+        if (is.null(private$labels)) {
+          private$labels <-character(0)
+        }
+        private$labels[names] <- labels[names]
+        private$labels <- private$labels[order(names(private$labels))]
       }
-      private$labels[names] <- labels[names]
-      private$labels <- private$labels[order(names(private$labels))]
       return(invisible(NULL))
     },
     serialize_mdl = function() {

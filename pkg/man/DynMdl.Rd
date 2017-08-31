@@ -108,7 +108,7 @@ stacked-time Newton problem either as a sparse matrix
 computed with functiomn \code{check()} of \code{solve_perturbation()},
 ordered with increasing absolute value}
 
-\item{\code{\link{copy}}}{Returns a deep copy of the \code{IsisMdl} object}
+\item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} object}
 
 }
 }

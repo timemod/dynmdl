@@ -4,14 +4,22 @@
 #' been specified, then this function also initializes the model data
 #' with the steady state values.
 #' @param period the model period for the ISLM model
-#' @return a \code{\link{DynMdl}} object
+#' @param fit a logical indicating whether the dynamical fit procedure
+#' should be used
+#' @return a \code{\link{DynMdl}} object or a \code{\link{FitMdl}} 
+#' object is argument \code{fit} is \code{TRUE}
 #' @examples
 #' mdl <- islm_mdl("2017Q1/2019Q4")
 #' @export
-islm_mdl <- function(period) {
+islm_mdl <- function(period, fit = FALSE) {
   
   mod_file <- tempfile(fileext = ".mod")
-  mdl_file <- system.file("models", "islm.mod",package = "dynmdl")
+  if (fit) {
+    mdl_name <- "islm_fit.mod"
+  } else {
+    mdl_name <- "islm.mod"
+  }
+  mdl_file <- system.file("models", mdl_name, package = "dynmdl")
   file.copy(mdl_file, mod_file, overwrite = TRUE)
   mdl <- dyn_mdl(mod_file)
   unlink(mod_file)

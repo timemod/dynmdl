@@ -3,9 +3,7 @@
 \docType{class}
 \name{FitMdl}
 \alias{FitMdl}
-\title{An R6 class for a Dynare model with Fit targets
-This class is a subclass of a \code{\link{DynMdl}} objects. It contains
-special methods for the fit procedure.}
+\title{An R6 class for a Dynare model with Fit targets}
 \format{\code{\link{R6Class}} object.}
 \usage{
 FitMdl
@@ -14,7 +12,6 @@ FitMdl
 Object of \code{\link{R6Class}} containing a macro-economic model,
 }
 \description{
-An R6 class for a Dynare model with Fit targets
 This class is a subclass of a \code{\link{DynMdl}} objects. It contains
 special methods for the fit procedure.
 }
@@ -29,16 +26,12 @@ fit procedure).}
 \item{\code{get_exo_names()}}{Returns the names of the exogenous variables
 of the model (excluding the fit control variables).}
 
-\item{\code{set_fit_targets(data, names = colnames(data))}}{
-Sets the targets for the fit procedure. \code{data} is a
-\code{regts} or \code{ts}. With argument \code{names} the names of the
-timeseries in \code{data} can be specified. This argument
-is mandatory if \code{data} does not have column names.
-Only non \code{NA} values are registered as fit target values. 
-A fit target can be removed by specifying a \code{NA}.}
+\item{\code{\link{set_fit}}}{Sets the targets for the fit procedure} 
 
-\item{\code{get_fit_targets())}}{Returns the fit targets
-used in the fit procedure.}
+\item{\code{\link{get_fit}}}{Returns the fit targets
+used in the fit procedure}
+
+\item{\code{\link{clear_fit}}}{Remove allfit targets}
 
 \item{\code{get_residuals())}}{Returns the residuals used in the 
 fit procedure.}

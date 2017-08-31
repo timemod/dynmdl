@@ -27,7 +27,7 @@ mdl$set_params(params)
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2021Q4")
 
-mdl$set_fit_targets(fit_targets)
+mdl$set_fit(fit_targets)
 cat("fit targets:\n")
 print(mdl$get_fit_targets())
 

@@ -19,7 +19,7 @@ report <- capture_output(mdl <- dyn_mdl(mod_file,
 
 mdl$solve_steady()
 mdl$set_period(model_period)
-mdl$set_fit_targets(regts(1275, start = "2016Q4"), names = "y_year")
+mdl$set_fit(regts(1275, start = "2016Q4"), names = "y_year")
 
 mdl$solve(control = list(silent = TRUE))
 
@@ -28,6 +28,7 @@ endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
 endo_data <- t(as.matrix(read.csv(endo_file, header = FALSE)))
 dynare_result <- regts(endo_data, start = start_period(mdl$get_period()) - 1,
                        names = endo_names)[, mdl$get_endo_names()]
+dynare_result <- dynare_result[, order(colnames(dynare_result))]
 
 test_that("generated fit mod file equal to reference ", {
   new <- readLines(fit_mod_file)

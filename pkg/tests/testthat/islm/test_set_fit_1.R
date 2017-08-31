@@ -4,53 +4,54 @@ library(testthat)
 
 context("set_fit (1) for the ISLM model")
 
-# capture_output(mdl <- read_mdl("islm_model_solved.rds"))
-# 
-# i <- regts(200, start = '2015Q2')
-# c <- regts(c(600, NA, 600), start = '2015Q2')
-# y <- regts(c(990, NA, 1010), start = '2015Q2')
-# fit <- cbind(i, c, y)
-# ts_labels(fit) <- c("investment", "consumption", "income")
-# 
-# # an ordered list of fit values without identities:
-# fit_ordered <- fit[, c("c", "i", "y")]
-# 
-# fit2 <- fit
-# fit2["2015q2", "i"] <- NA
-# fit2["2015q3", "c"] <- 650
-# 
-# fit_mdl <- mdl$copy()
-# fit_mdl <- mdl$set_fit(fit)
-# 
-# test_that("set_fit update mode upd", {
-# 
-#   # get_fit currently does not return labels
-#   expect_equal(fit_mdl$get_fit(), fit_ordered)
-# 
-#   # the model data should not have changed
-#   expect_equal(fit_mdl$get_data(), mdl$get_data())
-# 
-#   fit_mdl2 <- mdl$clone(deep = TRUE)
-#   fit_mdl2$set_fit(fit, upd_mode = "upd")
-# 
-#   expect_equal(fit_mdl2$get_fit(), fit_ordered)
-# 
-#   # the model data should not have changed
-#   expect_equal(fit_mdl2$get_data(), mdl$get_data())
-# })
-# 
-# test_that("set_fit for update mode upd (second test)", {
-#   fit_mdl2 <- fit_mdl$clone(deep = TRUE)
-#   fit_mdl2$set_fit(fit2, upd_mode = "upd")
-# 
-#   fit_combi <- update_ts(fit, fit2, method = "upd")[, c("c", "y")]
-#   # update labels (update_ts does not handle labels correctly yet)
-#   fit_combi <- update_ts_labels(fit_combi, ts_labels(fit))
-# 
-#   expect_equal(fit_mdl2$get_fit(), fit_combi)
-#   expect_equal(fit_mdl2$get_data(), mdl$get_data())
-# })
-# 
+rds_file <- "islm_model_fit.rds"
+capture_output(mdl <- read_mdl(rds_file))
+ 
+i <- regts(200, start = '2016Q1')
+c <- regts(c(600, NA, 600), start = '2016Q1')
+y <- regts(c(990, NA, 1010), start = '2016Q1')
+fit <- cbind(i, c, y)
+ts_labels(fit) <- c("investment", "consumption", "income")
+
+# an ordered list of fit values without identities:
+fit_ordered <- fit[, order(colnames(fit))]
+ 
+fit2 <- fit
+fit2["2016q1", "i"] <- NA
+fit2["2016q2", "c"] <- 650
+ 
+fit_mdl <- mdl$copy()
+fit_mdl <- fit_mdl$set_fit(fit)
+
+test_that("set_fit update mode upd", {
+ 
+  expect_equal(fit_mdl$get_fit(), fit_ordered)
+  
+  # the model data should have been updated
+  expected_output <- mdl$get_endo_data()
+  expected_output <- update_ts(expected_output, fit, method = "updval")
+  expect_equal(fit_mdl$get_endo_data(), expected_output)
+  
+  fit_mdl2 <- mdl$copy()
+  fit_mdl2$set_fit(fit, upd_mode = "upd")
+
+  expect_equal(fit_mdl2$get_fit(), fit_ordered)
+})
+
+test_that("set_fit for update mode upd (second test)", {
+  fit_mdl2 <- fit_mdl$copy()
+  fit_mdl2$set_fit(fit2, upd_mode = "upd")
+
+  fit_combi <- update_ts(fit, fit2, method = "upd")[, c("c", "y")]
+  
+  expect_equal(fit_mdl2$get_fit(), fit_combi)
+  
+  expected_output <- mdl$get_endo_data()
+  expected_output <- update_ts(expected_output, fit, method = "updval")
+  expected_output <- update_ts(expected_output, fit2, method = "updval")
+  expect_equal(fit_mdl2$get_endo_data(), expected_output)
+})
+
 # 
 # test_that("set_fit for update mode updval", {
 #   fit_mdl2 <- fit_mdl$clone(deep = TRUE)
@@ -72,6 +73,3 @@ context("set_fit (1) for the ISLM model")
 #   fit_mdl2$set_fit_values(NA, names = c("c", "i", "y"), period = "2015Q2")
 #   expect_null(fit_mdl2$get_fit())
 # })
-# 
-# 
-# 

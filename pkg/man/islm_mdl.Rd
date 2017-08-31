@@ -4,13 +4,17 @@
 \alias{islm_mdl}
 \title{Returns an example ISLM model}
 \usage{
-islm_mdl(period)
+islm_mdl(period, fit = FALSE)
 }
 \arguments{
 \item{period}{the model period for the ISLM model}
+
+\item{fit}{a logical indicating whether the dynamical fit procedure
+should be used}
 }
 \value{
-a \code{\link{DynMdl}} object
+a \code{\link{DynMdl}} object or a \code{\link{FitMdl}} 
+object is argument \code{fit} is \code{TRUE}
 }
 \description{
 This function returns an example ISLM model, If argument \code{period} has
