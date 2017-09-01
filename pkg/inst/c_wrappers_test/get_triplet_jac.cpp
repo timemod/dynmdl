@@ -8,7 +8,7 @@ extern "C" void jac_dynamic(double *y, double *x, int nb_row_x, double *params,
                  int it_, double *g1);
 
 
-SEXP get_triplet_jac_new(SEXP endos, SEXP exo_data, SEXP params,
+SEXP get_triplet_jac(SEXP endos, SEXP exo_data, SEXP params,
                          SEXP nb_row_x_, SEXP nper_, SEXP max_lag_,
                          SEXP jac_work) {
 
