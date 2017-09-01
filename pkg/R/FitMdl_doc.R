@@ -69,6 +69,41 @@
 #' @seealso \code{\link{clear_fit}} and \code{\link{set_data}}.
 NULL
 
+#' \code{\link{FitMdl}} method: Sets the values of the fit targets
+#' @name set_fit_values
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} 
+#' can be used to set the values of the fit targets.
+#'
+#' @section Usage:
+#' \preformatted{
+#'
+#' mdl$set_fit_values(value, names, pattern, period = mdl$get_data_period())
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{FitMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{value}}{a numeric vector of length 1 or with the same length
+#' as the length of the range of \code{period}}
+#' \item{\code{names}}{a character vector with variable names}
+#' \item{\code{pattern}}{a regular expression}
+#' \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
+#' object that can be coerced to a \code{period_range}}
+#' }
+#' @examples
+#'
+#' mdl <- islm_mdl(period = "2017Q1/2018Q3", fit = TRUE)
+#'
+#' # set the values of ms in 2017Q1 and 2017Q2
+#' mdl$set_fit_values(c(190, 195), names = "i", period = "2017Q1/2017Q2")
+#'
+#' print(mdl$get_fit())
+NULL
+
 #' \code{\link{FitMdl}} method: deletes all fit targets
 #' @name clear_fit
 #' @description

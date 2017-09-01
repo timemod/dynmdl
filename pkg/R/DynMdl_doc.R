@@ -267,6 +267,15 @@ NULL
 #'
 #' }
 #'
+#' @examples
+#'
+#' mdl <- islm_mdl(period = "2017Q1/2018Q3")
+#'
+#' # set the values of ms in 2017Q1 and 2017Q2
+#' mdl$set_exo_values(c(205, 206), names = "ms", period = "2017Q1/2017Q2")
+#' 
+#' # set the values for y and yd to 1000 for  the full data period
+#' mdl$set_endo_values(1000, pattern = "^yd?$")
 NULL
 
 #' \code{\link{DynMdl}} methods: changes the endogenous or exogenous

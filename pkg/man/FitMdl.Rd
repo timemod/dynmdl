@@ -26,6 +26,8 @@ fit procedure).}
 \item{\code{get_exo_names()}}{Returns the names of the exogenous variables
 of the model (excluding the fit control variables).}
 
+\item{\code{\link{set_fit_values}}}{Sets the values of the fit targets}
+
 \item{\code{\link{set_fit}}}{Sets the targets for the fit procedure} 
 
 \item{\code{\link{get_fit}}}{Returns the fit targets

@@ -25,6 +25,8 @@
 #' \item{\code{get_exo_names()}}{Returns the names of the exogenous variables
 #' of the model (excluding the fit control variables).}
 #'
+#' \item{\code{\link{set_fit_values}}}{Sets the values of the fit targets}
+#'
 #' \item{\code{\link{set_fit}}}{Sets the targets for the fit procedure} 
 #'
 #' \item{\code{\link{get_fit}}}{Returns the fit targets
@@ -85,7 +87,16 @@ FitMdl <- R6Class("FitMdl",
     },
     set_fit = function(data, names = colnames(data), 
                        upd_mode = c("upd", "updval")) {
+      
+      if (is.null(private$model_period)) stop(private$period_error_msg)
+      if (!inherits(data, "ts")) {
+        # we use inherits and not is.ts, because is.ts returns FALSE if
+        # length(x) == 0
+        stop("Argument data is not a timeseries object")
+      }
+      
       upd_mode <- match.arg(upd_mode)
+      period <- range_intersect(get_period_range(data), private$data_period)
       if (upd_mode == "updval") {
         stop("upd_mode updval is not yet implemented")
       }
@@ -94,7 +105,7 @@ FitMdl <- R6Class("FitMdl",
         dim(data) <- c(length(data), 1)
         colnames(data) <- names
       } 
-      data <- data[private$model_period, names, drop = FALSE]
+      data <- data[period, names, drop = FALSE]
       
       cols <- match(names, private$fit_info$orig_endos)
       
@@ -107,24 +118,47 @@ FitMdl <- R6Class("FitMdl",
       super$set_data_(data, private$fit_info$fit_vars[cols], FALSE, 
                       type = "exo", upd_mode = "update")
     },
+    set_fit_values = function(value, names = NULL, pattern = NULL, 
+                              period = private$data_period) {
+      value <- as.numeric(value)
+      period <- private$convert_period_arg(period)
+      nper <- nperiod(period)
+      vlen <- length(value)
+      if (vlen != 1 && vlen < nper) {
+        stop(paste("Argument value should have length 1 or",
+                   "length ", nper))
+      }
+      period <- range_intersect(period, private$data_period)
+      names <- private$get_names_fitmdl_("endo", names, pattern)
+      nvar <- length(names)
+      if (nvar > 0) {
+        if (vlen > 1) {
+          value <- value[1:nperiod(period)]
+        }
+        data <- matrix(rep(value, nvar), ncol = nvar)
+        data <- regts(data, period = period, names = names)
+        self$set_fit(data)
+      }
+      return(invisible(NULL))
+    },
     clear_fit = function() {
       super$set_exo_values(0, names = private$fit_info$fit_vars)
     },
     get_endo_data = function(pattern = NULL, names = NULL, 
                              period = private$data_period) {
-      names <- private$get_names_("endo", names, pattern)
+      names <- private$get_names_fitmdl_("endo", names, pattern)
       return(super$get_endo_data(period = period, names = names))
     },
     get_exo_data = function(pattern = NULL, names = NULL, 
                             period = private$data_period) {
-      names <- private$get_names_("exo", names, pattern)
+      names <- private$get_names_fitmdl_("exo", names, pattern)
       return(super$get_exo_data(period = period, names = names))
     },
     get_fit = function() {
-      fit_vars <- private$exo_data[private$model_period, 
-                                   private$fit_info$fit_vars]
-      fit_exos <- private$exo_data[private$model_period, 
-                                   private$fit_info$exo_vars]
+      fit_vars <- private$exo_data[private$data_period, 
+                                   private$fit_info$fit_vars, drop = FALSE]
+      fit_exos <- private$exo_data[private$data_period, 
+                                   private$fit_info$exo_vars, drop = FALSE]
       rows <- !apply(fit_vars == 0, 1, all)
       if (!any(rows)) {
         # no fit targets
@@ -135,10 +169,10 @@ FitMdl <- R6Class("FitMdl",
       fit_vars <- fit_vars[rowsel, cols, drop = FALSE]
       fit_exos <- fit_exos[rowsel, cols, drop = FALSE]
       fit_exos <- ifelse(fit_vars == 1, fit_exos, NA)
-      ps <- start_period(private$model_period) + min(which(rows)) - 1
+      ps <- start_period(private$data_period) + min(which(rows)) - 1
       ret <- regts(fit_exos, start = ps)
       colnames(ret) <- gsub("^fit_", "", colnames(ret))
-      ret <- ret[, order(colnames(ret))]
+      ret <- ret[, order(colnames(ret)), drop = FALSE]
       ret <- update_ts_labels(ret, self$get_labels())
       return(ret)
     },
@@ -163,18 +197,34 @@ FitMdl <- R6Class("FitMdl",
       ser <- super$serialize_mdl()
       return(c(ser, list(fit_info = private$fit_info)))
     },
-    get_names_ = function(type, names, pattern) {
+    get_names_fitmdl_ = function(type, names, pattern) {
       if (type == "endo") {
         vnames <- sort(private$fit_info$orig_endos)
       } else {
         vnames <- sort(private$fit_info$orig_exos)
       }
+      if (!is.null(names)) {
+        error_vars <- setdiff(names, vnames)
+        if (length(error_vars) > 0) {
+          if (type == "endo") {
+            type_txt <- "endogenous "
+          } else {
+            type_txt <- "exogenous "
+          }
+          if (length(error_vars) == 1) {
+            stop(paste0(error_vars, " is not an ", type_txt, "model variable"))
+          } else {
+            stop(paste0("The variables ", paste(error_vars, collapse = " "),
+                        " are no ", type_txt, "model variables"))
+          }
+        }
+      }
       if (is.null(pattern) && is.null(names)) {
         names <- vnames
       } else if (is.null(names)) {
-          names <- grep(pattern, vnames)
+          names <- vnames[grep(pattern, vnames)]
       } else if (!is.null(pattern)) {
-          names <- union(names, grep(pattern, vnames))
+          names <- union(names, vnames[grep(pattern, vnames)])
       }
       return(names)
     }

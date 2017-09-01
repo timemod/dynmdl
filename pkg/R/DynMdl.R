@@ -72,16 +72,16 @@ setOldClass("regts")
 #'
 #' \item{\code{get_lead_period}}{Returns the lead period}
 #'
-#'\item{\code{set_endo_values}}{Sets the values of endogenous model variables}
+#' \item{\code{\link{set_endo_values}}}{Sets the values of endogenous model variables}
 #'
-#' \item{\code{set_exo_values}}{Sets the values of exogenous model variables}
+#' \item{\code{\link{set_exo_values}}}{Sets the values of exogenous model variables}
 #'
 #' \item{\code{\link{set_data}}}{Transfer timeseries to the model data}
 #'
-#' \item{\code{change_endo_data}}{Changes the values of endogenous model variables
+#' \item{\code{\link{change_endo_data}}}{Changes the values of endogenous model variables
 #' by applying a function}
 #'
-#' \item{\code{change_exo_data}}{Changes the values of exogenous model variables
+#' \item{\code{\link{change_exo_data}}}{Changes the values of exogenous model variables
 #' by applying a function}
 #'
 #' \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
@@ -746,7 +746,7 @@ DynMdl <- R6Class("DynMdl",
           private$exo_data[period, names]  <- value
         }
       }
-      return(NULL)
+      return(invisible(NULL))
     },
     change_data_ = function(fun, names, pattern, period, type, ...) {
       period <- private$convert_period_arg(period)
@@ -918,6 +918,8 @@ DynMdl <- R6Class("DynMdl",
       if (!is.null(private$model_period)) {
         cat(sprintf("%-60s%s\n", "Model period:",
                     as.character(private$model_period)))
+        cat(sprintf("%-60s%s\n", "Data period:",
+                    as.character(private$data_period)))
       }
       if (!short) {
         cat("Names of the endogenous variables:\n")
