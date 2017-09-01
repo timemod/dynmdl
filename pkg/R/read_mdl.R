@@ -18,7 +18,17 @@
 read_mdl <- function(file, dll_dir) {
   cat(paste("Reading model from", file, "\n"))
   ser <- readRDS(file)
-  if (ser$use_dll) {
+  
+   # TODO: check package version 
+   if (ser$use_dll) {
+     
+    # check operating system. If the model is generated on a different
+    # platform, then we should recompile the model!
+    if (ser$os_type != .Platform$OS.type) {
+      # TODO: simply recompile the model
+      stop("The model functions have been compiled on a different platform")
+    }
+     
     if (missing(dll_dir)) {
       dll_dir <- tempfile(pattern = "dynmdl_dll_")
     } else if (dir.exists(dll_dir)) {

@@ -877,17 +877,21 @@ DynMdl <- R6Class("DynMdl",
       } else {
         dll_data <- NULL
       }
-      # TODO: write the contents of the mdl file, the package version
-      # and the operating system to the rds file. If necessary,
-      # the model should be recompiled in read_mdl.
-      # We should not only copy the dll file, but also the C source code.
-      # In function, read_mdl, it should be possible to specify that the
-      # model is recompiled.
+      
+      if (private$use_dll) {
+        os_type <- .Platform$OS.type
+      } else {
+        # if we do not use dll, then we don't care about the 
+        # operating system type
+        os_type <- NULL
+      }
       serialized_mdl <- list(class = class(self)[1],
+                             version = packageVersion("dynmdl"),
                              model_info = private$model_info, 
                              bytecode = private$bytecode,
                              use_dll = private$use_dll, dll_data = dll_data,
                              dll_basename = basename(private$dll_file),
+                             os_type = .Platform$OS.type,
                              params = private$params,
                              endos = private$endos,
                              exos = private$exos,
