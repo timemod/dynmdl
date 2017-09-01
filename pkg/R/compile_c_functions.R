@@ -8,24 +8,13 @@ compile_c_functions <- function(dll_dir) {
   dll_ext <- system("R CMD config SHLIB_EXT", intern = TRUE)
   dll_file <- file.path(dll_dir, paste0("mdl_functions", dll_ext))
   
-  mdl_function_file <- system.file("c_wrappers", "mdl_functions.c",
-                                   package = "dynmdl")
-  r_function_file <- system.file("c_wrappers", "call_R_function.c",
-                                 package = "dynmdl")
-  r_function_header <- system.file("c_wrappers", "call_R_function.h",
-                                   package = "dynmdl")
-  triplet_jac_file <- system.file("c_wrappers", "get_triplet_jac_new.cpp",
-                                  package = "dynmdl")
+  c_wrappers_dir <- system.file("c_wrappers", package = "dynmdl")
+  c_wrapper_files <- dir(path = c_wrappers_dir, full.names = TRUE)
   
-  file.copy(mdl_function_file, file.path(dll_dir, "mdl_functions.c"),
-            overwrite = TRUE)
-  file.copy(triplet_jac_file, file.path(dll_dir, "get_triplet_jac_new.cpp"),
-            overwrite = TRUE)
-  ok <- file.copy(r_function_file, file.path(dll_dir, "call_R_function.c"), 
-                  overwrite = TRUE)
-  ok <- file.copy(r_function_header, file.path(dll_dir, "call_R_function.h"), 
-                  overwrite = TRUE)
-  
+  ok <- file.copy(c_wrapper_files, dll_dir)
+  if (any(!  ok)) {
+    stop("Internal error in compile_c_functions: could not copy c wrapper files")
+  }
   
   r_home <- R.home(component = "bin")
   R <- file.path(r_home, "R")
@@ -36,25 +25,26 @@ compile_c_functions <- function(dll_dir) {
   
   # separate compilation of f_static and f_dynamic (because we do not want
   # to use optimalization)
-  system(paste(CC, cflags, file.path(dll_dir, "f_static.c"),
-               "-o", file.path(dll_dir, "f_static.o")))
-  system(paste(CC, cflags, file.path(dll_dir, "f_dynamic.c"),
-               "-o", file.path(dll_dir, "f_dynamic.o")))
+  function_src <- file.path(dll_dir, c( "f_static.c", "f_dynamic.c"), 
+                            fsep = .Platform$file.sep)
+  function_obj <- gsub("\\.c$", ".o", function_src)
+  for (i in seq_along(function_src)) {
+    system(paste(CC, cflags, function_src[i], "-o", function_obj[i]))
+  }
   
-  source_file <- paste(dll_dir, c("mdl_functions.c",
-                                  "get_triplet_jac_new.cpp",
-                                  "call_R_function.c",
-                                  "f_static.c", "f_dynamic.c"),
-                       sep = .Platform$file.sep)
-  cmd <- paste(r_home, .Platform$file.sep,
-               "R ", "CMD SHLIB ", paste(shQuote(source_file), collapse = " "),
-               sep = "")
+  c_wrapper_files <- file.path(dll_dir, basename(c_wrapper_files),  
+                               fsep = .Platform$file.sep)
+  src_files <- c(c_wrapper_files, function_src)
+  
+  r_cmd <- file.path(r_home, "R", fsep =  .Platform$file.sep)
+  cmd <- paste(r_cmd, "CMD SHLIB -o", dll_file, 
+               paste(shQuote(src_files), collapse = " "))
   output <- system(cmd, intern = TRUE)
   cat(output)
   cat("Done\n")
   
   # remove object files
   unlink(file.path(dll_dir, "*.o*"))
- 
+  
   return(dll_file)
 }
