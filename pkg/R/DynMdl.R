@@ -556,12 +556,45 @@ DynMdl <- R6Class("DynMdl",
     },
     write_mdl = function(file) {
       cat(paste("Writing model to", file, " ...\n"))
-      saveRDS(private$serialize_mdl(), file)
+      saveRDS(self$serialize(), file)
       cat("Done\n")
       return (invisible(self))
     },
     copy = function() {
       return(self$clone(deep = TRUE))
+    },
+    serialize = function() {
+      if (private$use_dll) {
+        zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
+        zip(zipfile = zip_file, files = private$dll_dir, extra = "-q")
+        size <- file.info(zip_file)$size
+        dll_data <- readBin(zip_file, what = "raw", n = size)
+        unlink(zip_file)
+      } else {
+        dll_data <- NULL
+      }
+      
+      if (private$use_dll) {
+        os_type <- .Platform$OS.type
+      } else {
+        # if we do not use dll, then we don't care about the 
+        # operating system type
+        os_type <- NULL
+      }
+      serialized_mdl <- list(version = packageVersion("dynmdl"),
+                             model_info = private$model_info, 
+                             bytecode = private$bytecode,
+                             use_dll = private$use_dll, dll_data = dll_data,
+                             dll_basename = basename(private$dll_file),
+                             os_type = .Platform$OS.type,
+                             params = private$params,
+                             endos = private$endos,
+                             exos = private$exos,
+                             labels = private$labels,
+                             period = private$model_period,
+                             endo_data = private$endo_data,
+                             exo_data = private$exo_data)
+      return(structure(serialized_mdl, class = "serialized_dynmdl"))
     }
   ),
   private = list(
@@ -867,40 +900,7 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(NULL))
     },
-    serialize_mdl = function() {
-      if (private$use_dll) {
-        zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
-        zip(zipfile = zip_file, files = private$dll_dir, extra = "-q")
-        size <- file.info(zip_file)$size
-        dll_data <- readBin(zip_file, what = "raw", n = size)
-        unlink(zip_file)
-      } else {
-        dll_data <- NULL
-      }
-      
-      if (private$use_dll) {
-        os_type <- .Platform$OS.type
-      } else {
-        # if we do not use dll, then we don't care about the 
-        # operating system type
-        os_type <- NULL
-      }
-      serialized_mdl <- list(class = class(self)[1],
-                             version = packageVersion("dynmdl"),
-                             model_info = private$model_info, 
-                             bytecode = private$bytecode,
-                             use_dll = private$use_dll, dll_data = dll_data,
-                             dll_basename = basename(private$dll_file),
-                             os_type = .Platform$OS.type,
-                             params = private$params,
-                             endos = private$endos,
-                             exos = private$exos,
-                             labels = private$labels,
-                             period = private$model_period,
-                             endo_data = private$endo_data,
-                             exo_data = private$exo_data)
-      return(serialized_mdl)
-    },
+
     print_info = function(short) {
       cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
                   private$endo_count))

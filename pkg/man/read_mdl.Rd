@@ -10,9 +10,8 @@ read_mdl(file, dll_dir)
 \item{file}{the name of the RDS file}
 
 \item{dll_dir}{the directory where the dynamically linked library is stored.
-Primarily used for testing.
-Only used if argument \code{use_dll} was \code{TRUE} (see function
-\code{\link{dyn_mdl}}.}
+Primarily used for testing. Only used if the model
+was created with the dll option (see function  \code{\link{dyn_mdl}}).}
 }
 \value{
 a \code{\link{DynMdl}} or \code{\link{FitMdl}} object

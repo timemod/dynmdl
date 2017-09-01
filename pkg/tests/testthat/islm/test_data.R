@@ -31,7 +31,12 @@ test_that("set_data, set_endo_values and set_exo_values works correctly (1)", {
   data <- cbind(g, y, t, ms, yd)
   
   mdl2 <- mdl$clone()
+  
+  expect_true(isTRUE(all.equal(mdl, mdl2)))
+  
   mdl2$set_data(data)
+  
+  expect_false(isTRUE(all.equal(mdl, mdl2)))
   
   mdl3 <- mdl$clone()
   p <- get_period_range(data)

@@ -17,6 +17,7 @@ report <- capture_output(mdl2 <- read_mdl(tmp_rds_file))
 
 test_that("mdl and mdl2 are equal", {
   expect_equal(mdl, mdl2)
+  expect_true(isTRUE(all.equal(mdl,  mdl2)))
   expect_equal(mdl2$get_params("c0"), c(c0 = 110))
 })
 
@@ -39,6 +40,7 @@ report <- capture_output(mdl_dll2 <- read_mdl(tmp_rds_file, dll_dir = dll_dir))
 
 test_that("mdl_dll and mdl_dll2 are equal", {
   expect_equal(mdl_dll, mdl_dll2)
+  expect_true(isTRUE(all.equal(mdl_dll, mdl_dll2)))
   expect_equal(mdl_dll2$get_params("c0"), c(c0 = 110))
 })
 
@@ -46,6 +48,7 @@ mdl_dll2$solve(control = list(silent = TRUE))
 
 test_that("mdl_dll andn mdl_dll2 are equal (after solving)", {
   expect_equal(mdl_dll, mdl_dll2)
+  expect_true(isTRUE(all.equal(mdl_dll, mdl_dll2)))
 })
 
 # clean up

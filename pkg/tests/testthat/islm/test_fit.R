@@ -10,8 +10,18 @@ endo_file <- file.path(dynare_dir, "islm_fit_endo.csv")
 
 report <- capture_output(mdl <- read_mdl(rds_file))
 
+mdl_old <- mdl$copy()
+
+test_that("all.equal works correctly for fit models", {
+  expect_true(isTRUE(all.equal(mdl, mdl_old)))
+})
+
 mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
 mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")
+
+test_that("all.equal works correctly for fit models", {
+  expect_false(isTRUE(all.equal(mdl, mdl_old)))
+})
 
 mdl$solve(control = list(silent = TRUE))
 

@@ -23,7 +23,7 @@ cat("fit targets:\n")
 print(fit_targets)
 
 mdl$set_fit(fit_targets)
-print(mdl$get_fit_targets())
+print(mdl$get_fit())
 
 
 mdl$solve(control = list(trace = TRUE))
@@ -32,5 +32,5 @@ print(mdl$get_endo_data())
 print(mdl$get_exo_data())
 print(mdl$get_residuals())
 print(mdl$get_lagrange())
-print(mdl$get_fit_targets())
+print(mdl$get_fit())
 plot(mdl$get_endo_data("y"), type = "o")

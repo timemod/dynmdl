@@ -189,14 +189,15 @@ FitMdl <- R6Class("FitMdl",
         names <- intersect(names, sort(private$fit_info$l_vars))
       }
       return (private$endo_data[period, names, drop = FALSE])
+    },
+    serialize = function() {
+      ser <- as.list(super$serialize())
+      ret <- c(ser, list(fit_info = private$fit_info))
+      return(structure(ret, class = "serialized_fitmdl"))
     }
   ), 
   private = list(
     fit_info = NULL,
-    serialize_mdl = function() {
-      ser <- super$serialize_mdl()
-      return(c(ser, list(fit_info = private$fit_info)))
-    },
     get_names_fitmdl_ = function(type, names, pattern) {
       if (type == "endo") {
         vnames <- sort(private$fit_info$orig_endos)

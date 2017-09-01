@@ -16,19 +16,25 @@
 #' @importFrom utils unzip
 #' @export
 read_mdl <- function(file, dll_dir) {
+  
   cat(paste("Reading model from", file, "\n"))
   ser <- readRDS(file)
   
-   # TODO: check package version 
-   if (ser$use_dll) {
-     
+  if (!(inherits(ser, "serialized_fitmdl") || 
+        inherits(ser, "serialized_dynmdl"))) {
+    stop(paste("File", file, "does not contain a serialized dynmdl or fitmdl"))
+  }
+  
+  # TODO: check package version 
+  if (ser$use_dll) {
+    
     # check operating system. If the model is generated on a different
     # platform, then we should recompile the model!
     if (ser$os_type != .Platform$OS.type) {
       # TODO: simply recompile the model
       stop("The model functions have been compiled on a different platform")
     }
-     
+    
     if (missing(dll_dir)) {
       dll_dir <- tempfile(pattern = "dynmdl_dll_")
     } else if (dir.exists(dll_dir)) {
@@ -45,7 +51,7 @@ read_mdl <- function(file, dll_dir) {
     dll_file <- NA_character_
   }
   
-  if (ser$class == "FitMdl") {
+  if (inherits(ser, "serialized_fitmdl")) {
     mdl <- FitMdl$new(ser$model_info, ser$fit_info, ser$params, 
                       ser$bytecode, ser$use_dll, dll_dir, dll_file)
   } else {
