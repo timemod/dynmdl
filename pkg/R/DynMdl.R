@@ -869,15 +869,12 @@ DynMdl <- R6Class("DynMdl",
     },
     serialize_mdl = function() {
       if (private$use_dll) {
-        cwd <- getwd()
-        setwd(private$dll_dir)
-        zip("dll.zip", basename(private$dll_file), extra = "-q")
-        setwd(cwd)
-        zip_file <- file.path(private$dll_dir, "dll.zip")
+        zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
+        zip(zipfile = zip_file, files = private$dll_dir, extra = "-q")
         size <- file.info(zip_file)$size
         dll_data <- readBin(zip_file, what = "raw", n = size)
         unlink(zip_file)
-      }  else {
+      } else {
         dll_data <- NULL
       }
       # TODO: write the contents of the mdl file, the package version

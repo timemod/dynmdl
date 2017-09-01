@@ -19,8 +19,10 @@ mdl$solve(control = list(trace = TRUE))
 print(mdl$get_endo_data())
 plot(mdl$get_endo_data("r"), type = "o")
 
-save(mdl, file = "mdl.RData")
-rm(list = ls())
-load("mdl.RData")
+# test writing and reading the model
+rds_file <- "islm_dll.rds"
+mdl$write_mdl(rds_file)
+rm(mdl)
+mdl <- read_mdl(rds_file)
 mdl$solve(control = list(trace = TRUE))
-unlink("mdl.RData")
+unlink(rds_file)
