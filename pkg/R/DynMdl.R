@@ -466,8 +466,8 @@ DynMdl <- R6Class("DynMdl",
                      "solver is allowed"))
         }
         nper <- nperiod(private$model_period)
-        lags <- private$get_lags()
-        leads <- private$get_leads()
+        lags <- private$get_endo_lags()
+        leads <- private$get_endo_leads()
         x <- private$get_solve_endo()
         ret <- umf_solve_nl(x, private$get_residuals,
                             private$get_jac, lags = lags,
@@ -527,8 +527,8 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     get_jacob = function(sparse = TRUE) {
-      lags  <- private$get_lags()
-      leads <- private$get_leads()
+      lags  <- private$get_endo_lags()
+      leads <- private$get_endo_leads()
       nper <-nperiod(private$model_period)
       x <- private$get_solve_endo()
       jac <- private$get_jac(x, lags, leads, nper)
@@ -799,13 +799,23 @@ DynMdl <- R6Class("DynMdl",
       private$set_data_(data, names = names, names_missing = FALSE, 
                         type = type)
     },
-    get_lags = function() {
-      lag_per <- self$get_lag_period()
-      return (t(private$endo_data[lag_per, ]))
+    get_endo_lags = function() {
+      if (private$max_endo_lag > 0) {
+        p <- start_period(private$model_period)
+        lag_per <- period_range(p - private$max_endo_lag, p - 1)
+        return(t(private$endo_data[lag_per, ]))
+      } else {
+        return(NULL)
+      }
     },
-    get_leads = function() {
-      lead_per <- self$get_lead_period()
-      return (t(private$endo_data[lead_per, ]))
+    get_endo_leads = function() {
+      if (private$max_endo_lead > 0) {
+        p <- end_period(private$model_period)
+        lead_per <- period_range(p + 1, p + private$max_endo_lead)
+        return(t(private$endo_data[lead_per, ]))
+      } else {
+        return(NULL)
+      }
     },
     # returns a vector with endogenous variables in the solution period
     get_solve_endo = function() {
@@ -816,7 +826,7 @@ DynMdl <- R6Class("DynMdl",
     get_residuals = function(x, lags, leads, nper) {
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
-      return (get_residuals_(endos,
+      return(get_residuals_(endos,
                              which(private$lead_lag_incidence != 0) - 1,
                              private$exo_data, private$params,
                              private$f_dynamic, private$endo_count,
