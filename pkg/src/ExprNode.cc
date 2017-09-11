@@ -4830,13 +4830,17 @@ AbstractExternalFunctionNode::normalizeEquation(int var_endo, vector<pair<int, p
 void
 AbstractExternalFunctionNode::writeExternalFunctionArguments(ostream &output, ExprNodeOutputType output_type,
                                                              const temporary_terms_t &temporary_terms,
-                                                             deriv_node_temp_terms_t &tef_terms) const
-{
+                                                             deriv_node_temp_terms_t &tef_terms) const {
   for (vector<expr_t>::const_iterator it = arguments.begin();
-       it != arguments.end(); it++)
-    {
-      if (it != arguments.begin())
+       it != arguments.end(); it++) {
+
+      if (it != arguments.begin()) {
         output << ",";
+      }
+
+      if (IS_C(output_type)) {
+          output << "(double) ";
+      }
 
       (*it)->writeOutput(output, output_type, temporary_terms, tef_terms);
     }
