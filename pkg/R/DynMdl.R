@@ -30,9 +30,9 @@ setOldClass("regts")
 #' \describe{
 #'
 #'
-#' \item{\code{\link{get_maxlag}}}{Returns the maximum lag}
+#' \item{\code{\link{get_max_lag}}}{Returns the maximum lag}
 #'
-#' \item{\code{\link{get_maxlead}}}{Returns the maximum lead}
+#' \item{\code{\link{get_max_lead}}}{Returns the maximum lead}
 #'
 #' \item{\code{get_endo_names()}}{Returns the names of the endogenous variables.}
 #
@@ -224,11 +224,11 @@ DynMdl <- R6Class("DynMdl",
       private$print_info(short)
       return (invisible(NULL))
     },
-    get_maxlag = function() {
-      return(private$maxlag)
+    get_max_lag = function() {
+      return(private$max_lag)
     },
-    get_maxlead = function() {
-      return(private$maxlead)
+    get_max_lead = function() {
+      return(private$max_lead)
     },
     get_endo_names = function(pattern) {
       return(private$endo_names)
@@ -305,7 +305,7 @@ DynMdl <- R6Class("DynMdl",
         private$model_period <- period_range(startp, endp)
       } else {
         stop(paste("The data period is too short. It should contain at least",
-                   private$maxlag + private$maxlead + 1, "periods"))
+                   private$max_lag + private$max_lead + 1, "periods"))
       }
       
       if (!missing(data)) {

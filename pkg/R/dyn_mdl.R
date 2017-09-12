@@ -83,14 +83,18 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     mdl <- DynMdl$new(model_info, params, bytecode, use_dll, dll_dir, dll_file)
   }
   
+  if (!missing(period)) {
+    period <- as.period_range(period)
+  }
+  
   if (!missing(data)) {
     data_period <- get_period_range(data)
     if (!missing(period)) {
       # data_period should be the union of the period_range of data
       # and the supplied period extended with a lag and lead period.
       data_period_2 <- period_range(
-        start_period(period) - mdl$get_maxlag(),
-        end_period(period)   + mdl$get_maxlead())
+        start_period(period) - mdl$get_max_lag(),
+        end_period(period)   + mdl$get_max_lead())
       data_period <- range_union(data_period, data_period_2)
     }
     if (is.null(colnames(data))) {
@@ -101,7 +105,6 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
   }
   
   if (!missing(period)) {
-    period <- as.period_range(period)
     mdl$set_period(period)
   }
   
