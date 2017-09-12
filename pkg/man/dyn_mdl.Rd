@@ -4,11 +4,16 @@
 \alias{dyn_mdl}
 \title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
 \usage{
-dyn_mdl(mod_file, bytecode = FALSE, use_dll = FALSE, fit_mod_file,
-  debug = FALSE, dll_dir)
+dyn_mdl(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
+  fit_mod_file, debug = FALSE, dll_dir)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
+
+\item{period}{a \code{\link[regts]{period_range}} object}
+
+\item{data}{the model data as a  \code{\link[regts]{regts}} object with column
+names}
 
 \item{bytecode}{If \code{TRUE}, then the functions used to calculate the
 residuals and Jacobian are byte compiled}

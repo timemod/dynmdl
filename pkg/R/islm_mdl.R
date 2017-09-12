@@ -21,7 +21,7 @@ islm_mdl <- function(period, fit = FALSE) {
   }
   mdl_file <- system.file("models", mdl_name, package = "dynmdl")
   file.copy(mdl_file, mod_file, overwrite = TRUE)
-  mdl <- dyn_mdl(mod_file)
+  mdl <- dyn_mdl(mod_file, period = period)
   unlink(mod_file)
   
   mdl$set_labels(c(i = "investment", c = "consumption", md = "money demand",
@@ -31,9 +31,5 @@ islm_mdl <- function(period, fit = FALSE) {
   
   mdl$solve_steady(control = list(trace = FALSE))
   
-  if (!missing(period)) {
-    period <- as.period_range(period)
-    mdl$set_period(period)
-  }
   return(mdl)
 }

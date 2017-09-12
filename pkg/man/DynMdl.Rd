@@ -18,6 +18,11 @@ An R6 class for a Dynare model
 
 \describe{
 
+
+\item{\code{\link{get_maxlag}}}{Returns the maximum lag}
+
+\item{\code{\link{get_maxlead}}}{Returns the maximum lead}
+
 \item{\code{get_endo_names()}}{Returns the names of the endogenous variables.}
 \item{\code{get_exo_names()}}{Returns the names of the exogenous variables.}
 

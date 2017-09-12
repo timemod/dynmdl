@@ -29,6 +29,11 @@ setOldClass("regts")
 #' @section Methods:
 #' \describe{
 #'
+#'
+#' \item{\code{\link{get_maxlag}}}{Returns the maximum lag}
+#'
+#' \item{\code{\link{get_maxlead}}}{Returns the maximum lead}
+#'
 #' \item{\code{get_endo_names()}}{Returns the names of the endogenous variables.}
 #
 #' \item{\code{get_exo_names()}}{Returns the names of the exogenous variables.}
@@ -218,6 +223,12 @@ DynMdl <- R6Class("DynMdl",
       cat("DynMdl object\n")
       private$print_info(short)
       return (invisible(NULL))
+    },
+    get_maxlag = function() {
+      return(private$maxlag)
+    },
+    get_maxlead = function() {
+      return(private$maxlead)
     },
     get_endo_names = function(pattern) {
       return(private$endo_names)

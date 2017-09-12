@@ -5,6 +5,9 @@
 #' object, which is an extension of a \code{DynMdl} object.
 #'
 #' @param mod_file the name of the model file (including extension .mod)
+#' @param period a \code{\link[regts]{period_range}} object
+#' @param data the model data as a  \code{\link[regts]{regts}} object with column
+#' names
 #' @param bytecode If \code{TRUE}, then the functions used to calculate the
 #' residuals and Jacobian are byte compiled
 #' @param  use_dll if \code{TRUE}, then the  functions used to calculate the
@@ -22,7 +25,7 @@
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
-dyn_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
+dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
                        fit_mod_file, debug = FALSE, dll_dir) {
   
   if (!file.exists(mod_file)) {
@@ -62,8 +65,8 @@ dyn_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
     } else {
       dll_file <- NA_character_
     }
-    return(FitMdl$new(model_info, fit_info, params, bytecode, use_dll,
-                      dll_dir, dll_file, debug))
+    mdl <- FitMdl$new(model_info, fit_info, params, bytecode, use_dll,
+                       dll_dir, dll_file, debug)
   } else {
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
@@ -76,8 +79,33 @@ dyn_mdl <- function(mod_file, bytecode = FALSE, use_dll = FALSE,
     } else {
       dll_file <- NA_character_
     }
-    return(DynMdl$new(model_info, params, bytecode, use_dll, dll_dir, dll_file))
+    
+    mdl <- DynMdl$new(model_info, params, bytecode, use_dll, dll_dir, dll_file)
   }
+  
+  if (!missing(data)) {
+    data_period <- get_period_range(data)
+    if (!missing(period)) {
+      # data_period should be the union of the period_range of data
+      # and the supplied period extended with a lag and lead period.
+      data_period_2 <- period_range(
+        start_period(period) - mdl$get_maxlag(),
+        end_period(period)   + mdl$get_maxlead())
+      data_period <- range_union(data_period, data_period_2)
+    }
+    if (is.null(colnames(data))) {
+      stop("data has no column names")
+    } else {
+      mdl$init_data(data_period = data_period, data = data)
+    }
+  }
+  
+  if (!missing(period)) {
+    period <- as.period_range(period)
+    mdl$set_period(period)
+  }
+  
+  return(mdl)
 }
 
 # Returns true if model mod_file contains a fit block
