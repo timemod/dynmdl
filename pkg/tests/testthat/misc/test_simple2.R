@@ -15,12 +15,12 @@ nper <- nperiod(data_per)
 lead_per <- mdl$get_lead_period()
 lag_per  <- mdl$get_lag_period()
 
-eigvals <- get_analytical_eigvals(mdl$get_params())
+eigvals <- get_analytical_eigvals(mdl$get_param())
 y_ref_per <- period_range(start_period(data_per), end_period(data_per) + 1)
 y_ref1 <- get_analytical_result(y0 = 1, x1 = 0, period = y_ref_per,
-                                mdl$get_params())
+                                mdl$get_param())
 y_ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = y_ref_per,
-                                mdl$get_params())
+                                mdl$get_param())
 
 ymin_ref1  <- lag(y_ref1, -1)
 colnames(ymin_ref1) <- "ymin"

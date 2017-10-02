@@ -42,11 +42,11 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{get_labels}}}{Returns the labels of the model variables.}
 #'
-#' \item{\code{get_param_names()}}{Returns the names of the parameters.}
+#' \item{\code{get_par_names()}}{Returns the names of the parameters.}
 #'
-#' \item{\code{set_params()}}{Sets the parameters of the model.}
+#' \item{\code{set_param()}}{Sets the parameters of the model.}
 #'
-#' \item{\code{get_params()}}{Returns the parameters of the model.}
+#' \item{\code{get_param()}}{Returns the parameters of the model.}
 #'
 #' \item{\code{set_static_exos(exos)}}{Sets the static values of
 #' the exogenous variables. These values are used to compute the steady state.}
@@ -242,19 +242,27 @@ DynMdl <- R6Class("DynMdl",
     get_labels = function() {
       return(private$labels)
     },
-    get_param_names = function() {
-      return (private$param_names)
+    get_par_names = function(pattern = ".*") {
+      names <- private$param_names
+      if (!missing(pattern)) {
+        sel <- grep(pattern, names)
+        names <- names[sel]
+      }
+      return(sort(names))
     },
-    set_params = function(params) {
+    set_param = function(params) {
       private$params[names(params)] <- params
       return (invisible(self))
     },
-    get_params = function(names = NULL) {
-      if (missing(names)) {
-        return (private$params)
-      } else {
-        return (private$params[names])
+    get_param = function(pattern, names) {
+      if (missing(pattern) && missing(names)) {
+        names <- self$get_par_names()
+      } else if (missing(names)) {
+        names <- self$get_par_names(pattern)
+      } else if (!missing(pattern)) {
+        names <- union(names, self$get_par_names(pattern))
       }
+      return(private$params[names])
     },
     set_static_exos = function(exos) {
       private$exos[names(exos)] <- exos

@@ -19,9 +19,9 @@ An R6 class for a Dynare model
 \describe{
 
 
-\item{\code{\link{get_maxlag}}}{Returns the maximum lag}
+\item{\code{\link{get_max_lag}}}{Returns the maximum lag}
 
-\item{\code{\link{get_maxlead}}}{Returns the maximum lead}
+\item{\code{\link{get_max_lead}}}{Returns the maximum lead}
 
 \item{\code{get_endo_names()}}{Returns the names of the endogenous variables.}
 \item{\code{get_exo_names()}}{Returns the names of the exogenous variables.}
@@ -30,11 +30,11 @@ An R6 class for a Dynare model
 
 \item{\code{\link{get_labels}}}{Returns the labels of the model variables.}
 
-\item{\code{get_param_names()}}{Returns the names of the parameters.}
+\item{\code{get_par_names()}}{Returns the names of the parameters.}
 
-\item{\code{set_params()}}{Sets the parameters of the model.}
+\item{\code{set_param()}}{Sets the parameters of the model.}
 
-\item{\code{get_params()}}{Returns the parameters of the model.}
+\item{\code{get_param()}}{Returns the parameters of the model.}
 
 \item{\code{set_static_exos(exos)}}{Sets the static values of
 the exogenous variables. These values are used to compute the steady state.}

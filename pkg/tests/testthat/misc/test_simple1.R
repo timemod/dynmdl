@@ -10,11 +10,11 @@ report <- capture_output(mdl <- dyn_mdl(mod_file))
 
 mdl$set_period("2015/2060")
 data_per <- mdl$get_data_period()
-eigvals <- get_analytical_eigvals(mdl$get_params())
+eigvals <- get_analytical_eigvals(mdl$get_param())
 ref1 <- get_analytical_result(y0 = 1, x1 = 0, period = data_per,
-                              params = mdl$get_params())
+                              params = mdl$get_param())
 ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = data_per,
-                              params = mdl$get_params())
+                              params = mdl$get_param())
 lead_per <- mdl$get_lead_period()
 lag_per <- mdl$get_lag_period()
 
