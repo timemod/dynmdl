@@ -22,7 +22,7 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
     lag_indices <- which(lead_lag_incidence[, 1 : max_lag] != 0)
 
     f <- function(x, lags, iper) {
-        return (f_dynamic(c(lags, x), exo_data, params, iper + max_lag))
+        return(f_dynamic(c(lags, x), exo_data, params, iper + max_lag))
     }
 
     if (solver == "nleqslv") {
@@ -66,7 +66,6 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
         } else {
             control_ <- control
             control_["silent"] <- TRUE
-            control_["trace"] <- FALSE
             out <- umf_solve_nl(start, fn = f, jac = jac, lags = lags,
                                 iper = iper, control = control_)
             error <- !out$solved
@@ -87,7 +86,7 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
         if (error) {
             break
         }
-
+        
         itr_tot <- itr_tot + out$iter
         data[cur_indices] <- out$x
     }

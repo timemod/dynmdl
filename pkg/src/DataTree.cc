@@ -676,34 +676,8 @@ DataTree::minLagForSymbol(int symb_id) const
   return r;
 }
 
-void
-DataTree::writePowerDerivCHeader(ostream &output) const
-{
-  if (isBinaryOpUsed(oPowerDeriv))
-    output << "double getPowerDeriv(double, double, int);" << endl;
-}
-
-void
-DataTree::writePowerDeriv(ostream &output, bool use_dll) const
-{
-  if (use_dll && isBinaryOpUsed(oPowerDeriv))
-    output << "/*" << endl
-           << " * The k-th derivative of x^p" << endl
-           << " */" << endl
-           << "double getPowerDeriv(double x, double p, int k)" << endl
-           << "{" << endl
-           << "#ifdef _MSC_VER" << endl
-           << "# define nearbyint(x) (fabs((x)-floor(x)) < fabs((x)-ceil(x)) ? floor(x) : ceil(x))" << endl
-           << "#endif" << endl
-           << "  if ( fabs(x) < " << NEAR_ZERO << " && p > 0 && k > p && fabs(p-nearbyint(p)) < " << NEAR_ZERO << " )" << endl
-           << "    return 0.0;" << endl
-           << "  else" << endl
-           << "    {" << endl
-           << "      int i = 0;" << endl
-           << "      double dxp = pow(x, p-k);" << endl
-           << "      for (; i<k; i++)" << endl
-           << "        dxp *= p--;" << endl
-           << "      return dxp;" << endl
-           << "    }" << endl
-           << "}" << endl;
+void DataTree::writePowerDerivCHeader(ostream &output) const {
+  if (isBinaryOpUsed(oPowerDeriv)) {
+    output << "#include \"getPowerDeriv.h\"" << endl;
+  }
 }

@@ -1669,7 +1669,6 @@ StaticModel::writeStaticCFile(const string &func_name) const
   writeStaticModel(output, oCStaticModel);
   output << "}" << endl << endl;
 
-  writePowerDeriv(output, true);
   output.close();
 
 #ifndef USE_R
