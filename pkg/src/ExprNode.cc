@@ -4839,10 +4839,14 @@ AbstractExternalFunctionNode::writeExternalFunctionArguments(ostream &output, Ex
       }
 
       if (IS_C(output_type)) {
-          output << "(double) ";
+          output << "(double) (";
       }
 
       (*it)->writeOutput(output, output_type, temporary_terms, tef_terms);
+
+      if (IS_C(output_type)) {
+          output << ")";
+      }
     }
 }
 
