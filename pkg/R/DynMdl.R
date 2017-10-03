@@ -472,8 +472,14 @@ DynMdl <- R6Class("DynMdl",
                      solver = c("umfpackr", "nleqslv")) {
       
       solver <- match.arg(solver)
-      control_ <- list(ftol = 1e-8, maxiter = 20, trace = FALSE,
-                       cndtol = 1e-12, silent = FALSE)
+      
+      control_ <- list(ftol = 1e-8, trace = FALSE, cndtol = 1e-12, 
+                       silent = FALSE)
+      if (solver == "umfpackr")  {
+        control_$maxiter <- 20
+      } else {
+        control_$maxit <- 20
+      }
       control_[names(control)] <- control
       
       if (private$use_dll) private$prepare_solve()
