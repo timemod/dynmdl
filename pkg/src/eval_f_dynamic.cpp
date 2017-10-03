@@ -10,7 +10,7 @@ using std::vector;
 // [[Rcpp::export]]
 NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_data,
                              SEXP params, Function f_dynamic, int n_endo, int nper,
-                             int max_lag) {
+                             int period_shift) {
 
     NumericVector res(nper * n_endo);
     NumericVector x(icols.size());
@@ -20,7 +20,7 @@ NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_
             x(i) = endos(icols(i) +  it * n_endo);
         }
         NumericVector res_t = f_dynamic(x, exo_data, params,
-                                        it + 1 + max_lag);          
+                                        it + 1 + period_shift);          
         for (int id = 0; id < n_endo; id++) {
             res(id + it * n_endo) = res_t[id];
         }
@@ -32,7 +32,7 @@ NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_
 List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, 
                      IntegerVector tshift, SEXP exo_data,
                      SEXP params, Function jac_dynamic, int n_endo,
-                     int nper, int max_lag) {
+                     int nper, int period_shift) {
         
     int nendo = max(lead_lag_incidence);
     int *jac_var_id = new int[nendo];
@@ -62,7 +62,7 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
         for (int i = 0; i < nendo; i++) {
             x(i) = endos(icols[i] + it * n_endo);
         }
-        List jac_data = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
+        List jac_data = jac_dynamic(x, exo_data, params, it + 1 + period_shift);
         IntegerVector rows_t   = jac_data[0];
         IntegerVector cols_t   = jac_data[1];
         NumericVector values_t = jac_data[2];
@@ -100,7 +100,7 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
 List get_jac_backwards(NumericVector endos, NumericVector lags,
                        NumericVector cols, 
                        SEXP exo_data, SEXP params, Function jac_dynamic,
-                       int it, int max_lag) {
+                       int it, int period_shift) {
 
     int nlags  = lags.size();
     int nendo = endos.size();
@@ -113,7 +113,7 @@ List get_jac_backwards(NumericVector endos, NumericVector lags,
         x[i + nlags] = endos[i];
     }
 
-    List jac_data = jac_dynamic(x, exo_data, params, it + 1 + max_lag);
+    List jac_data = jac_dynamic(x, exo_data, params, it + 1 + period_shift);
     IntegerVector rows_t   = jac_data[0];
     IntegerVector cols_t   = jac_data[1];
     NumericVector values_t = jac_data[2];

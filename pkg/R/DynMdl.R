@@ -311,6 +311,8 @@ DynMdl <- R6Class("DynMdl",
       endp <- end_period(data_period) - private$max_lead
       if (endp >= startp) {
         private$model_period <- period_range(startp, endp)
+        private$period_shift <- start_period(private$model_period) - 
+                                start_period(private$data_period)
       } else {
         stop(paste("The data period is too short. It should contain at least",
                    private$max_lag + private$max_lead + 1, "periods"))
@@ -334,6 +336,8 @@ DynMdl <- R6Class("DynMdl",
         private$check_model_period(period) 
       }
       private$model_period <-  period
+      private$period_shift <- start_period(private$model_period) -
+                              start_period(private$data_period)
       return(invisible(self))
     },
     get_period = function() {
@@ -506,6 +510,7 @@ DynMdl <- R6Class("DynMdl",
         }
       } else {
         ret <- solve_backward_model(private$model_period,
+                                    private$period_shift,
                                     private$endo_data,
                                     private$exo_data, private$params,
                                     private$lead_lag_incidence,
@@ -648,6 +653,7 @@ DynMdl <- R6Class("DynMdl",
     jac_dynamic_size = NA_integer_,
     model_period = NULL,
     data_period =  NULL,
+    period_shift =  NA,
     endo_data = NULL,
     exo_data = NULL,
     ss = NULL,
@@ -855,7 +861,7 @@ DynMdl <- R6Class("DynMdl",
                              which(private$lead_lag_incidence != 0) - 1,
                              private$exo_data, private$params,
                              private$f_dynamic, private$endo_count,
-                             nper, private$max_lag))
+                             nper, private$period_shift))
     },
     get_jac = function(x, lags, leads, nper) {
       endos <- c(lags, x, leads)
@@ -865,7 +871,7 @@ DynMdl <- R6Class("DynMdl",
                                   tshift, private$exo_data,
                                   private$params, private$jac_dynamic,
                                   private$endo_count, nper,
-                                  private$max_lag)
+                                  private$period_shift)
       n <- nper * private$endo_count
       # NOTE: the function sparseMatrix of the Matrix package
       # only works correctly when package methods has been attached.

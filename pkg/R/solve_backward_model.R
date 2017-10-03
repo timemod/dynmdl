@@ -6,8 +6,8 @@
 #' @importFrom nleqslv nleqslv
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom methods as
-solve_backward_model <- function(model_period, endo_data, exo_data, params,
-                                 lead_lag_incidence, njac_cols, f_dynamic, 
+solve_backward_model <- function(model_period, period_shift, endo_data, exo_data, 
+                                 params, lead_lag_incidence, njac_cols, f_dynamic, 
                                  jac_dynamic, control, solver) {
   
   start_per <- start_period(model_period)
@@ -19,15 +19,16 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
   jac_cols <- lead_lag_incidence[, "0"]
   
   max_lag <- abs(as.numeric(colnames(lead_lag_incidence)[1]))
-  lag_indices <- which(lead_lag_incidence[, 1 : max_lag] != 0)
+  lag_indices <- which(lead_lag_incidence[, 1 : max_lag] != 0) + 
+                    (period_shift - max_lag) * nendo
   
   f <- function(x, lags, iper) {
-    return(f_dynamic(c(lags, x), exo_data, params, iper + max_lag))
+    return(f_dynamic(c(lags, x), exo_data, params, iper + period_shift))
   }
   
   jac_sparse <- function(x, lags, iper) {
     mat_info <- get_jac_backwards(x, lags, jac_cols, exo_data, 
-                                  params, jac_dynamic, iper, max_lag)
+                                  params, jac_dynamic, iper, period_shift)
     return(sparseMatrix(i = mat_info$rows, j = mat_info$columns,
                         x = mat_info$values,
                         dims = as.integer(rep(nendo, 2))))
@@ -63,7 +64,7 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
   for (iper in 1:nper) {
     per_txt <- as.character(start_per + (iper - 1))
     lags <- data[lag_indices + (iper - 1) * nendo]
-    cur_indices <- (1:nendo) + (iper - 1 + max_lag) * nendo
+    cur_indices <- (1:nendo) + (iper - 1 + period_shift) * nendo
     start <- data[cur_indices]
     if (solver == "nleqslv") {
       out <- nleqslv(start, fn = f, jac = jac_fun, method = "Newton",
@@ -108,7 +109,7 @@ solve_backward_model <- function(model_period, endo_data, exo_data, params,
   }
   
   # update data
-  x <- data[(1 : (nper * nendo)) + max_lag * nendo]
+  x <- data[(1 : (nper * nendo)) + period_shift * nendo]
   return (list(solved = !error, itr_tot = itr_tot, x = x,
                t_f = t_f, t_jac = t_jac, t_lu = t_lu, t_jac = t_jac))
 }
