@@ -1,5 +1,6 @@
 # construct the solution of the linear state space model.
 # also computes the eigenvalues.
+#' @importFrom regts printobj
 solve_first_order <- function(ss, lead_lag_incidence, static_exos,
                              static_endos, params, jac_dynamic,
                              nendo, njac_cols, only_eigval = FALSE,
