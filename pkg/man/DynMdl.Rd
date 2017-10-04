@@ -101,6 +101,9 @@ Newton method for the whole model period.
 Argument \code{control} is a list with solve options (TODO: describe these
 options somewhere).}
 
+\item{\code{\link{residual_check}}}{Calculates the residuals of the equation
+and report the differences larger than a tolerance parameters}
+
 \item{\code{solve_perturbation()}}{Solves the model using the perturbation
 theory used in the Dynare function stoch_simul. Only shocks in the first
 solution period are allowed.}

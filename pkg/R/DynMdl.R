@@ -113,6 +113,9 @@ setOldClass("regts")
 #' Argument \code{control} is a list with solve options (TODO: describe these
 #' options somewhere).}
 #'
+#' \item{\code{\link{residual_check}}}{Calculates the residuals of the equation
+#' and report the differences larger than a tolerance parameters}
+#'
 #' \item{\code{solve_perturbation()}}{Solves the model using the perturbation
 #' theory used in the Dynare function stoch_simul. Only shocks in the first
 #' solution period are allowed.}
@@ -472,6 +475,38 @@ DynMdl <- R6Class("DynMdl",
       if (private$use_dll) private$clean_after_solve()
       return (invisible(self))
     },
+    residual_check = function(tol = 0) {
+      
+      if (private$use_dll) private$prepare_solve()
+      
+      nper <- nperiod(private$model_period)
+      lags <- private$get_endo_lags()
+      leads <- private$get_endo_leads()
+      x <- private$get_solve_endo()
+      
+      residuals <- private$get_residuals(x, lags, leads, nper)
+      dim(residuals) <- c(private$endo_count, nper)
+      residuals <- t(residuals)
+      colnames(residuals) <- paste0("eq_", 1 : private$endo_count)
+      p_start <- start_period(private$model_period)
+      p_end <- end_period(private$model_period)
+      if (tol != 0) {
+        col_sel <- apply(residuals, MARGIN = 2, FUN = function(x) max(abs(x)) > tol)
+        residuals <- residuals[ , col_sel, drop = FALSE]
+        if (ncol(residuals) > 0) {
+          row_sel <-  which(apply(residuals, MARGIN = 1, 
+                            FUN = function(x) max(abs(x)) > tol))
+          imin <- min(row_sel)
+          imax <- max(row_sel)
+          if (imax >= imin) {
+            residuals <- residuals[imin : imax, , drop = FALSE]
+          }
+          p_start <- p_start + (imin - 1)
+          p_end <- p_end - (nper - imax)
+        }
+      }
+      return(regts(residuals, start = p_start, end = p_end))
+     },
     solve = function(control = list(), force_stacked_time = FALSE,
                      solver = c("umfpackr", "nleqslv")) {
       

@@ -9,16 +9,16 @@ compute_derivatives <- function(modfile) {
     .Call(`_dynmdl_compute_derivatives`, modfile)
 }
 
-get_residuals_ <- function(endos, icols, exo_data, params, f_dynamic, n_endo, nper, max_lag) {
-    .Call(`_dynmdl_get_residuals_`, endos, icols, exo_data, params, f_dynamic, n_endo, nper, max_lag)
+get_residuals_ <- function(endos, icols, exo_data, params, f_dynamic, n_endo, nper, period_shift) {
+    .Call(`_dynmdl_get_residuals_`, endos, icols, exo_data, params, f_dynamic, n_endo, nper, period_shift)
 }
 
-get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag) {
-    .Call(`_dynmdl_get_triplet_jac`, endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag)
+get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, period_shift) {
+    .Call(`_dynmdl_get_triplet_jac`, endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, period_shift)
 }
 
-get_jac_backwards <- function(endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag) {
-    .Call(`_dynmdl_get_jac_backwards`, endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag)
+get_jac_backwards <- function(endos, lags, cols, exo_data, params, jac_dynamic, it, period_shift) {
+    .Call(`_dynmdl_get_jac_backwards`, endos, lags, cols, exo_data, params, jac_dynamic, it, period_shift)
 }
 
 run_macro <- function(modfile, new_modfile) {

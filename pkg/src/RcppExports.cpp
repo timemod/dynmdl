@@ -30,8 +30,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_residuals_
-NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_data, SEXP params, Function f_dynamic, int n_endo, int nper, int max_lag);
-RcppExport SEXP _dynmdl_get_residuals_(SEXP endosSEXP, SEXP icolsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP f_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {
+NumericVector get_residuals_(NumericVector endos, NumericVector icols, SEXP exo_data, SEXP params, Function f_dynamic, int n_endo, int nper, int period_shift);
+RcppExport SEXP _dynmdl_get_residuals_(SEXP endosSEXP, SEXP icolsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP f_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,14 +42,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Function >::type f_dynamic(f_dynamicSEXP);
     Rcpp::traits::input_parameter< int >::type n_endo(n_endoSEXP);
     Rcpp::traits::input_parameter< int >::type nper(nperSEXP);
-    Rcpp::traits::input_parameter< int >::type max_lag(max_lagSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_residuals_(endos, icols, exo_data, params, f_dynamic, n_endo, nper, max_lag));
+    Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_residuals_(endos, icols, exo_data, params, f_dynamic, n_endo, nper, period_shift));
     return rcpp_result_gen;
 END_RCPP
 }
 // get_triplet_jac
-List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, IntegerVector tshift, SEXP exo_data, SEXP params, Function jac_dynamic, int n_endo, int nper, int max_lag);
-RcppExport SEXP _dynmdl_get_triplet_jac(SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP max_lagSEXP) {
+List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence, IntegerVector tshift, SEXP exo_data, SEXP params, Function jac_dynamic, int n_endo, int nper, int period_shift);
+RcppExport SEXP _dynmdl_get_triplet_jac(SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,14 +61,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Function >::type jac_dynamic(jac_dynamicSEXP);
     Rcpp::traits::input_parameter< int >::type n_endo(n_endoSEXP);
     Rcpp::traits::input_parameter< int >::type nper(nperSEXP);
-    Rcpp::traits::input_parameter< int >::type max_lag(max_lagSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_triplet_jac(endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, max_lag));
+    Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_triplet_jac(endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, period_shift));
     return rcpp_result_gen;
 END_RCPP
 }
 // get_jac_backwards
-List get_jac_backwards(NumericVector endos, NumericVector lags, NumericVector cols, SEXP exo_data, SEXP params, Function jac_dynamic, int it, int max_lag);
-RcppExport SEXP _dynmdl_get_jac_backwards(SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP itSEXP, SEXP max_lagSEXP) {
+List get_jac_backwards(NumericVector endos, NumericVector lags, NumericVector cols, SEXP exo_data, SEXP params, Function jac_dynamic, int it, int period_shift);
+RcppExport SEXP _dynmdl_get_jac_backwards(SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP itSEXP, SEXP period_shiftSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -79,8 +79,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< Function >::type jac_dynamic(jac_dynamicSEXP);
     Rcpp::traits::input_parameter< int >::type it(itSEXP);
-    Rcpp::traits::input_parameter< int >::type max_lag(max_lagSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_jac_backwards(endos, lags, cols, exo_data, params, jac_dynamic, it, max_lag));
+    Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_jac_backwards(endos, lags, cols, exo_data, params, jac_dynamic, it, period_shift));
     return rcpp_result_gen;
 END_RCPP
 }

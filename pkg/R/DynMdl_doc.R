@@ -411,3 +411,26 @@ NULL
 #' @seealso
 #' \code{\link{set_labels}}
 NULL
+
+#' \code{\link{DynMdl}} method: Calculates the residuals of the equations
+#' @name residual_check
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} calculates the 
+#' residuals for the full model period and returns the 
+#' result  as a \code{\link[regts]{regts}} timeseries object.
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$residual_check(tol = 0)
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{tol}}{the tolerance parameter. 
+#' The return value does not include columns for the euqations
+#' whose residuals are smaller than \code{tol}}}
+NULL
