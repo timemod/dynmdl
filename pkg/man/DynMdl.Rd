@@ -108,9 +108,10 @@ and report the differences larger than a tolerance parameters}
 theory used in the Dynare function stoch_simul. Only shocks in the first
 solution period are allowed.}
 
-\item{\code{get_jacob(sparse = TRUE)}}{Returns the Jacobian for the
-stacked-time Newton problem either as a sparse matrix
-(a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
+\item{\code{get_jacob}}{Returns the Jacobian for the static problem}
+
+\item{\code{get_static_jacob}}{Returns the Jacobian for the
+stacked-time Newton problem}
 
 \item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
 computed with functiomn \code{check()} of \code{solve_perturbation()},

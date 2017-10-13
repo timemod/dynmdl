@@ -120,9 +120,10 @@ setOldClass("regts")
 #' theory used in the Dynare function stoch_simul. Only shocks in the first
 #' solution period are allowed.}
 #'
-#' \item{\code{get_jacob(sparse = TRUE)}}{Returns the Jacobian for the
-#' stacked-time Newton problem either as a sparse matrix
-#' (a \code{\link[Matrix]{Matrix}} object) or normal \code{\link{matrix}}.}
+#' \item{\code{get_jacob}}{Returns the Jacobian for the static problem}
+#'
+#' \item{\code{get_static_jacob}}{Returns the Jacobian for the
+#' stacked-time Newton problem}
 #'
 #' \item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
 #' computed with functiomn \code{check()} of \code{solve_perturbation()},
@@ -601,6 +602,13 @@ DynMdl <- R6Class("DynMdl",
         jac <- as(jac, "matrix")
       }
       return (jac)
+    },
+    get_static_jacob = function() {
+      if (private$use_dll) private$prepare_solve_steady()
+      ret <- private$jac_static(private$endos, private$exos, private$params)
+      colnames(ret) <- private$endo_names
+      if (private$use_dll) private$clean_after_solve_steady()
+      return(ret)
     },
     get_eigval = function() {
       if (!is.null(private$ss) && !is.null(private$ss$eigval)) {
