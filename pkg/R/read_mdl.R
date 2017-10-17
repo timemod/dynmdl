@@ -64,7 +64,9 @@ read_mdl <- function(file, dll_dir) {
     mdl$init_data(data_period = get_period_range(ser$endo_data))
     mdl$set_period(ser$period)
     mdl$set_data(ser$endo_data)
-    mdl$set_data(ser$exo_data)
+    if (!is.null(ser$exo_data)) {
+      mdl$set_data(ser$exo_data)
+    }
   }
   if (!is.null(ser$labels)) {
     mdl$set_labels(ser$labels)
