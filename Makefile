@@ -109,7 +109,8 @@ bin: install_deps
 	$(MAKE) -f Makedeps
 	-@rm -rf tmp
 	mkdir tmp
-	R CMD INSTALL $(INSTALL_FLAGS) -l ./tmp --build $(PKGDIR)
+	R CMD build $(PKGDIR)
+	R CMD INSTALL $(INSTALL_FLAGS) -l ./tmp --build $(PKGTAR)
 
 document: install_deps
 	$(MAKE) -f Makedeps
