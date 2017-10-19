@@ -1,5 +1,5 @@
 ---
-title: "Tutorial for package `dynmdl`"
+title: "Introduction to package `dynmdl`"
 author: "Rob van Harrevelt"
 date: "`r Sys.Date()`"
 output:
