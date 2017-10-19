@@ -468,7 +468,7 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     residual_check = function(tol = 0) {
-      
+      if (is.null(private$model_period)) stop(private$period_error_msg)
       if (private$use_dll) private$prepare_solve()
       
       nper <- nperiod(private$model_period)
@@ -501,7 +501,7 @@ DynMdl <- R6Class("DynMdl",
      },
     solve = function(control = list(), force_stacked_time = FALSE,
                      solver = c("umfpackr", "nleqslv")) {
-      
+      if (is.null(private$model_period)) stop(private$period_error_msg)
       solver <- match.arg(solver)
       
       control_ <- list(ftol = 1e-8, trace = FALSE, cndtol = 1e-12, 
@@ -555,7 +555,7 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     solve_perturbation = function() {
-      
+      if (is.null(private$model_period)) stop(private$period_error_msg)
       self$solve_steady(init_data = FALSE)
       
       if (private$use_dll) private$prepare_solve()
@@ -584,15 +584,20 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     get_jacob = function(sparse = TRUE) {
+      if (is.null(private$model_period)) stop(private$period_error_msg)
       lags  <- private$get_endo_lags()
       leads <- private$get_endo_leads()
-      nper <-nperiod(private$model_period)
+      nper <- nperiod(private$model_period)
       x <- private$get_solve_endo()
       jac <- private$get_jac(x, lags, leads, nper)
       if (!sparse) {
         jac <- as(jac, "matrix")
       }
-      return (jac)
+      colnames(jac) <- as.character(outer(private$endo_names, 1:nper, 
+                                          FUN = "paste", sep ="_t"))
+      rownames(jac) <- as.character(outer(paste0("eq_", 1:private$endo_count), 
+                                          1:nper, FUN = "paste", sep ="_t"))
+      return(jac)
     },
     get_static_jacob = function() {
       if (private$use_dll) private$prepare_solve_steady()
