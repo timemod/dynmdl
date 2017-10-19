@@ -18,7 +18,6 @@ An R6 class for a Dynare model
 
 \describe{
 
-
 \item{\code{\link{get_max_lag}}}{Returns the maximum lag}
 
 \item{\code{\link{get_max_lead}}}{Returns the maximum lead}
@@ -81,17 +80,9 @@ by applying a function}
 
 \item{\code{\link{get_exo_data}}}{Returns the exogenous model data}
 
-\item{\code{solve_steady(start = self$get_static_endos(), init_data = TRUE,
-control = NULL)}}{
-Solve the steady state of the model.
-This methods solves the steady state problem. Argument \code{start}
-can be used to specify an initial guess for the steady state values.
-By default, the initial guess is either based on the \code{initval}
-block of the mode file or the result of a previous call of \code{solve_steady}.
-If \code{init_data} is true, then the computed steady state values
-are used to initialise the endogenous model variables
-\code{control} is a list of control options passed to
-\code{\link[nleqslv]{nleqslv}}.}
+\item{\code{\link{solve_steady}}}{Solves the steady state}
+
+\item{\code{\link{solve}}}{Solves the model}
 
 \item{\code{check()}}{Compute the eigenvalues of the linear
 system and check if the Blachard and Kahn conditions are satisfied.}

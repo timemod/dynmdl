@@ -434,3 +434,76 @@ NULL
 #' The return value does not include columns for the euqations
 #' whose residuals are smaller than \code{tol}}}
 NULL
+
+#' \code{\link{DynMdl}} method: Solves the steady state.
+#' @name solve_steady
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} solves
+#' the steady states.
+#' 
+#' The steady state function employs function \code{\link[nleqslv]{nleqslv}}
+#' of the \code{nleqslv} package.
+#'
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$solve_steady(start = mdl$get_static_endos(),
+#'                  init_data = TRUE, control)
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{start}}{a numeric vector with an initial
+#' guess of the steady state values of the endogenous variables}
+#' \item{\code{init_data}}{a logical. If \code{TRUE}, then if the 
+#' solve was succesfull the endogenous model variables are set to
+#' the computed steady state values.}
+#' \item{\code{control}}{A named list of control parameters passed to function
+#' \code{\link[nleqslv]{nleqslv}}.}
+#' }
+#' @seealso \code{\link{solve}}
+#' @examples
+#' mdl <- islm_mdl()
+#' mdl$solve_steady(control = list(trace = 1))
+NULL
+
+#' \code{\link{DynMdl}} method: Solves the model
+#' @name solve
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} solves
+#' the model.
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#'  md$solve(control = list(), force_stacked_time = FALSE,
+#'             solver = c("umfpackr", "nleqslv"))
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{control}}{A named list of control parameters passed to function
+#' \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
+#' depending on argument \code{solver}}
+#' \item{\code{force_stacked_time}}{a logical. If \code{TRUE}, the the 
+#' model is solved using the stacked time Newton method, also for 
+#' purely backward looking models.}
+#' \item{\code{solver}}{Specifies the solver employed to solve the model:
+#' \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
+#' For large model, the \code{umfpackr} solve can be much faster.}
+#' }
+#' @seealso \code{\link{solve_steady}}
+#' @examples
+#' mdl <- islm_mdl(period = "2018Q1/2023Q3")
+#' mdl$solve(control = list(trace = TRUE))
+NULL
+
