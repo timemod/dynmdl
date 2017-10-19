@@ -291,15 +291,15 @@ DynMdl <- R6Class("DynMdl",
       private$data_period <- data_period
       nper <- nperiod(data_period)
       endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
-      private$endo_data <- regts(endo_mat,
-                                 start = start_period(data_period),
+      private$endo_data <- regts(endo_mat, start = start_period(data_period),
                                  names = names(private$endos))
       if (private$exo_count > 0) {
         exo_mat <- matrix(rep(private$exos, each = nper), nrow = nper)
-        private$exo_data <- regts(exo_mat,
-                                  start = start_period(data_period),
-                                  names = names(private$exos))
+        colnames(exo_mat) <- private$exo_names
+      } else {
+        exo_mat <- matrix(NA_real_, nrow = nper, ncol = 0)
       }
+      private$exo_data <- regts(exo_mat, start = start_period(data_period))
       
       # update the model period
       startp <- start_period(data_period) + private$max_lag
@@ -360,6 +360,9 @@ DynMdl <- R6Class("DynMdl",
     get_exo_data = function(pattern = NULL, names = NULL, 
                             period = private$data_period) {
       period <- private$convert_period_arg(period)
+      if (private$exo_count == 0) {
+        return(private$exo_data[period, ])
+      }
       if (missing(pattern) && missing(names)) {
         ret <- private$exo_data[period, ]
       } else {
@@ -589,7 +592,9 @@ DynMdl <- R6Class("DynMdl",
       leads <- private$get_endo_leads()
       nper <- nperiod(private$model_period)
       x <- private$get_solve_endo()
+      if (private$use_dll) private$prepare_solve()
       jac <- private$get_jac(x, lags, leads, nper)
+      if (private$use_dll) private$clean_after_solve()
       if (!sparse) {
         jac <- as(jac, "matrix")
       }
@@ -897,10 +902,10 @@ DynMdl <- R6Class("DynMdl",
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
       return(get_residuals_(endos,
-                             which(private$lead_lag_incidence != 0) - 1,
-                             private$exo_data, private$params,
-                             private$f_dynamic, private$endo_count,
-                             nper, private$period_shift))
+                            which(private$lead_lag_incidence != 0) - 1,
+                            private$exo_data, private$params,
+                            private$f_dynamic, private$endo_count,
+                            nper, private$period_shift))
     },
     get_jac = function(x, lags, leads, nper) {
       endos <- c(lags, x, leads)
