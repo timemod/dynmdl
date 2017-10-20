@@ -31,14 +31,14 @@ create_fit_mod <- function(mod_file, fit_mod, debug = FALSE) {
   create_fit_control_file(mod_file, fit_control_file)
   run_macro(fit_control_file, expanded_file)
   
-  # analyse expaned file line to find a list of residuals
+  # analyse expaned file line to find a list of instruments
   fit_txt <- paste(readLines(expanded_file), collapse = " ")
   fit_txt <- gsub("\\$.+?\\$", "", fit_txt) # remove latex names
   fit_txt <- gsub("\\(.+?\\)", "", fit_txt) # remove long names
   m <- gregexpr("varexo([^;]+)", fit_txt, perl = TRUE)
   ma <- regmatches(fit_txt, m)
-  residuals <- strsplit(ma[[1]], split = "\\s+")
-  residuals <- setdiff(unlist(residuals), "varexo")
+  instruments <- strsplit(ma[[1]], split = "\\s+")
+  instruments <- setdiff(unlist(instruments), "varexo")
   
   if (!debug) {
     unlink(expanded_file)
@@ -46,17 +46,17 @@ create_fit_mod <- function(mod_file, fit_mod, debug = FALSE) {
   
   # run the Dynare parser to obtain the first order 
   # conditions for the fit procedure
-  fit_cond <- get_fit_conditions(mod_file, residuals)
+  fit_cond <- get_fit_conditions(mod_file, instruments)
   
   # finally, create the mod file for the fit procedure
   convert_mod(mod_file, fit_mod, fit_cond = fit_cond)
   
   # return information about the fit variables
   with (fit_cond, {
-    return (list(orig_endos = vars, orig_exos = orig_exos, 
-                 l_vars = l_vars, fit_vars = fit_vars,
-                 exo_vars = exo_vars, residuals = residuals, 
-                 sigmas = sigmas))
+    return(list(orig_endos = vars, orig_exos = orig_exos, 
+                l_vars = l_vars, fit_vars = fit_vars,
+                exo_vars = exo_vars, instruments = instruments, 
+                old_instruments = old_instruments, sigmas = sigmas))
   })
 }
 
@@ -148,6 +148,9 @@ convert_mod <- function(input_file, output_file, fit_cond) {
       writeLines(strwrap(fit_lines, width = 80), con = output)
       exo_lines <- paste("varexo", 
                          paste(fit_cond$exo_vars, collapse = " "), ";", "")
+      writeLines(strwrap(exo_lines, width = 80), con = output)
+      exo_lines <- paste("varexo", 
+                         paste(fit_cond$old_instruments, collapse = " "), ";", "")
       writeLines(strwrap(exo_lines, width = 80), con = output)
       writeLines(c("", line, ""), con = output)
       writeLines(c("% Model equations", ""), con = output)

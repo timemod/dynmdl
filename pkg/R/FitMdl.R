@@ -9,6 +9,7 @@
 #' @importFrom regts start_period
 #' @importFrom regts period_range
 #' @importFrom regts regts
+#' @importFrom regts zero_trim
 #' @importFrom tools file_path_sans_ext
 #' @export
 #' @keywords data
@@ -19,7 +20,7 @@
 #' \describe{
 #'
 #' \item{\code{get_endo_names()}}{Returns the names of the endogenous variables
-#' of the model (excluding the residuals and Lagrange multipliers used in the
+#' of the model (excluding the instruments and Lagrange multipliers used in the
 #' fit procedure).}
 #'
 #' \item{\code{get_exo_names()}}{Returns the names of the exogenous variables
@@ -32,12 +33,17 @@
 #' \item{\code{\link{get_fit}}}{Returns the fit targets
 #' used in the fit procedure}
 #'
-#' \item{\code{\link{clear_fit}}}{Remove allfit targets}
+#' \item{\code{\link{clear_fit}}}{Remove all fit targets and set all fit sigmas 
+#' to zero. Also all Lagrange multipliers are set to zero}
 #'
-#' \item{\code{get_residuals())}}{Returns the residuals used in the 
-#' fit procedure.}
+#' \item{\code{get_fit_instruments}}{Returns all non-zero fit instruments
+#' used in the fit procedure}
 #' 
-#' \item{\code{get_lagrange())}}{Returns the Lagrange multipliers
+#' \item{\code{get_sigmas}}{Returns all  sigma parameters >= 0(rms values)
+#' used in the fit procedure. If a sigma parameter is negative, the corresponding
+#' fit instrument is not included}
+#' 
+#' \item{\code{get_lagrange}}{Returns the Lagrange multipliers
 #' used in the fit procedure.}
 #'
 #' \item{\code{get_exo_data(names, period = self$get_data_period()}}{Returns
@@ -49,7 +55,7 @@
 #'
 #' \item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{Returns
 #' the endogenous data excluding the auxiliary endogenous variables
-#'  for the fit procedure (the residuals and the Lagrange multipliers).
+#'  for the fit procedure (the instruments and the Lagrange multipliers).
 #' \code{pattern} is a regular expression,  \code{names} a list of variables
 #'  and \code{period} an \code{\link[regts]{period_range}} object
 #'  or an object that can be coerced to \code{period_range}.}
@@ -143,6 +149,10 @@ FitMdl <- R6Class("FitMdl",
     },
     clear_fit = function() {
       super$set_exo_values(0, names = private$fit_info$fit_vars)
+      super$set_endo_values(0, names = private$fit_info$l_vars)
+      sigmas <- self$get_sigmas()
+      sigmas[] <- -1
+      self$set_param(sigmas)
     },
     get_endo_data = function(pattern = NULL, names = NULL, 
                              period = private$data_period) {
@@ -176,12 +186,19 @@ FitMdl <- R6Class("FitMdl",
       ret <- update_ts_labels(ret, self$get_labels())
       return(ret)
     },
-    get_residuals = function(names = private$fit_info$residuals, 
+    get_fit_instruments = function(names = private$fit_info$instruments, 
                              period = private$model_period) {
       if (!missing(names)) {
-        names <- intersect(names, sort(private$fit_info$residuals))
+        names <- intersect(names, sort(private$fit_info$instruments))
       }
-      return (private$endo_data[period, names, drop = FALSE])
+      ret <- private$endo_data[period, names, drop = FALSE]
+      cols <- !apply(ret == 0, 2, all)
+      if (!any(cols)) {
+        # no fit instruments
+        return(NULL)
+      } else {
+        return(zero_trim(ret[, cols, drop = FALSE]))
+      }
     },
     get_lagrange = function(names = private$fit_info$l_vars,
                             period = private$model_period) {
@@ -190,10 +207,19 @@ FitMdl <- R6Class("FitMdl",
       }
       return (private$endo_data[period, names, drop = FALSE])
     },
+    get_sigmas = function() {
+      ret <- self$get_param(names = private$fit_info$sigmas)
+      return(ret[ret >= 0])
+    },
     serialize = function() {
       ser <- as.list(super$serialize())
       ret <- c(ser, list(fit_info = private$fit_info))
       return(structure(ret, class = "serialized_fitmdl"))
+    },
+    solve = function(...) {
+      private$exo_data[, private$fit_info$old_instruments] <-
+               private$endo_data[, private$fit_info$instruments] 
+      ret <- super$solve(...)
     }
   ), 
   private = list(

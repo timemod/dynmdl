@@ -26,6 +26,7 @@ t0 = -15; t1 = 0.22;
 var l_1 l_2 l_3 l_4 l_5 l_6 l_7 l_8 ;
 varexo fit_y fit_yd fit_t fit_c fit_i fit_md fit_r fit_y_year ;
 varexo y_exo yd_exo t_exo c_exo i_exo md_exo r_exo y_year_exo ;
+varexo ut_old uc_old ui_old umd_old ;
 
 model;
 
@@ -47,10 +48,14 @@ y_year = 0.25 * (y + y(-1) + y(-2) + y(-3));
 
 % First order condition the resisuals:
 
-ut / sigma_ut^2 + l_3 * ((-1)) = 0;
-uc / sigma_uc^2 + l_4 * ((-1)) = 0;
-ui / sigma_ui^2 + l_5 * ((-1)) = 0;
-umd / sigma_umd^2 + l_6 * ((-1)) = 0;
+(sigma_ut >= 0) * (ut / sigma_ut^2 + l_3 * ((-1))) + (sigma_ut < 0) * (ut -
+ut_old) = 0;
+(sigma_uc >= 0) * (uc / sigma_uc^2 + l_4 * ((-1))) + (sigma_uc < 0) * (uc -
+uc_old) = 0;
+(sigma_ui >= 0) * (ui / sigma_ui^2 + l_5 * ((-1))) + (sigma_ui < 0) * (ui -
+ui_old) = 0;
+(sigma_umd >= 0) * (umd / sigma_umd^2 + l_6 * ((-1))) + (sigma_umd < 0) * (umd
+- umd_old) = 0;
 
 % First order conditions endogenous variables:
 

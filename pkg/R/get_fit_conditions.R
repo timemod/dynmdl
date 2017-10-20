@@ -1,23 +1,23 @@
 # Computes the first order conditions for the fit procedure
 #
 # @param mod_file the filename of the mod file
-# @param residuals a list of residuals used in the fit procedure
+# @param instruments a list of instruments used in the fit procedure
 #' @importFrom gsubfn gsubfn
 # @return a list with information about the derivatives
-get_fit_conditions <- function(mod_file, residuals) {
+get_fit_conditions <- function(mod_file, instruments) {
 
     # regular expressions:
     lag_pattern <- "\\[(-?\\d+)\\]"
 
     model_info <- compute_derivatives(mod_file)
     with(model_info, {
-        # a problem will occur if the residuals have
+        # a problem will occur if the instruments have
         # lags or leads. When computing derivatives with respect to the
         # exogenous variables, the dynare preprocessor ignores
         # leads and leads. For other variables a lag or lead > 1
         # would not result in an error
-        # TODO: maybe we could search for lags and leads of residuals
-        # in tbe mod file, and given an error only if the residuals
+        # TODO: maybe we could search for lags and leads of instruments
+        # in tbe mod file, and given an error only if the instruments
         # occur with this leads.
         if (dynamic_model$max_exo_lag > 0 ||  dynamic_model$max_exo_lead > 1) {
             stop("compute_first_order cannot handle exogenous lags and leads > 0")
@@ -34,9 +34,9 @@ get_fit_conditions <- function(mod_file, residuals) {
 
     exo_deriv <- model_info$dynamic_model$derivatives[, -(1:length(endo_names))]
     colnames(exo_deriv) <- model_info$exo_names
-    res_deriv <- exo_deriv[, residuals, drop = FALSE]
+    res_deriv <- exo_deriv[, instruments, drop = FALSE]
 
-    nres <- length(residuals)
+    nres <- length(instruments)
     # handle **
     fpow <- function(x) {
         return (gsub("\\*\\*", "^", x))
@@ -51,7 +51,8 @@ get_fit_conditions <- function(mod_file, residuals) {
     l_vars   <- paste("l", seq_along(vars), sep = "_")
     fit_vars <- paste("fit", vars, sep = "_")
     exo_vars <- paste(vars, "exo", sep = "_")
-    sigmas <- paste("sigma", residuals, sep = "_")
+    sigmas <- paste("sigma", instruments, sep = "_")
+    old_instruments <- paste0(instruments, "_old")
     # TODO: check that the intersection of fit_vars, exo_vars,
     # l_vars and sigmas with vars is zero
 
@@ -86,14 +87,17 @@ get_fit_conditions <- function(mod_file, residuals) {
     endo_deriv <- apply(endo_deriv, MARGIN = 2, FUN = mult_lagrange,
                         l_names = paste0(l_vars, "[0]"))
 
-    # derivatives with respect to fit intruments:
+    # derivatives with respect to fit instruments:
     sum_derivatives <- function(x) {
         return (paste(x[!is.na(x)], collapse = " + "))
     }
     if (nres > 0) {
       deriv1 <- apply(res_deriv, MARGIN = 2, FUN = sum_derivatives)
-      deriv0 <- paste(residuals, paste0(sigmas, "^2"), sep = " / ")
-      res_equations <- (paste0(paste(deriv0, deriv1, sep = " + "), " = 0;"))
+      deriv0 <- paste(instruments, paste0(sigmas, "^2"), sep = " / ")
+      res_equations <- paste0("(", sigmas, " >= 0) * (", 
+                               paste(deriv0, deriv1, sep = " + "), 
+                               ") + (", sigmas, " < 0) * (", instruments, 
+                               " - ", old_instruments, ") = 0;")
     } else {
       res_equations <- character(0)
     }
@@ -134,9 +138,10 @@ get_fit_conditions <- function(mod_file, residuals) {
         endo_equations[ivar] <- equation
     }
 
-    return (list(vars = vars, l_vars = l_vars, fit_vars = fit_vars,
-                 exo_vars = exo_vars, residuals = residuals, sigmas = sigmas,
-                 orig_exos = setdiff(model_info$exo_names, residuals),
-                 res_equations = res_equations,
-                 endo_equations = endo_equations))
+    return(list(vars = vars, l_vars = l_vars, fit_vars = fit_vars,
+                exo_vars = exo_vars, instruments = instruments, 
+                old_instruments = old_instruments, sigmas = sigmas,
+                orig_exos = setdiff(model_info$exo_names, instruments),
+                res_equations = res_equations,
+                endo_equations = endo_equations))
 }

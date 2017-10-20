@@ -1,3 +1,4 @@
+library(testthat)
 library(dynmdl)
 
 context("ISLM model with year fit")
