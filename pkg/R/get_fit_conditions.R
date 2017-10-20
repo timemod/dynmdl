@@ -1,7 +1,7 @@
 # Computes the first order conditions for the fit procedure
 #
 # @param mod_file the filename of the mod file
-# @param residuals a list of residuas used in the fit procedure
+# @param residuals a list of residuals used in the fit procedure
 #' @importFrom gsubfn gsubfn
 # @return a list with information about the derivatives
 get_fit_conditions <- function(mod_file, residuals) {
@@ -36,11 +36,14 @@ get_fit_conditions <- function(mod_file, residuals) {
     colnames(exo_deriv) <- model_info$exo_names
     res_deriv <- exo_deriv[, residuals, drop = FALSE]
 
+    nres <- length(residuals)
     # handle **
     fpow <- function(x) {
         return (gsub("\\*\\*", "^", x))
     }
-    res_deriv  <- apply(res_deriv,  MARGIN = c(1,2), FUN = fpow)
+    if (nres > 0) {
+      res_deriv  <- apply(res_deriv,  MARGIN = c(1,2), FUN = fpow)
+    }
     endo_deriv <- apply(endo_deriv, MARGIN = c(1,2), FUN = fpow)
 
     vars <- model_info$endo_names
@@ -74,10 +77,12 @@ get_fit_conditions <- function(mod_file, residuals) {
         }
         return(gsubfn(lag_pattern, repl, x))
     }
-    res_deriv <- apply(res_deriv, MARGIN = c(1,2), FUN = handle_lags_res)
-
-    res_deriv <- apply(res_deriv, MARGIN = 2, FUN = mult_lagrange,
-                       l_names = l_vars)
+    
+    if (nres > 0) {
+      res_deriv <- apply(res_deriv, MARGIN = c(1,2), FUN = handle_lags_res)
+      res_deriv <- apply(res_deriv, MARGIN = 2, FUN = mult_lagrange,
+                         l_names = l_vars)
+    }
     endo_deriv <- apply(endo_deriv, MARGIN = 2, FUN = mult_lagrange,
                         l_names = paste0(l_vars, "[0]"))
 
@@ -85,10 +90,13 @@ get_fit_conditions <- function(mod_file, residuals) {
     sum_derivatives <- function(x) {
         return (paste(x[!is.na(x)], collapse = " + "))
     }
-    deriv1 <- apply(res_deriv, MARGIN = 2, FUN = sum_derivatives)
-    deriv0 <- paste(residuals, paste0(sigmas, "^2"), sep = " / ")
-    res_equations <- (paste0(paste(deriv0, deriv1, sep = " + "), " = 0;"))
-
+    if (nres > 0) {
+      deriv1 <- apply(res_deriv, MARGIN = 2, FUN = sum_derivatives)
+      deriv0 <- paste(residuals, paste0(sigmas, "^2"), sep = " / ")
+      res_equations <- (paste0(paste(deriv0, deriv1, sep = " + "), " = 0;"))
+    } else {
+      res_equations <- character(0)
+    }
     handle_lags <- function(x, endo_lags) {
         repl <- function(x) {
             i <- as.integer(x) - shift
