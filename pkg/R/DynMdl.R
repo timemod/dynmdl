@@ -980,8 +980,10 @@ DynMdl <- R6Class("DynMdl",
         if (is.null(private$labels)) {
           private$labels <-character(0)
         }
-        private$labels[names] <- labels[names]
-        private$labels <- private$labels[order(names(private$labels))]
+        if (length(names) > 0) {
+          private$labels[names] <- labels[names]
+          private$labels <- private$labels[order(names(private$labels))]
+        }
       }
       return(invisible(NULL))
     },
