@@ -11,7 +11,7 @@ p1 <- period("2011Q3")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
 report <- capture_output(mdl <- dyn_mdl(mod_file))
-mdl$solve_steady()
+report2 <- capture_output(mdl$solve_steady())
 mdl$set_period(model_period)
 lag_per <- mdl$get_lag_period()
 
@@ -61,7 +61,7 @@ test_that("solve_perturb linear model", {
   mdl2 <- mdl$clone()
   # set all non-linear parameters to 0
   mdl2$set_param(c(c5 = 0, i5 = 0, m3 = 0))
-  mdl2$solve_steady()
+  mdl2$solve_steady(control = list(silent = TRUE))
   mdl2$set_data(regts(1200, period = lag_per), names = "y")
   # use a large shock, this should not matter if the model
   # is exactly linear

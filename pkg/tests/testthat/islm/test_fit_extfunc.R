@@ -37,8 +37,8 @@ multiply_d2 <<- function(x, y) {
 }
 
 report <- capture_output(mdl <- dyn_mdl(mod_file))
+report2 <- capture_output(mdl$solve_steady())
 
-mdl$solve_steady()
 mdl$set_period(model_period)
 mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
 mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")

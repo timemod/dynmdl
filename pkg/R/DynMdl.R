@@ -461,9 +461,7 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     check = function() {
-      
-      self$solve_steady(init_data = FALSE)
-      
+  
       if (private$use_dll) private$prepare_solve()
       private$ss  <- solve_first_order(private$ss,
                                        private$lead_lag_incidence,
@@ -570,8 +568,8 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     solve_perturbation = function() {
+
       if (is.null(private$model_period)) stop(private$period_error_msg)
-      self$solve_steady(init_data = FALSE)
       
       if (private$use_dll) private$prepare_solve()
       
