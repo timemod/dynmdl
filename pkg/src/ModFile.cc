@@ -80,16 +80,17 @@ ModFile::evalAllExpressions(bool warn_uninit)
   DynOut << "done" << endl;
 
   // Check if some symbols are not initialized, and give them a zero value then
-  for (int id = 0; id <= symbol_table.maxID(); id++)
-    {
+  for (int id = 0; id <= symbol_table.maxID(); id++) {
       SymbolType type = symbol_table.getType(id);
       if ((type == eEndogenous || type == eExogenous || type == eExogenousDet
            || type == eParameter || type == eModelLocalVariable)
-          && global_eval_context.find(id) == global_eval_context.end())
-        {
-          if (warn_uninit)
+          && global_eval_context.find(id) == global_eval_context.end()) {
+          /* we always want to warn about uninitialized parameters in the
+           * mod file */
+          if (warn_uninit || type == eParameter || type == eModelLocalVariable) {
             warnings << "WARNING: Can't find a numeric initial value for "
-                     << symbol_table.getName(id) << ", using zero" << endl;
+                     << symbol_table.getName(id) << ", using zero\n";
+          }
           global_eval_context[id] = 0;
         }
     }
@@ -286,7 +287,7 @@ ModFile::checkPass()
   set<int> unusedExo = dynamic_model.findUnusedExogenous();
   if (unusedExo.size() > 0)
     {
-      warnings << "WARNING: some exogenous (";
+      warnings << "WARNING: some exogenous variables (";
       for (set<int>::const_iterator it = unusedExo.begin();
            it != unusedExo.end(); )
         {
@@ -294,7 +295,7 @@ ModFile::checkPass()
           if (++it != unusedExo.end())
             warnings << ", ";
         }
-      warnings << ") are declared but not used in the model. This may lead to crashes or unexpected behaviour." << endl;
+      warnings << ") are declared but not used in the model. This may lead to crashes or unexpected behaviour.\n";
     }
 }
 
@@ -1272,5 +1273,9 @@ Rcpp::List ModFile::getDerivativeInfo(void)  {
                               Rcpp::Named("endo_names") = endo_names,
                               Rcpp::Named("param_names") = param_names,
                               Rcpp::Named("dynamic_model") = dynmdl);
+}
+
+int ModFile::get_warning_count(void) {
+    return(warnings.countWarnings());
 }
 #endif

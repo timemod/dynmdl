@@ -168,6 +168,7 @@ public:
 #ifdef USE_R
   Rcpp::List getModelListR(void);
   Rcpp::List getDerivativeInfo(void);
+  int get_warning_count(void);
 #endif
 };
 

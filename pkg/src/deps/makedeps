@@ -41,6 +41,12 @@ ModFile.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
            NumericalConstants.hh NumericalInitialization.hh Statement.hh \
            StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
            WarningConsolidation.hh dyn_error.hh dynout.hh location.hh
+ModFile.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
+           DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
+           ExternalFunctionsTable.hh ModelTree.hh NumericalConstants.hh \
+           NumericalInitialization.hh Statement.hh StaticModel.hh \
+           SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+           WarningConsolidation.hh location.hh
 ModelTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
              ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
              MinimumFeedbackSet.hh ModelTree.hh NumericalConstants.hh \
@@ -80,8 +86,7 @@ SteadyStateModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
 SymbolList.o : SymbolList.hh
 SymbolTable.o : CodeInterpreter.hh ExprNode.hh \
                ExternalFunctionsTable.hh SymbolTable.hh dyn_error.hh
-WarningConsolidation.o : WarningConsolidation.hh dyn_error.hh \
-                        location.hh
+WarningConsolidation.o : WarningConsolidation.hh dynout.hh location.hh
 compile_model.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
                  DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
                  ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
@@ -101,7 +106,8 @@ parse.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
          ModelTree.hh NumericalConstants.hh NumericalInitialization.hh \
          ParsingDriver.hh Shocks.hh SigmaeInitialization.hh Statement.hh \
          StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
-         WarningConsolidation.hh dynout.hh location.hh parse.hh run_dynare.hh
+         WarningConsolidation.hh dyn_error.hh dynout.hh location.hh parse.hh \
+         run_dynare.hh
 parse_macro.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
                DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
                ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
