@@ -31,7 +31,7 @@ mdl$set_period(model_period)
 data_period <- mdl$get_data_period()
 dynare_result <- regts(endo_data, period = data_period, names = endo_names)
 
-mdl$solve_steady(control = list(trace = FALSE))
+mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
 
 test_that("solve_steady", {
   #  read in dynare result, and compare

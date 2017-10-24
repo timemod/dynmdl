@@ -21,7 +21,7 @@ multiply <<- function(x, y) {
   return(x * y)
 }
 
-mdl$solve_steady()
+mdl$solve_steady(control = list(silent = TRUE))
 
 mdl$set_period(model_period)
 lag_per <- mdl$get_lag_period()

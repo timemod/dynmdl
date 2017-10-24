@@ -28,7 +28,7 @@ multiply_jac <<- function(x, y) {
   return(c(y,  x))
 }
 
-mdl$solve_steady()
+mdl$solve_steady(control = list(silent = TRUE))
 
 mdl$set_period(model_period)
 lag_per <- mdl$get_lag_period()

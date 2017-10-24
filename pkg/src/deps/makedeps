@@ -45,9 +45,6 @@ ModelTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
              ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
              MinimumFeedbackSet.hh ModelTree.hh NumericalConstants.hh \
              SymbolTable.hh dyn_error.hh dynout.hh
-ModelTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
-             ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
-             NumericalConstants.hh SymbolTable.hh
 NumericalConstants.o : NumericalConstants.hh
 NumericalInitialization.o : CodeInterpreter.hh ExprNode.hh \
                            ExternalFunctionsTable.hh NumericalInitialization.hh Statement.hh \
@@ -72,6 +69,9 @@ StaticModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
                NumericalConstants.hh StaticModel.hh SymbolTable.hh dyn_error.hh \
                dynout.hh
+StaticModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
+               ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
+               NumericalConstants.hh SymbolTable.hh
 SteadyStateModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                     ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
                     NumericalConstants.hh StaticModel.hh SteadyStateModel.hh \

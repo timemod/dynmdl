@@ -18,7 +18,7 @@ unlink(fit_mod_file)
 report <- capture_output(mdl <- dyn_mdl(mod_file,
                                         fit_mod_file = fit_mod_file))
 
-mdl$solve_steady()
+mdl$solve_steady(control = list(silent = TRUE))
 mdl$set_period(model_period)
 mdl$set_fit(regts(1275, start = "2016Q4"), names = "y_year")
 

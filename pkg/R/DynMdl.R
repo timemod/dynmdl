@@ -155,6 +155,7 @@ DynMdl <- R6Class("DynMdl",
         private$max_exo_lag        <- dynamic_model$max_exo_lag
         private$max_exo_lead       <- dynamic_model$max_exo_lead
         private$lead_lag_incidence <- dynamic_model$lead_lag_incidence
+        private$jac_static_size    <- static_model$jac_size
         private$jac_dynamic_size   <- dynamic_model$jac_size
       })
       
@@ -169,19 +170,19 @@ DynMdl <- R6Class("DynMdl",
       rownames(private$lead_lag_incidence) <- names(model_info$endos)
       
       private$njac_cols <- length(which(private$lead_lag_incidence != 0)) +
-        private$exo_count
+                           private$exo_count
       if (use_dll) {
         private$f_static <- function(y, x, params) {
           res <- numeric(private$endo_count)
-          .Call("f_static_", y, x, params, res, 
-                PACKAGE = "mdl_functions")
+          .Call("f_static_", y, x, params, res, PACKAGE = "mdl_functions")
           return(res)
         }
         private$jac_static <- function(y, x, params) {
           # NOTE: creating a new jac_steady every function call is
-          # inefficient, therefore use private$jac_static that is
+          # inefficient, therefore use private$jac_steady that is
           # created just before solve_steady is called.
-          .Call("jac_static_", y, x, params, private$jac_steady,
+          .Call("jac_static_", y, x, params, private$jac_steady$rows,
+                private$jac_steady$cols, private$jac_steady$values,
                 PACKAGE = "mdl_functions")
           return(private$jac_steady)
         }
@@ -201,7 +202,8 @@ DynMdl <- R6Class("DynMdl",
           return(private$jac)
         }
       } else {
-        eval(parse(text = model_info$static_functions))
+        # no dll, functions implemented in R
+        eval(parse(text = model_info$static_model$static_functions))
         eval(parse(text = model_info$dynamic_model$dynamic_functions))
         private$f_static    <- f_static
         private$jac_static  <- jac_static
@@ -416,26 +418,36 @@ DynMdl <- R6Class("DynMdl",
       return(private$change_data_(fun, names, pattern, period, "exo", ...))
     },
     solve_steady = function(start = self$get_static_endos(),
-                            init_data = TRUE, control = NULL) {
-      
+                            init_data = TRUE, control = NULL,
+                            solver = c("umfpackr", "nleqslv")) {
+
+      solver <- match.arg(solver)
       
       f <- function(endos) {
         return(private$f_static(endos, private$exos, private$params))
       }
-      jac <- function(endos) {
-        return(private$jac_static(endos, private$exos, private$params))
-      }
       
       if (private$use_dll) private$prepare_solve_steady()
-      # ToDO: use umfpackr?
-      out <- nleqslv(start, fn = f, jac = jac, method = "Newton",
-                     control = control)
+
+      if (solver == "umfpackr") {
+        out <- umf_solve_nl(start, fn = f, jac = private$get_static_jac, 
+                            control = control)
+        error <- !out$solved
+      } else {
+        jacf <- function(endos) {
+          j <- private$get_static_jac(endos)
+          return(as(j, "matrix"))
+        }
+        out <- nleqslv(start, fn = f, jac = jacf, method = "Newton",
+                       control = control)
+        error <- out$termcd != 1
+      }
       if (private$use_dll) private$clean_after_solve_steady()
+
       private$endos <- out$x
-      
-      if (out$termcd != 1) {
-        stop(paste("Error solving the steady state.\n",
-                   out$message))
+
+      if (error) {
+        stop(paste("Error solving the steady state.\n", out$message))
       }
       
       if (init_data && !is.null(private$endo_data)) {
@@ -449,9 +461,7 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     check = function() {
-      
-      self$solve_steady(init_data = FALSE)
-      
+  
       if (private$use_dll) private$prepare_solve()
       private$ss  <- solve_first_order(private$ss,
                                        private$lead_lag_incidence,
@@ -558,8 +568,8 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     solve_perturbation = function() {
+
       if (is.null(private$model_period)) stop(private$period_error_msg)
-      self$solve_steady(init_data = FALSE)
       
       if (private$use_dll) private$prepare_solve()
       
@@ -604,12 +614,15 @@ DynMdl <- R6Class("DynMdl",
                                           1:nper, FUN = "paste", sep ="_t"))
       return(jac)
     },
-    get_static_jacob = function() {
+    get_static_jacob = function(sparse = TRUE) {
       if (private$use_dll) private$prepare_solve_steady()
-      ret <- private$jac_static(private$endos, private$exos, private$params)
-      colnames(ret) <- private$endo_names
+      jac <- private$get_static_jac(private$endos)
+      if (!sparse) {
+        jac <- as(jac, "matrix")
+      }
+      colnames(jac) <- private$endo_names
       if (private$use_dll) private$clean_after_solve_steady()
-      return(ret)
+      return(jac)
     },
     get_eigval = function() {
       if (!is.null(private$ss) && !is.null(private$ss$eigval)) {
@@ -694,6 +707,7 @@ DynMdl <- R6Class("DynMdl",
     jac_static = NULL,
     f_dynamic = NULL,
     jac_dynamic = NULL,
+    jac_static_size = NA_integer_,
     jac_dynamic_size = NA_integer_,
     model_period = NULL,
     data_period =  NULL,
@@ -926,6 +940,12 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values,
                           dims = as.integer(rep(n, 2))))
     },
+    get_static_jac = function(x) {
+      mat_info <- private$jac_static(x, private$exos, private$params)
+      return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
+                          x = mat_info$values, 
+                          dims = as.integer(rep(private$endo_count, 2))))
+    },
     prepare_solve = function() {
       private$nrow_exo <- nrow(private$exo_data)
       private$jac  <- list(rows   = integer(private$jac_dynamic_size),
@@ -947,8 +967,9 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(NULL))
     },
     prepare_solve_steady = function() {
-      private$jac_steady <- matrix(0, nrow = private$endo_count,
-                                   ncol = private$endo_count)
+      private$jac_steady <- list(rows   = integer(private$jac_static_size),
+                                 cols   = integer(private$jac_static_size),
+                                 values = numeric(private$jac_static_size))
       dyn.load(private$dll_file)
       return(invisible(NULL))
     },
@@ -1001,6 +1022,8 @@ DynMdl <- R6Class("DynMdl",
                   private$max_exo_lead))
       cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
                   private$max_exo_lag))
+      cat(sprintf("%-60s%d\n", "Number of nonzeros static. jac:",
+                  private$jac_static_size))
       cat(sprintf("%-60s%d\n", "Number of nonzeros dyn. jac:",
                   private$jac_dynamic_size))
       if (!is.null(private$model_period)) {

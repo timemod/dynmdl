@@ -1655,7 +1655,6 @@ ModelTree::jacobianHelper(ostream &output, int eq_nb, int col_nb, ExprNodeOutput
 }
 
 
-#ifdef USE_R
 void ModelTree::jacobianHelper(ostream &output, int ideriv, int eq_nb, 
                                int col_nb, ExprNodeOutputType output_type) const {
 
@@ -1667,7 +1666,7 @@ void ModelTree::jacobianHelper(ostream &output, int ideriv, int eq_nb,
   output << RIGHT_ARRAY_SUBSCRIPT(output_type);
   output << ASSIGNMENT_OPERATOR(output_type);
   output << eq_nb + 1;
-  if (output_type == oCDynamicModel) {
+  if (IS_C(output_type)) {
       output << ";";
   }
   output << endl;
@@ -1678,7 +1677,7 @@ void ModelTree::jacobianHelper(ostream &output, int ideriv, int eq_nb,
   output << RIGHT_ARRAY_SUBSCRIPT(output_type);
   output << ASSIGNMENT_OPERATOR(output_type);
   output << col_nb + 1;
-  if (output_type == oCDynamicModel) {
+  if (IS_C(output_type)) {
       output << ";";
   }
   output << endl;
@@ -1687,7 +1686,6 @@ void ModelTree::jacobianHelper(ostream &output, int ideriv, int eq_nb,
   output << "values" << LEFT_ARRAY_SUBSCRIPT(output_type);
   output << ideriv + shift << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
-#endif
 
 void
 ModelTree::sparseHelper(int order, ostream &output, int row_nb, int col_nb, ExprNodeOutputType output_type) const

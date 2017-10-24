@@ -29,7 +29,7 @@ test_that("mdl and mdl2 are equal (after solving)", {
 
 report <- capture.output(mdl_dll <- dyn_mdl(mod_file, use_dll = TRUE,
                                             dll_dir = dll_dir))
-mdl_dll$solve_steady()
+mdl_dll$solve_steady(control = list(silent = TRUE))
 mdl_dll$set_period(mdl$get_period())
 mdl_dll$set_param(c(c0 = 110))
 mdl_dll$solve(control = list(silent = TRUE))

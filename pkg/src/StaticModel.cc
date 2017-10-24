@@ -1247,20 +1247,20 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, jacobian_output, output_type, tef_terms);
   }
+  int ideriv = 0;
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
-       it != first_derivatives.end(); it++)
-    {
+       it != first_derivatives.end(); it++) {
       int eq = it->first.first;
-      int symb_id = getSymbIDByDerivID(it->first.second);
+      int var = it->first.second;
       expr_t d1 = it->second;
-
-      jacobianHelper(jacobian_output, eq, symbol_table.getTypeSpecificID(symb_id), output_type);
+      jacobianHelper(jacobian_output, ideriv, eq, var, output_type);
       jacobian_output << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
       if (IS_R(output_type) || output_type == oCStaticModel) {
           jacobian_output << ";";
       }
       jacobian_output << endl;
+      ideriv++;
     }
 
   int g2ncols = symbol_table.endo_nbr() * symbol_table.endo_nbr();
@@ -1468,6 +1468,9 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
    } else if  (output_type == oRStaticModel) {
 
+      int nnz = first_derivatives.size();
+
+
       StaticOutput << "f_static <- function(y, x, params) {" << endl
                     << model_local_vars_output.str()
                     <<  "residual <- numeric(" <<  equations.size() << ")" <<  endl
@@ -1475,12 +1478,14 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
                     <<   "return(residual)" << endl
                     << "}" << endl << endl
                     << "jac_static <- function(y, x, params) {" << endl
-                    <<  "g1 <- matrix(0, " << equations.size()  << ", "
-                    << symbol_table.endo_nbr() << ")" << endl
                     << model_local_vars_output.str()
+                    << "rows   <- integer(" << nnz << ")" << endl
+                    << "cols   <- integer(" << nnz << ")" << endl
+                    << "values <- integer(" << nnz << ")" << endl << endl
                     << jacobian_output.str()
-                    << endl <<  "return(g1)"  << endl
-                    << "}" << endl;
+                     << endl
+                    << "return(list(rows = rows, cols = cols, values = values))"
+                    << endl << "}" << endl;
 
    } else if (output_type == oCStaticModel) {
       StaticOutput << "void f_static(double *y, double *x, double *params, double *residual) {" << endl
@@ -1498,7 +1503,8 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
       }
       StaticOutput << endl << "return;" << endl << "}" << endl << endl;
 
-      StaticOutput << "void jac_static(double *y, double *x, double *params, double *g1) {" << endl
+      StaticOutput << "void jac_static(double *y, double *x, double *params, "
+                      "int *rows, int *cols, double *values) {" << endl
                    << "  /* Jacobian  */" << endl;
       if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
           StaticOutput << "init_call_R();" << endl << endl;
@@ -2426,12 +2432,15 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
 
 
 #ifdef USE_R
-Rcpp::String StaticModel::getStaticModelR(void) {
+Rcpp::List StaticModel::getStaticModelR(void) {
 
     // function body
     std::ostringstream dynout;
     writeStaticModel(dynout, oRStaticModel);
-    return Rcpp::String(dynout.str());
+
+    return Rcpp::List::create(
+             Rcpp::Named("jac_size") = (int) first_derivatives.size(),
+             Rcpp::Named("static_functions")  = Rcpp::String(dynout.str()));
 }
 #endif
 

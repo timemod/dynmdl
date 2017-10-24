@@ -15,7 +15,8 @@ of the \code{nleqslv} package.
 \code{DynMdl} method:
 \preformatted{
 mdl$solve_steady(start = mdl$get_static_endos(),
-                 init_data = TRUE, control)
+                 init_data = TRUE, control,
+                 solver = c("umfpackr", "nleqslv"))
 
 }
 
@@ -32,7 +33,11 @@ guess of the steady state values of the endogenous variables}
 solve was succesfull the endogenous model variables are set to
 the computed steady state values.}
 \item{\code{control}}{A named list of control parameters passed to function
-\code{\link[nleqslv]{nleqslv}}.}
+\code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
+depending on argument \code{solver}}
+\item{\code{solver}}{Specifies the solver employed to solve the model:
+\code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
+For large model, the \code{umfpackr} solve can be much faster.}
 }
 }
 

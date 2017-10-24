@@ -41,38 +41,39 @@ ref2[lag_per, "ymin"] <- 0
 mdl$set_data(regts(1, period = lag_per), names = "y")
 
 test_that("steady state calculation", {
-    mdl_stat <- mdl$clone()
-    mdl_stat$solve_steady(start = c(y = 2, yplus = 1, ymin = 9, exo = 0))
-	expect_equal(mdl_stat$get_static_endos(), c(y = 0, yplus = 0, ymin = 0,
-	                                            exo= 0))
+  mdl_stat <- mdl$clone()
+  mdl_stat$solve_steady(start = c(y = 2, yplus = 1, ymin = 9, exo = 0),
+                        control = list(silent = TRUE))
+  expect_equal(mdl_stat$get_static_endos(), c(y = 0, yplus = 0, ymin = 0,
+                                              exo= 0))
 })
 
 test_that("solve", {
-    mdl1 <- mdl$clone()
-    mdl1$set_data(ref1[lead_per, "y", drop = FALSE])
-    mdl1$solve(control = list(silent = TRUE))
-    mdl2 <- mdl1$clone()
-    mdl2$set_data(ref2[lead_per, "y", drop = FALSE])
-    mdl2$set_data(regts(1, start = start_period(mdl$get_period())), 
-                      names = "x")
-    mdl2$solve(control = list(silent = TRUE))
-    per <- mdl$get_period()
-    expect_equal(mdl1$get_endo_data(period = per), ref1[per, ])
-    expect_equal(mdl2$get_endo_data(period = per), ref2[per, ])
+  mdl1 <- mdl$clone()
+  mdl1$set_data(ref1[lead_per, "y", drop = FALSE])
+  mdl1$solve(control = list(silent = TRUE))
+  mdl2 <- mdl1$clone()
+  mdl2$set_data(ref2[lead_per, "y", drop = FALSE])
+  mdl2$set_data(regts(1, start = start_period(mdl$get_period())), 
+                names = "x")
+  mdl2$solve(control = list(silent = TRUE))
+  per <- mdl$get_period()
+  expect_equal(mdl1$get_endo_data(period = per), ref1[per, ])
+  expect_equal(mdl2$get_endo_data(period = per), ref2[per, ])
 })
 
 test_that("solve_perturbation", {
-    mdl1 <- mdl$clone()
-    mdl1$solve_perturbation()
-    x <- lag(y_ref1)[lag_per]
-    mdl1$set_data(lag(y_ref1)[lag_per], names = "yplus")
-    expect_equal(mdl1$get_endo_data(), ref1)
-    expect_equal(mdl1$get_eigval(), eigvals)
-    mdl2 <- mdl1$clone()
-    mdl2$set_data(lag(y_ref2)[lag_per], names = "yplus")
-    mdl2$set_data(regts(1, start = start_period(mdl$get_period())), 
-                      names = "x")
-    mdl2$solve_perturbation()
-    expect_equal(mdl1$get_endo_data(), ref1)
-    expect_equal(mdl2$get_endo_data(), ref2)
+  mdl1 <- mdl$clone()
+  mdl1$solve_perturbation()
+  x <- lag(y_ref1)[lag_per]
+  mdl1$set_data(lag(y_ref1)[lag_per], names = "yplus")
+  expect_equal(mdl1$get_endo_data(), ref1)
+  expect_equal(mdl1$get_eigval(), eigvals)
+  mdl2 <- mdl1$clone()
+  mdl2$set_data(lag(y_ref2)[lag_per], names = "yplus")
+  mdl2$set_data(regts(1, start = start_period(mdl$get_period())), 
+                names = "x")
+  mdl2$solve_perturbation()
+  expect_equal(mdl1$get_endo_data(), ref1)
+  expect_equal(mdl2$get_endo_data(), ref2)
 })
