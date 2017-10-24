@@ -318,7 +318,7 @@ public:
     return -1;
   };
 #ifdef USE_R
-  Rcpp::String getStaticModelR(void);
+  Rcpp::List getStaticModelR(void);
 #endif
 };
 

@@ -1217,7 +1217,7 @@ Rcpp::List ModFile::getModelListR(void)  {
 
 
     Rcpp::List dynmdl = dynamic_model.getDynamicModelR();
-    Rcpp::String static_functions = static_model.getStaticModelR();
+    Rcpp::List statmdl = static_model.getStaticModelR();
 
     Rcpp::NumericVector exos(exo_count);
     Rcpp::NumericVector endos(endo_count);
@@ -1245,7 +1245,7 @@ Rcpp::List ModFile::getModelListR(void)  {
                               Rcpp::Named("endos") = endos,
                               Rcpp::Named("params") = params,
                               Rcpp::Named("dynamic_model") = dynmdl,
-                              Rcpp::Named("static_functions") = static_functions);
+                              Rcpp::Named("static_model") = statmdl);
 }
 
 Rcpp::List ModFile::getDerivativeInfo(void)  {
