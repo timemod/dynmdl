@@ -1,4 +1,5 @@
 library(dynmdl)
+library(testthat)
 context("ISLM model with local variables")
 
 nperiods <- 18

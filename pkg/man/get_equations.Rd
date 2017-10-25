@@ -3,10 +3,10 @@
 \name{get_equations}
 \alias{get_equations}
 \title{\code{\link{DynMdl}} method: Returns a character vector with the model 
-equations}
+equations.}
 \description{
 This method of R6 class \code{\link{DynMdl}} returns a character vector 
-with the model equations.
+with the model equations (excluding local equations).
 }
 \section{Usage}{
 
@@ -23,7 +23,7 @@ with the model equations.
 
 
 \describe{
-\item{\code{i}}{A numeric vector with the indices of the equations.
+\item{\code{i}}{A numeric vector with the indices of the non-local equations.
 If not specified, then the function returns all equations}
 }
 }

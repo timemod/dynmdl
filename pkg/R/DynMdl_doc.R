@@ -513,13 +513,13 @@ NULL
 NULL
 
 #' \code{\link{DynMdl}} method: Returns a character vector with the model 
-#' equations
+#' equations.
 #'
 #' @name get_equations
 #'
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} returns a character vector 
-#' with the model equations. 
+#' with the model equations (excluding local equations). 
 #' 
 #' @section Usage:
 #' \code{DynMdl} method:
@@ -533,7 +533,7 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{i}}{A numeric vector with the indices of the equations.
+#' \item{\code{i}}{A numeric vector with the indices of the non-local equations.
 #' If not specified, then the function returns all equations}
 #' }
 #' @examples

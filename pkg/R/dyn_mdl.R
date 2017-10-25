@@ -138,6 +138,13 @@ get_equations <- function(mod_text) {
   model_block <- gsub("%.*\n", "\n", model_block, perl = TRUE)
   equations <- strsplit(model_block, ";")[[1]]
   equations <- unlist(lapply(equations, FUN = trimws))
+  
+  # skip local equations
+  if (!is.null(equations)) {
+    # TODO: sometimes this gows wrong
+    sel <- !startsWith(equations, "#")
+    equations <- equations[sel]
+  }
   return(equations)
 }
 
