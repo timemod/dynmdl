@@ -9,7 +9,6 @@ varexo g_@{co} ms_@{co};
 %$fit$
 @#for co in countries
 varexo ut_@{co} ui_@{co} uc_@{co} umd_@{co};
-sigma_ut_@{co} = 6; sigma_uc_@{co} = 5; sigma_ui_@{co} = 21; sigma_umd_@{co} = 2;
 @#endfor
 %$endfit$
 

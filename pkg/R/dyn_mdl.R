@@ -130,7 +130,7 @@ has_fit_block <- function(mod_file) {
     }
   }
   close(con)
-  return (fit)
+  return(fit)
 }
 
 

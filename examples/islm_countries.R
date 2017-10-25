@@ -11,23 +11,24 @@ params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
 # read fit targets
-fit_targets <- as.regts(read.csv("input/islm_countries_fit.csv", row.names = 1))
+fit_targets <- as.regts(read.csv("input/islm_countries_fit.csv", 
+                                 row.names = 1))
 print(fit_targets)
 
 mdl <- dyn_mdl("mod/islm_countries.mod", 
                   fit_mod_file = "fmod/islm_countries.fmod")
 print(mdl)
 
-mdl$set_params(params)
+mdl$set_param(params)
 
-print(mdl$get_params())
+print(mdl$get_param())
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2022Q4")
 
 mdl$set_fit(fit_targets)
 cat("fit targets:\n")
-print(mdl$get_fit_targets())
+print(mdl$get_fit())
 
 mdl$solve(control = list(trace = TRUE))
 

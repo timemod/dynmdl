@@ -82,8 +82,6 @@ var d       //preference shock
  
 %$fit$
 varexo epsd epsphi epsmu_I epsA epsm;
-sigma_epsd = exp(-1.51); sigma_epsphi = exp(-2.36); sigma_epsmu_I = exp(-5.43);
-sigma_epsA = exp(-3.97); sigma_epsm = exp(-5.85);
 %$endfit$
 
 predetermined_variables k;
@@ -145,12 +143,7 @@ gammmaPI =1.29;
 PIbar = 1.01;
 rhod  = 0.12;
 rhophi = 0.93;
-sigma_A = -3.97;
-sigma_d = -1.51;
 
-sigma_phi =-2.36;
-sigma_mu =-5.43;
-sigma_m  =-5.85;
 Lambdamu=3.4e-3;
 LambdaA = 2.8e-3;
 

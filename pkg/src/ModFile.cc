@@ -25,6 +25,7 @@
 #ifndef _WIN32
 # include <unistd.h>
 #endif
+#include <boost/algorithm/string/trim.hpp>
 
 #include "ModFile.hh"
 #include "ConfigFile.hh"
@@ -56,11 +57,12 @@ ModFile::~ModFile()
 void
 ModFile::evalAllExpressions(bool warn_uninit)
 {
-  DynOut << "Evaluating expressions...";
+  DynOut << "Evaluating expressions..." << endl;
 
   // Loop over all statements, and fill global eval context if relevant
-  for (vector<Statement *>::const_iterator it = statements.begin(); it != statements.end(); it++)
-    {
+  for (vector<Statement *>::const_iterator it = statements.begin(); 
+       it != statements.end(); it++) {
+
       InitParamStatement *ips = dynamic_cast<InitParamStatement *>(*it);
       if (ips)
         ips->fillEvalContext(global_eval_context);
@@ -72,6 +74,29 @@ ModFile::evalAllExpressions(bool warn_uninit)
       LoadParamsAndSteadyStateStatement *lpass = dynamic_cast<LoadParamsAndSteadyStateStatement *>(*it);
       if (lpass)
         lpass->fillEvalContext(global_eval_context);
+
+      NativeStatement *ns = dynamic_cast<NativeStatement *>(*it);
+      if (ns) {
+        // native statement: this is typically a statement such as pi = acos(-1)
+        // were pi is not a parameter
+        std::ostringstream msg;
+
+        const std::string statement = ns->get_statement();
+        int pos = statement.find('=');
+        if (pos != std::string::npos) {
+            std::string name = statement.substr(0, pos);
+            boost::algorithm::trim(name);
+            msg  << "Variable " << name << " is not a declared parameter." 
+                 << endl
+                 << "  dynmdl does not support local variables outside the "
+                 << "model block" << endl;
+        } else {
+            msg << "Found native statement" << endl
+                << "  " << statement << endl
+                << "  dynmdl does not support native statements" << endl;
+        }
+        dyn_error(msg);
+      }
     }
 
   // Evaluate model local variables

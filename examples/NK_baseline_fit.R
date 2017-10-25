@@ -15,6 +15,11 @@ fit_targets <- as.regts(read.csv(fit_target_csv), time_column = 1)
 cat("fit targets:\n")
 print(fit_targets)
 
+sigmas <- c(sigma_epsd = -1.51, sigma_epsphi = -2.36, sigma_epsmu_I =-5.43, 
+            sigma_epsA = -3.97, sigma_epsm = -5.86)
+sigmas <- exp(sigmas)
+mdl$set_param(sigmas)
+
 mdl$set_fit(fit_targets)
 print(mdl$get_fit_targets())
 

@@ -31,7 +31,7 @@ create_fit_mod <- function(mod_file, fit_mod, debug = FALSE) {
   create_fit_control_file(mod_file, fit_control_file)
   run_macro(fit_control_file, expanded_file)
   
-  # analyse expaned file line to find a list of instruments
+  # analyse expanded file line to find a list of instruments
   fit_txt <- paste(readLines(expanded_file), collapse = " ")
   fit_txt <- gsub("\\$.+?\\$", "", fit_txt) # remove latex names
   fit_txt <- gsub("\\(.+?\\)", "", fit_txt) # remove long names
@@ -126,7 +126,11 @@ convert_mod <- function(input_file, output_file, fit_cond) {
       param_lines <- paste("parameters", paste(fit_cond$sigmas,
                                                collapse = " "), ";", "")
       writeLines(strwrap(param_lines, width = 80), con = output)
+      # initial values for the sigmas (-1)
+      writeLines(paste(fit_cond$sigmas, " = -1;", collapse = " "), 
+                 con = output)
       writeLines("", con = output)
+      
       line <- readLines(input, n = 1)
       line <- trimws(line)
       while (!startsWith(line, fit_end)) {

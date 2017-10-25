@@ -15,6 +15,7 @@ mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period(period)
 
 mdl$set_fit(regts(1275, start = "2017Q4"), names = "y_year")
+mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
 mdl$solve(control = list(trace = TRUE))
 
 print(mdl$get_endo_data())
