@@ -12,7 +12,7 @@ names(params) <- as.character(param_names)
 mdl <- dyn_mdl("mod/islm_back_countries.mod", bytecode = FALSE)
 print(mdl)
 
-mdl$set_params(params)
+mdl$set_param(params)
 
 print(system.time(
   mdl$solve_steady(control = list(trace = TRUE))

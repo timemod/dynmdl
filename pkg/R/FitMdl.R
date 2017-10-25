@@ -217,6 +217,23 @@ FitMdl <- R6Class("FitMdl",
       return(structure(ret, class = "serialized_fitmdl"))
     },
     solve = function(...) {
+      
+      # check if we have sufficient fit instruments
+      fit_targets <- self$get_fit()
+      if (is.null(fit_targets)) {
+        n_fit_targets <- 0
+      } else {
+        n_fit_targets <- ncol(fit_targets)
+      }
+      if (n_fit_targets > 0) {
+        n_sigmas <- length(self$get_sigmas())
+        if (n_sigmas < n_fit_targets) {
+          stop(sprintf(paste("The number of fit targets (%d) exceeds the",
+                             "number of fit instruments (%d)\n."),
+                        n_fit_targets, n_sigmas))
+        }
+      }
+      
       private$exo_data[, private$fit_info$old_instruments] <-
                private$endo_data[, private$fit_info$instruments] 
       ret <- super$solve(...)

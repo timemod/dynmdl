@@ -565,7 +565,10 @@ DynMdl <- R6Class("DynMdl",
       private$endo_data[private$model_period, ] <-
         t(matrix(ret$x, nrow = private$endo_count))
       
-      return (invisible(self))
+      if (!ret$solved) {
+        stop(paste("Model solving not succesfull.\n", ret$message))
+      }
+      return(invisible(self))
     },
     solve_perturbation = function() {
 

@@ -14,7 +14,7 @@ fit_target_csv <- "input/islm_fit_targets.csv"
 mdl <- dyn_mdl("mod/islm_fit.mod", fit_mod_file = "fmod/islm_fit.fmod")
 print(mdl)
 
-# mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 21))
+mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 21))
 
 mdl$solve_steady(control = list(trace = TRUE))
 
@@ -24,7 +24,7 @@ fit_targets <- as.regts(read.csv(fit_target_csv), time_column = 1)
 cat("fit targets:\n")
 print(fit_targets)
 
-#mdl$set_fit(fit_targets)
+mdl$set_fit(fit_targets)
 print(mdl$get_fit())
 
 mdl$solve(control = list(trace = TRUE))
