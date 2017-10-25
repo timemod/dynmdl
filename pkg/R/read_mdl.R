@@ -53,10 +53,11 @@ read_mdl <- function(file, dll_dir) {
   
   if (inherits(ser, "serialized_fitmdl")) {
     mdl <- FitMdl$new(ser$model_info, ser$fit_info, ser$params, 
-                      ser$bytecode, ser$use_dll, dll_dir, dll_file)
+                      ser$equations, ser$bytecode, ser$use_dll, dll_dir, 
+                      dll_file)
   } else {
-    mdl <- DynMdl$new(ser$model_info, ser$params, ser$bytecode, ser$use_dll, 
-                      dll_dir, dll_file)
+    mdl <- DynMdl$new(ser$model_info, ser$params, ser$equations, ser$bytecode, 
+                      ser$use_dll, dll_dir, dll_file)
   }
   mdl$set_static_endos(ser$endos)
   mdl$set_static_exos(ser$exos)

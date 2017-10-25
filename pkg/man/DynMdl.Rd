@@ -108,6 +108,9 @@ stacked-time Newton problem}
 computed with functiomn \code{check()} of \code{solve_perturbation()},
 ordered with increasing absolute value}
 
+\item{\code{\link{get_equations}}}{Returns a character vector with the 
+equations of the model.}
+
 \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} object}
 
 }

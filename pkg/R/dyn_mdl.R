@@ -25,6 +25,7 @@
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
+#' @importFrom readr read_file
 dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
                        fit_mod_file, debug = FALSE, dll_dir) {
   
@@ -65,8 +66,9 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     } else {
       dll_file <- NA_character_
     }
-    mdl <- FitMdl$new(model_info, fit_info, params, bytecode, use_dll,
-                       dll_dir, dll_file, debug)
+    equations <- get_equations(fit_mod_file)
+    mdl <- FitMdl$new(model_info, fit_info, params, equations, 
+                      bytecode, use_dll, dll_dir, dll_file, debug)
   } else {
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
@@ -79,8 +81,9 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     } else {
       dll_file <- NA_character_
     }
-    
-    mdl <- DynMdl$new(model_info, params, bytecode, use_dll, dll_dir, dll_file)
+    equations <- get_equations(mod_file)
+    mdl <- DynMdl$new(model_info, params, equations, 
+                      bytecode, use_dll, dll_dir, dll_file)
   }
   
   if (!missing(period)) {
@@ -131,6 +134,24 @@ has_fit_block <- function(mod_file) {
   }
   close(con)
   return(fit)
+}
+
+
+# this function read the mod file and creates a vector with equations
+get_equations <- function(mod_file) {
+  
+  mod_text <- read_file(mod_file)
+  m <- gregexpr("model.*?;([\\s\\S]+?)end;", mod_text, perl = TRUE)[[1]]
+  startpos <- attr(m, "capture.start")[1]
+  endpos <- startpos + attr(m, "capture.length")[1] - 1
+  model_block <- substr(mod_text, startpos, endpos)
+  model_block <- trimws(model_block)
+  
+  # remove comments
+  model_block <- gsub("%.*\n", "\n", model_block, perl = TRUE)
+  equations <- strsplit(model_block, ";")[[1]]
+  equations <- unlist(lapply(equations, FUN = trimws))
+  return(equations)
 }
 
 

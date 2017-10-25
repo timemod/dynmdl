@@ -120,15 +120,19 @@ setOldClass("regts")
 #' computed with functiomn \code{check()} of \code{solve_perturbation()},
 #' ordered with increasing absolute value}
 #' 
+#' \item{\code{\link{get_equations}}}{Returns a character vector with the 
+#' equations of the model.}
+#' 
 #' \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} object}
 #'
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(
-    initialize = function(model_info, params, bytecode, use_dll, dll_dir,
-                          dll_file) {
+    initialize = function(model_info, params, equations, 
+                          bytecode, use_dll, dll_dir, dll_file) {
       
       private$model_info <- model_info
+      private$equations <- equations
       
       if (use_dll) {
         reg.finalizer(self,
@@ -627,6 +631,12 @@ DynMdl <- R6Class("DynMdl",
       if (private$use_dll) private$clean_after_solve_steady()
       return(jac)
     },
+    get_equations = function(i = 1:private$endo_count) {
+      if (!is.numeric(eq_numbers)) {
+        stop("eq_numbers should be a numeric")
+      }
+      return(private$equations[eq_numbers])
+    },
     get_eigval = function() {
       if (!is.null(private$ss) && !is.null(private$ss$eigval)) {
         i <- order(abs(private$ss$eigval))
@@ -673,6 +683,7 @@ DynMdl <- R6Class("DynMdl",
       }
       serialized_mdl <- list(version = packageVersion("dynmdl"),
                              model_info = private$model_info, 
+                             equations = private$equations,
                              bytecode = private$bytecode,
                              use_dll = private$use_dll, dll_data = dll_data,
                              dll_basename = basename(private$dll_file),
@@ -689,6 +700,7 @@ DynMdl <- R6Class("DynMdl",
   ),
   private = list(
     model_info = NULL,
+    equations = NULL,
     exo_count = NA_integer_,
     endo_count = NA_integer_,
     exo_names = NULL,

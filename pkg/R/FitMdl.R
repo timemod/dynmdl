@@ -64,10 +64,10 @@
 FitMdl <- R6Class("FitMdl",
   inherit = DynMdl,
   public = list(
-    initialize = function(model_info, fit_info, params, bytecode, use_dll, 
-                          dll_dir, dll_file, debug = FALSE) {
-      super$initialize(model_info, params, bytecode, use_dll, dll_dir, 
-                       dll_file)
+    initialize = function(model_info, fit_info, params, equations,
+                          bytecode, use_dll, dll_dir, dll_file, debug = FALSE) {
+      super$initialize(model_info, params, equations, bytecode, use_dll, 
+                       dll_dir,  dll_file)
       private$fit_info <- fit_info
     }, 
     print = function(short = TRUE) {
@@ -79,8 +79,9 @@ FitMdl <- R6Class("FitMdl",
                   endo_count_orig))
       cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
                   exo_count_orig))
-      # TODO: print maximum and minimum lags / leads of the original
-      # model
+      cat("Information about the fit procedure:\n")
+      cat(sprintf("%-60s%d\n", "Number of potential fit instruments:",
+                  length(private$fit_info$sigmas)))
       cat("Information about the expanded model for the fit procedure:\n")
       private$print_info(short)
       return (invisible(NULL))
