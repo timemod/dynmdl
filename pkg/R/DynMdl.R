@@ -632,10 +632,10 @@ DynMdl <- R6Class("DynMdl",
       return(jac)
     },
     get_equations = function(i = 1:private$endo_count) {
-      if (!is.numeric(eq_numbers)) {
-        stop("eq_numbers should be a numeric")
+      if (!is.numeric(i)) {
+        stop("Argument i should be a numeric")
       }
-      return(private$equations[eq_numbers])
+      return(private$equations[i])
     },
     get_eigval = function() {
       if (!is.null(private$ss) && !is.null(private$ss$eigval)) {

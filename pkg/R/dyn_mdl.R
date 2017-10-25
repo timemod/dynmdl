@@ -50,7 +50,9 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     dll_dir <- NA_character_
   }
   
-  if (has_fit_block(mod_file)) {
+  mod_text <- read_file(mod_file)
+  
+  if (has_fit_block(mod_text)) {
     if (missing(fit_mod_file)) {
       fit_mod_file <- tempfile()
     }
@@ -66,7 +68,8 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     } else {
       dll_file <- NA_character_
     }
-    equations <- get_equations(fit_mod_file)
+    fit_mod_text <- read_file(fit_mod_file)
+    equations <- get_equations(fit_mod_text)
     mdl <- FitMdl$new(model_info, fit_info, params, equations, 
                       bytecode, use_dll, dll_dir, dll_file, debug)
   } else {
@@ -81,7 +84,7 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     } else {
       dll_file <- NA_character_
     }
-    equations <- get_equations(mod_file)
+    equations <- get_equations(mod_text)
     mdl <- DynMdl$new(model_info, params, equations, 
                       bytecode, use_dll, dll_dir, dll_file)
   }
@@ -114,33 +117,17 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
   return(mdl)
 }
 
-# Returns true if model mod_file contains a fit block
-# Note that the fit block should be in the main mod file.
-has_fit_block <- function(mod_file) {
-  # TODO: fit_command is also used in create_fit_mod. Is there a way to store
-  # this data? Otherwise we could create a function get_fit_command().
-  fit_command <- "%$fit$"
-  fit <- FALSE
-  con <- file(mod_file, "r")
-  while (TRUE) {
-    line <- readLines(con, n = 1)
-    if (length(line) == 0) {
-      break
-    }
-    if (startsWith(trimws(line, "left"), fit_command)) {
-      fit <- TRUE
-      break
-    }
-  }
-  close(con)
-  return(fit)
+# Returns true if the model text contains a fit block.
+# Note that the fit block should be in the main mod file (it cannot
+# be included). The %$fit$ directive should also be on a separate line.
+has_fit_block <- function(mod_text) {
+  return(grepl(paste("(^|\\n)%\\$fit\\$(\\n|$)"), mod_text))
 }
 
 
 # this function read the mod file and creates a vector with equations
-get_equations <- function(mod_file) {
+get_equations <- function(mod_text) {
   
-  mod_text <- read_file(mod_file)
   m <- gregexpr("model.*?;([\\s\\S]+?)end;", mod_text, perl = TRUE)[[1]]
   startpos <- attr(m, "capture.start")[1]
   endpos <- startpos + attr(m, "capture.length")[1] - 1
