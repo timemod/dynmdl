@@ -7,7 +7,6 @@ varexo g ms; %exogenous variables
 
 %$fit$
 varexo ut uc ui umd; %residuals (endogenous)
-sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 2;
 %$endfit$
 
 %Setting parameter values

@@ -105,6 +105,10 @@ NativeStatement::writeOutput(ostream &output, const string &basename, bool minim
   output << ns << endl;
 }
 
+const string NativeStatement::get_statement(void) const {
+    return native_statement;
+}
+
 VerbatimStatement::VerbatimStatement(const string &verbatim_statement_arg) :
   verbatim_statement(verbatim_statement_arg)
 {

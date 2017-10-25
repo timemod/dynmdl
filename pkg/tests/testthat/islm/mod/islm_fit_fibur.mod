@@ -13,8 +13,7 @@ external_function(name = ifelse_d3, nargs = 3,
                   first_deriv_provided);
 
 %$fit$
-varexo ut uc umd ui;       % residuals
-sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 2;
+varexo ut uc umd ui;       % fit instruments
 %$endfit$
 
 %Setting parameter values

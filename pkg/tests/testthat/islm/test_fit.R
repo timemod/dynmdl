@@ -9,6 +9,7 @@ endo_name_file <- file.path(dynare_dir, "islm_fit_endo_names.txt")
 endo_file <- file.path(dynare_dir, "islm_fit_endo.csv")
 
 report <- capture_output(mdl <- read_mdl(rds_file))
+mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
 
 mdl_old <- mdl$copy()
 

@@ -15,8 +15,7 @@ external_function(name = multiply_d2, nargs = 2);
 
 
 %$fit$
-varexo ut uc umd ui;       % residuals
-sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 2;
+varexo ut uc umd ui;       % fit instruments
 %$endfit$
 
 %Setting parameter values

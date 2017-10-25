@@ -7,7 +7,6 @@ varexo g ms; %exogenous variables
 
 %$fit$
 varexo ut uc ui umd; %residuals (endogenous)
-sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 2;
 %$endfit$
 
 %Setting parameter values
@@ -15,7 +14,6 @@ parameters c0 c1 c2 c3 c4 c5;
 parameters i0 i1 i2 i3 i4 i5;
 parameters m0 m1 m2 m3;
 parameters t0 t1;
-parameters qt qc qi qmd; %standard deviations of residuals
 c0 = 100; c1 = 0.28; c2 = 0.32; c3 = 0.10; c4 = -20; c5 = 1;
 i0 = 100; i1 = 0.12; i2 = 0.08; i3 = 0.04; i4 = -40; i5 = -1.5;
 m0 = 75; m1 = 0.23; m2 = -35; m3 = -1.5;

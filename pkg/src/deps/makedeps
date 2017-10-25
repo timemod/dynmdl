@@ -71,6 +71,7 @@ SigmaeInitialization.o : CodeInterpreter.hh ExprNode.hh \
                         SymbolList.hh SymbolTable.hh WarningConsolidation.hh location.hh
 Statement.o : Statement.hh SymbolList.hh WarningConsolidation.hh \
              location.hh
+Statement.o : SymbolList.hh WarningConsolidation.hh location.hh
 StaticModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
                NumericalConstants.hh StaticModel.hh SymbolTable.hh dyn_error.hh \

@@ -153,6 +153,7 @@ private:
 public:
   NativeStatement(const string &native_statement_arg);
   virtual void writeOutput(ostream &output, const string &basename, bool minimal_workspace) const;
+  virtual const string get_statement(void) const;
 };
 
 class VerbatimStatement : public Statement
