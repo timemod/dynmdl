@@ -75,17 +75,16 @@ InitParamStatement::writeCOutput(ostream &output, const string &basename)
   output << "double " << symbol_table.getName(symb_id) << " = params[ " << id << " ];" << endl;
 }
 
-void
-InitParamStatement::fillEvalContext(eval_context_t &eval_context) const
-{
-  try
-    {
+void InitParamStatement::fillEvalContext(eval_context_t &eval_context) const {
+  try {
       eval_context[symb_id] = param_value->eval(eval_context);
-    }
-  catch (ExprNode::EvalException &e)
-    {
-      // Do nothing
-    }
+  } catch (ExprNode::EvalException &e) {
+      std::ostringstream msg;
+      msg << "Error evaluating parameter " << symbol_table.getName(symb_id) 
+          << endl << "  Probably some variables on the right hand side do "
+          "not exist." << endl;
+      dyn_error(msg);
+  }
 }
 
 InitOrEndValStatement::InitOrEndValStatement(const init_values_t &init_values_arg,
@@ -97,20 +96,19 @@ InitOrEndValStatement::InitOrEndValStatement(const init_values_t &init_values_ar
 {
 }
 
-void
-InitOrEndValStatement::fillEvalContext(eval_context_t &eval_context) const
-{
+void InitOrEndValStatement::fillEvalContext(eval_context_t &eval_context) const {
   for (init_values_t::const_iterator it = init_values.begin();
-       it != init_values.end(); it++)
-    {
-      try
-        {
+       it != init_values.end(); it++) {
+      try {
           eval_context[it->first] = (it->second)->eval(eval_context);
-        }
-      catch (ExprNode::EvalException &e)
-        {
-          // Do nothing
-        }
+      } catch (ExprNode::EvalException &e) {
+        std::ostringstream msg;
+        msg << "Error evaluating initval/endval of variable " 
+            << symbol_table.getName(it->first) << endl 
+            << "  Probably some variables on the right hand side do "
+               "not exist." << endl;
+        dyn_error(msg);
+      }
     }
 }
 
