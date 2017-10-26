@@ -50,16 +50,25 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     dll_dir <- NA_character_
   }
   
-  # TODO: to read the equations, we may need to read the processed file
-  #run_macro(mod_file, "testje.mod")
+  # run macropreprocessor to preprocess the file, this is necessary
+  # for get_equations()
+  if (debug) {
+    preprocessed_mod_file <- "preprocessed.mod"
+    if (file.exists(preprocessed_mod_file)) {
+      unlink(preprocessed_mod_file)
+    }
+  } else {
+    preprocessed_mod_file <- tempfile()
+  }
+  run_macro(mod_file, preprocessed_mod_file)
   
-  mod_text <- read_file(mod_file)
+  mod_text <- read_file(preprocessed_mod_file)
   
   if (has_fit_block(mod_text)) {
     if (missing(fit_mod_file)) {
       fit_mod_file <- tempfile()
     }
-    fit_info   <- create_fit_mod(mod_file, fit_mod_file, debug)
+    fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, debug)
     model_info <- compile_model_(fit_mod_file, use_dll, dll_dir)
     params <- model_info$params
     model_info$params <- NULL
@@ -90,6 +99,10 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     equations <- get_equations(mod_text)
     mdl <- DynMdl$new(model_info, params, equations, 
                       bytecode, use_dll, dll_dir, dll_file)
+  }
+  
+  if (!debug) {
+    unlink(preprocessed_mod_file)
   }
   
   if (!missing(period)) {
