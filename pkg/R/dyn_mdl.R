@@ -50,6 +50,9 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     dll_dir <- NA_character_
   }
   
+  # TODO: to read the equations, we may need to read the processed file
+  #run_macro(mod_file, "testje.mod")
+  
   mod_text <- read_file(mod_file)
   
   if (has_fit_block(mod_text)) {
@@ -128,23 +131,25 @@ has_fit_block <- function(mod_text) {
 # this function read the mod file and creates a vector with equations
 get_equations <- function(mod_text) {
   
-  m <- gregexpr("model.*?;([\\s\\S]+?)end;", mod_text, perl = TRUE)[[1]]
+  # remove C-style comments, regexpr cannot handle this
+  mod_text <- gsub("/\\*[\\s\\S]*?\\*/", "", mod_text, perl = TRUE, 
+                   useBytes = TRUE)
+  
+  m <- regexpr("model.*?;([\\s\\S]+?)end;", mod_text, perl = TRUE, 
+               useBytes = TRUE)
   startpos <- attr(m, "capture.start")[1]
   endpos <- startpos + attr(m, "capture.length")[1] - 1
   model_block <- substr(mod_text, startpos, endpos)
   model_block <- trimws(model_block)
   
   # remove comments
-  model_block <- gsub("%.*\n", "\n", model_block, perl = TRUE)
+  model_block <- gsub("%.*\n", "\n", model_block, perl = TRUE, useBytes = TRUE)
+  model_block  <- gsub("//.*\n", "\n", model_block, perl = TRUE, useBytes = TRUE)
+  
+  # split equations
   equations <- strsplit(model_block, ";")[[1]]
   equations <- unlist(lapply(equations, FUN = trimws))
   
-  # skip local equations
-  if (!is.null(equations)) {
-    # TODO: sometimes this gows wrong
-    sel <- !startsWith(equations, "#")
-    equations <- equations[sel]
-  }
   return(equations)
 }
 

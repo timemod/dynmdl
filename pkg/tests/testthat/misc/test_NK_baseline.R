@@ -1,4 +1,5 @@
 library(dynmdl)
+library(testthat)
 
 context("NK_baseline model")
 
@@ -17,6 +18,7 @@ stoch_endo_data_file <- file.path(dynare_dir, "NK_baseline_stoch_endo.csv")
 steady_data_file <- file.path(dynare_dir, "NK_baseline_steady.csv")
 eigval_file <- file.path(dynare_dir, "NK_baseline_eigval.csv")
 start_period <- period("2015")
+expected_equations_file <- "expected_output/expected_equations.rds"
 
 # compile the model
 report <- capture_output(mdl <- dyn_mdl(mod_file))
@@ -64,6 +66,14 @@ test_that("solve", {
   
   expect_equal(mdl2$get_endo_data(), dynare_result)
 })
+
+test_that("get_equations", {
+  eqs <- mdl$get_equations()
+  #print(eqs)
+  expect_equal_to_reference(eqs, expected_equations_file)
+})
+
+
 
 # 
 # NOTE:
