@@ -27,7 +27,7 @@
 #' @importFrom tools file_path_sans_ext
 #' @importFrom readr read_file
 dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
-                       fit_mod_file, debug = FALSE, dll_dir) {
+                    fit_mod_file, debug = FALSE, dll_dir) {
   
   if (!file.exists(mod_file)) {
     stop(paste("ERROR: Could not open file:", mod_file))
@@ -64,12 +64,14 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
   
   mod_text <- read_file(preprocessed_mod_file)
   
-  if (has_fit_block(mod_text)) {
+  instruments <- get_fit_instruments(mod_text)
+  
+  if (!is.null(instruments))  {
+    
     if (missing(fit_mod_file)) {
       fit_mod_file <- tempfile()
     }
     
-    instruments <- get_fit_instruments(mod_text)
     fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                  instruments, debug)
     model_info <- compile_model_(fit_mod_file, use_dll, dll_dir)
@@ -136,13 +138,6 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
   return(mdl)
 }
 
-# Returns true if the model text contains a fit block.
-# Note that the fit block should be in the main mod file (it cannot
-# be included). The %$fit$ directive should also be on a separate line.
-has_fit_block <- function(mod_text) {
-  return(grepl(paste("(^|\\n)%\\$fit\\$(\\n|$)"), mod_text))
-}
-
 get_fit_instruments <- function(mod_text) {
   # analyse expanded file line to find a list of instruments
   
@@ -155,7 +150,6 @@ get_fit_instruments <- function(mod_text) {
   # get fit block
   m <- regexpr("%\\$fit\\$\\n([\\s\\S]+?)\\n%\\$endfit\\$", mod_text, 
                perl = TRUE,  useBytes = TRUE)
-  printobj(m)
   startpos <- attr(m, "capture.start")[1]
   endpos   <- startpos + attr(m, "capture.length")[1] - 1
   fit_block <- substr(mod_text, startpos, endpos)
