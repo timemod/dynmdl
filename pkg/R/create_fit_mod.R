@@ -1,47 +1,20 @@
 # Constructs a mod file for the fit procedure based on a mod file with
 # special %$fit$ block in the mod file.
+# The mod file should be allready have been preprocessed by the macro directive
 # The function assumes that there is a single fit block, 
 # and that both the fit block and the model block are in the
 # main mod file. Macro preprocessor directives @#if, @#for etc. should be
 # repeated in the fit block
-# @param mod_file the filename of the mod file with #FIT tags
+# @param mod_file the filename of the mod file with #FIT tags (already 
+#                                                        preprocessed)
 # @param fit_mod the name of the file used for the fit procedure
+# @param instruments a character vector with the names of the fit instruments
 # @return a list with the names of the auxiliary variables
 #' @importFrom stringi stri_split_fixed
-create_fit_mod <- function(mod_file, fit_mod, debug = FALSE) {
+create_fit_mod <- function(mod_file, fit_mod, instruments, debug = FALSE) {
   
   if (file.exists(fit_mod)) {
     unlink(fit_mod)
-  }
-  
-  if (debug) {
-    fit_control_file <- "fit_control_file.mod"
-    expanded_file    <- "expanded.mod"
-    if (file.exists(fit_control_file)) {
-      unlink(fit_control_file)
-    }
-    if (file.exists(expanded_file)) {
-      unlink(expanded_file)
-    }
-  } else {
-    fit_control_file <- tempfile()
-    expanded_file    <- tempfile()
-  }
-  
-  create_fit_control_file(mod_file, fit_control_file)
-  run_macro(fit_control_file, expanded_file)
-  
-  # analyse expanded file line to find a list of instruments
-  fit_txt <- paste(readLines(expanded_file), collapse = " ")
-  fit_txt <- gsub("\\$.+?\\$", "", fit_txt) # remove latex names
-  fit_txt <- gsub("\\(.+?\\)", "", fit_txt) # remove long names
-  m <- gregexpr("varexo([^;]+)", fit_txt, perl = TRUE)
-  ma <- regmatches(fit_txt, m)
-  instruments <- strsplit(ma[[1]], split = "\\s+")
-  instruments <- setdiff(unlist(instruments), "varexo")
-  
-  if (!debug) {
-    unlink(expanded_file)
   }
   
   # run the Dynare parser to obtain the first order 
@@ -60,46 +33,6 @@ create_fit_mod <- function(mod_file, fit_mod, debug = FALSE) {
   })
 }
 
-
-create_fit_control_file <- function(mod_file, fit_control_file) {
-  
-  # read the original model file, and process the fit block.
-  fit_command <- "%$fit$"
-  fit_end <- "%$endfit$"
-  
-  input <- file(mod_file, "r")
-  output <- file(fit_control_file, open = "a")
-  
-  while (TRUE) {
-    line <- readLines(input, n = 1)
-    if (length(line) == 0 ) {
-      break
-    }
-    if (startsWith(trimws(line, "left"), "@#define")) {
-      writeLines(line, con = output)
-    }
-    if (startsWith(trimws(line, "left"), fit_command)) {
-      line <- readLines(input, n = 1)
-      line <- trimws(line)
-      while (!startsWith(line, fit_end)) {
-        # remove comment:
-        line <- stri_split_fixed(line, "%", n = 2)[[1]][1]
-        writeLines(line, con = output)
-        line <- readLines(input, n = 1)
-        if (length(line) == 0) {
-          stop(paste("Error: fit block in model file not", 
-                     "closed with %$endfit block"))
-          break
-        }
-        line <- trimws(line)
-      }
-      break;
-    }
-  }
-  close(input)
-  close(output)
-  return(invisible(NULL))
-}
 
 convert_mod <- function(input_file, output_file, fit_cond) {
   

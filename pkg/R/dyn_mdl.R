@@ -68,7 +68,10 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     if (missing(fit_mod_file)) {
       fit_mod_file <- tempfile()
     }
-    fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, debug)
+    
+    instruments <- get_fit_instruments(mod_text)
+    fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
+                                 instruments, debug)
     model_info <- compile_model_(fit_mod_file, use_dll, dll_dir)
     params <- model_info$params
     model_info$params <- NULL
@@ -140,6 +143,35 @@ has_fit_block <- function(mod_text) {
   return(grepl(paste("(^|\\n)%\\$fit\\$(\\n|$)"), mod_text))
 }
 
+get_fit_instruments <- function(mod_text) {
+  # analyse expanded file line to find a list of instruments
+  
+  # remove C-style comments, regexpr cannot handle this
+  mod_text <- gsub("/\\*[\\s\\S]*?\\*/", "", mod_text, perl = TRUE, 
+                   useBytes = TRUE)
+  
+  fit_command <- "%$fit$"
+  fit_end     <- "%$endfit$"
+  # get fit block
+  m <- regexpr("%\\$fit\\$\\n([\\s\\S]+?)\\n%\\$endfit\\$", mod_text, 
+               perl = TRUE,  useBytes = TRUE)
+  printobj(m)
+  startpos <- attr(m, "capture.start")[1]
+  endpos   <- startpos + attr(m, "capture.length")[1] - 1
+  fit_block <- substr(mod_text, startpos, endpos)
+  fit_block <- trimws(fit_block)
+  fit_block <- gsub("\\$.+?\\$", "", fit_block) # remove latex names
+  fit_block <- gsub("\\(.+?\\)", "", fit_block) # remove long names
+  # remove comments
+  fit_block <- gsub("%.*\n", "\n", fit_block, perl = TRUE, useBytes = TRUE)
+  fit_block  <- gsub("//.*\n", "\n", fit_block, perl = TRUE, useBytes = TRUE)
+  
+  m <- gregexpr("varexo([^;]+)", fit_block, perl = TRUE, useBytes = TRUE)
+  ma <- regmatches(fit_block, m)
+  instruments <- strsplit(ma[[1]], split = "\\s+")
+  instruments <- setdiff(unlist(instruments), "varexo")
+  return(instruments)
+}
 
 # this function read the mod file and creates a vector with equations
 get_equations <- function(mod_text) {
