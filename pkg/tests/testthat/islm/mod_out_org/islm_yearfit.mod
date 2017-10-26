@@ -7,10 +7,14 @@ varexo g ms; %exogenous variables
 
 
 % Parameters for the standard deviation for the fit procedure:
-parameters sigma_ut sigma_uc sigma_ui sigma_umd ;
-sigma_ut  = -1; sigma_uc  = -1; sigma_ui  = -1; sigma_umd  = -1;
+parameters sigma_ui sigma_umd ;
+sigma_ui  = -1; sigma_umd  = -1;
+var    ut uc; %fit instruments
+var    ui
+umd;
+parameters sigma_ut sigma_uc;
+sigma_ut = 7; sigma_uc = 5;
 
-var    ut uc ui umd; %residuals (endogenous)
 
 %Setting parameter values
 parameters c0 c1 c2 c3 c4 c5;

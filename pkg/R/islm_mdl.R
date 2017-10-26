@@ -29,10 +29,6 @@ islm_mdl <- function(period, fit = FALSE) {
                    yd = "disposable income",  g = "government spending",
                    ms = "money supply"))
   
-  if (fit) {
-    mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
-  }
-  
   mdl$solve_steady(control = list(trace = FALSE))
   
   return(mdl)

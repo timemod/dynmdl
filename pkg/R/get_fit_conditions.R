@@ -137,11 +137,15 @@ get_fit_conditions <- function(mod_file, instruments) {
                           first_order, ")", " = 0;")
         endo_equations[ivar] <- equation
     }
-
-    return(list(vars = vars, l_vars = l_vars, fit_vars = fit_vars,
-                exo_vars = exo_vars, instruments = instruments, 
-                old_instruments = old_instruments, sigmas = sigmas,
-                orig_exos = setdiff(model_info$exo_names, instruments),
-                res_equations = res_equations,
-                endo_equations = endo_equations))
+    
+    initialized_sigmas <- intersect(sigmas, model_info$param_names)
+    fit_cond <- list(vars = vars, l_vars = l_vars, fit_vars = fit_vars,
+                     exo_vars = exo_vars, instruments = instruments, 
+                     old_instruments = old_instruments, sigmas = sigmas,
+                     orig_exos = setdiff(model_info$exo_names, instruments),
+                     res_equations = res_equations,
+                     endo_equations = endo_equations,
+                     initialized_sigmas = initialized_sigmas)
+    
+    return(fit_cond)
 }

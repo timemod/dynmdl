@@ -6,7 +6,11 @@ var y yd t c i md r y_year; %endogenous variables
 varexo g ms; %exogenous variables
 
 %$fit$
-varexo ut uc ui umd; %residuals (endogenous)
+varexo ut uc; %fit instruments
+varexo ui 
+       umd; 
+parameters sigma_ut sigma_uc;
+sigma_ut = 7; sigma_uc = 5;
 %$endfit$
 
 %Setting parameter values

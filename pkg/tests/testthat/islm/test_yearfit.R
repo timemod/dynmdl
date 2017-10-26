@@ -21,7 +21,7 @@ report <- capture_output(mdl <- dyn_mdl(mod_file,
 mdl$solve_steady(control = list(silent = TRUE))
 mdl$set_period(model_period)
 mdl$set_fit(regts(1275, start = "2016Q4"), names = "y_year")
-mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
+mdl$set_param(c(sigma_umd = 2, sigma_ui = 21))
 
 mdl$solve(control = list(silent = TRUE))
 

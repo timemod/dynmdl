@@ -20,7 +20,7 @@ create_fit_mod <- function(mod_file, fit_mod, instruments, debug = FALSE) {
   # run the Dynare parser to obtain the first order 
   # conditions for the fit procedure
   fit_cond <- get_fit_conditions(mod_file, instruments)
-  
+
   # finally, create the mod file for the fit procedure
   convert_mod(mod_file, fit_mod, fit_cond = fit_cond)
   
@@ -56,13 +56,15 @@ convert_mod <- function(input_file, output_file, fit_cond) {
       writeLines(c("",
                    "% Parameters for the standard deviation for the fit procedure:"),
                  con = output)
-      param_lines <- paste("parameters", paste(fit_cond$sigmas,
+      default_sigmas <- setdiff(fit_cond$sigmas, fit_cond$initialized_sigmas)
+      if (length(default_sigmas) > 0) {
+        param_lines <- paste("parameters", paste(default_sigmas,
                                                collapse = " "), ";", "")
-      writeLines(strwrap(param_lines, width = 80), con = output)
-      # initial values for the sigmas (-1)
-      writeLines(paste(fit_cond$sigmas, " = -1;", collapse = " "), 
-                 con = output)
-      writeLines("", con = output)
+        writeLines(strwrap(param_lines, width = 80), con = output)
+        # initial values for the sigmas (-1)
+        writeLines(paste(default_sigmas, " = -1;", collapse = " "), con = output)
+      }
+      
       
       line <- readLines(input, n = 1)
       line <- trimws(line)
@@ -74,6 +76,7 @@ convert_mod <- function(input_file, output_file, fit_cond) {
         }
         line <- trimws(line)
       }
+      writeLines("", con = output)
       fit_block_found <- TRUE
     } else if (!model_block_found && startsWith(trimws(line, "left"), "model")) {
       in_model <- TRUE

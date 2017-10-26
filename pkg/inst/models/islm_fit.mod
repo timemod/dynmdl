@@ -4,6 +4,8 @@ varexo g ms;               % exogenous variables
 
 %$fit$
 varexo ut uc umd ui;       % residuals
+parameters sigma_ut sigma_uc sigma_ui sigma_umd;
+sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 21;
 %$endfit$
 
 %Setting parameter values
