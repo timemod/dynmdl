@@ -26,6 +26,7 @@
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
 #' @importFrom readr read_file
+#' @importFrom regts range_union
 dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
                     fit_mod_file, debug = FALSE, dll_dir) {
   

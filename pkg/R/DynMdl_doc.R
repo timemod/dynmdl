@@ -360,7 +360,7 @@ NULL
 #' mdl$copy()
 #'
 #' }
-#' \code{mdl} is an \code{\link{IsisMdl}} object
+#' \code{mdl} is an \code{\link{DynMdl}} object
 #'
 #' @section Details:
 #' \code{mdl$copy()} is  equivalent to \code{mdl$clone(deep = TRUE)}
@@ -545,4 +545,26 @@ NULL
 #' # print all equations
 #' print(mdl$get_equations())
 NULL
+
+#' \code{\link{DynMdl}} methods: Returns the maximum lag or lead of the model
+#'
+#' @name get_max_lag/get_max_lead
+#' @aliases get_max_lag get_max_lead
+#'
+#' @description
+#' Methods \code{get_max_lag} and \code{get_max_lead} of R6 class 
+#' \code{\link{DynMdl}} return the maximum lag and lead, respectively.
+#'  the maximum a character vector 
+#' 
+#' @section Usage:
+#' \code{DynMdl} methods:
+#' \preformatted{
+#'  mdl$get_max_lag()
+#'  mdl$get_max_lead()
+#'  
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+NULL
+
 

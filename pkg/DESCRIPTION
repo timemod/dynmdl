@@ -21,7 +21,8 @@ Imports:
     tools,
     stringi,
     umfpackr,
-    numDeriv
+    numDeriv,
+    readr
 Depends:
     regts,
     methods
