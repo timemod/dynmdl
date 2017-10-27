@@ -603,7 +603,7 @@ DynMdl <- R6Class("DynMdl",
       if (private$use_dll) private$clean_after_solve()
       return (invisible(self))
     },
-    get_jacob = function(sparse = TRUE) {
+    get_jacob = function(sparse = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       lags  <- private$get_endo_lags()
       leads <- private$get_endo_leads()
@@ -621,7 +621,7 @@ DynMdl <- R6Class("DynMdl",
                                           1:nper, FUN = "paste", sep ="_t"))
       return(jac)
     },
-    get_static_jacob = function(sparse = TRUE) {
+    get_static_jacob = function(sparse = FALSE) {
       if (private$use_dll) private$prepare_solve_steady()
       jac <- private$get_static_jac(private$endos)
       if (!sparse) {

@@ -43,10 +43,19 @@ ModFile.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
            NumericalConstants.hh NumericalInitialization.hh Statement.hh \
            StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
            WarningConsolidation.hh dyn_error.hh dynout.hh location.hh
+ModFile.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
+           DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
+           ExternalFunctionsTable.hh ModelTree.hh NumericalConstants.hh \
+           NumericalInitialization.hh Statement.hh StaticModel.hh \
+           SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+           WarningConsolidation.hh location.hh
 ModelTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
              ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
              MinimumFeedbackSet.hh ModelTree.hh NumericalConstants.hh \
              SymbolTable.hh dyn_error.hh dynout.hh
+ModelTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
+             ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
+             NumericalConstants.hh SymbolTable.hh
 NumericalConstants.o : NumericalConstants.hh
 NumericalInitialization.o : CodeInterpreter.hh ExprNode.hh \
                            ExternalFunctionsTable.hh NumericalInitialization.hh Statement.hh \
@@ -67,10 +76,14 @@ SigmaeInitialization.o : CodeInterpreter.hh ExprNode.hh \
                         SymbolList.hh SymbolTable.hh WarningConsolidation.hh location.hh
 Statement.o : Statement.hh SymbolList.hh WarningConsolidation.hh \
              location.hh
+Statement.o : SymbolList.hh WarningConsolidation.hh location.hh
 StaticModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
                NumericalConstants.hh StaticModel.hh SymbolTable.hh dyn_error.hh \
                dynout.hh
+StaticModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
+               ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
+               NumericalConstants.hh SymbolTable.hh
 SteadyStateModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                     ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
                     NumericalConstants.hh StaticModel.hh SteadyStateModel.hh \
