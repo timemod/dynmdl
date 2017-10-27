@@ -14,6 +14,8 @@ test_that("get_equations works correctly", {
 
   if (.Platform$OS.type == "windows") {
     eqs_fit_tmp <- gsub("\r\n", "\n", eqs_fit)
+  } else {
+    eqs_fit_tmp <- eqs_fit
   }
   expect_equal_to_reference(eqs_fit_tmp, "expected_output/eqs_fit.rds")
   

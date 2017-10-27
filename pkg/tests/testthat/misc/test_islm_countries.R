@@ -12,6 +12,8 @@ test_that("get_equations works correctly", {
   eqs <- mdl$get_equations()
   if (.Platform$OS.type == "windows") {
     eqs_tmp <- gsub("\r\n", "\n", eqs)
+  } else {
+    eqs_tmp <- eqs
   }
   expect_equal_to_reference(eqs_tmp, "expected_output/islm_countries_eqs.rds")
 })

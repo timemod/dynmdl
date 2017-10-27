@@ -71,6 +71,8 @@ test_that("get_equations", {
   eqs <- mdl$get_equations()
   if (.Platform$OS.type == "windows") {
     eqs_tmp <- gsub("\r\n", "\n", eqs)
+  } else {
+    eqs_tmp <- eqs
   }
   #print(eqs)
   expect_equal_to_reference(eqs_tmp, expected_equations_file)
