@@ -79,23 +79,9 @@ ModFile::evalAllExpressions(bool warn_uninit)
       if (ns) {
         // native statement: this is typically a statement such as pi = acos(-1)
         // were pi is not a parameter
-        std::ostringstream msg;
-
         const std::string statement = ns->get_statement();
-        int pos = statement.find('=');
-        if (pos != std::string::npos) {
-            std::string name = statement.substr(0, pos);
-            boost::algorithm::trim(name);
-            msg  << "Variable " << name << " is not a declared parameter." 
-                 << endl
-                 << "  dynmdl does not support local variables outside the "
-                 << "model block" << endl;
-        } else {
-            msg << "Found native statement" << endl
-                << "  " << statement << endl
-                << "  dynmdl does not support native statements" << endl;
-        }
-        dyn_error(msg);
+        dyn_error("Found native statement\n"  + statement +
+                  "\n  dynmdl does not support native statements\n");
       }
     }
 

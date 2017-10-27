@@ -873,8 +873,12 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
   else
     {
       /* Enter a native block */
+      driver.error(*yylloc, "variable " + string(yytext) + 
+		            " is not a declared parameter or variable.");
+      /*
       BEGIN NATIVE;
       yyless(0);
+      */
     }
 }
 

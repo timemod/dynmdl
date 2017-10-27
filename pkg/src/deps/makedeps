@@ -19,6 +19,8 @@ DynareBison.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
                ParsingDriver.hh Shocks.hh SigmaeInitialization.hh Statement.hh \
                StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
                WarningConsolidation.hh location.hh
+DynareBison.o : CodeInterpreter.hh ExprNode.hh \
+               ExternalFunctionsTable.hh SymbolTable.hh
 DynareFlex.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
               DataTree.hh DynamicModel.hh DynareBison.hh ExprNode.hh \
               ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModFile.hh \
