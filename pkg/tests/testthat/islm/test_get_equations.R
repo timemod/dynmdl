@@ -11,7 +11,11 @@ test_that("get_equations works correctly", {
   eqs_fit <- mdl_fit$get_equations()
   
   expect_equal_to_reference(eqs, "expected_output/eqs.rds")
-  expect_equal_to_reference(eqs_fit, "expected_output/eqs_fit.rds")
+
+  if (.Platform$OS.type == "windows") {
+    eqs_fit_tmp <- gsub("\r\n", "\n", eqs_fit)
+  }
+  expect_equal_to_reference(eqs_fit_tmp, "expected_output/eqs_fit.rds")
   
   expect_equal(eqs[3], mdl$get_equations(3))
   expect_equal(eqs_fit[c(3,16)], mdl_fit$get_equations(i = c(3,16)))

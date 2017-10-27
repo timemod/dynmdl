@@ -149,8 +149,8 @@ get_fit_instruments <- function(mod_text) {
   fit_command <- "%$fit$"
   fit_end     <- "%$endfit$"
   # get fit block
-  m <- regexpr("%\\$fit\\$\\n([\\s\\S]+?)\\n%\\$endfit\\$", mod_text, 
-               perl = TRUE,  useBytes = TRUE)
+  m <- regexpr("%\\$fit\\$[\\n\\r]+?([\\s\\S]+?)[\\n\\r]+?%\\$endfit\\$", 
+               mod_text, perl = TRUE,  useBytes = TRUE)
   startpos <- attr(m, "capture.start")[1]
   endpos   <- startpos + attr(m, "capture.length")[1] - 1
   fit_block <- substr(mod_text, startpos, endpos)
