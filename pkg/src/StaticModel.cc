@@ -413,12 +413,9 @@ StaticModel::writeModelEquationsCode(const string file_name, const string bin_ba
   string main_name = file_name;
   main_name += ".cod";
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
-  if (!code_file.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error : Can't open file \"" << main_name << "\" for writing\n";
-      dyn_error(msg);
-    }
+  if (!code_file.is_open()) {
+      dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
+  }
   int count_u;
   int u_count_int = 0;
 
@@ -598,12 +595,9 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
   string main_name = file_name;
   main_name += ".cod";
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
-  if (!code_file.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error : Can't open file \"" << main_name << "\" for writing\n";
-      dyn_error(msg);
-    }
+  if (!code_file.is_open()) {
+      dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
+  }
   //Temporary variables declaration
 
   FDIMST_ fdimst(temporary_terms.size());
@@ -995,12 +989,10 @@ StaticModel::Write_Inf_To_Bin_File_Block(const string &static_basename, const st
     SaveCode.open((bin_basename + "_static.bin").c_str(), ios::out | ios::in | ios::binary | ios::ate);
   else
     SaveCode.open((bin_basename + "_static.bin").c_str(), ios::out | ios::binary);
-  if (!SaveCode.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error : Can't open file \"" << bin_basename << "_static.bin\" for writing\n";
-      dyn_error(msg);
-    }
+  if (!SaveCode.is_open()) {
+      dyn_error("Error : Can't open file \"" + bin_basename + 
+                "_static.bin\" for writing\n");
+  }
   u_count_int = 0;
   unsigned int block_size = getBlockSize(num);
   unsigned int block_mfs = getBlockMfs(num);
@@ -1169,12 +1161,9 @@ StaticModel::writeStaticMFile(const string &func_name) const
 
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open())
-    {
-      std::ostringstream msg;
-      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!output.is_open()) {
+      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
+  }
 
   output << "function [residual, g1, g2, g3] = " << func_name + "_static(y, x, params)" << endl
          << "%" << endl
@@ -1639,12 +1628,9 @@ StaticModel::writeStaticCFile(const string &func_name) const
 
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open())
-    {
-      std::ostringstream msg;
-      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!output.is_open()) {
+      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
+  }
 
   output << "/*" << endl
          << " * " << filename << " : Computes static model for Dynare" << endl
@@ -1679,12 +1665,9 @@ StaticModel::writeStaticCFile(const string &func_name) const
 
 #ifndef USE_R
   output.open(filename_mex.c_str(), ios::out | ios::binary);
-  if (!output.is_open())
-    {
-      std::ostringstream msg;
-      msg << "ERROR: Can't open file " << filename_mex << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!output.is_open()) {
+      dyn_error("ERROR: Can't open file " + filename_mex + " for writing\n");
+  }
 
   // Writing the gateway routine
   output << "/*" << endl
@@ -1754,12 +1737,9 @@ StaticModel::writeStaticJuliaFile(const string &basename) const
   string filename = basename + "Static.jl";
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open())
-    {
-      std::ostringstream msg;
-      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!output.is_open()) {
+      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
+  }
 
   output << "module " << basename << "Static" << endl
          << "#" << endl
@@ -1784,21 +1764,18 @@ StaticModel::writeStaticFile(const string &basename, bool block, bool bytecode, 
 #else
   r = mkdir(basename.c_str(), 0777);
 #endif
-  if (r < 0 && errno != EEXIST)
-    {
-      std::ostringstream msg;
-      msg << "ERROR: " << std::strerror(errno) << endl;
-      dyn_error(msg);
-    }
+  if (r < 0 && errno != EEXIST) {
+      dyn_error("ERROR: " + string(std::strerror(errno)) + "\n");
+   }
   if (block && bytecode)
     writeModelEquationsCode_Block(basename + "_static", basename, map_idx, map_idx2);
   else if (!block && bytecode)
     writeModelEquationsCode(basename + "_static", basename, map_idx);
   else if (block && !bytecode)
     {
-      chdir(basename.c_str());
+      int idum1 = chdir(basename.c_str());
       writeModelEquationsOrdered_M(basename + "_static");
-      chdir("..");
+      int idum2 = chdir("..");
       writeStaticBlockMFSFile(basename);
     }
   else if(use_dll)
@@ -1817,12 +1794,9 @@ StaticModel::writeStaticBlockMFSFile(const string &basename) const
 
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open())
-    {
-      std::ostringstream msg;
-      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!output.is_open()) {
+      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
+  }
 
   string func_name = basename + "_static";
 

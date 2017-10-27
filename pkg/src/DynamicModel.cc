@@ -801,12 +801,9 @@ DynamicModel::writeModelEquationsCode(string &file_name, const string &bin_basen
 
   main_name += ".cod";
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
-  if (!code_file.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error : Can't open file \"" << main_name << "\" for writing\n";
-      dyn_error(msg);
-    }
+  if (!code_file.is_open()) {
+      dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
+  }
 
   int count_u;
   int u_count_int = 0;
@@ -1078,12 +1075,9 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
   string main_name = file_name;
   main_name += ".cod";
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
-  if (!code_file.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error : Can't open file \"" << main_name << "\" for writing\n";
-      dyn_error(msg);
-    }
+  if (!code_file.is_open()) {
+      dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
+  }
   //Temporary variables declaration
 
   FDIMT_ fdimt(temporary_terms.size());
@@ -1528,12 +1522,9 @@ DynamicModel::writeDynamicMFile(const string &dynamic_basename) const
 
   ofstream mDynamicModelFile;
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDynamicModelFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicModelFile.is_open()) {
+      dyn_error("Error: Can't open file " + filename + " for writing");
+  }
   mDynamicModelFile << "function [residual, g1, g2, g3] = " << dynamic_basename << "(y, x, params, steady_state, it_)" << endl
                     << "%" << endl
                     << "% Status : Computes dynamic model for Dynare" << endl
@@ -1577,12 +1568,9 @@ DynamicModel::writeDynamicJuliaFile(const string &basename) const
 
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!output.is_open()) {
+      dyn_error("Error: Can't open file " + filename + " for writing");
+  }
 
   output << "module " << basename << "Dynamic" << endl
          << "#" << endl
@@ -1604,12 +1592,9 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   ofstream mDynamicModelFile, mDynamicMexFile;
 
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDynamicModelFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicModelFile.is_open()) {
+      dyn_error("Error: Can't open file " + filename + " for writing");
+  }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes dynamic model for Dynare" << endl
                     << " *" << endl
@@ -1641,12 +1626,9 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
 
 #ifndef USE_R
   mDynamicMexFile.open(filename_mex.c_str(), ios::out | ios::binary);
-  if (!mDynamicMexFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename_mex << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicMexFile.is_open()) {
+      dyn_error("Error: Can't open file " + filename_mex + " for writing");
+  }
 
   // Writing the gateway routine
   mDynamicMexFile << "/*" << endl
@@ -1774,12 +1756,9 @@ DynamicModel::Write_Inf_To_Bin_File_Block(const string &dynamic_basename, const 
     SaveCode.open((bin_basename + "_dynamic.bin").c_str(), ios::out | ios::in | ios::binary | ios::ate);
   else
     SaveCode.open((bin_basename + "_dynamic.bin").c_str(), ios::out | ios::binary);
-  if (!SaveCode.is_open())
-    {
-      std::ostringstream msg;
-      msg  << "Error : Can't open file \"" << bin_basename << "_dynamic.bin\" for writing\n";
-      dyn_error(msg);
-    }
+  if (!SaveCode.is_open()) {
+      dyn_error("Error : Can't open file \"" + bin_basename + "_dynamic.bin\" for writing\n");
+  }
   u_count_int = 0;
   unsigned int block_size = getBlockSize(num);
   unsigned int block_mfs = getBlockMfs(num);
@@ -1826,15 +1805,12 @@ DynamicModel::writeSparseDynamicMFile(const string &dynamic_basename, const stri
   ofstream mDynamicModelFile;
   ostringstream tmp, tmp1, tmp_eq;
   bool OK;
-  chdir(basename.c_str());
+  int idum1 = chdir(basename.c_str());
   string filename = dynamic_basename + ".m";
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDynamicModelFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicModelFile.is_open()) {
+      dyn_error("Error: Can't open file " + filename + " for writing\n");
+  }
   mDynamicModelFile << "%\n";
   mDynamicModelFile << "% " << filename << " : Computes dynamic model for Dynare\n";
   mDynamicModelFile << "%\n";
@@ -2142,7 +2118,7 @@ DynamicModel::writeSparseDynamicMFile(const string &dynamic_basename, const stri
 
   writeModelEquationsOrdered_M(dynamic_basename);
 
-  chdir("..");
+  int idum2 =chdir("..");
 }
 
 // write the body of the dynamic function
@@ -3624,12 +3600,9 @@ DynamicModel::writeDynamicFile(const string &basename, bool block, bool bytecode
 #else
       r = mkdir(basename.c_str(), 0777);
 #endif
-      if (r < 0 && errno != EEXIST)
-        {
-          std::ostringstream msg;
-          msg << "ERROR: " << std::strerror(errno) << endl;
-          dyn_error(msg);
-        }
+      if (r < 0 && errno != EEXIST) {
+          dyn_error("ERROR: " + string(std::strerror(errno)));
+      }
       writeSparseDynamicMFile(t_basename, basename);
     }
   else if (use_dll)
@@ -4059,12 +4032,9 @@ DynamicModel::writeParamsDerivativesFile(const string &basename, bool julia) con
   string filename = julia ? basename + "DynamicParamsDerivs.jl" : basename + "_params_derivs.m";
   ofstream paramsDerivsFile;
   paramsDerivsFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!paramsDerivsFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!paramsDerivsFile.is_open()) {
+      dyn_error("ERROR: Can't open file " + filename + " for writing");
+  }
 
   ExprNodeOutputType output_type = (julia ? oJuliaDynamicModel : oMatlabDynamicModel);
 
@@ -4712,9 +4682,7 @@ DynamicModel::isChecksumMatching(const string &basename) const
   if (r < 0)  {
     if (errno != EEXIST)
       {
-    std::ostringstream msg;
-    msg << "ERROR: " << std::strerror(errno) << endl;
-	dyn_error(msg);
+    dyn_error("ERROR: " + string(std::strerror(errno)) + "\n");
       }
     else
       basename_dir_exists = true;
@@ -4739,12 +4707,9 @@ DynamicModel::isChecksumMatching(const string &basename) const
   if (old_checksum != result.checksum())
 	{
 	  checksum_file.open(filename.c_str(), ios::out | ios::binary);
-	  if (!checksum_file.is_open())
-	    {  
-          std::ostringstream msg;
-	      msg << "ERROR: Can't open file " << filename << endl;
-	      dyn_error(msg);
-	    }
+	  if (!checksum_file.is_open()) {  
+	      dyn_error("ERROR: Can't open file " + filename);
+	  }
 	  checksum_file << result.checksum();
 	  checksum_file.close();
 	  return false;
@@ -4851,13 +4816,9 @@ DynamicModel::writeResidualsC(const string &basename, bool cuda) const
   ofstream mDynamicModelFile, mDynamicMexFile;
 
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDynamicModelFile.is_open())
-    {  
-      std::ostringstream msg;
-	  msg << "Order larger than 3 not implemented" << endl;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicModelFile.is_open()) {  
+      dyn_error("Error: Can't open file " + filename + " for writing");
+  }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes residuals of the model for Dynare" << endl
                     << " *" << endl
@@ -4901,12 +4862,9 @@ DynamicModel::writeFirstDerivativesC(const string &basename, bool cuda) const
   ofstream mDynamicModelFile, mDynamicMexFile;
 
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDynamicModelFile.is_open())
-    {  
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicModelFile.is_open()) {  
+      dyn_error("Error: Can't open file " + filename + " for writing");
+  }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes first order derivatives of the model for Dynare" << endl
                     << " *" << endl
@@ -4961,12 +4919,9 @@ DynamicModel::writeFirstDerivativesC_csr(const string &basename, bool cuda) cons
   ofstream mDynamicModelFile, mDynamicMexFile;
 
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDynamicModelFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicModelFile.is_open()) {
+      dyn_error("Error: Can't open file " + filename + " for writing");
+  }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes first order derivatives of the model for Dynare" << endl
                     << " *" << endl
@@ -5063,12 +5018,9 @@ DynamicModel::writeSecondDerivativesC_csr(const string &basename, bool cuda) con
   ofstream mDynamicModelFile, mDynamicMexFile;
 
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDynamicModelFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicModelFile.is_open()) {
+      dyn_error("Error: Can't open file " + filename + " for writing");
+  }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes second order derivatives of the model for Dynare" << endl
                     << " *" << endl
@@ -5156,12 +5108,9 @@ DynamicModel::writeThirdDerivativesC_csr(const string &basename, bool cuda) cons
   ofstream mDynamicModelFile, mDynamicMexFile;
 
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!mDynamicModelFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "Error: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
+  if (!mDynamicModelFile.is_open()) {
+      dyn_error("Error: Can't open file " + filename + " for writing");
+  }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes third order derivatives of the model for Dynare" << endl
                     << " *" << endl
