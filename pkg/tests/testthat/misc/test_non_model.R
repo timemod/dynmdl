@@ -2,7 +2,7 @@ library(dynmdl)
 library(testthat)
 context("non existing mod file")
 
-test_that("create_mod gives an error", {
+test_that("dyn_mdl gives an error", {
   capture_output(expect_error(dyn_mdl("non_existing.mod"),
                               "ERROR: Could not open file: non_existing.mod"))
   
