@@ -918,7 +918,8 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 }
 
  /* Enter a native block */
-<INITIAL>. { BEGIN NATIVE; yyless(0); }
+<INITIAL>. {driver.error(*yylloc, string("Syntax error"));
+           /*BEGIN NATIVE; yyless(0);*/}
 
  /* Add the native statement */
 <NATIVE>{

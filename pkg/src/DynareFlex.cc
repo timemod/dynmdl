@@ -4302,10 +4302,10 @@ static yyconst flex_int16_t yy_rule_linenum[606] =
       776,  777,  778,  779,  780,  781,  782,  783,  784,  785,
       786,  787,  788,  789,  790,  791,  792,  796,  797,  798,
       799,  801,  802,  804,  809,  814,  819,  820,  828,  830,
-      838,  842,  846,  850,  866,  888,  921,  925,  926,  927,
-      928,  929,  930,  931,  932,  933,  942,  943,  944,  945,
+      838,  842,  846,  850,  866,  888,  921,  926,  927,  928,
+      929,  930,  931,  932,  933,  934,  943,  944,  945,  946,
 
-      946,  950,  957,  958,  962
+      947,  951,  958,  959,  963
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -7828,37 +7828,38 @@ YY_RULE_SETUP
 case 587:
 YY_RULE_SETUP
 #line 921 "lex_yacc/DynareFlex.ll"
-{ BEGIN NATIVE; yyless(0); }
+{driver.error(*yylloc, string("Syntax error"));
+           /*BEGIN NATIVE; yyless(0);*/}
 	YY_BREAK
 /* Add the native statement */
 
 case 588:
-#line 926 "lex_yacc/DynareFlex.ll"
-case 589:
 #line 927 "lex_yacc/DynareFlex.ll"
-case 590:
+case 589:
 #line 928 "lex_yacc/DynareFlex.ll"
-case 591:
+case 590:
 #line 929 "lex_yacc/DynareFlex.ll"
-case 592:
+case 591:
 #line 930 "lex_yacc/DynareFlex.ll"
-case 593:
+case 592:
 #line 931 "lex_yacc/DynareFlex.ll"
+case 593:
+#line 932 "lex_yacc/DynareFlex.ll"
 case 594:
 YY_RULE_SETUP
-#line 931 "lex_yacc/DynareFlex.ll"
+#line 932 "lex_yacc/DynareFlex.ll"
 { yymore(); eofbuff = string(yytext); }
 	YY_BREAK
 case 595:
 /* rule 595 can match eol */
 YY_RULE_SETUP
-#line 932 "lex_yacc/DynareFlex.ll"
+#line 933 "lex_yacc/DynareFlex.ll"
 { driver.add_native_remove_charset(yytext, "\n"); }
 	YY_BREAK
 case 596:
 /* rule 596 can match eol */
 YY_RULE_SETUP
-#line 933 "lex_yacc/DynareFlex.ll"
+#line 934 "lex_yacc/DynareFlex.ll"
 {
                                 if (strlen(yytext) > 1)
                                   driver.add_native_remove_charset(yytext, "\n");
@@ -7866,7 +7867,7 @@ YY_RULE_SETUP
                               }
 	YY_BREAK
 case YY_STATE_EOF(NATIVE):
-#line 938 "lex_yacc/DynareFlex.ll"
+#line 939 "lex_yacc/DynareFlex.ll"
 {
                                 driver.add_native(eofbuff);
                                 yyterminate();
@@ -7874,26 +7875,26 @@ case YY_STATE_EOF(NATIVE):
 	YY_BREAK
 case 597:
 /* rule 597 can match eol */
-#line 943 "lex_yacc/DynareFlex.ll"
+#line 944 "lex_yacc/DynareFlex.ll"
 case 598:
 /* rule 598 can match eol */
 YY_RULE_SETUP
-#line 943 "lex_yacc/DynareFlex.ll"
+#line 944 "lex_yacc/DynareFlex.ll"
 { driver.add_native_remove_charset(yytext, "%"); }
 	YY_BREAK
 case 599:
 /* rule 599 can match eol */
-#line 945 "lex_yacc/DynareFlex.ll"
+#line 946 "lex_yacc/DynareFlex.ll"
 case 600:
 /* rule 600 can match eol */
 YY_RULE_SETUP
-#line 945 "lex_yacc/DynareFlex.ll"
+#line 946 "lex_yacc/DynareFlex.ll"
 { driver.add_native_remove_charset(yytext, "//"); }
 	YY_BREAK
 case 601:
 /* rule 601 can match eol */
 YY_RULE_SETUP
-#line 946 "lex_yacc/DynareFlex.ll"
+#line 947 "lex_yacc/DynareFlex.ll"
 {
                                 driver.add_native_remove_charset(yytext, "/*");
                                 BEGIN NATIVE_COMMENT;
@@ -7901,7 +7902,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 602:
 YY_RULE_SETUP
-#line 950 "lex_yacc/DynareFlex.ll"
+#line 951 "lex_yacc/DynareFlex.ll"
 {
                                 driver.add_native_remove_charset(yytext, "/*");
                                 comment_caller = NATIVE;
@@ -7912,12 +7913,12 @@ YY_RULE_SETUP
 case 603:
 /* rule 603 can match eol */
 YY_RULE_SETUP
-#line 957 "lex_yacc/DynareFlex.ll"
+#line 958 "lex_yacc/DynareFlex.ll"
 { BEGIN NATIVE; }
 	YY_BREAK
 case 604:
 YY_RULE_SETUP
-#line 958 "lex_yacc/DynareFlex.ll"
+#line 959 "lex_yacc/DynareFlex.ll"
 
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -7929,20 +7930,20 @@ case YY_STATE_EOF(LINE1):
 case YY_STATE_EOF(LINE2):
 case YY_STATE_EOF(LINE3):
 case YY_STATE_EOF(NATIVE_COMMENT):
-#line 960 "lex_yacc/DynareFlex.ll"
+#line 961 "lex_yacc/DynareFlex.ll"
 { yyterminate(); }
 	YY_BREAK
 case 605:
 YY_RULE_SETUP
-#line 962 "lex_yacc/DynareFlex.ll"
+#line 963 "lex_yacc/DynareFlex.ll"
 { driver.error(*yylloc, "character unrecognized by lexer"); }
 	YY_BREAK
 case 606:
 YY_RULE_SETUP
-#line 963 "lex_yacc/DynareFlex.ll"
+#line 964 "lex_yacc/DynareFlex.ll"
 ECHO;
 	YY_BREAK
-#line 7946 "DynareFlex.cc"
+#line 7947 "DynareFlex.cc"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -9055,7 +9056,7 @@ void Dynarefree (void * ptr )
 
 /* %ok-for-header */
 
-#line 963 "lex_yacc/DynareFlex.ll"
+#line 964 "lex_yacc/DynareFlex.ll"
 
 
 
