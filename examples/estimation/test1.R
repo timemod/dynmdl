@@ -1,5 +1,6 @@
 library(dynmdl)
 library(nlmrt)
+library(nleqslv)
 
 mod_file <- "mod/islm_back.mod"
 
@@ -8,7 +9,7 @@ print(mdl)
 
 # prepare model
 mdl$solve_steady()
-mdl$set_period("2017q1/2017q4")
+mdl$set_period("2017q1/2019q4")
 mdl$set_exo_values(280, names = "g", period = "2017Q1")
 mdl$solve()
 
@@ -37,7 +38,7 @@ eval_equation <- function(y, x, params, it_, eqs, ieq) {
   return(eval(eqs[[ieq]]))
 }
 
-estimate <- function(mdl, par_names, ieqs) {
+estimate <- function(mdl, par_names, ieq, aux_ieqs, aux_vars) {
   per <- mdl$get_period()
   nper <- nperiod(per)
   
@@ -55,20 +56,48 @@ estimate <- function(mdl, par_names, ieqs) {
   params <- mdl$get_param()
   # todo: also handle models with leads, for the time being iugnore leads
   
+  aux_var_indices <- match(aux_vars, mdl$get_endo_names())
+  aux_var_indices_y <- sapply(aux_var_indices, FUN = function(x) {
+                              lead_lag_incidence[x, max_endo_lag + 1]})
+  
   start_per <- start_period(per)
   
+
   get_residues <- function(par) {
   
     params[names(par)] <- par
     
-    residuals <- matrix(NA, nrow = nper, ncol = length(ieqs))
+    # first solve the auxiliarry variables for all times
+    for (i in seq_along(aux_ieqs)) {
+      aux_ieq <- aux_ieqs[i]
+      aux_var_index <- aux_var_indices[i]
+      aux_var_index_y <- aux_var_indices_y[i]
+      
+      for (iper in seq_len(nper)) {
+        lags <- t_endo_data[lag_indices + (iper - 1) * nendo]
+        cur_indices <- (1:nendo) + (iper - 1 + period_shift) * nendo
+        cur <- t_endo_data[cur_indices]
+        y <- c(lags, cur)
+        
+        f <- function(x) {
+          y[aux_var_index_y] <- x
+          return(eval_equation(y, x, params, iper + period_shift, 
+                               eqs, aux_ieqs))
+        }   
+        start <- y[aux_var_index_y]
+        ret <- nleqslv(start, fn = f)
+        t_endo_data[aux_var_index, iper + period_shift] <- ret$x
+      }
+    }
+    
+    residuals <- numeric(nper)
     for (iper in seq_len(nper)) {
       lags <- t_endo_data[lag_indices + (iper - 1) * nendo]
       cur_indices <- (1:nendo) + (iper - 1 + period_shift) * nendo
       cur <- t_endo_data[cur_indices]
       y <- c(lags, cur)
-      residuals[iper, ] <- eval_equation(y, x, params, iper + period_shift, 
-                                         eqs, ieqs) 
+      residuals[iper] <- eval_equation(y, x, params, iper + period_shift, 
+                                         eqs, ieq) 
     }
     return(residuals)
   }
@@ -80,10 +109,12 @@ estimate <- function(mdl, par_names, ieqs) {
 
 set.seed(123)
 per <- mdl$get_period()
-mdl$change_endo_data(names = "y", 
-                       fun = function(x) (x + 0.01 * rnorm(nperiod(per))), 
-                     period = per)
-mdl$set_param(c(t0 = -17, t1 = 0.25))
+mdl$change_endo_data(names = "r", 
+                       fun = function(x) (x + 0.0001 * rnorm(nperiod(per))), 
+                    period = per)
+mdl$set_param(c(c0 = 130, c1 = 0.3, c2 = 0.3, c4 = -18, c5 = 0.75))
 
-ret <- estimate(mdl, par_names = c("t0", "t1"), ieqs = 3)
+ret <- estimate(mdl, par_names = c("c0", "c1", "c2", "c4", "c5"), ieq = 5,
+                aux_ieqs = 4, aux_vars = "c_step1")
 print(ret)
+print(ret$jacobian)
