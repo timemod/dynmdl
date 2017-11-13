@@ -15,6 +15,7 @@ class ModelCalc {
 
     private:
         unsigned int neq;
+        double *constants;
         vector<unsigned int>**equations;
         double *y, *p;
         stack<double> stk;

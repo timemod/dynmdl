@@ -7,13 +7,17 @@ using namespace std;
 
 int main() {
 
-    PolishModel mdl(2);
+    double constants[] = {2};
+
+    PolishModel mdl(2, constants);
 
     mdl.new_equation();
     mdl.add_endo(1);
     mdl.add_param(0);
+    mdl.add_constant(0);
     mdl.add_param(1);
     mdl.add_endo(2);
+    mdl.add_binop('*');
     mdl.add_binop('*');
     mdl.add_binop('+');
     mdl.add_binop('-');

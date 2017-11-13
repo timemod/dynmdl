@@ -3,6 +3,7 @@
 
 ModelCalc::ModelCalc(PolishModel *model) {
     equations = model->get_equations();
+    constants = model->get_constants();
     neq = model->get_equation_count();
 }
 
@@ -21,6 +22,9 @@ double ModelCalc::eval_eq(int ieq) {
    while (pos < eq->size()) {
        unsigned int code = codes[pos];
        switch (code) {
+           case CONST: index = codes[++pos];
+                       stk.push(constants[index]);
+                       break;
            case ENDO: index = codes[++pos];
                       stk.push(y[index]);
                       break;

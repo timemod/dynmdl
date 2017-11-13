@@ -1,7 +1,9 @@
 #include "PolishModel.hh"
 
-PolishModel::PolishModel(unsigned int neq_in) {
+PolishModel::PolishModel(unsigned int neq_in,
+                         double *constants_in) {
     neq = neq_in;
+    constants = constants_in;
     ieq = 0;
     equations = new vector<unsigned int>*[neq];
 }
@@ -9,6 +11,11 @@ PolishModel::PolishModel(unsigned int neq_in) {
 void PolishModel::new_equation(void) {
     cur_eq = new vector<unsigned int>();
     equations[ieq++] = cur_eq;
+}
+
+void PolishModel::add_constant(unsigned int index) {
+    cur_eq->push_back(CONST);
+    cur_eq->push_back(index);
 }
 
 void PolishModel::add_endo(unsigned int index) {
@@ -38,6 +45,10 @@ unsigned int PolishModel::get_equation_count() {
 
 vector<unsigned int>**PolishModel::get_equations() {
     return equations;
+}
+
+double *PolishModel::get_constants() {
+    return constants;
 }
 
 // TODO:
