@@ -3,6 +3,7 @@
 S3method(all,equal.DynMdl)
 export(DynMdl)
 export(FitMdl)
+export(check_mdl)
 export(dyn_mdl)
 export(islm_mdl)
 export(read_mdl)

@@ -4,10 +4,9 @@
 
 // [[Rcpp::export]]
 Rcpp::List compile_model_(std::string modfile, bool use_dll, 
-                          std::string dll_dir) {
+                          std::string dll_dir, bool max_laglead_1) {
     // the treatement of char in the next statement does not deserve a beauty
     // price
-    bool max_laglead_1 = false;
     ModFile *mod_file = parse((char *) modfile.c_str(), max_laglead_1, false);
     
     Rcpp::List retval;

@@ -67,8 +67,6 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
   
   instruments <- get_fit_instruments(mod_text)
 
-  max_laglead_1 <- FALSE
-  
   if (!is.null(instruments))  {
     
     if (missing(fit_mod_file)) {
@@ -77,7 +75,7 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     
     fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                  instruments, debug)
-    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir)
+    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir, FALSE)
     params <- model_info$params
     model_info$params <- NULL
     if (missing(fit_mod_file)) {
@@ -96,7 +94,7 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    model_info <- compile_model_(mod_file, use_dll, dll_dir)
+    model_info <- compile_model_(mod_file, use_dll, dll_dir, FALSE)
     params <- model_info$params
     model_info$params <- NULL
     if (use_dll) {
