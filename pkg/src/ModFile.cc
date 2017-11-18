@@ -311,7 +311,7 @@ ModFile::checkPass()
 }
 
 void
-ModFile::transformPass(bool nostrict)
+ModFile::transformPass(bool nostrict, bool max_laglead_1)
 {
   // Save the original model (must be done before any model transformations by preprocessor)
   dynamic_model.cloneDynamic(original_model);
@@ -375,16 +375,14 @@ ModFile::transformPass(bool nostrict)
       dynamic_model.substituteEndoLagGreaterThanTwo(false);
       dynamic_model.substituteExoLag(false);
     }
-  else
-    {
+  else if (max_laglead_1) {
       // In deterministic models, create auxiliary vars for leads and lags endogenous greater than 2, only on endos (useless on exos)
       /* For package dynmdl, it is not requited to substitute
        * lags and leads > 2 */
-      /*
+
       dynamic_model.substituteEndoLeadGreaterThanTwo(true);
       dynamic_model.substituteEndoLagGreaterThanTwo(true);
-      */
-    }
+  }
 
   if (differentiate_forward_vars)
     dynamic_model.differentiateForwardVars(differentiate_forward_vars_subset);

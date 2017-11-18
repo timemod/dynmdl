@@ -36,7 +36,7 @@ ModFile *parse_post_macro(stringstream &in, string &basename, bool debug, bool c
       bool nograph, bool nointeractive, bool parallel, ConfigFile &config_file,
       WarningConsolidation &warnings, bool nostrict, bool check_model_changes,
       bool minimal_workspace, bool compute_xrefs, FileOutputType output_mode,
-      LanguageOutputType language, int params_derivs_order
+      LanguageOutputType language, int params_derivs_order, bool max_laglead_1
 #if defined(_WIN32) || defined(__CYGWIN32__)
       , bool cygwin, bool msvc
 #endif
@@ -50,7 +50,7 @@ ModFile *parse_post_macro(stringstream &in, string &basename, bool debug, bool c
   mod_file->checkPass();
 
   // Perform transformations on the model (creation of auxiliary vars and equations)
-  mod_file->transformPass(nostrict);
+  mod_file->transformPass(nostrict, max_laglead_1);
 
   // Evaluate parameters initialization, initval, endval and pounds
   mod_file->evalAllExpressions(warn_uninit);

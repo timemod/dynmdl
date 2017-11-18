@@ -128,7 +128,7 @@ public:
   /*! \todo add check for number of equations and endogenous if ramsey_policy is present */
   void checkPass();
   //! Perform some transformations on the model (creation of auxiliary vars and equations)
-  void transformPass(bool nostrict);
+  void transformPass(bool nostrict, bool max_laglead_1);
   //! Execute computations
   /*! \param no_tmp_terms if true, no temporary terms will be computed in the static and dynamic files */
   /*! \param compute_xrefs if true, equation cross references will be computed */

@@ -66,6 +66,8 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
   mod_text <- read_file(preprocessed_mod_file)
   
   instruments <- get_fit_instruments(mod_text)
+
+  max_laglead_1 <- FALSE
   
   if (!is.null(instruments))  {
     
