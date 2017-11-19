@@ -2,15 +2,25 @@
 % Please edit documentation in R/check_mdl.R
 \name{check_mdl}
 \alias{check_mdl}
-\title{This function computes the eigenvaues of the linearized model around the
+\title{This function computes the eigenvalues of the linearized model around the
 steady state.}
 \usage{
-check_mdl(mod_file)
+check_mdl(mod_file, endos, exos)
 }
 \arguments{
-\item{mod_file}{the model file}
+\item{mod_file}{the model file (the text file specifying the model
+equations)}
+
+\item{endos}{a named numerical vector with an initial guess for the 
+steady state values of the endogenous variables}
+
+\item{exos}{a named numerical vector with the static exogenous variables
+used to compute the steady state}
 }
 \description{
-This function computes the eigenvaues of the linearized model around the
-steady state.
+The function first attemts to calculate the steady state,
+then linearizes the model around the steady state and calculates the
+eigenvalues. This function also works for models with lags or 
+leads greater than 1, in contrast to the \code{\link{check}} method of the 
+\code{DynMdl} class.
 }

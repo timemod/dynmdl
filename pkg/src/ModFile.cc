@@ -377,8 +377,8 @@ ModFile::transformPass(bool nostrict, bool max_laglead_1)
     }
   else if (max_laglead_1) {
       // In deterministic models, create auxiliary vars for leads and lags endogenous greater than 2, only on endos (useless on exos)
-      /* For package dynmdl, it is not requited to substitute
-       * lags and leads > 2 */
+      /* For package dynmdl, it is not required to substitute
+       * lags and leads > 2, except in function check_mdl. */
 
       dynamic_model.substituteEndoLeadGreaterThanTwo(true);
       dynamic_model.substituteEndoLagGreaterThanTwo(true);
@@ -1224,6 +1224,19 @@ Rcpp::List ModFile::getModelListR(void)  {
     for (int i = 0; i < param_count; i++) {
         param_names[i] = symbol_table.getName(eParameter, i).c_str();
     }
+    
+    // auxiliary variables (only used for check_mdl)
+    int aux_count = symbol_table.get_aux_count();
+    Rcpp::NumericVector endo_index(aux_count);
+    Rcpp::NumericVector orig_endo_index(aux_count);
+    for (int i = 0; i < aux_count; i++) {
+        endo_index[i] = symbol_table.get_endo_index_aux(i) + 1;
+        orig_endo_index[i] = symbol_table.get_orig_endo_index_aux(i) + 1;
+    }
+    Rcpp::List aux_vars = Rcpp::List::create(
+            Rcpp::Named("aux_count") = aux_count,
+            Rcpp::Named("endo_index") = endo_index,
+            Rcpp::Named("orig_endo_index") = orig_endo_index);
 
 
     Rcpp::List dynmdl = dynamic_model.getDynamicModelR();
@@ -1254,6 +1267,7 @@ Rcpp::List ModFile::getModelListR(void)  {
     return Rcpp::List::create(Rcpp::Named("exos") = exos,
                               Rcpp::Named("endos") = endos,
                               Rcpp::Named("params") = params,
+                              Rcpp::Named("aux_vars") = aux_vars,
                               Rcpp::Named("dynamic_model") = dynmdl,
                               Rcpp::Named("static_model") = statmdl);
 }

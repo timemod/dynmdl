@@ -327,6 +327,9 @@ public:
   bool isAuxiliaryVariableButNotMultiplier(int symb_id) const;
   //! Get list of endogenous variables without aux vars
   set <int> getOrigEndogenous() const;
+  int get_endo_index_aux(int i) const;
+  int get_orig_endo_index_aux(int i) const;
+  int get_aux_count() const throw (NotYetFrozenException);
 };
 
 inline bool
@@ -452,6 +455,13 @@ inline int
 SymbolTable::orig_endo_nbr() const throw (NotYetFrozenException)
 {
   return (endo_nbr() - aux_vars.size());
+}
+
+inline int SymbolTable::get_aux_count() const throw (NotYetFrozenException) {
+  if (!frozen) {
+    throw NotYetFrozenException();
+  }
+  return aux_vars.size();
 }
 
 #endif

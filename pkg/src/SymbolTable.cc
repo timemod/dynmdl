@@ -982,3 +982,10 @@ SymbolTable::writeJuliaOutput(ostream &output) const throw (NotYetFrozenExceptio
         output << "                   ]" << endl;
       }
 }
+
+int SymbolTable::get_endo_index_aux(int i) const {
+    return getTypeSpecificID(aux_vars[i].get_symb_id());
+}
+int SymbolTable::get_orig_endo_index_aux(int i) const {
+    return getTypeSpecificID(aux_vars[i].get_orig_symb_id());
+}

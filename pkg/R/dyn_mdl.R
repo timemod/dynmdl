@@ -78,6 +78,7 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     model_info <- compile_model_(fit_mod_file, use_dll, dll_dir, FALSE)
     params <- model_info$params
     model_info$params <- NULL
+    model_info$aux_vars <- NULL
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
     } 
@@ -97,6 +98,7 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     model_info <- compile_model_(mod_file, use_dll, dll_dir, FALSE)
     params <- model_info$params
     model_info$params <- NULL
+    model_info$aux_vars <- NULL
     if (use_dll) {
       dll_file <- compile_c_functions(dll_dir)
     } else {

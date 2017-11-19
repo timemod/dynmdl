@@ -77,6 +77,8 @@ SteadyStateModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
 SymbolList.o : SymbolList.hh
 SymbolTable.o : CodeInterpreter.hh ExprNode.hh \
                ExternalFunctionsTable.hh SymbolTable.hh dyn_error.hh
+SymbolTable.o : CodeInterpreter.hh ExprNode.hh \
+               ExternalFunctionsTable.hh SymbolTable.hh
 WarningConsolidation.o : WarningConsolidation.hh dynout.hh location.hh
 compile_model.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
                  DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
