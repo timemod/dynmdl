@@ -1227,16 +1227,16 @@ Rcpp::List ModFile::getModelListR(void)  {
     
     // auxiliary variables (only used for check_mdl)
     int aux_count = symbol_table.get_aux_count();
-    Rcpp::NumericVector endo_index(aux_count);
-    Rcpp::NumericVector orig_endo_index(aux_count);
+    Rcpp::CharacterVector aux_endos(aux_count);
+    Rcpp::CharacterVector aux_orig_endos(aux_count);
     for (int i = 0; i < aux_count; i++) {
-        endo_index[i] = symbol_table.get_endo_index_aux(i) + 1;
-        orig_endo_index[i] = symbol_table.get_orig_endo_index_aux(i) + 1;
+        aux_endos[i] = symbol_table.get_aux_endo(i).c_str();
+        aux_orig_endos[i] = symbol_table.get_aux_orig_endo(i).c_str();
     }
     Rcpp::List aux_vars = Rcpp::List::create(
             Rcpp::Named("aux_count") = aux_count,
-            Rcpp::Named("endo_index") = endo_index,
-            Rcpp::Named("orig_endo_index") = orig_endo_index);
+            Rcpp::Named("endos") = aux_endos,
+            Rcpp::Named("orig_endos") = aux_orig_endos);
 
 
     Rcpp::List dynmdl = dynamic_model.getDynamicModelR();

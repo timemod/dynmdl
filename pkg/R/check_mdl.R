@@ -2,7 +2,7 @@
 #' steady state.
 #'
 #' The function first attemts to calculate the steady state,
-#' then linearizes the model around the steady state and calculates the
+#' then linearizes the model around the steady state and finally calculates the
 #' eigenvalues. This function also works for models with lags or 
 #' leads greater than 1, in contrast to the \code{\link{check}} method of the 
 #' \code{DynMdl} class.
@@ -15,39 +15,31 @@
 #' @export
 check_mdl <- function(mod_file, endos, exos) {
 
-  # TODO: add argumemts static_endos and static_exos.
-  # When argument static_endos has been specified, then also take auxiliary 
-  # variables into account, and no exos.
-  
   ret <- create_check_mdl(mod_file)
   mdl <- ret$mdl
   aux_vars <- ret$aux_vars
 
   if (!missing(endos)) {
     if (aux_vars$aux_count > 0) {
-      endo_names <- mdl$get_endo_names() 
-      indices <- match(names(endos), endo_names)
-      printobj(indices)
-      sel <- match(indices, aux_vars$orig_endo_index)
+      orig <- intersect(aux_vars$orig_endos, names(endos))
+      if (length(orig) > 0) {
+        aux_endos <- endos[orig];
+        orig_index <- match(orig, aux_vars$orig_endos)
+        names(aux_endos) <- aux_vars$endos[orig_index]
+        endos <- c(endos, aux_endos)
+      }
     }
     mdl$set_static_endos(endos)
   }
+
   if (!missing(exos)) {
     mdl$set_static_exos(exos)
   }
 
-  printobj(mdl$get_static_endos())
-  printobj(mdl$get_static_exos())
-
   cat("solving the steady state...\n")
   mdl$solve_steady()
 
-  printobj(mdl$get_static_endos())
-  printobj(mdl$get_static_exos())
-
-  printobj(mdl$get_static_endos())
-
-  # TODO: error if the steady state was not found
+  # TODO: error if solve_steady was not succeful
   cat("done\n")
   mdl$check()
 

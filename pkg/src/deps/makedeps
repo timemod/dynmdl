@@ -41,6 +41,12 @@ ModFile.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
            NumericalConstants.hh NumericalInitialization.hh Statement.hh \
            StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
            WarningConsolidation.hh dyn_error.hh dynout.hh location.hh
+ModFile.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
+           DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
+           ExternalFunctionsTable.hh ModelTree.hh NumericalConstants.hh \
+           NumericalInitialization.hh Statement.hh StaticModel.hh \
+           SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+           WarningConsolidation.hh location.hh
 ModelTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
              ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
              MinimumFeedbackSet.hh ModelTree.hh NumericalConstants.hh \
