@@ -440,7 +440,7 @@ NULL
 #'
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} solves
-#' the steady states.
+#' the steady state.
 #' 
 #' The steady state function employs function \code{\link[nleqslv]{nleqslv}}
 #' of the \code{nleqslv} package.
@@ -567,4 +567,48 @@ NULL
 #' \code{mdl} is an \code{\link{DynMdl}} object
 NULL
 
+#' \code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model 
+#' around thesteady state.
+#' @name check
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} computes the steady state,
+#' constructs a linear model around the state steady and finally
+#' computes the eigenvalues of the linearized model around the steady state. It 
+#' also checks if the Blachard and  Kahn conditions are satisfied. 
+#'
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$check()
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @seealso \code{\link{solve_steady}} and \code{\link{get_eigval}}
+#' @examples
+#' mdl <- islm_mdl()
+#' mdl$check()
+#' print(mdl$get_eigval())
+NULL
+
+#' \code{\link{DynMdl}} method: Return the eigenvalues computed with method
+#' \code{check}
+#' @name get_eigval
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} returns the eigenvalues 
+#' computed with method \code{\link{check}}, ordered with increasing absolute 
+#' value
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$get_eigval()
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @seealso \code{\link{check}} 
+NULL
 

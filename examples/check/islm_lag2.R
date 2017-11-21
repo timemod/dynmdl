@@ -1,4 +1,11 @@
 library(dynmdl)
 
 #print(check_mdl("mod/islm_lag2.mod"))
-print(check_mdl("mod/islm_lag2.mod", endos = c(yd=2000), exos = c(g = 240)))
+mdl <- dyn_mdl("mod/islm_lag2.mod", max_laglead_1 = TRUE)
+mdl$set_static_endos(c(yd=2000))
+mdl$check()
+
+mdl$set_period("2010Q1/2011Q2")
+
+mdl$solve()
+print(mdl$get_endo_data())

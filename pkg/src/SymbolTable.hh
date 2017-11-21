@@ -329,6 +329,7 @@ public:
   set <int> getOrigEndogenous() const;
   string get_aux_endo(int i) const;
   string get_aux_orig_endo(int i) const;
+  int get_aux_orig_lead_lag(int i) const;
   int get_aux_count() const throw (NotYetFrozenException);
 };
 

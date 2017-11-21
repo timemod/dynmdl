@@ -84,7 +84,7 @@ by applying a function}
 
 \item{\code{\link{solve}}}{Solves the model}
 
-\item{\code{check()}}{Compute the eigenvalues of the linear
+\item{\code{\link{check}}}{Compute the eigenvalues of the linear
 system and check if the Blachard and Kahn conditions are satisfied.}
 
 \item{\code{solve(control = list())}}{Solves the model using a stacked-time
@@ -104,15 +104,14 @@ solution period are allowed.}
 \item{\code{get_static_jacob}}{Returns the Jacobian for the
 stacked-time Newton problem}
 
-\item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
-computed with functiomn \code{check()} of \code{solve_perturbation()},
-ordered with increasing absolute value}
+\item{\code{\link{get_eigval}}}{Returns the eigenvalues computed with 
+method \code{\link{check}} or \code{solve_perturbation}}
 
 \item{\code{\link{get_equations}}}{Returns a character vector with the 
 equations of the model.}
 
-\item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} object}
-
+\item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} 
+object}
 }
 }
 

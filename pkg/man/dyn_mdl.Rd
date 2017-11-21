@@ -5,7 +5,7 @@
 \title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
 \usage{
 dyn_mdl(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
-  fit_mod_file, debug = FALSE, dll_dir)
+  fit_mod_file, debug = FALSE, dll_dir, max_laglead_1 = FALSE)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -31,6 +31,13 @@ are executed.}
 \item{dll_dir}{the directory where the dynamically linked library is stored.
 Primarily used for testing.
 Only used if argument \code{use_dll} is \code{TRUE}.}
+
+\item{max_laglead_1}{a logical indicating whether the model should be 
+transformed internally to a model with a maximum lag and lead of 1.
+The default is \code{FALSE}. This option has no effect if the maximum lag
+and lead of the original model is 1. Set this argument to
+\code{TRUE} if you want to analyse the stability of the steady state with 
+method \code{\link{check}} for models with a maximum lag or lead larger than 1.}
 }
 \value{
 an \code{DynMdl} object or, if the mod file contains a

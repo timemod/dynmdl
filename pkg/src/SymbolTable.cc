@@ -992,3 +992,7 @@ string  SymbolTable::get_aux_orig_endo(int i) const {
     int id = aux_vars[i].get_orig_symb_id();
     return name_table[id];
 }
+
+int SymbolTable::get_aux_orig_lead_lag(int i) const {
+    return aux_vars[i].get_orig_lead_lag();
+}

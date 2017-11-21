@@ -20,6 +20,12 @@
 #' @param dll_dir the directory where the dynamically linked library is stored.
 #' Primarily used for testing.
 #' Only used if argument \code{use_dll} is \code{TRUE}.
+#' @param max_laglead_1 a logical indicating whether the model should be 
+#' transformed internally to a model with a maximum lag and lead of 1.
+#' The default is \code{FALSE}. This option has no effect if the maximum lag
+#' and lead of the original model is 1. Set this argument to
+#' \code{TRUE} if you want to analyse the stability of the steady state with 
+#' method \code{\link{check}} for models with a maximum lag or lead larger than 1.
 #' @return an \code{DynMdl} object or, if the mod file contains a
 #' fit block, a \code{\link{FitMdl}} object.
 #' @export
@@ -28,7 +34,8 @@
 #' @importFrom readr read_file
 #' @importFrom regts range_union
 dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
-                    fit_mod_file, debug = FALSE, dll_dir) {
+                    fit_mod_file, debug = FALSE, dll_dir,
+                    max_laglead_1 = FALSE) {
   
   if (!file.exists(mod_file)) {
     stop(paste("ERROR: Could not open file:", mod_file))
@@ -75,10 +82,10 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     
     fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                  instruments, debug)
-    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir, FALSE)
+    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir, max_laglead_1)
+    
     params <- model_info$params
     model_info$params <- NULL
-    model_info$aux_vars <- NULL
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
     } 
@@ -95,10 +102,9 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    model_info <- compile_model_(mod_file, use_dll, dll_dir, FALSE)
+    model_info <- compile_model_(mod_file, use_dll, dll_dir, max_laglead_1)
     params <- model_info$params
     model_info$params <- NULL
-    model_info$aux_vars <- NULL
     if (use_dll) {
       dll_file <- compile_c_functions(dll_dir)
     } else {

@@ -5,7 +5,7 @@
 \title{\code{\link{DynMdl}} method: Solves the steady state.}
 \description{
 This method of R6 class \code{\link{DynMdl}} solves
-the steady states.
+the steady state.
 
 The steady state function employs function \code{\link[nleqslv]{nleqslv}}
 of the \code{nleqslv} package.

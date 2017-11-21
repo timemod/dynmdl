@@ -96,7 +96,7 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{solve}}}{Solves the model}
 #' 
-#' \item{\code{check()}}{Compute the eigenvalues of the linear
+#' \item{\code{\link{check}}}{Compute the eigenvalues of the linear
 #' system and check if the Blachard and Kahn conditions are satisfied.}
 #'
 #' \item{\code{solve(control = list())}}{Solves the model using a stacked-time
@@ -116,15 +116,14 @@ setOldClass("regts")
 #' \item{\code{get_static_jacob}}{Returns the Jacobian for the
 #' stacked-time Newton problem}
 #'
-#' \item{\code{get_eigval(}}{Returns the eigenvalues of the linearized model.
-#' computed with functiomn \code{check()} of \code{solve_perturbation()},
-#' ordered with increasing absolute value}
+#' \item{\code{\link{get_eigval}}}{Returns the eigenvalues computed with 
+#' method \code{\link{check}} or \code{solve_perturbation}}
 #' 
 #' \item{\code{\link{get_equations}}}{Returns a character vector with the 
 #' equations of the model.}
 #' 
-#' \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} object}
-#'
+#' \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} 
+#' object}
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(
@@ -150,6 +149,7 @@ DynMdl <- R6Class("DynMdl",
       with(model_info, {
         private$endo_names         <- names(endos)
         private$exo_names          <- names(exos)
+        private$aux_vars           <- aux_vars
         private$param_names        <- names(params)
         private$endos              <- endos
         private$exos               <- exos
@@ -273,8 +273,17 @@ DynMdl <- R6Class("DynMdl",
       return (private$exos)
     },
     set_static_endos = function(endos) {
+      if (private$aux_vars$aux_count > 0) {
+        orig <- intersect(private$aux_vars$orig_endos, names(endos))
+        if (length(orig) > 0) {
+          aux_endos <- endos[orig]
+          orig_index <- match(orig, private$aux_vars$orig_endos)
+          names(aux_endos) <- private$aux_vars$endos[orig_index]
+          endos <- c(endos, aux_endos)
+        }
+      }
       private$endos[names(endos)] <- endos
-      return (invisible(self))
+      return(invisible(self))
     },
     get_static_endos = function() {
       return (private$endos)
@@ -465,8 +474,11 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     check = function() {
-  
+
       if (private$use_dll) private$prepare_solve()
+
+      self$solve_steady(init_data = FALSE)
+
       private$ss  <- solve_first_order(private$ss,
                                        private$lead_lag_incidence,
                                        private$exos, private$endos,
@@ -482,7 +494,7 @@ DynMdl <- R6Class("DynMdl",
       }
       cat("\n")
       if (private$use_dll) private$clean_after_solve()
-      return (invisible(self))
+      return(invisible(self))
     },
     residual_check = function(tol = 0) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
@@ -577,6 +589,8 @@ DynMdl <- R6Class("DynMdl",
     solve_perturbation = function() {
 
       if (is.null(private$model_period)) stop(private$period_error_msg)
+
+      self$solve_steady(init_data = FALSE)
       
       if (private$use_dll) private$prepare_solve()
       
@@ -705,6 +719,7 @@ DynMdl <- R6Class("DynMdl",
     endo_count = NA_integer_,
     exo_names = NULL,
     endo_names = NULL,
+    aux_vars = NULL,
     labels = NULL,
     param_names = NULL,
     exos = NULL,
