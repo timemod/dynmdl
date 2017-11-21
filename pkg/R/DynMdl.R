@@ -273,15 +273,6 @@ DynMdl <- R6Class("DynMdl",
       return (private$exos)
     },
     set_static_endos = function(endos) {
-      if (private$aux_vars$aux_count > 0) {
-        orig <- intersect(private$aux_vars$orig_endos, names(endos))
-        if (length(orig) > 0) {
-          aux_endos <- endos[orig]
-          orig_index <- match(orig, private$aux_vars$orig_endos)
-          names(aux_endos) <- private$aux_vars$endos[orig_index]
-          endos <- c(endos, aux_endos)
-        }
-      }
       private$endos[names(endos)] <- endos
       return(invisible(self))
     },
@@ -435,6 +426,12 @@ DynMdl <- R6Class("DynMdl",
                             solver = c("umfpackr", "nleqslv")) {
 
       solver <- match.arg(solver)
+    
+      if (private$aux_vars$aux_count > 0) {
+        # make sure that they are ok.
+        aux_endos <- private$endos[private$aux_vars$orig_endos]
+        private$endos[aux_vars$endos]  <- aux_endos
+      }
       
       f <- function(endos) {
         return(private$f_static(endos, private$exos, private$params))
