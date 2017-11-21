@@ -41,6 +41,11 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     stop(paste("ERROR: Could not open file:", mod_file))
   }
   
+  if (max_laglead_1) {
+    warning(paste("The max_laglead_1 = FALSE option is still experimental!",
+                  "Please check the results carefully."))
+  }
+  
   if (use_dll) {
     if (missing(dll_dir)) {
       dll_dir <- tempfile(pattern = "dynmdl_dll_")

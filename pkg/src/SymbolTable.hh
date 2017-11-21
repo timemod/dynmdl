@@ -191,7 +191,7 @@ private:
   //! Factorized code for adding aux lag variables
   int addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
   //! Factorized code for adding aux lead variables
-  int addLeadAuxiliaryVarInternal(bool endo, int index, expr_t arg) throw (FrozenException);
+  int addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
 
 public:
   //! Add a symbol
@@ -204,7 +204,7 @@ public:
   /*!
     \param[in] index Used to construct the variable name
     \return the symbol ID of the new symbol */
-  int addEndoLeadAuxiliaryVar(int index, expr_t arg) throw (FrozenException);
+  int addEndoLeadAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
   //! Adds an auxiliary variable for endogenous with lag >= 2
   /*!
     \param[in] orig_symb_id symbol ID of the endogenous declared by the user that this new variable will represent
@@ -222,6 +222,8 @@ public:
     \param[in] orig_lead_lag lag value such that this new variable will be equivalent to orig_symb_id(orig_lead_lag)
     \return the symbol ID of the new symbol */
   int addExoLagAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
+
+
   //! Adds an auxiliary variable for the expectation operator
   /*!
     \param[in] information_set information set (possibly negative) of the expectation operator

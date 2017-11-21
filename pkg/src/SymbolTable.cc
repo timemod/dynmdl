@@ -588,59 +588,46 @@ SymbolTable::writeCCOutput(ostream &output) const throw (NotYetFrozenException)
     output << "varobs.push_back(" << getTypeSpecificID(*it) << ");" << endl;
 }
 
-int
-SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int index, expr_t expr_arg) throw (FrozenException)
-{
+int SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, 
+                 int orig_lead_lag, expr_t expr_arg) throw (FrozenException) {
   ostringstream varname;
-  if (endo)
-    varname << "AUX_ENDO_LEAD_";
-  else
-    varname << "AUX_EXO_LEAD_";
-  varname << index;
+  varname << name_table[orig_symb_id] << "_lead_" << orig_lead_lag;
   int symb_id;
-  try
-    {
+  try {
       symb_id = addSymbol(varname.str(), eEndogenous);
-    }
-  catch (AlreadyDeclaredException &e)
-    {
-      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
-    }
+  } catch (AlreadyDeclaredException &e) {
+      dyn_error("ERROR: you should rename your variable called " + 
+              varname.str() + ", this name is internally used by Dynare");
+  }
 
-  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLead : avExoLead), 0, 0, 0, 0, expr_arg));
+  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLead : avExoLead), 
+              orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
 
   return symb_id;
 }
 
-int
-SymbolTable::addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t expr_arg) throw (FrozenException)
-{
+int SymbolTable::addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, 
+        int orig_lead_lag, expr_t expr_arg) throw (FrozenException) {
   ostringstream varname;
-  if (endo)
-    varname << "AUX_ENDO_LAG_";
-  else
-    varname << "AUX_EXO_LAG_";
-  varname << orig_symb_id << "_" << -orig_lead_lag;
+
+  varname << name_table[orig_symb_id] << "_lag_" << -orig_lead_lag;
 
   int symb_id;
-  try
-    {
+  try {
       symb_id = addSymbol(varname.str(), eEndogenous);
-    }
-  catch (AlreadyDeclaredException &e)
-    {
-      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
-    }
+  } catch (AlreadyDeclaredException &e) {
+      dyn_error("ERROR: you should rename your variable called " + varname.str() + 
+              ", this name is internally used by Dynare");
+  }
 
   aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLag : avExoLag), orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
 
   return symb_id;
 }
 
-int
-SymbolTable::addEndoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenException)
-{
-  return addLeadAuxiliaryVarInternal(true, index, expr_arg);
+int SymbolTable::addEndoLeadAuxiliaryVar(int orig_symb_id, int orig_lead_lag, 
+                  expr_t expr_arg) throw (FrozenException) {
+  return addLeadAuxiliaryVarInternal(true, orig_symb_id, orig_lead_lag, expr_arg);
 }
 
 int
@@ -652,7 +639,7 @@ SymbolTable::addEndoLagAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t 
 int
 SymbolTable::addExoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenException)
 {
-  return addLeadAuxiliaryVarInternal(false, index, expr_arg);
+  return addLeadAuxiliaryVarInternal(false, index, 0, expr_arg);
 }
 
 int
