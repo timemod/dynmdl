@@ -33,9 +33,9 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{get_max_lead}}}{Returns the maximum lead}
 #'
-#' \item{\code{get_endo_names()}}{Returns the names of the endogenous variables.}
+#' \item{\code{get_endo_names}}{Returns the names of the endogenous variables.}
 #
-#' \item{\code{get_exo_names()}}{Returns the names of the exogenous variables.}
+#' \item{\code{get_exo_names}}{Returns the names of the exogenous variables.}
 #'
 #' \item{\code{\link{set_labels}}}{Set labels for the model variables}
 #'
@@ -47,10 +47,10 @@ setOldClass("regts")
 #'
 #' \item{\code{get_param()}}{Returns the parameters of the model.}
 #'
-#' \item{\code{set_static_exos(exos)}}{Sets the static values of
+#' \item{\code{set_static_exos}}{Sets the static values of
 #' the exogenous variables. These values are used to compute the steady state.}
 #'
-#' \item{\code{get_static_exos()}}{Returns the static values of
+#' \item{\code{get_static_exos}}{Returns the static values of
 #' the exogenous variables}
 #'
 #' \item{\code{set_static_endos}}{Sets the static values of
@@ -165,8 +165,19 @@ DynMdl <- R6Class("DynMdl",
       
       private$exo_count  <- length(private$exos)
       private$endo_count <- length(private$endo_names)
+      
+      # Determine the maximum lag and lead for the model data administration.
+      # note that if there are auxiliary variables (when max_laglead_1 is TRUE),
+      # then the maximum lag en lead is not the same as max_endo_lead and 
+      # max_exo_lead
       private$max_lag    <- max(private$max_endo_lag,  private$max_exo_lag)
       private$max_lead   <- max(private$max_endo_lead, private$max_exo_lead)
+      if (private$aux_vars$aux_count > 0) {
+        max_aux_lag <-  max(max(-private$aux_vars$orig_leads), 0)
+        max_aux_lead <- max(max(private$aux_vars$orig_leads), 0)
+        private$max_lag <- max(private$max_lag, max_aux_lag + 1)
+        private$max_lead <- max(private$max_lead, max_aux_lead + 1)
+      }
       
       # add column names and row names to the lead lag incidence matrix
       colnames(private$lead_lag_incidence) <- as.character(
@@ -231,10 +242,14 @@ DynMdl <- R6Class("DynMdl",
     get_max_lead = function() {
       return(private$max_lead)
     },
-    get_endo_names = function(pattern) {
-      return(private$endo_names)
+    get_endo_names = function() {
+      if (private$aux_vars$aux_count > 0) {
+        return(private$endo_names[-private$aux_vars$endos])
+      } else {
+        return(private$endo_names)
+      }
     },
-    get_exo_names = function(pattern) {
+    get_exo_names = function() {
       return(private$exo_names)
     },
     set_labels = function(labels) {
@@ -266,18 +281,24 @@ DynMdl <- R6Class("DynMdl",
       return(private$params[names])
     },
     set_static_exos = function(exos) {
-      private$exos[names(exos)] <- exos
-      return (invisible(self))
+      exo_names <- intersect(private$exo_names, names(exos))
+      private$exos[exo_names] <- exos[exo_names]
+      return(invisible(self))
     },
     get_static_exos = function() {
-      return (private$exos)
+      return(private$exos)
     },
     set_static_endos = function(endos) {
-      private$endos[names(endos)] <- endos
+      endo_names <- intersect(private$endo_names, names(endos))
+      private$endos[endo_names] <- endos[endo_names]
       return(invisible(self))
     },
     get_static_endos = function() {
-      return (private$endos)
+      if (private$aux_vars$aux_count > 0) {
+        return(private$endos[-private$aux_vars$endos])
+      } else {
+        return(private$endos)
+      }
     },
     init_data = function(data_period, data)  {
       if (missing(data_period)) {
@@ -402,7 +423,8 @@ DynMdl <- R6Class("DynMdl",
     get_endo_data = function(pattern = NULL, names = NULL, 
                              period = private$data_period) {
       period <- private$convert_period_arg(period)
-      if (missing(pattern) && missing(names)) {
+      if (missing(pattern) && missing(names) && 
+          !private$aux_vars$aux_count > 0) {
         ret <- private$endo_data[period, ]
       } else {
         names <- private$get_names_("endo", names, pattern)
@@ -421,16 +443,16 @@ DynMdl <- R6Class("DynMdl",
                                period = private$data_period , ...) {
       return(private$change_data_(fun, names, pattern, period, "exo", ...))
     },
-    solve_steady = function(start = self$get_static_endos(),
-                            init_data = TRUE, control = NULL,
+    solve_steady = function(init_data = TRUE, control = NULL,
                             solver = c("umfpackr", "nleqslv")) {
 
       solver <- match.arg(solver)
-    
+      
+      start <- private$endos
       if (private$aux_vars$aux_count > 0) {
-        # make sure that they are ok.
+        # make sure that they are ok
         aux_endos <- private$endos[private$aux_vars$orig_endos]
-        private$endos[aux_vars$endos]  <- aux_endos
+        start[private$aux_vars$endos]  <- aux_endos
       }
       
       f <- function(endos) {
@@ -527,6 +549,7 @@ DynMdl <- R6Class("DynMdl",
      },
     solve = function(control = list(), force_stacked_time = FALSE,
                      solver = c("umfpackr", "nleqslv")) {
+      
       if (is.null(private$model_period)) stop(private$period_error_msg)
       solver <- match.arg(solver)
       
@@ -540,6 +563,10 @@ DynMdl <- R6Class("DynMdl",
       control_[names(control)] <- control
       
       if (private$use_dll) private$prepare_solve()
+      
+      if (private$aux_vars$aux_count > 0) {
+        private$prepare_aux_vars()
+      }
       
       if (private$max_endo_lead > 0 || force_stacked_time ) {
         # preparations
@@ -598,6 +625,10 @@ DynMdl <- R6Class("DynMdl",
       if (private$max_exo_lag > 0 || private$max_exo_lead > 0) {
         stop(paste("Method solve_perturbation does not work for models",
                    "with exogenous lags or leads"))
+      }
+      
+      if (private$aux_vars$aux_count > 0) {
+        private$prepare_aux_vars()
       }
       
       private$ss <- solve_first_order(private$ss, private$lead_lag_incidence,
@@ -754,6 +785,9 @@ DynMdl <- R6Class("DynMdl",
     get_names_ = function(type, names, pattern) {
       if (type == "endo") {
         vnames <- private$endo_names
+        if (private$aux_vars$aux_count > 0) {
+          vnames <- vnames[-private$aux_vars$endos]
+        }
       } else {
         vnames <- private$exo_names
       }
@@ -1003,6 +1037,26 @@ DynMdl <- R6Class("DynMdl",
     clean_after_solve_steady = function() {
       private$jac_steady <- NULL
       dyn.unload(private$dll_file)
+      return(invisible(NULL))
+    },
+    prepare_aux_vars = function() {
+      # calculate the auxiliary auxiliary variables before solving
+      if (private$aux_vars$aux_count == 0) {
+        return(invisible(NULL))
+      }
+      nper <- nrow(private$endo_data)
+      with(private$aux_vars, {
+        for (i in seq_len(aux_count)) {
+          if (orig_leads[i] > 0) {
+            sel_orig <- (1 + orig_leads[i]) : nper
+          } else {
+            sel_orig <- 1 : (nper + orig_leads[i])
+          }
+          sel_endo <- sel_orig - orig_leads[i]
+          private$endo_data[sel_endo , endos[i]] <- 
+                        private$endo_data[sel_orig , orig_endos[i]]
+        }
+      })
       return(invisible(NULL))
     },
     check_model_period = function(period) {

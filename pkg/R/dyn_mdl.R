@@ -42,7 +42,7 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
   }
   
   if (max_laglead_1) {
-    warning(paste("The max_laglead_1 = FALSE option is still experimental!",
+    warning(paste("The max_laglead_1 = FALSE option is still experimental.\n",
                   "Please check the results carefully."))
   }
   
