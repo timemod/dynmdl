@@ -34,16 +34,11 @@
 #' @importFrom readr read_file
 #' @importFrom regts range_union
 dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
-                    fit_mod_file, debug = FALSE, dll_dir,
+                    fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE) {
   
   if (!file.exists(mod_file)) {
     stop(paste("ERROR: Could not open file:", mod_file))
-  }
-  
-  if (max_laglead_1) {
-    warning(paste("The max_laglead_1 = FALSE option is still experimental.\n",
-                  "Please check the results carefully."))
   }
   
   if (use_dll) {
