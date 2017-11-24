@@ -99,15 +99,10 @@ setOldClass("regts")
 #' \item{\code{\link{check}}}{Compute the eigenvalues of the linear
 #' system and check if the Blachard and Kahn conditions are satisfied.}
 #'
-#' \item{\code{solve(control = list())}}{Solves the model using a stacked-time
-#' Newton method for the whole model period.
-#' Argument \code{control} is a list with solve options (TODO: describe these
-#' options somewhere).}
-#'
 #' \item{\code{\link{residual_check}}}{Calculates the residuals of the equation
 #' and report the differences larger than a tolerance parameters}
 #'
-#' \item{\code{solve_perturbation()}}{Solves the model using the perturbation
+#' \item{\code{solve_perturbation}{Solves the model using the perturbation
 #' theory used in the Dynare function stoch_simul. Only shocks in the first
 #' solution period are allowed.}
 #'
@@ -479,7 +474,7 @@ DynMdl <- R6Class("DynMdl",
       private$endos <- out$x
 
       if (error) {
-        stop(paste("Error solving the steady state.\n", out$message))
+        stop(paste0("Error solving the steady state.\n", out$message))
       }
       
       if (init_data && !is.null(private$endo_data)) {
@@ -496,7 +491,7 @@ DynMdl <- R6Class("DynMdl",
 
       if (private$use_dll) private$prepare_solve()
 
-      self$solve_steady(init_data = FALSE)
+      self$solve_steady(init_data = FALSE, control = list(silent = TRUE))
 
       private$ss  <- solve_first_order(private$ss,
                                        private$lead_lag_incidence,
@@ -614,7 +609,7 @@ DynMdl <- R6Class("DynMdl",
 
       if (is.null(private$model_period)) stop(private$period_error_msg)
 
-      self$solve_steady(init_data = FALSE)
+      self$solve_steady(init_data = FALSE, control = list(silent = TRUE))
       
       if (private$use_dll) private$prepare_solve()
       

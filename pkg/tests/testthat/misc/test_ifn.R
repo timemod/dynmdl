@@ -56,12 +56,10 @@ test_that("solve", {
 
 test_that("solve_steady, check and solve_perturb give an error", {
   # for the ifn model the steady state cannot be computed  
-  msg <- paste("Error solving the steady state.\n The Jacobian is \\(nearly\\)",
-               "singular. The inverse condition is 0.\n")
+  msg <- paste("Error solving the steady state.\nThe Jacobian is \\(nearly\\)",
+              "singular. The inverse condition is 0.\n")
   outp <- capture_output(expect_error(mdl$solve_steady(), msg))
   expect_equal(outp, "No convergence after 1 iterations")
-  msg <- "Blanchard & Kahn conditions are not satisfied: no stable equilibrium"
   expect_error(mdl$check(), msg)
-  msg <- "Method solve_perturbation does not work for models with exogenous lags or leads"
   expect_error(mdl$solve_perturbation(), msg)
 })
