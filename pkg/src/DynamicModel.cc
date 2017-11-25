@@ -28,6 +28,7 @@
 #include "DynamicModel.hh"
 #include "dyn_error.hh"
 #include "dynout.hh"
+#include "PolishModel.hh"
 
 // For mkdir() and chdir()
 #ifdef _WIN32
@@ -2545,6 +2546,10 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
                       << third_derivatives_output.str();
       DynamicOutput << "end" << endl;
     }
+}
+
+void DynamicModel::genPolishModel(PolishModel &mdl) const {
+    genPolishEquations(mdl);
 }
 
 void

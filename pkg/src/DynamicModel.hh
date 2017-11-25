@@ -206,6 +206,7 @@ public:
   //! Adds a variable node
   /*! This implementation allows for non-zero lag */
   virtual VariableNode *AddVariable(int symb_id, int lag = 0);
+  void genPolishModel(PolishModel &mdl) const;
   
   //! Execute computations (variable sorting + derivation)
   /*!

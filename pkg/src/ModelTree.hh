@@ -196,6 +196,7 @@ protected:
   void writeModelLocalVariables(ostream &output, ExprNodeOutputType output_type, deriv_node_temp_terms_t &tef_terms) const;
   //! Writes model equations
   void writeModelEquations(ostream &output, ExprNodeOutputType output_type) const;
+  void genPolishEquations(PolishModel &mdl) const;
   //! Compiles model equations
   void compileModelEquations(ostream &code_file, unsigned int &instruction_number, const temporary_terms_t &tt, const map_idx_t &map_idx, bool dynamic, bool steady_dynamic) const;
 

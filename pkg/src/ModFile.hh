@@ -169,6 +169,7 @@ public:
   Rcpp::List getModelListR(void);
   Rcpp::List getDerivativeInfo(void);
   int get_warning_count(void);
+  void createPolishModel(PolishModel &mdl) const;
 #endif
 };
 

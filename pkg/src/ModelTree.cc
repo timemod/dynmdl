@@ -31,6 +31,7 @@
 #include <boost/graph/topological_sort.hpp>
 #include "dyn_error.hh"
 #include "dynout.hh"
+#include "PolishModel.hh"
 
 using namespace boost;
 using namespace MFS;
@@ -1427,6 +1428,36 @@ ModelTree::writeModelEquations(ostream &output, ExprNodeOutputType output_type) 
                  << " = ";
           lhs->writeOutput(output, output_type, temp_terms);
           output << ";" << endl;
+        }
+    }
+}
+
+void ModelTree::genPolishEquations(PolishModel &mdl) const {
+
+    for (int eq = 0; eq < (int) equations.size(); eq++) {
+
+        mdl.new_equation();
+
+        BinaryOpNode *eq_node = equations[eq];
+        expr_t lhs = eq_node->get_arg1();
+        expr_t rhs = eq_node->get_arg2();
+
+        // Test if the right hand side of the equation is empty.
+        double vrhs = 1.0;
+        try {
+            vrhs = rhs->eval(eval_context_t());
+        } catch (ExprNode::EvalException &e) {
+        }
+
+        if (vrhs != 0) { 
+            // The right hand side of the equation is not empty 
+            //   ==> residual=lhs-rhs;
+            lhs->genPolishCode(mdl);
+            rhs->genPolishCode(mdl);
+            mdl.add_unary_minus();
+        } else  {
+            // The right hand side of the equation is empty ==> residual=lhs;
+            lhs->genPolishCode(mdl);
         }
     }
 }

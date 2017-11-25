@@ -32,6 +32,7 @@
 #include "ComputingTasks.hh"
 #include "dyn_error.hh"
 #include "dynout.hh"
+#include "PolishModel.hh"
 
 ModFile::ModFile(WarningConsolidation &warnings_arg)
   : expressions_tree(symbol_table, num_constants, external_functions_table),
@@ -1288,5 +1289,9 @@ Rcpp::List ModFile::getDerivativeInfo(void)  {
 
 int ModFile::get_warning_count(void) {
     return(warnings.countWarnings());
+}
+
+void ModFile::createPolishModel(PolishModel &mdl) const {
+    dynamic_model.genPolishModel(mdl);
 }
 #endif

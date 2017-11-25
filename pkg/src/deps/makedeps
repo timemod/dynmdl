@@ -10,8 +10,11 @@ DataTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
             dyn_error.hh dynout.hh
 DynamicModel.o : CodeInterpreter.hh DataTree.hh DynamicModel.hh \
                 ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
-                ModelTree.hh NumericalConstants.hh StaticModel.hh SymbolTable.hh \
-                dyn_error.hh dynout.hh
+                ModelTree.hh NumericalConstants.hh PolishModel.hh StaticModel.hh \
+                SymbolTable.hh dyn_error.hh dynout.hh
+DynamicModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
+                ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModelTree.hh \
+                NumericalConstants.hh PolishModel.hh StaticModel.hh SymbolTable.hh
 DynareBison.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
                DataTree.hh DynamicModel.hh DynareBison.hh ExprNode.hh \
                ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh ModFile.hh \
@@ -41,19 +44,23 @@ MinimumFeedbackSet.o : MinimumFeedbackSet.hh dynout.hh
 ModFile.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
            DataTree.hh DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
            ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
-           NumericalConstants.hh NumericalInitialization.hh Statement.hh \
-           StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
-           WarningConsolidation.hh dyn_error.hh dynout.hh location.hh
+           NumericalConstants.hh NumericalInitialization.hh PolishModel.hh \
+           Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
+           SymbolTable.hh WarningConsolidation.hh dyn_error.hh dynout.hh \
+           location.hh
 ModFile.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
            DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
            ExternalFunctionsTable.hh ModelTree.hh NumericalConstants.hh \
-           NumericalInitialization.hh Statement.hh StaticModel.hh \
+           NumericalInitialization.hh PolishModel.hh Statement.hh StaticModel.hh \
            SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
            WarningConsolidation.hh location.hh
 ModelTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
              ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
              MinimumFeedbackSet.hh ModelTree.hh NumericalConstants.hh \
-             SymbolTable.hh dyn_error.hh dynout.hh
+             PolishModel.hh SymbolTable.hh dyn_error.hh dynout.hh
+ModelTree.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
+             ExtendedPreprocessorTypes.hh ExternalFunctionsTable.hh \
+             NumericalConstants.hh PolishModel.hh SymbolTable.hh
 NumericalConstants.o : NumericalConstants.hh
 NumericalInitialization.o : CodeInterpreter.hh ExprNode.hh \
                            ExternalFunctionsTable.hh NumericalInitialization.hh Statement.hh \
