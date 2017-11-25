@@ -324,6 +324,10 @@ NumConstNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << datatree.num_constants.get(id);
 }
 
+void NumConstNode::genPolishCode(PolishModel &mdl) const {
+    mdl.add_constant(id);
+}
+
 bool
 NumConstNode::containsExternalFunction() const
 {
@@ -509,6 +513,8 @@ NumConstNode::substituteStaticAuxiliaryVariable() const
 {
   return const_cast<NumConstNode *>(this);
 }
+
+
 
 
 VariableNode::VariableNode(DataTree &datatree_arg, int symb_id_arg, int lag_arg) :
@@ -848,6 +854,22 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case eStatementDeclaredVariable:
     case eUnusedEndogenous:
       dyn_error("Impossible case");
+    }
+}
+
+void VariableNode::genPolishCode(PolishModel &mdl) const {
+    int i;
+    switch (type) {
+    case eParameter:
+        i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        mdl.add_constant(i);
+        break;
+    case eEndogenous:
+        i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag));
+        mdl.add_endo(i);
+    default:
+        dyn_error("Internal error: internal evalution not yet supported"
+                  " for exogenous variables");
     }
 }
 
@@ -2021,6 +2043,17 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   // Close parenthesis for uminus
   if (op_code == oUminus)
     output << RIGHT_PAR(output_type);
+}
+
+void UnaryOpNode::genPolishCode(PolishModel &mdl) const {
+    arg->genPolishCode(mdl);
+    switch (op_code) {
+    case oUminus:
+      mdl.add_unary_minus();
+      break;
+    default:
+      dyn_error("genPolishCode not implemented for this type");
+    }
 }
 
 void
@@ -3228,6 +3261,26 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << RIGHT_PAR(output_type);
 }
 
+void BinaryOpNode::genPolishCode(PolishModel &mdl) const {
+    arg1->genPolishCode(mdl);
+    arg2->genPolishCode(mdl);
+    switch (op_code) {
+    case oPlus:
+        mdl.add_binop('+');
+        break;
+    case oMinus:
+        mdl.add_binop('-');
+        break;
+    case oTimes:
+        mdl.add_binop('*');
+        break;
+    case oDivide:
+        mdl.add_binop('/');
+    default:
+      dyn_error("genPolishCode not implemented for this type");
+    }
+}
+
 void
 BinaryOpNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                           const temporary_terms_t &temporary_terms,
@@ -4244,6 +4297,10 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     }
 }
 
+void TrinaryOpNode::genPolishCode(PolishModel &mdl) const {
+    dyn_error("genPolishCode not implemented for this type");
+}
+
 void
 TrinaryOpNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
@@ -5044,6 +5101,10 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
   output << "tef_" << getIndxInTefTerms(symb_id, tef_terms);
 }
 
+void ExternalFunctionNode::genPolishCode(PolishModel &mdl) const {
+    dyn_error("genPolishCode not implemented for this type");
+}
+
 void
 ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                                   const temporary_terms_t &temporary_terms,
@@ -5249,6 +5310,10 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
     output << "tefd_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
   }
+}
+
+void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl) const {
+    dyn_error("genPolishCode not implemented for this type");
 }
 
 void
@@ -5554,6 +5619,10 @@ SecondDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType
     else
       output << "TEFDD_def_" << getIndxInTefTerms(second_deriv_symb_id, tef_terms)
              << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndex1 << "," << tmpIndex2 << RIGHT_ARRAY_SUBSCRIPT(output_type);
+}
+
+void SecondDerivExternalFunctionNode::genPolishCode(PolishModel &mdl) const {
+    dyn_error("genPolishCode not implemented for this type");
 }
 
 void

@@ -29,9 +29,12 @@ DynareFlex.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
 ExprNode.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
             DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
             ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
-            NumericalConstants.hh NumericalInitialization.hh Statement.hh \
-            StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
-            WarningConsolidation.hh dyn_error.hh dynout.hh location.hh
+            NumericalConstants.hh NumericalInitialization.hh PolishModel.hh \
+            Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
+            SymbolTable.hh WarningConsolidation.hh dyn_error.hh dynout.hh \
+            location.hh
+ExprNode.o : CodeInterpreter.hh ExprNode.hh ExternalFunctionsTable.hh \
+            PolishModel.hh SymbolTable.hh
 ExternalFunctionsTable.o : CodeInterpreter.hh ExprNode.hh \
                           ExternalFunctionsTable.hh SymbolTable.hh dyn_error.hh
 MinimumFeedbackSet.o : MinimumFeedbackSet.hh dynout.hh
@@ -63,6 +66,7 @@ ParsingDriver.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
                  ParsingDriver.hh Shocks.hh SigmaeInitialization.hh Statement.hh \
                  StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
                  WarningConsolidation.hh dyn_error.hh location.hh
+PolishModel.o : PolishModel.hh
 Shocks.o : CodeInterpreter.hh ExprNode.hh ExternalFunctionsTable.hh \
           Shocks.hh Statement.hh SymbolList.hh SymbolTable.hh \
           WarningConsolidation.hh dyn_error.hh location.hh
