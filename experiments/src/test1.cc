@@ -44,7 +44,8 @@ int main() {
     double p[] = {1, 2, 0.1};
 
     double *residuals = new double[2];
-    mdl.set_data(y, p);
+    mdl.set_endo(y);
+    mdl.set_param(p);
     mdl.get_residuals(residuals);
 
     int njac = mdl.get_jac_count();

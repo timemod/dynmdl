@@ -69,8 +69,11 @@ void PolishModel::add_unary_minus() {
 // functions for evaluating the model
 //
 
-void PolishModel::set_data(double const y[], double const p[]) {
+void PolishModel::set_endo(double const y[]) {
     this->y = y;
+}
+
+void PolishModel::set_param(double const p[]) {
     this->p = p;
 }
 
