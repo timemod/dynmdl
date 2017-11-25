@@ -2,10 +2,8 @@
 #include <iostream>
 using namespace std;
 
-PolishModel::PolishModel(int neq_in, int njac_in, double *constants_in) {
-    neq = neq_in;
-    njac = njac_in;
-    constants = constants_in;
+PolishModel::PolishModel(int neq, int const njac, const double constants[]) :
+        neq(neq), njac(njac), constants(constants) {
     ieq = 0; ieq_jac = 0;
     equations = new vector<int>*[neq];
     jac_equations = new vector<int>*[njac];
@@ -25,7 +23,7 @@ int PolishModel::get_jac_count() {
 //  codes for generating polish code
 //
 
-void PolishModel::new_equation(void) {
+void PolishModel::new_equation() {
     cur_eq = new vector<int>();
     equations[ieq++] = cur_eq;
 }
@@ -71,9 +69,9 @@ void PolishModel::add_unary_minus() {
 // functions for evaluating the model
 //
 
-void PolishModel::set_data(double *y_in, double *p_in) {
-    y = y_in;
-    p = p_in;
+void PolishModel::set_data(double const y[], double const p[]) {
+    this->y = y;
+    this->p = p;
 }
 
 double PolishModel::eval_eq(vector<int> *eq) {
@@ -125,13 +123,13 @@ double PolishModel::eval_eq(vector<int> *eq) {
    return res;
 }
 
-void PolishModel::get_residuals(double *residuals) {
+void PolishModel::get_residuals(double residuals[]) {
     for (int ieq = 0; ieq < neq; ieq++) {
         residuals[ieq] = eval_eq(equations[ieq]);
     }
 }
 
-void PolishModel::get_jac(int *rows, int *cols, double *values) {
+void PolishModel::get_jac(int rows[], int cols[], double values[]) {
     for (int ieq = 0; ieq < njac; ieq++) {
         rows[ieq] = jac_rows[ieq];
         cols[ieq] = jac_cols[ieq];
