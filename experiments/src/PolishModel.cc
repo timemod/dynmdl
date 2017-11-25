@@ -1,46 +1,53 @@
 #include "PolishModel.hh"
+#include <iostream>
+using namespace std;
 
-PolishModel::PolishModel(unsigned int neq_in,
-                         double *constants_in) {
+PolishModel::PolishModel(int neq_in, int njac_in, double *constants_in) {
     neq = neq_in;
+    njac = njac_in;
     constants = constants_in;
-    ieq = 0;
-    equations = new vector<unsigned int>*[neq];
+    ieq = 0; ieq_jac = 0;
+    equations = new vector<int>*[neq];
+    jac_equations = new vector<int>*[njac];
+    jac_rows = new int[njac];
+    jac_cols = new int[njac];
 }
 
-unsigned int PolishModel::get_equation_count() {
+int PolishModel::get_equation_count() {
     return neq;
 }
 
-vector<unsigned int>**PolishModel::get_equations() {
-    return equations;
-}
-
-double *PolishModel::get_constants() {
-    return constants;
+int PolishModel::get_jac_count() {
+    return njac;
 }
 
 //
 //  codes for generating polish code
 //
 
-
 void PolishModel::new_equation(void) {
-    cur_eq = new vector<unsigned int>();
+    cur_eq = new vector<int>();
     equations[ieq++] = cur_eq;
 }
 
-void PolishModel::add_constant(unsigned int index) {
+void PolishModel::new_jac_equation(int row, int col) {
+    cur_eq = new vector<int>();
+    jac_rows[ieq_jac] = row;
+    jac_cols[ieq_jac] = col;
+    jac_equations[ieq_jac++] = cur_eq;
+}
+
+void PolishModel::add_constant(int index) {
     cur_eq->push_back(CONST);
     cur_eq->push_back(index);
 }
 
-void PolishModel::add_endo(unsigned int index) {
+void PolishModel::add_endo(int index) {
     cur_eq->push_back(ENDO);
     cur_eq->push_back(index);
 }
 
-void PolishModel::add_param(unsigned int index) {
+void PolishModel::add_param(int index) {
     cur_eq->push_back(PARAM);
     cur_eq->push_back(index);
 }
@@ -56,6 +63,10 @@ void PolishModel::add_binop(char op) {
     cur_eq->push_back(code);
 }
 
+void PolishModel::add_unary_minus() {
+    cur_eq->push_back(UMIN);
+}
+
 //
 // functions for evaluating the model
 //
@@ -65,25 +76,25 @@ void PolishModel::set_data(double *y_in, double *p_in) {
     p = p_in;
 }
 
-double PolishModel::eval_eq(int ieq) {
-   vector<unsigned int> *eq = equations[ieq];
+double PolishModel::eval_eq(vector<int> *eq) {
+
    unsigned int pos = 0;
 
-   unsigned int *codes = &((*eq)[0]);
-   unsigned int index;
-   double lop, rop, res;
+   int *codes = &((*eq)[0]);
+   int index;
+   double op, lop, rop, res;
    while (pos < eq->size()) {
-       unsigned int code = codes[pos];
+       int code = codes[pos];
        switch (code) {
            case CONST: index = codes[++pos];
                        stk.push(constants[index]);
                        break;
-           case ENDO: index = codes[++pos];
-                      stk.push(y[index]);
-                      break;
+           case ENDO:  index = codes[++pos];
+                       stk.push(y[index]);
+                       break;
            case PARAM: index = codes[++pos];
-                      stk.push(p[index]);
-                      break;
+                       stk.push(p[index]);
+                       break;
            case MULT: 
            case PLUS: 
            case DIV: 
@@ -99,6 +110,11 @@ double PolishModel::eval_eq(int ieq) {
                           case DIV:  res = lop / rop; break;
                        }
                       stk.push(res);
+                      break;
+           case UMIN: op = stk.top();
+                      stk.pop();
+                      stk.push(-op);
+                      break;
        }
        ++pos;
    }
@@ -110,8 +126,16 @@ double PolishModel::eval_eq(int ieq) {
 }
 
 void PolishModel::get_residuals(double *residuals) {
-    for (unsigned int ieq = 0; ieq < neq; ieq++) {
-        residuals[ieq] = eval_eq(ieq);
+    for (int ieq = 0; ieq < neq; ieq++) {
+        residuals[ieq] = eval_eq(equations[ieq]);
+    }
+}
+
+void PolishModel::get_jac(int *rows, int *cols, double *values) {
+    for (int ieq = 0; ieq < njac; ieq++) {
+        rows[ieq] = jac_rows[ieq];
+        cols[ieq] = jac_cols[ieq];
+        values[ieq] = eval_eq(jac_equations[ieq]);
     }
 }
 

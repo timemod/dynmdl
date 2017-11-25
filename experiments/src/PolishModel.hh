@@ -14,43 +14,48 @@ enum ecode {
     PLUS,
     MULT,
     MINUS,
-    DIV
+    DIV,
+    UMIN  // unary minus
 };
 
 
 class PolishModel {
     public:
-        PolishModel(unsigned int neq_in, double *constants_in);
-        vector<unsigned int> **get_equations();
-        double *get_constants();
-        unsigned int get_equation_count();
+        PolishModel(int neq_in,int njac_in, double *constants_in);
+        int get_equation_count();
+        int get_jac_count();
 
         // functions for generating Polish code
         void new_equation(void);
-        void add_constant(unsigned int index);
-        void add_endo(unsigned int index);
-        void add_param(unsigned int index);
+        void new_jac_equation(int row, int col);
+        void add_constant(int index);
+        void add_endo(int index);
+        void add_param(int index);
         void add_binop(char op);
+        void add_unary_minus();
 
         // functions for evaluating the model
         void set_data(double *y_in, double *p_in);
         void get_residuals(double *residuals);
+        void get_jac(int *rows, int *cols, double *values);
 
     private:
        // member defining the model
-       unsigned int neq;
-       vector<unsigned int> **equations; 
+       int neq, njac;
+       vector<int> **equations; 
+       int *jac_rows;
+       int *jac_cols;
+       vector<int> **jac_equations; 
        double *constants;
 
        // members used for generating Polish code
-       unsigned int ieq;
-       vector<unsigned int> *cur_eq;
+       int ieq, ieq_jac;
+       vector<int> *cur_eq;
 
        // members for evaluating the model
        double *y, *p;
        stack<double> stk;
-       double eval_eq(int ieq);
-
+       double eval_eq(vector<int> *eq);
 };
 
 #endif
