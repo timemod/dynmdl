@@ -102,6 +102,7 @@ SymbolTable.o : CodeInterpreter.hh ExprNode.hh \
 SymbolTable.o : CodeInterpreter.hh ExprNode.hh \
                ExternalFunctionsTable.hh SymbolTable.hh
 WarningConsolidation.o : WarningConsolidation.hh dynout.hh location.hh
+calc_dynamic_internal.o : PolishModel.hh PolishModels.hh
 compile_model.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \
                  DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
                  ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \

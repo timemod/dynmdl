@@ -1454,7 +1454,7 @@ void ModelTree::genPolishEquations(PolishModel &mdl) const {
             //   ==> residual=lhs-rhs;
             lhs->genPolishCode(mdl);
             rhs->genPolishCode(mdl);
-            mdl.add_unary_minus();
+            mdl.add_binop('-');
         } else  {
             // The right hand side of the equation is empty ==> residual=lhs;
             lhs->genPolishCode(mdl);

@@ -11,8 +11,9 @@ class PolishModels {
         static int model_index;
         static vector<PolishModel*> models;
     public:
-        static int create_model(PolishModel *mdl, int row, int col,
+        static int create_model(PolishModel *&mdl, int row, int col,
                                 const double constants[]);
+        static PolishModel *get_model(int index);
 };
 
 

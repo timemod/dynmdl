@@ -5,6 +5,9 @@ using namespace std;
 PolishModel::PolishModel(int neq, int const njac, const double constants[]) :
         neq(neq), njac(njac), constants(constants) {
     ieq = 0; ieq_jac = 0;
+    cout << "constants = " << this->constants[0] << " "
+                           << this->constants[1] << " "
+                           << this->constants[2] << endl;
     equations = new vector<int>*[neq];
     jac_equations = new vector<int>*[njac];
     jac_rows = new int[njac];
@@ -126,7 +129,8 @@ double PolishModel::eval_eq(vector<int> *eq) {
    return res;
 }
 
-void PolishModel::get_residuals(double residuals[]) {
+void PolishModel::get_residuals(const double y[], double residuals[], int it) {
+    set_endo(y);
     for (int ieq = 0; ieq < neq; ieq++) {
         residuals[ieq] = eval_eq(equations[ieq]);
     }

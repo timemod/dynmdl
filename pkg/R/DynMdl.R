@@ -942,11 +942,21 @@ DynMdl <- R6Class("DynMdl",
     get_residuals = function(x, lags, leads, nper) {
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
-      return(get_residuals_(endos,
+      if (private$internal_calc) {
+        # for the time begin, assume that the model index is 1
+        cat("get_residuals_internal aangeroepen\n")
+        return(get_residuals_internal(0L, endos,
+                              which(private$lead_lag_incidence != 0) - 1,
+                              private$exo_data, private$params,
+                              private$endo_count,
+                              nper, private$period_shift))
+      } else {
+        return(get_residuals_(endos,
                             which(private$lead_lag_incidence != 0) - 1,
                             private$exo_data, private$params,
                             private$f_dynamic, private$endo_count,
                             nper, private$period_shift))
+      }
     },
     get_jac = function(x, lags, leads, nper) {
       endos <- c(lags, x, leads)

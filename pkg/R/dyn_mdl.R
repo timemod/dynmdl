@@ -56,7 +56,7 @@ dyn_mdl <- function(mod_file, period, data,
   }
   
   use_dll <- calc == "dll"
-  internal_calc <- calc = "internal"
+  internal_calc <- calc == "internal"
   
   if (calc == "internal") {
     warning("The internal calc method is still experimental.")
@@ -127,6 +127,7 @@ dyn_mdl <- function(mod_file, period, data,
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
     model_info <- compile_model_(mod_file, use_dll, dll_dir, internal_calc)
+    printobj(model_info)
     params <- model_info$params
     model_info$params <- NULL
     if (calc == "use_dll") {

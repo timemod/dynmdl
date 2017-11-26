@@ -34,6 +34,7 @@
 #include "dynout.hh"
 #include "PolishModel.hh"
 #include "PolishModels.hh"
+#include "DataTree.hh"
 
 ModFile::ModFile(WarningConsolidation &warnings_arg)
   : expressions_tree(symbol_table, num_constants, external_functions_table),
@@ -1258,7 +1259,12 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
     int model_index;
     if (internal_calc) {
         PolishModel *mdl;
-        double constants[] = {1, 2, 3}; // temporary solution
+        // TODO: handle constants correctly either use the data table or
+        // use an internal method in PolishCalc.
+        cout << "grote num_constants" <<  num_constans.getDouble(0);
+        cout << "grote num_constants" <<  num_constans.getDouble(1);
+        cout << "grote num_constants" <<  num_constans.getDouble(2);
+        static double constants[] = {2, 1, 2}; 
         model_index = PolishModels::create_model(mdl, 2, 4, constants);
         dynamic_model.genPolishModel(*mdl);
     } else {

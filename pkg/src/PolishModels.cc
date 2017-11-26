@@ -1,11 +1,15 @@
 #include "PolishModels.hh"
 
-int PolishModels::create_model(PolishModel *mdl, int nrow, int ncol,
+int PolishModels::create_model(PolishModel *&mdl, int nrow, int ncol,
                                const double constants[]) {
 
     mdl = new PolishModel(nrow, ncol, constants);
-    models[model_index] = mdl;
-    return(model_index++);
+    models.push_back(mdl);
+    return model_index++;
+}
+
+PolishModel *PolishModels::get_model(int index) {
+    return models[index];
 }
 
 int PolishModels::model_index = 0;

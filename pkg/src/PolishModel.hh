@@ -37,7 +37,7 @@ class PolishModel {
         // functions for evaluating the model
         void set_endo(double const y[]);
         void set_param(double const p[]);
-        void get_residuals(double residuals[]);
+        void get_residuals(const double y[], double residuals[], int it);
         void get_jac(int rows[], int cols[], double values[]);
 
     private:
