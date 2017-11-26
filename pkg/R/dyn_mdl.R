@@ -8,9 +8,13 @@
 #' @param period a \code{\link[regts]{period_range}} object
 #' @param data the model data as a  \code{\link[regts]{regts}} object with column
 #' names
-#' @param bytecode If \code{TRUE}, then the functions used to calculate the
+#' @param calc Method used to evaluate the model equations. 
+#' Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and 
+#' \code{"internal"}. See details.
+#' @param bytecode Deprecated (replaced by argument \code{calc}. 
+#' If \code{TRUE}, then the functions used to calculate the
 #' residuals and Jacobian are byte compiled
-#' @param  use_dll if \code{TRUE}, then the  functions used to calculate the
+#' @param  use_dll Deprecated (replaced by argument \code{calc}. If \code{TRUE}, then the  functions used to calculate the
 #' residuals and Jacobian are converted to C code that is subsequently
 #' converted to a dynamically linked library.
 #' @param fit_mod_file the name of the generated fit mod file. If not specified,
@@ -27,14 +31,42 @@
 #' @importFrom tools file_path_sans_ext
 #' @importFrom readr read_file
 #' @importFrom regts range_union
-dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
-                    fit_mod_file, debug = FALSE, dll_dir) {
+dyn_mdl <- function(mod_file, period, data, 
+                    calc = c("R", "bytecode", "dll", "internal"),
+                    fit_mod_file, debug = FALSE, dll_dir,
+                    bytecode, use_dll) {
   
+  calc_missing <- missing(calc)
+  calc <- match.arg(calc)
+  if (calc_missing) {
+    if (!missing(use_dll)) {
+      warning("Argument use_dll is deprecated! Please use argument calc.")
+      calc <- "dll"
+    } else if (!missing(bytecode)) {
+      warning("Argument bytcode is deprecated! Please use argument calc.")
+      calc <- "bytecode"
+    } 
+  } else {
+      if (!missing(use_dll)) {
+        warning("Argument calc overrules deprecated argument use_dll.")
+      }
+      if (!missing(bytecode)) {
+        warning("Argument calc overrules deprecated argument bytecode.")
+      }
+  }
+  
+  use_dll <- calc == "dll"
+  internal_calc <- calc = "internal"
+  
+  if (calc == "internal") {
+    warning("The internal calc method is still experimental.")
+  }
+
   if (!file.exists(mod_file)) {
     stop(paste("ERROR: Could not open file:", mod_file))
   }
   
-  if (use_dll) {
+  if (calc == "dll") {
     if (missing(dll_dir)) {
       dll_dir <- tempfile(pattern = "dynmdl_dll_")
     } else if (dir.exists(dll_dir)) {
@@ -75,13 +107,13 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     
     fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                  instruments, debug)
-    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir)
+    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir, internal_calc)
     params <- model_info$params
     model_info$params <- NULL
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
     } 
-    if (use_dll) {
+    if (calc == "use_dll") {
       dll_file <- compile_c_functions(dll_dir)
     } else {
       dll_file <- NA_character_
@@ -89,22 +121,21 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     fit_mod_text <- read_file(fit_mod_file)
     equations <- get_equations(fit_mod_text)
     mdl <- FitMdl$new(model_info, fit_info, params, equations, 
-                      bytecode, use_dll, dll_dir, dll_file, debug)
+                      calc, dll_dir, dll_file, debug)
   } else {
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    model_info <- compile_model_(mod_file, use_dll, dll_dir)
+    model_info <- compile_model_(mod_file, use_dll, dll_dir, internal_calc)
     params <- model_info$params
     model_info$params <- NULL
-    if (use_dll) {
+    if (calc == "use_dll") {
       dll_file <- compile_c_functions(dll_dir)
     } else {
       dll_file <- NA_character_
     }
     equations <- get_equations(mod_text)
-    mdl <- DynMdl$new(model_info, params, equations, 
-                      bytecode, use_dll, dll_dir, dll_file)
+    mdl <- DynMdl$new(model_info, params, equations, calc, dll_dir, dll_file)
   }
   
   if (!debug) {

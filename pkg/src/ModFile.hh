@@ -166,9 +166,9 @@ public:
 
   void computeChecksum();
 #ifdef USE_R
-  Rcpp::List getModelListR(void);
-  Rcpp::List getDerivativeInfo(void);
-  int get_warning_count(void);
+  Rcpp::List getModelListR(bool internal_calc);
+  Rcpp::List getDerivativeInfo() const;
+  int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
 #endif
 };

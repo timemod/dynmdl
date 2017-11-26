@@ -4,8 +4,8 @@
 \alias{dyn_mdl}
 \title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
 \usage{
-dyn_mdl(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
-  fit_mod_file, debug = FALSE, dll_dir)
+dyn_mdl(mod_file, period, data, calc = c("R", "bytecode", "dll", "internal"),
+  fit_mod_file, debug = FALSE, dll_dir, bytecode, use_dll)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -15,12 +15,9 @@ dyn_mdl(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
 \item{data}{the model data as a  \code{\link[regts]{regts}} object with column
 names}
 
-\item{bytecode}{If \code{TRUE}, then the functions used to calculate the
-residuals and Jacobian are byte compiled}
-
-\item{use_dll}{if \code{TRUE}, then the  functions used to calculate the
-residuals and Jacobian are converted to C code that is subsequently
-converted to a dynamically linked library.}
+\item{calc}{Method used to evaluate the model equations. 
+Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and 
+\code{"internal"}. See details.}
 
 \item{fit_mod_file}{the name of the generated fit mod file. If not specified,
 then the fit mod file is destroyed after the model has been parsed.}
@@ -31,6 +28,14 @@ are executed.}
 \item{dll_dir}{the directory where the dynamically linked library is stored.
 Primarily used for testing.
 Only used if argument \code{use_dll} is \code{TRUE}.}
+
+\item{bytecode}{Deprecated (replaced by argument \code{calc}. 
+If \code{TRUE}, then the functions used to calculate the
+residuals and Jacobian are byte compiled}
+
+\item{use_dll}{Deprecated (replaced by argument \code{calc}. If \code{TRUE}, then the  functions used to calculate the
+residuals and Jacobian are converted to C code that is subsequently
+converted to a dynamically linked library.}
 }
 \value{
 an \code{DynMdl} object or, if the mod file contains a

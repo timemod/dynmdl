@@ -503,8 +503,8 @@ public:
   bool isChecksumMatching(const string &basename) const;
 
 #ifdef USE_R
-   Rcpp::List getDynamicModelR(void);
-   Rcpp::List getDerivativeInfoR(void);
+   Rcpp::List getDynamicModelR() const;
+   Rcpp::List getDerivativeInfoR() const;
 #endif
 };
 

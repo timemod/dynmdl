@@ -5283,7 +5283,7 @@ DynamicModel::writeCCOutput(ostream &output, const string &basename, bool block_
 }
 
 #ifdef USE_R
-Rcpp::List DynamicModel::getDynamicModelR(void) {
+Rcpp::List DynamicModel::getDynamicModelR() const {
 
     // create lead_lag_indicence matrix 
     Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);
@@ -5315,7 +5315,7 @@ Rcpp::List DynamicModel::getDynamicModelR(void) {
                              );
 }
 
-Rcpp::List DynamicModel::getDerivativeInfoR(void) {
+Rcpp::List DynamicModel::getDerivativeInfoR() const {
 
     // create lead_lag_indicence matrix 
     Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);

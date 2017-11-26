@@ -2406,7 +2406,7 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
 
 
 #ifdef USE_R
-Rcpp::List StaticModel::getStaticModelR(void) {
+Rcpp::List StaticModel::getStaticModelR() const {
 
     // function body
     std::ostringstream dynout;

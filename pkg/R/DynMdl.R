@@ -129,12 +129,12 @@ setOldClass("regts")
 DynMdl <- R6Class("DynMdl",
   public = list(
     initialize = function(model_info, params, equations, 
-                          bytecode, use_dll, dll_dir, dll_file) {
+                          calc, dll_dir, dll_file) {
       
       private$model_info <- model_info
       private$equations <- equations
       
-      if (use_dll) {
+      if (calc == "use_dll") {
         reg.finalizer(self,
                       function(e) {
                         #unlink(private$dll_dir, recursive = TRUE)
@@ -142,11 +142,16 @@ DynMdl <- R6Class("DynMdl",
                       onexit = TRUE)
       } 
       
-      private$bytecode <- bytecode
-      private$use_dll <- use_dll
-      private$dll_dir <- dll_dir
-      private$dll_file <- dll_file
-      
+      if (calc == "use_dll") {
+        private$use_dll <- TRUE
+        private$dll_dir <- dll_dir
+        private$dll_file <- dll_file
+      } else if (calc == "bytecode") {
+        private$bytecode <- TRUE
+      } else if (calc == "internal") {
+        private$internal_calc <- TRUE
+      }
+
       with(model_info, {
         private$endo_names         <- names(endos)
         private$exo_names          <- names(exos)
@@ -175,7 +180,7 @@ DynMdl <- R6Class("DynMdl",
       
       private$njac_cols <- length(which(private$lead_lag_incidence != 0)) +
                            private$exo_count
-      if (use_dll) {
+      if (private$use_dll) {
         private$f_static <- function(y, x, params) {
           res <- numeric(private$endo_count)
           .Call("f_static_", y, x, params, res, PACKAGE = "mdl_functions")
@@ -214,7 +219,7 @@ DynMdl <- R6Class("DynMdl",
         private$f_dynamic   <- f_dynamic
         private$jac_dynamic <- jac_dynamic
         
-        if (bytecode) {
+        if (private$bytecode) {
           private$f_static <- compiler::cmpfun(private$f_static)
           private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
         }
@@ -664,6 +669,12 @@ DynMdl <- R6Class("DynMdl",
       return(self$clone(deep = TRUE))
     },
     serialize = function() {
+      
+      if (private$internal_calc) {
+        stop(paste("It is not yet possible to serialize model when the",
+                   "internal calculator is used."))
+      }
+      
       if (private$use_dll) {
         zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
         zip(zipfile = zip_file, files = private$dll_dir, extra = "-q")
@@ -732,6 +743,7 @@ DynMdl <- R6Class("DynMdl",
     ss = NULL,
     bytecode = FALSE,
     use_dll = FALSE,
+    internal_calc = FALSE,
     dll_dir = NA_character_,
     dll_file = NA_character_,
     period_error_msg = paste("The model period is not set.",

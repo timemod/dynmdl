@@ -33,6 +33,7 @@
 #include "dyn_error.hh"
 #include "dynout.hh"
 #include "PolishModel.hh"
+#include "PolishModels.hh"
 
 ModFile::ModFile(WarningConsolidation &warnings_arg)
   : expressions_tree(symbol_table, num_constants, external_functions_table),
@@ -1209,7 +1210,7 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
 }
 
 #ifdef USE_R
-Rcpp::List ModFile::getModelListR(void)  {
+Rcpp::List ModFile::getModelListR(bool internal_calc) {
 
     int exo_count = symbol_table.exo_nbr();
     int endo_count =  symbol_table.endo_nbr();
@@ -1227,7 +1228,6 @@ Rcpp::List ModFile::getModelListR(void)  {
     for (int i = 0; i < param_count; i++) {
         param_names[i] = symbol_table.getName(eParameter, i).c_str();
     }
-
 
     Rcpp::List dynmdl = dynamic_model.getDynamicModelR();
     Rcpp::List statmdl = static_model.getStaticModelR();
@@ -1254,14 +1254,27 @@ Rcpp::List ModFile::getModelListR(void)  {
     exos.names() = exo_names;
     endos.names() = endo_names;
     params.names() = param_names;
+
+    int model_index;
+    if (internal_calc) {
+        PolishModel *mdl;
+        double constants[] = {1, 2, 3}; // temporary solution
+        model_index = PolishModels::create_model(mdl, 2, 4, constants);
+        dynamic_model.genPolishModel(*mdl);
+    } else {
+        model_index = 0;
+    }
+
+
     return Rcpp::List::create(Rcpp::Named("exos") = exos,
                               Rcpp::Named("endos") = endos,
                               Rcpp::Named("params") = params,
+                              Rcpp::Named("model_index") = model_index,
                               Rcpp::Named("dynamic_model") = dynmdl,
                               Rcpp::Named("static_model") = statmdl);
 }
 
-Rcpp::List ModFile::getDerivativeInfo(void)  {
+Rcpp::List ModFile::getDerivativeInfo() const {
     int exo_count = symbol_table.exo_nbr();
     int endo_count =  symbol_table.endo_nbr();
     int param_count = symbol_table.param_nbr();
@@ -1280,18 +1293,14 @@ Rcpp::List ModFile::getDerivativeInfo(void)  {
     }
 
     Rcpp::List dynmdl = dynamic_model.getDerivativeInfoR();
-
+    
     return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,
                               Rcpp::Named("endo_names") = endo_names,
                               Rcpp::Named("param_names") = param_names,
                               Rcpp::Named("dynamic_model") = dynmdl);
 }
 
-int ModFile::get_warning_count(void) {
+int ModFile::get_warning_count() const {
     return(warnings.countWarnings());
-}
-
-void ModFile::createPolishModel(PolishModel &mdl) const {
-    dynamic_model.genPolishModel(mdl);
 }
 #endif
