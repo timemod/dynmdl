@@ -594,11 +594,11 @@ NULL
 #'
 #' \code{mdl} is an \code{\link{DynMdl}} object
 #'
-#' @seealso \code{\link{solve_steady}} and \code{\link{get_eigval}}
 #' @examples
 #' mdl <- islm_mdl()
 #' mdl$check()
 #' print(mdl$get_eigval())
+#' @seealso \code{\link{solve_steady}} and \code{\link{get_eigval}}
 NULL
 
 #' \code{\link{DynMdl}} method: Return the eigenvalues computed with method
@@ -620,4 +620,54 @@ NULL
 #'
 #' @seealso \code{\link{check}} 
 NULL
+
+#' \code{\link{DynMdl}} methods: set and get the static values of the
+#' model variables
+#' @name set/get_static_endos/exos
+#' @aliases set_static_exos set_static_endos get_static_endos get_static_exos
+#'
+#' @description
+#' 
+#' \code{\link{set_static_exos}} and \code{\link{set_static_endos}}
+#' can be used to set one or more static values of the endogenous
+#' or exogenous model variables, respectively. The correspondig
+#' \code{get} method can be used to retrieve them.
+#' 
+#' Each \code{\link{DynMdl}} object contains a set of static values
+#' for the exogenous and endogenous model variables.
+#' The static exogenous values are used to compute the steady state
+#' with function methode \code{\link{solve_steady}}.
+#' The static endogenous values are both input and output of 
+#' \code{solve_steady}: they are used as an initial guess
+#' for the steady state, and replaced by the steady 
+#' state solution.
+#' 
+#' The static values are initialized to the values specified in the initval block of 
+#' the mod file, or to zero if they are not specified in the initval block.
+#' The static values can be modified with methods
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$set_static_endos(endos)
+#' mdl$set_static_exos(exos)
+#' mdl$get_static_endos()
+#' mdl$get_static_endos()
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#' \describe{
+#' \item{\code{endos}}{A named numerical vector with new static values of the
+#' endogenous variables}
+#' \item{\code{exos}}{A named numerical vector with new static values of the
+#' exogenous variables}
+#' }
+#' @examples
+#' mdl <- islm_mdl(period = "2018Q1/2023Q3")
+#' mdl$set_static_endos(c(y = 1250))
+#' @seealso \code{\link{solve_steady}}and \code{\link{check}}
+NULL
+
 

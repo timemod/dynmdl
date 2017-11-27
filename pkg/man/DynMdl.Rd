@@ -23,34 +23,30 @@ An R6 class for a Dynare model
 \item{\code{\link{get_max_lead}}}{Returns the maximum lead}
 
 \item{\code{get_endo_names}}{Returns the names of the endogenous variables.}
+
 \item{\code{get_exo_names}}{Returns the names of the exogenous variables.}
 
 \item{\code{\link{set_labels}}}{Set labels for the model variables}
 
 \item{\code{\link{get_labels}}}{Returns the labels of the model variables.}
 
-\item{\code{get_par_names()}}{Returns the names of the parameters.}
+\item{\code{get_par_names}}{Returns the names of the parameters.}
 
-\item{\code{set_param()}}{Sets the parameters of the model.}
+\item{\code{set_param}}{Sets the parameters of the model.}
 
-\item{\code{get_param()}}{Returns the parameters of the model.}
+\item{\code{get_param}}{Returns the parameters of the model.}
 
-\item{\code{set_static_exos}}{Sets the static values of
-the exogenous variables. These values are used to compute the steady state.}
+\item{\code{\link{set_static_exos}}}{Sets the static values of
+the exogenous variables used to compute the steady state.}
 
-\item{\code{get_static_exos}}{Returns the static values of
-the exogenous variables}
+\item{\code{\link{get_static_exos}}}{Returns the static values of
+the exogenous variables.}
 
-\item{\code{set_static_endos}}{Sets the static values of
-the endos variables. These values are used to compute the steady state.}
+\item{\code{\link{set_static_endos}}}{Sets the static values of
+the endogenous variables.}
 
-\item{\code{get_static_endos}}{Returns the static values of
-the endogenous variables, i.e. the values that are supposed to be
-the steady state values. Function \code{solve_steady} can be used
-to compute them. After compiling the model, the
-static endos are initialized with zeros and the values in the \code{initval}
-block in the  \code{mdl} file. There is no setter for the static values:
-you can only modify them by calling function \code{solve_steady}}
+\item{\code{\link{get_static_endos}}}{Returns the static values of
+the endogenous variables.} 
 
 \item{\code{\link{init_data}}}{Initializes the model data}
 
@@ -58,23 +54,25 @@ you can only modify them by calling function \code{solve_steady}}
 
 \item{\code{\link{get_period}}}{Returns the model period}
 
-\item{\code{\link{get_data_period}}}{Returns the model data period}
+\item{\code{\link{get_data_period}}}{Returns the model data period.}
 
-\item{\code{get_lag_period}}{Returns the lag period}
+\item{\code{get_lag_period}}{Returns the lag period.}
 
 \item{\code{get_lead_period}}{Returns the lead period}
 
-\item{\code{\link{set_endo_values}}}{Sets the values of endogenous model variables}
+\item{\code{\link{set_endo_values}}}{Sets the values of endogenous model 
+variables}
 
-\item{\code{\link{set_exo_values}}}{Sets the values of exogenous model variables}
+\item{\code{\link{set_exo_values}}}{Sets the values of exogenous model 
+variables}
 
 \item{\code{\link{set_data}}}{Transfer timeseries to the model data}
 
-\item{\code{\link{change_endo_data}}}{Changes the values of endogenous model variables
-by applying a function}
+\item{\code{\link{change_endo_data}}}{Changes the values of endogenous model 
+variables by applying a function}
 
-\item{\code{\link{change_exo_data}}}{Changes the values of exogenous model variables
-by applying a function}
+\item{\code{\link{change_exo_data}}}{Changes the values of exogenous model 
+variables by applying a function}
 
 \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 
@@ -87,15 +85,10 @@ by applying a function}
 \item{\code{\link{check}}}{Compute the eigenvalues of the linear
 system and check if the Blachard and Kahn conditions are satisfied.}
 
-\item{\code{solve(control = list())}}{Solves the model using a stacked-time
-Newton method for the whole model period.
-Argument \code{control} is a list with solve options (TODO: describe these
-options somewhere).}
-
 \item{\code{\link{residual_check}}}{Calculates the residuals of the equation
 and report the differences larger than a tolerance parameters}
 
-\item{\code{solve_perturbation()}}{Solves the model using the perturbation
+\item{\code{solve_perturbation}}{Solves the model using the perturbation
 theory used in the Dynare function stoch_simul. Only shocks in the first
 solution period are allowed.}
 
