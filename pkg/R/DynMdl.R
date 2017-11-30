@@ -511,6 +511,10 @@ DynMdl <- R6Class("DynMdl",
       if (is.null(private$model_period)) stop(private$period_error_msg)
       if (private$use_dll) private$prepare_solve()
       
+      if (private$aux_vars$aux_count > 0) {
+        private$prepare_aux_vars()
+      }
+      
       nper <- nperiod(private$model_period)
       lags <- private$get_endo_lags()
       leads <- private$get_endo_leads()
