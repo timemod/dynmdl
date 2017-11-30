@@ -94,3 +94,46 @@ test_that("get_equations", {
   #print(eqs)
   expect_equal_to_reference(eqs_tmp, expected_equations_file)
 })
+
+#
+# now with dll option
+#
+
+report <- capture_output(mdl_dll <- dyn_mdl(mod_file, period = "2015/2032",
+                                            max_laglead_1 = TRUE, 
+                                            use_dll = TRUE))
+
+test_that("solve_steady with max_laglead_1, dll", {
+  mdl_dll$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  mdl_dll$set_static_endos(c(yd = 4800))
+  expect_equal(mdl_dll$get_static_endos(), dynare_result$steady)
+})
+
+test_that("solve with max_laglead_1 and dll", {
+  mdl2 <- create_solve_mdl(mdl_dll)
+  p1 <- start_period(mdl2$get_period())
+  mdl2$set_exo_values(c(245, 250, 260), names = "g", 
+                      period = period_range(p1, p1 + 2))
+  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
+               dynare_result$endo)
+  
+  # residual check 
+  res_check <- mdl2$residual_check()
+  neq <- length(mdl$get_endo_names())
+  expected_res_check <- regts(matrix(0, ncol = neq), period = mdl2$get_period(),
+                              names = paste0("eq_", 1:neq))
+  expect_equal(res_check, expected_res_check)
+})
+
+test_that("eigenvalues with dll", {
+  capture_output(mdl_dll$check())
+  eigval <- mdl_dll$get_eigval()
+  
+  # the last eigenvalues is Inf or almost infinite
+  expect_equal(Re(eigval)[1:10], dynare_result$eigval[1:10, 1], 
+               tolerance = 1e-7)
+  expect_equal(Im(eigval)[1:10], dynare_result$eigval[1:10, 2],
+               tolerance = 1e-7)
+})
+

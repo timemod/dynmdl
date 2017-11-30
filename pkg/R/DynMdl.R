@@ -486,10 +486,9 @@ DynMdl <- R6Class("DynMdl",
     },
     check = function() {
 
-      if (private$use_dll) private$prepare_solve()
-
       self$solve_steady(init_data = FALSE, control = list(silent = TRUE))
-
+      
+      if (private$use_dll) private$prepare_solve()
       private$ss  <- solve_first_order(private$ss,
                                        private$lead_lag_incidence,
                                        private$exos, private$endos,
@@ -498,13 +497,14 @@ DynMdl <- R6Class("DynMdl",
                                        private$endo_count,
                                        private$njac_cols,
                                        only_eigval = TRUE, debug = FALSE)
+      if (private$use_dll) private$clean_after_solve()
+      
       cat("EIGENVALUES:\n")
       cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
       for (eigv in private$ss$eigval) {
         cat(sprintf("%16g%16g%16g\n", Mod(eigv), Re(eigv), Im(eigv)))
       }
       cat("\n")
-      if (private$use_dll) private$clean_after_solve()
       return(invisible(self))
     },
     residual_check = function(tol = 0) {
