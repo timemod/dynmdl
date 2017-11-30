@@ -1,0 +1,14 @@
+y               
+yd              
+t               
+c               
+i               
+md              
+r               
+AUX_ENDO_LEAD_98
+AUX_ENDO_LEAD_51
+AUX_ENDO_LAG_1_1
+AUX_ENDO_LAG_1_2
+AUX_ENDO_LAG_0_1
+AUX_ENDO_LAG_0_2
+AUX_ENDO_LAG_0_3
