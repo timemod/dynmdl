@@ -12,22 +12,31 @@ mod_file <- file.path("mod", paste0(model, ".mod"))
 expected_equations_file <- "expected_output/expected_equations_islm_var1.rds"
 
 # compile the model 
-report <- capture_output(mdl <- dyn_mdl(mod_file, period = "2015/2027"))
+report <- capture_output(mdl <- dyn_mdl(mod_file, period = "2015/2032"))
 
 dynare_result <- read_dynare_result("islm_var1", mdl)
 
-test_that("solve_steady", {
+create_solve_mdl <- function(mdl) {
+  mdl2 <- mdl$clone()
+  p1 <- start_period(mdl2$get_period())
+  mdl2$set_exo_values(c(245, 250, 260), names = "g", 
+                      period = period_range(p1, p1 + 2))
+  mdl2$set_endo_values(4800, names = "yd", 
+                       period = mdl2$get_lead_period())
+  return(mdl2)
+}
+
+test_that("solve_steady and set_static_endos", {
   mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  mdl$set_static_endos(c(yd = 4800))
   expect_equal(mdl$get_static_endos(), dynare_result$steady)
 })
 
 test_that("solve", {
-  mdl2 <- mdl$clone()
-  mdl2$set_data(dynare_result$endo[mdl$get_lag_period()])
-  mdl2$set_data(dynare_result$endo[mdl$get_lead_period()])
-  mdl2$set_data(dynare_result$exo)
+  mdl2 <- create_solve_mdl(mdl)
   mdl2$solve(control = list(silent = TRUE, trace = FALSE))
-  expect_equal(mdl2$get_endo_data(), dynare_result$endo)
+  expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
+               dynare_result$endo)
 })
 
 test_that("check", {
@@ -38,21 +47,23 @@ test_that("check", {
 })
 
 # now compile the model with option max_laglead_1
-report <- capture_output(mdl_new <- dyn_mdl(mod_file, period = "2015/2027",
+report <- capture_output(mdl_new <- dyn_mdl(mod_file, period = "2015/2032",
                                             max_laglead_1 = TRUE))
 
-test_that("solve_steady", {
+test_that("solve_steady with max_laglead_1", {
   mdl_new$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  mdl_new$set_static_endos(c(yd = 4800))
   expect_equal(mdl_new$get_static_endos(), dynare_result$steady)
 })
 
-test_that("solve", {
-  mdl2 <- mdl_new$clone()
-  mdl2$set_data(dynare_result$endo[mdl$get_lag_period()])
-  mdl2$set_data(dynare_result$endo[mdl$get_lead_period()])
-  mdl2$set_data(dynare_result$exo)
+test_that("solve with max_laglead_1", {
+  mdl2 <- create_solve_mdl(mdl)
+  p1 <- start_period(mdl2$get_period())
+  mdl2$set_exo_values(c(245, 250, 260), names = "g", 
+                      period = period_range(p1, p1 + 2))
   mdl2$solve(control = list(silent = TRUE, trace = FALSE))
-  expect_equal(mdl2$get_endo_data(), dynare_result$endo)
+  expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
+               dynare_result$endo)
 })
 
 test_that("eigenvalues", {
@@ -60,8 +71,10 @@ test_that("eigenvalues", {
   eigval <- mdl_new$get_eigval()
  
   # the last eigenvalues is Inf or almost infinite
-  expect_equal(Re(eigval)[1:10], dynare_result$eigval[1:10, 1])
-  expect_equal(Im(eigval)[1:10], dynare_result$eigval[1:10, 2])
+  expect_equal(Re(eigval)[1:10], dynare_result$eigval[1:10, 1], 
+               tolerance = 1e-7)
+  expect_equal(Im(eigval)[1:10], dynare_result$eigval[1:10, 2],
+               tolerance = 1e-7)
 })
 
 test_that("get_equations", {
@@ -74,29 +87,3 @@ test_that("get_equations", {
   #print(eqs)
   expect_equal_to_reference(eqs_tmp, expected_equations_file)
 })
-
-
-
-# 
-# NOTE:
-# solve_perturbation does currently not work for the islm_var1 model.
-# this problem has to be solved.
-#
-# test_that("solve_perturbation (1) compare with dynare result", {
-#     mdl2 <- mdl$clone()
-#     p <- start_period(model_period)
-#     with (as.list(mdl2$get_param()), {
-#         mdl2$set_exo_values(exp(sigma_d), names = "epsd", period = p);
-#     })
-#     mdl2$solve_perturbation()
-# 
-#     # read in Dynare result (stoch_simul calculation)
-#     stoch_endo_data <- t(as.matrix(read.csv(stoch_endo_data_file, header = FALSE)))
-#     stoch_per <- period_range(start_period(model_period), end_period(data_period))
-#     dynare_stoch_result <- regts(stoch_endo_data, period = stoch_per, names = endo_names)
-#     dynare_stoch_result <- dynare_stoch_result +
-#         rep(mdl$get_static_endos(), each = nperiod(stoch_per))
-# 
-#     expect_equal(mdl2$get_endo_data(period = stoch_per), dynare_stoch_result)
-#     mdl2$get_endo_data(period = stoch_per) - dynare_stoch_result
-# })

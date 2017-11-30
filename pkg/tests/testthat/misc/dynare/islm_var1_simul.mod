@@ -1,15 +1,11 @@
 @#include "../mod/islm_var1.mod"
 
-initval;
-y = 1200;
-end;
-
-endval;
-y = 1250;
-end;
-
 steady;
 check;
+
+endval;
+yd = 4800;
+end;
 
 % Temp shock to government consumption
 shocks;
