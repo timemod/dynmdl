@@ -519,9 +519,16 @@ DynMdl <- R6Class("DynMdl",
       residuals <- private$get_residuals(x, lags, leads, nper)
       dim(residuals) <- c(private$endo_count, nper)
       residuals <- t(residuals)
-      colnames(residuals) <- paste0("eq_", 1 : private$endo_count)
+      colnames(residuals) <- paste0("eq_",  1 : (private$endo_count))
+      
+      if (private$aux_vars$aux_count > 0) {
+        # remove the residuals for the auxiliary equations
+        residuals <- residuals[, -private$aux_vars$endos]
+      }
+
       p_start <- start_period(private$model_period)
       p_end <- end_period(private$model_period)
+      
       if (tol != 0) {
         col_sel <- apply(residuals, MARGIN = 2, FUN = function(x) max(abs(x)) > tol)
         residuals <- residuals[ , col_sel, drop = FALSE]

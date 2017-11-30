@@ -64,6 +64,13 @@ test_that("solve with max_laglead_1", {
   mdl2$solve(control = list(silent = TRUE, trace = FALSE))
   expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
                dynare_result$endo)
+ 
+  # residual check 
+  res_check <- mdl2$residual_check()
+  neq <- length(mdl$get_endo_names())
+  expected_res_check <- regts(matrix(0, ncol = neq), period = mdl2$get_period(),
+                              names = paste0("eq_", 1:neq))
+  expect_equal(res_check, expected_res_check)
 })
 
 test_that("eigenvalues", {
