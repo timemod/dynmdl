@@ -1,7 +1,7 @@
 #include "PolishModels.hh"
 
 int PolishModels::create_model(PolishModel *&mdl, int nrow, int ncol,
-                               const double constants[]) {
+                               const vector<double>& constants) {
 
     mdl = new PolishModel(nrow, ncol, constants);
     models.push_back(mdl);

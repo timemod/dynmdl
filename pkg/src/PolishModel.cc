@@ -1,17 +1,20 @@
 #include "PolishModel.hh"
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
-PolishModel::PolishModel(int neq, int const njac, const double constants[]) :
-        neq(neq), njac(njac), constants(constants) {
+PolishModel::PolishModel(int neq, int njac,
+                         const vector<double> &constants_arg) 
+                                 : neq(neq), njac(njac) {
+
     ieq = 0; ieq_jac = 0;
-    cout << "constants = " << this->constants[0] << " "
-                           << this->constants[1] << " "
-                           << this->constants[2] << endl;
     equations = new vector<int>*[neq];
     jac_equations = new vector<int>*[njac];
     jac_rows = new int[njac];
     jac_cols = new int[njac];
+
+    constants = new double[constants_arg.size()];
+    copy(constants_arg.begin(), constants_arg.end(), constants);
 }
 
 int PolishModel::get_equation_count() {
@@ -109,9 +112,9 @@ double PolishModel::eval_eq(vector<int> *eq) {
                       stk.pop();
                       switch (code) {
                           case MULT: res = lop * rop; break;
-                          case PLUS:  res = lop + rop; break;
-                          case MINUS:  res = lop - rop; break;
-                          case DIV:  res = lop / rop; break;
+                          case PLUS: res = lop + rop; break;
+                          case MINUS: res = lop - rop; break;
+                          case DIV: res = lop / rop; break;
                        }
                       stk.push(res);
                       break;

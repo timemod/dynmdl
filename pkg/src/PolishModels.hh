@@ -12,7 +12,7 @@ class PolishModels {
         static vector<PolishModel*> models;
     public:
         static int create_model(PolishModel *&mdl, int row, int col,
-                                const double constants[]);
+                                const vector<double>& constants);
         static PolishModel *get_model(int index);
 };
 

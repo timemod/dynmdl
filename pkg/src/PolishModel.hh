@@ -21,7 +21,7 @@ enum ecode {
 
 class PolishModel {
     public:
-        PolishModel(int neq, int njac, const double constants[]);
+        PolishModel(int neq, int njac, const vector<double> &constants_arg);
         int get_equation_count();
         int get_jac_count();
 
@@ -47,7 +47,7 @@ class PolishModel {
        int *jac_rows;
        int *jac_cols;
        vector<int> **jac_equations; 
-       const double *constants;
+       double *constants;
 
        // members used for generating Polish code
        int ieq, ieq_jac;
