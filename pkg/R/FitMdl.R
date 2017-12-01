@@ -86,10 +86,10 @@ FitMdl <- R6Class("FitMdl",
       return (invisible(NULL))
     },
     get_endo_names = function() {
-      return (private$fit_info$orig_endos)
+      return(private$fit_info$orig_endos)
     },
     get_exo_names = function() {
-      return (private$fit_info$orig_exos)
+      return(private$fit_info$orig_exos)
     },
     set_fit = function(data, names = colnames(data), 
                        upd_mode = c("upd", "updval")) {
@@ -211,6 +211,9 @@ FitMdl <- R6Class("FitMdl",
       ret <- self$get_param(names = private$fit_info$sigmas)
       return(ret[ret >= 0])
     },
+    get_static_endos = function() {
+      return(super$get_static_endos()[private$fit_info$orig_endos])
+    },
     serialize = function() {
       ser <- as.list(super$serialize())
       ret <- c(ser, list(fit_info = private$fit_info))
@@ -237,15 +240,19 @@ FitMdl <- R6Class("FitMdl",
       private$exo_data[, private$fit_info$old_instruments] <-
                private$endo_data[, private$fit_info$instruments] 
       ret <- super$solve(...)
+    },
+    residual_check = function(...) {
+      ret <- super$residual_check(...)
+      return(ret[, seq_along(private$fit_info$orig_endos)])
     }
   ), 
   private = list(
     fit_info = NULL,
     get_names_fitmdl_ = function(type, names, pattern) {
       if (type == "endo") {
-        vnames <- sort(private$fit_info$orig_endos)
+        vnames <- private$fit_info$orig_endos
       } else {
-        vnames <- sort(private$fit_info$orig_exos)
+        vnames <- private$fit_info$orig_exos
       }
       if (!is.null(names)) {
         error_vars <- setdiff(names, vnames)

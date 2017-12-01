@@ -439,17 +439,24 @@ NULL
 #' @name solve_steady
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMdl}} solves
-#' the steady states.
+#' This method of R6 class \code{\link{DynMdl}} solves the steady state.
 #' 
-#' The steady state function employs function \code{\link[nleqslv]{nleqslv}}
-#' of the \code{nleqslv} package.
+#' This function uses the static exogenous and endogenous variables
+#' stored in the \code{DynMdl} object. The static endogenous variables
+#' are used as an initial guess for solving the steady state.
+#' After creating a \code{DynMdl} object, the static exogenous and endogenous
+#' variables are initialized to the values specified in the initval block of 
+#' the mod file, or to zero if they are not specified in the initval block.
+#' The static variables can be modified with methods
+#' \code{\link{set_static_exos}} and \code{\link{set_static_endos}}.
+#' 
+#' The function \code{\link{get_static_endos}} cab be used to retrieve the
+#' steady state solution.
 #'
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
-#' mdl$solve_steady(start = mdl$get_static_endos(),
-#'                  init_data = TRUE, control,
+#' mdl$solve_steady(init_data = TRUE, control,
 #'                  solver = c("umfpackr", "nleqslv"))
 #'
 #' }
@@ -459,8 +466,6 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{start}}{a numeric vector with an initial
-#' guess of the steady state values of the endogenous variables}
 #' \item{\code{init_data}}{a logical. If \code{TRUE}, then if the 
 #' solve was succesfull the endogenous model variables are set to
 #' the computed steady state values.}
@@ -471,10 +476,14 @@ NULL
 #' \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
 #' For large model, the \code{umfpackr} solve can be much faster.}
 #' }
-#' @seealso \code{\link{solve}}
+#' @seealso \code{\link{set_static_endos}}, \code{\link{set_static_exos}},
+#' \code{\link{get_static_endos}} and \code{\link{get_static_exos}}
 #' @examples
 #' mdl <- islm_mdl()
 #' mdl$solve_steady(control = list(trace = 1))
+#' 
+#' # print the solution
+#' print(mdl$get_static_endos())
 NULL
 
 #' \code{\link{DynMdl}} method: Solves the model
@@ -565,6 +574,100 @@ NULL
 #' }
 #'
 #' \code{mdl} is an \code{\link{DynMdl}} object
+NULL
+
+#' \code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model 
+#' around thesteady state.
+#' @name check
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} computes the steady state,
+#' constructs a linear model around the state steady and finally
+#' computes the eigenvalues of the linearized model around the steady state. It 
+#' also checks if the Blachard and  Kahn conditions are satisfied. 
+#'
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$check()
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @examples
+#' mdl <- islm_mdl()
+#' mdl$check()
+#' print(mdl$get_eigval())
+#' @seealso \code{\link{solve_steady}} and \code{\link{get_eigval}}
+NULL
+
+#' \code{\link{DynMdl}} method: Return the eigenvalues computed with method
+#' \code{check}
+#' @name get_eigval
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} returns the eigenvalues 
+#' computed with method \code{\link{check}}, ordered with increasing absolute 
+#' value
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$get_eigval()
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @seealso \code{\link{check}} 
+NULL
+
+#' \code{\link{DynMdl}} methods: set and get the static values of the
+#' model variables
+#' @name set/get_static_endos/exos
+#' @aliases set_static_exos set_static_endos get_static_endos get_static_exos
+#'
+#' @description
+#' 
+#' \code{\link{set_static_exos}} and \code{\link{set_static_endos}}
+#' can be used to set one or more static values of the endogenous
+#' or exogenous model variables, respectively. The correspondig
+#' \code{get} method can be used to retrieve them.
+#' 
+#' Each \code{\link{DynMdl}} object contains a set of static values
+#' for the exogenous and endogenous model variables.
+#' The static exogenous values are used to compute the steady state
+#' with function methode \code{\link{solve_steady}}.
+#' The static endogenous values are both input and output of 
+#' \code{solve_steady}: they are used as an initial guess
+#' for the steady state, and replaced by the steady 
+#' state solution.
+#' 
+#' The static values are initialized to the values specified in the initval block of 
+#' the mod file, or to zero if they are not specified in the initval block.
+#' The static values can be modified with methods
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$set_static_endos(endos)
+#' mdl$set_static_exos(exos)
+#' mdl$get_static_endos()
+#' mdl$get_static_endos()
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#' \describe{
+#' \item{\code{endos}}{A named numerical vector with new static values of the
+#' endogenous variables}
+#' \item{\code{exos}}{A named numerical vector with new static values of the
+#' exogenous variables}
+#' }
+#' @examples
+#' mdl <- islm_mdl(period = "2018Q1/2023Q3")
+#' mdl$set_static_endos(c(y = 1250))
+#' @seealso \code{\link{solve_steady}}and \code{\link{check}}
 NULL
 
 

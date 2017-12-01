@@ -4,18 +4,25 @@
 \alias{solve_steady}
 \title{\code{\link{DynMdl}} method: Solves the steady state.}
 \description{
-This method of R6 class \code{\link{DynMdl}} solves
-the steady states.
+This method of R6 class \code{\link{DynMdl}} solves the steady state.
 
-The steady state function employs function \code{\link[nleqslv]{nleqslv}}
-of the \code{nleqslv} package.
+This function uses the static exogenous and endogenous variables
+stored in the \code{DynMdl} object. The static endogenous variables
+are used as an initial guess for solving the steady state.
+After creating a \code{DynMdl} object, the static exogenous and endogenous
+variables are initialized to the values specified in the initval block of 
+the mod file, or to zero if they are not specified in the initval block.
+The static variables can be modified with methods
+\code{\link{set_static_exos}} and \code{\link{set_static_endos}}.
+
+The function \code{\link{get_static_endos}} cab be used to retrieve the
+steady state solution.
 }
 \section{Usage}{
 
 \code{DynMdl} method:
 \preformatted{
-mdl$solve_steady(start = mdl$get_static_endos(),
-                 init_data = TRUE, control,
+mdl$solve_steady(init_data = TRUE, control,
                  solver = c("umfpackr", "nleqslv"))
 
 }
@@ -27,8 +34,6 @@ mdl$solve_steady(start = mdl$get_static_endos(),
 
 
 \describe{
-\item{\code{start}}{a numeric vector with an initial
-guess of the steady state values of the endogenous variables}
 \item{\code{init_data}}{a logical. If \code{TRUE}, then if the 
 solve was succesfull the endogenous model variables are set to
 the computed steady state values.}
@@ -44,7 +49,11 @@ For large model, the \code{umfpackr} solve can be much faster.}
 \examples{
 mdl <- islm_mdl()
 mdl$solve_steady(control = list(trace = 1))
+
+# print the solution
+print(mdl$get_static_endos())
 }
 \seealso{
-\code{\link{solve}}
+\code{\link{set_static_endos}}, \code{\link{set_static_exos}},
+\code{\link{get_static_endos}} and \code{\link{get_static_exos}}
 }

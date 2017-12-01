@@ -24,6 +24,12 @@
 #' @param dll_dir the directory where the dynamically linked library is stored.
 #' Primarily used for testing.
 #' Only used if argument \code{use_dll} is \code{TRUE}.
+#' @param max_laglead_1 a logical indicating whether the model should be 
+#' transformed internally to a model with a maximum lag and lead of 1.
+#' The default is \code{FALSE}. This option has no effect if the maximum lag
+#' and lead of the original model is 1. Set this argument to
+#' \code{TRUE} if you want to analyse the stability of the steady state with 
+#' method \code{\link{check}} for models with a maximum lag or lead larger than 1.
 #' @return an \code{DynMdl} object or, if the mod file contains a
 #' fit block, a \code{\link{FitMdl}} object.
 #' @export
@@ -33,7 +39,7 @@
 #' @importFrom regts range_union
 dyn_mdl <- function(mod_file, period, data, 
                     calc = c("R", "bytecode", "dll", "internal"),
-                    fit_mod_file, debug = FALSE, dll_dir,
+                    fit_mod_file, debug = FALSE, dll_dir, max_laglead_1 = FALSE,
                     bytecode, use_dll) {
   
   calc_missing <- missing(calc)
@@ -98,7 +104,7 @@ dyn_mdl <- function(mod_file, period, data,
   mod_text <- read_file(preprocessed_mod_file)
   
   instruments <- get_fit_instruments(mod_text)
-  
+
   if (!is.null(instruments))  {
     
     if (missing(fit_mod_file)) {
@@ -107,7 +113,8 @@ dyn_mdl <- function(mod_file, period, data,
     
     fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                  instruments, debug)
-    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir, internal_calc)
+    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir, max_laglead_1,
+                                 internal_calc)
     params <- model_info$params
     model_info$params <- NULL
     if (missing(fit_mod_file)) {
@@ -126,8 +133,8 @@ dyn_mdl <- function(mod_file, period, data,
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    model_info <- compile_model_(mod_file, use_dll, dll_dir, internal_calc)
-    printobj(model_info)
+    model_info <- compile_model_(mod_file, use_dll, dll_dir, max_laglead_1, 
+                                 internal_calc)
     params <- model_info$params
     model_info$params <- NULL
     if (calc == "use_dll") {

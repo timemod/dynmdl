@@ -6,7 +6,7 @@
 Rcpp::List compute_derivatives(std::string modfile) {
     // the treatement of char in the next statement does not deserve a beauty
     // price
-    ModFile *mod_file = parse((char *) modfile.c_str(), true);
+    ModFile *mod_file = parse((char *) modfile.c_str(), false, true);
     
     Rcpp::List retval;
     retval =  mod_file->getDerivativeInfo();

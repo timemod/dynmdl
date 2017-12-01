@@ -1,7 +1,9 @@
 library(dynmdl)
 library(testthat)
-
+rm(list = ls())
 context("ISLM model with fit procedure and if statements")
+
+source("../tools/read_dynare_result.R")
 
 ifelse_jac <<- function(x, y, z) {
   if (x) {
@@ -33,13 +35,9 @@ ifelse_d3 <<- function(x, y, z) {
   return(list(val, c(0, 0, 0)))  
 }
 
-
 nperiods <- 18
-mod_file <- "mod/islm_fit_if.mod"
-dynare_dir     <- "dynare/output"
-endo_name_file <- file.path(dynare_dir, "islm_fit_if_endo_names.txt")
-endo_file <- file.path(dynare_dir, "islm_fit_if_endo.csv")
-
+model_name <- "islm_fit_if"
+mod_file <- file.path("mod", paste0(model_name, ".mod"))
 p1 <- period("2016Q1")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
@@ -52,14 +50,9 @@ mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
 
 mdl$solve(control = list(silent = TRUE))
 
-endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
-                       header = FALSE, sep = "")[[1]]
-endo_data <- t(as.matrix(read.csv(endo_file, header = FALSE)))
-dynare_result <- regts(endo_data, start = start_period(mdl$get_period()) - 1,
-                       names = endo_names)[, mdl$get_endo_names()]
-dynare_result <- dynare_result[, order(colnames(dynare_result))]
+dynare_result <- read_dynare_result(model_name, mdl)
 
 test_that("dynare result equal to islm result", {
-  p <- get_period_range(dynare_result)
-  expect_equal(dynare_result, mdl$get_endo_data(period = p))
+  p <- mdl$get_period()
+  expect_equal(dynare_result$endo, mdl$get_endo_data(period = p))
 })

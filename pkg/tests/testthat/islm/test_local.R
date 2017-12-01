@@ -1,50 +1,25 @@
 library(dynmdl)
 library(testthat)
+rm(list = ls())
 context("ISLM model with local variables")
 
-nperiods <- 18
-mod_file <- "mod/islm_local.mod"
-dynare_dir     <- "dynare/output"
-endo_name_file <- file.path(dynare_dir, "islm_endo_names.txt")
-exo_name_file  <- file.path(dynare_dir, "islm_exo_names.txt")
+source("../tools/read_dynare_result.R")
+source("utils.R")
 
-p1 <- period("2011Q3")
-model_period <- period_range(p1, p1 + nperiods - 1)
+mod_name <- "islm_local"
 
-report <- capture_output(mdl <- dyn_mdl(mod_file))
-report2 <- capture_output(mdl$solve_steady())
-mdl$set_period(model_period)
+mdl <- make_mdl(mod_name)
+model_period <- mdl$get_period()
 lag_per <- mdl$get_lag_period()
 
-get_dynare_endo <- function(endo_file, data_period) {
-  endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
-                         header = FALSE, sep = "")[[1]]
-  endo_data <- t(as.matrix(read.csv(file.path(dynare_dir, endo_file),
-                                    header = FALSE)))
-  return (regts(endo_data, period = data_period, names = endo_names))
-}
-
-get_dynare_exo <- function(exo_file, data_period) {
-  exo_names <- read.csv(exo_name_file, stringsAsFactors = FALSE,
-                        header = FALSE, sep = "")[[1]]
-  exo_data <- as.matrix(read.csv(file.path(dynare_dir, exo_file),
-                                 header = FALSE))
-  return (regts(exo_data, period = data_period, names = exo_names))
-}
-
-endo_names <- mdl$get_endo_names()
-dynare_endo <- get_dynare_endo("islm_simul_endo.csv",
-                               mdl$get_data_period())[, endo_names]
-dynare_exo <- get_dynare_exo("islm_simul_exo.csv", mdl$get_data_period())
+dynare_result <- read_dynare_result("islm", mdl)
 
 test_that("solve", {
-  mdl2 <- mdl$clone()
-  mdl2$set_data(dynare_endo[lag_per])
-  mdl2$set_data(dynare_exo)
-  mdl2$solve(control = list(silent = TRUE))
-  expect_equal(dynare_endo, mdl2$get_endo_data())
+  mdl2 <- simul_islm(mdl)
+  expect_equal(dynare_result$endo, mdl2$get_endo_data(period = model_period))
   expect_error(mdl2$solve_perturbation(),
-               "The perturbation approach currently only allows shocks in the first period")
+               paste("The perturbation approach currently only allows shocks",
+                     "in the first period"))
 })
 
 test_that("solve_perturb", {

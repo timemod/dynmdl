@@ -19,7 +19,8 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
     # equations. dynmdl does not do that.
     if (max_lag > 1 || max_lead > 1) {
         stop(paste("Function solve_first_order does not work for models",
-                   "with max_lag > 1 or max_lead > 1"))
+                   "with max_lag > 1 or max_lead > 1.\n",
+                   "Tip: call function dyn_mdl with option max_laglead = TRUE."))
     }
 
     # calculate the Jacobian

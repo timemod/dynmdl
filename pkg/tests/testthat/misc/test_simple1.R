@@ -22,7 +22,8 @@ mdl$set_data(regts(1, period = lag_per), names = "y")
 
 test_that("steady state calculation", {
   mdl_stat <- mdl$clone()
-  mdl_stat$solve_steady(start = c(y = 2), solver = "nleqslv")
+  mdl_stat$set_static_endos(c(y = 2))
+  mdl_stat$solve_steady(solver = "nleqslv")
   expect_equal(mdl_stat$get_static_endos(), c(y = 0))
 })
 

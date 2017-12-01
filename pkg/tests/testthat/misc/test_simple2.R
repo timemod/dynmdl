@@ -42,10 +42,10 @@ mdl$set_data(regts(1, period = lag_per), names = "y")
 
 test_that("steady state calculation", {
   mdl_stat <- mdl$clone()
-  mdl_stat$solve_steady(start = c(y = 2, yplus = 1, ymin = 9, exo = 0),
-                        control = list(silent = TRUE))
-  expect_equal(mdl_stat$get_static_endos(), c(y = 0, yplus = 0, ymin = 0,
-                                              exo= 0))
+  mdl$set_static_endos(c(y = 2, yplus = 1, ymin = 9, exo = 0))
+  mdl_stat$solve_steady(control = list(silent = TRUE))
+  expected_result <- c(y = 0, yplus = 0, ymin = 0, exo= 0)
+  expect_equal(mdl_stat$get_static_endos(), expected_result)
 })
 
 test_that("solve", {

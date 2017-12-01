@@ -5,8 +5,8 @@ get_residuals_internal <- function(model_index, endos, icols, exo_data, params, 
     .Call(`_dynmdl_get_residuals_internal`, model_index, endos, icols, exo_data, params, n_endo, nper, period_shift)
 }
 
-compile_model_ <- function(modfile, use_dll, dll_dir, internal_calc) {
-    .Call(`_dynmdl_compile_model_`, modfile, use_dll, dll_dir, internal_calc)
+compile_model_ <- function(modfile, use_dll, dll_dir, max_laglead_1, internal_calc) {
+    .Call(`_dynmdl_compile_model_`, modfile, use_dll, dll_dir, max_laglead_1, internal_calc)
 }
 
 compute_derivatives <- function(modfile) {

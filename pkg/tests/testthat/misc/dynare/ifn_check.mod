@@ -1,5 +1,5 @@
 @#include "../mod/ifn.mod"
 
-%steady;
+steady;
 
 check;

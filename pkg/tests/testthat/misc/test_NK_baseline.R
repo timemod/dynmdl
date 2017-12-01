@@ -1,55 +1,38 @@
 library(dynmdl)
 library(testthat)
-
+rm(list = ls())
 context("NK_baseline model")
 
-# NOTE: the IFN model is not normal DSGE model,
-# the steady state is not well defined and
-# the Blanchard-Kahn-conditions are not satisfied.
-# However, it may still be solved with the stacked-time algorithm.
+source("../tools/read_dynare_result.R")
 
-mod_file <- "mod/NK_baseline.mod"
+model_name <- "NK_baseline"
+mod_file <- file.path("mod", paste0(model_name, ".mod"))
 dynare_dir     <- "dynare/output"
 param_name_file <-  file.path(dynare_dir, "NK_baseline_param_names.txt")
 param_value_file <-  file.path(dynare_dir, "NK_baseline_param_values.txt")
-endo_name_file <- file.path(dynare_dir, "NK_baseline_endo_names.txt")
-endo_data_file <- file.path(dynare_dir, "NK_baseline_simul_endo.csv")
-stoch_endo_data_file <- file.path(dynare_dir, "NK_baseline_stoch_endo.csv")
+
 steady_data_file <- file.path(dynare_dir, "NK_baseline_steady.csv")
 eigval_file <- file.path(dynare_dir, "NK_baseline_eigval.csv")
 start_period <- period("2015")
 expected_equations_file <- "expected_output/expected_equations.rds"
 
 # compile the model
+model_period <- period_range("2015/2033")
 report <- capture_output(mdl <- dyn_mdl(mod_file))
-
-# read in the dynare result, this is also used to determine the solution period
-endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
-                       header = FALSE, sep = "")[[1]]
-endo_data <- t(as.matrix(read.csv(endo_data_file, header = FALSE)))
-nper <- nrow(endo_data) - 2 # minus maximum lag and lead
-model_period <- period_range(start_period, start_period + nper - 1)
 mdl$set_period(model_period)
-data_period <- mdl$get_data_period()
-dynare_result <- regts(endo_data, period = data_period, names = endo_names)
 
-mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
+dynare_result <- read_dynare_result(model_name, mdl)
 
 test_that("solve_steady", {
-  #  read in dynare result, and compare
-  steady_endos <- read.csv(steady_data_file, header = FALSE, sep = "")[[1]]
-  names(steady_endos) <- endo_names
-  expect_equal(steady_endos, mdl$get_static_endos())
+  mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  expect_equal(mdl$get_static_endos(), dynare_result$steady)
 })
 
 test_that("eigenvalues", {
   check_output <- capture_output(mdl$check())
-  eigvals <- mdl$get_eigval()
-  dynare_eigvals <- read.csv(eigval_file, header = FALSE, sep = ",")
-  i <- order(apply(dynare_eigvals, MARGIN = 1,
-                   FUN = function(x) sqrt(sum(x**2))))
+  eigval <- mdl$get_eigval()
   # the last eigenvalues are Inf or almost infinite
-  expect_equal(Re(eigvals[1:19]), dynare_eigvals[i[1:19], 1])
+  expect_equal(Re(eigval[1:19]), dynare_result$eigval[1:19, 1])
 })
 
 test_that("solve", {
@@ -64,7 +47,7 @@ test_that("solve", {
   })
   mdl2$solve(control = list(silent = TRUE, trace = FALSE))
   
-  expect_equal(mdl2$get_endo_data(), dynare_result)
+  expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })
 
 test_that("get_equations", {
@@ -78,28 +61,16 @@ test_that("get_equations", {
   expect_equal_to_reference(eqs_tmp, expected_equations_file)
 })
 
-
-
-# 
-# NOTE:
-# solve_perturbation does currently not work for the NK_baseline model.
-# this problem has to be solved.
-#
-# test_that("solve_perturbation (1) compare with dynare result", {
-#     mdl2 <- mdl$clone()
-#     p <- start_period(model_period)
-#     with (as.list(mdl2$get_param()), {
-#         mdl2$set_exo_values(exp(sigma_d), names = "epsd", period = p);
-#     })
-#     mdl2$solve_perturbation()
-# 
-#     # read in Dynare result (stoch_simul calculation)
-#     stoch_endo_data <- t(as.matrix(read.csv(stoch_endo_data_file, header = FALSE)))
-#     stoch_per <- period_range(start_period(model_period), end_period(data_period))
-#     dynare_stoch_result <- regts(stoch_endo_data, period = stoch_per, names = endo_names)
-#     dynare_stoch_result <- dynare_stoch_result +
-#         rep(mdl$get_static_endos(), each = nperiod(stoch_per))
-# 
-#     expect_equal(mdl2$get_endo_data(period = stoch_per), dynare_stoch_result)
-#     mdl2$get_endo_data(period = stoch_per) - dynare_stoch_result
-# })
+test_that("solve_perturbation (1) compare with dynare result", {
+    mdl2 <- mdl$clone()
+    p <- start_period(model_period)
+    with (as.list(mdl2$get_param()), {
+        mdl2$set_exo_values(exp(sigma_d), names = "epsd", period = p);
+    })
+    mdl2$solve_perturbation()
+    
+    stoch_per <- get_period_range(dynare_result$stoch_endo)
+    stoch_endo <- dynare_result$stoch_endo +
+        rep(mdl2$get_static_endos(), each = nperiod(stoch_per))
+    expect_equal(mdl2$get_endo_data(period = stoch_per), stoch_endo)
+})

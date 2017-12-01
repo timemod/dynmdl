@@ -1,14 +1,7 @@
-@#include "../mod/islm_extfunc.mod"
+@#include "../mod/islm_var3.mod"
 
 steady;
-
-initval;
-y = 1200;
-end;
-
-endval;
-y = 1210.381827;
-end;
+check;
 
 % Temp shock to government consumption
 shocks;

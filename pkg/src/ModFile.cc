@@ -314,7 +314,7 @@ ModFile::checkPass()
 }
 
 void
-ModFile::transformPass(bool nostrict)
+ModFile::transformPass(bool nostrict, bool max_laglead_1)
 {
   // Save the original model (must be done before any model transformations by preprocessor)
   dynamic_model.cloneDynamic(original_model);
@@ -378,16 +378,14 @@ ModFile::transformPass(bool nostrict)
       dynamic_model.substituteEndoLagGreaterThanTwo(false);
       dynamic_model.substituteExoLag(false);
     }
-  else
-    {
+  else if (max_laglead_1) {
       // In deterministic models, create auxiliary vars for leads and lags endogenous greater than 2, only on endos (useless on exos)
-      /* For package dynmdl, it is not requited to substitute
-       * lags and leads > 2 */
-      /*
+      /* For package dynmdl, it is not required to substitute
+       * lags and leads > 2, except in function check_mdl. */
+
       dynamic_model.substituteEndoLeadGreaterThanTwo(true);
       dynamic_model.substituteEndoLagGreaterThanTwo(true);
-      */
-    }
+  }
 
   if (differentiate_forward_vars)
     dynamic_model.differentiateForwardVars(differentiate_forward_vars_subset);
@@ -1229,6 +1227,22 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
     for (int i = 0; i < param_count; i++) {
         param_names[i] = symbol_table.getName(eParameter, i).c_str();
     }
+    
+    // auxiliary variables (only used for check_mdl)
+    int aux_count = symbol_table.get_aux_count();
+    Rcpp::NumericVector aux_endos(aux_count);
+    Rcpp::NumericVector aux_orig_endos(aux_count);
+    Rcpp::NumericVector aux_orig_leads(aux_count);
+    for (int i = 0; i < aux_count; i++) {
+        aux_endos[i] = symbol_table.get_aux_endo(i);
+        aux_orig_endos[i] = symbol_table.get_aux_orig_endo(i);
+        aux_orig_leads[i] = symbol_table.get_aux_orig_lead_lag(i);
+    }
+    Rcpp::List aux_vars = Rcpp::List::create(
+            Rcpp::Named("aux_count") = aux_count,
+            Rcpp::Named("endos") = aux_endos,
+            Rcpp::Named("orig_endos") = aux_orig_endos,
+            Rcpp::Named("orig_leads") = aux_orig_leads);
 
     Rcpp::List dynmdl = dynamic_model.getDynamicModelR();
     Rcpp::List statmdl = static_model.getStaticModelR();
@@ -1259,11 +1273,7 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
     int model_index;
     if (internal_calc) {
         PolishModel *mdl;
-        // TODO: handle constants correctly either use the data table or
-        // use an internal method in PolishCalc.
-        cout << "grote num_constants" <<  num_constans.getDouble(0);
-        cout << "grote num_constants" <<  num_constans.getDouble(1);
-        cout << "grote num_constants" <<  num_constans.getDouble(2);
+        // TODO: constants are not yet handled correctly.
         static double constants[] = {2, 1, 2}; 
         model_index = PolishModels::create_model(mdl, 2, 4, constants);
         dynamic_model.genPolishModel(*mdl);
@@ -1276,6 +1286,7 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
                               Rcpp::Named("endos") = endos,
                               Rcpp::Named("params") = params,
                               Rcpp::Named("model_index") = model_index,
+                              Rcpp::Named("aux_vars") = aux_vars,
                               Rcpp::Named("dynamic_model") = dynmdl,
                               Rcpp::Named("static_model") = statmdl);
 }
