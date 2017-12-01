@@ -1,8 +1,10 @@
 library(dynmdl)
 library(testthat)
+rm(list = ls())
 
 context("Reading and writing a model to an rds file")
 
+mod_file <- "mod/islm.mod"
 dll_dir <- "islm_dll"
 islm_rds_file <- "islm_model.rds"
 tmp_rds_file <- "mdl.rds"

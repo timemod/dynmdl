@@ -1,7 +1,8 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-source("read_dynare_result.R")
+
+source("../tools/read_dynare_result.R")
 
 context("ISLM variant 2")
 

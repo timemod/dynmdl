@@ -1,28 +1,22 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-
-context("ISLM model")
+context("ISLM model with local variables and the dll option")
 
 source("../tools/read_dynare_result.R")
 source("utils.R")
 
-nperiods <- 18
-model_name <- "islm"
-mod_file <- file.path("mod", paste0(model_name, ".mod"))
+mod_name <- "islm_local"
 
-p1 <- period("2011Q3")
-model_period <- period_range(p1, p1 + nperiods - 1)
-
-report <- capture_output(mdl <- islm_mdl(period = model_period))
-labels <- mdl$get_labels()
+mdl <- make_mdl(mod_name, use_dll = TRUE)
+model_period <- mdl$get_period()
 lag_per <- mdl$get_lag_period()
-dynare_result <- read_dynare_result(model_name, mdl)
-dynare_endo <- update_ts_labels(dynare_result$endo, labels)
+
+dynare_result <- read_dynare_result("islm", mdl)
 
 test_that("solve", {
   mdl2 <- simul_islm(mdl)
-  expect_equal(dynare_endo, mdl2$get_endo_data(period = model_period))
+  expect_equal(dynare_result$endo, mdl2$get_endo_data(period = model_period))
   expect_error(mdl2$solve_perturbation(),
                paste("The perturbation approach currently only allows shocks",
                      "in the first period"))
@@ -31,7 +25,7 @@ test_that("solve", {
 test_that("solve_perturb", {
   mdl2 <- mdl$clone()
   mdl2$set_data(regts(1200, period = lag_per), names = "y")
-  mdl2$set_data(regts(245, period = start_period(model_period)), names = "g")
+  mdl2$set_data(regts(245, start = start_period(model_period)), names = "g")
   mdl2$solve(control = list(silent = TRUE))
   mdl3 <- mdl2$clone()
   mdl3$solve_perturbation()
@@ -44,10 +38,10 @@ test_that("solve_perturb linear model", {
   # set all non-linear parameters to 0
   mdl2$set_param(c(c5 = 0, i5 = 0, m3 = 0))
   mdl2$solve_steady(control = list(silent = TRUE))
-  mdl2$set_endo_values(1200, names = "y", period = lag_per)
+  mdl2$set_data(regts(1200, period = lag_per), names = "y")
   # use a large shock, this should not matter if the model
   # is exactly linear
-  mdl2$set_exo_values(280, period = start_period(model_period), names = "g")
+  mdl2$set_data(regts(280, start = start_period(model_period)), names = "g")
   mdl2$solve(control = list(silent = TRUE))
   mdl3 <- mdl2$clone()
   mdl3$solve_perturbation()

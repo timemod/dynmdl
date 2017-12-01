@@ -1,12 +1,12 @@
 library(dynmdl)
 library(testthat)
-
+rm(list = ls())
 context("ISLM model with fit procedure")
 
+source("../tools/read_dynare_result.R")
+
 rds_file <- "islm_model_fit.rds"
-dynare_dir     <- "dynare/output"
-endo_name_file <- file.path(dynare_dir, "islm_fit_endo_names.txt")
-endo_file <- file.path(dynare_dir, "islm_fit_endo.csv")
+model_name <- "islm_fit"
 
 report <- capture_output(mdl <- read_mdl(rds_file))
 mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
@@ -26,15 +26,10 @@ test_that("all.equal works correctly for fit models", {
 
 mdl$solve(control = list(silent = TRUE))
 
-endo_names <- read.csv(endo_name_file, stringsAsFactors = FALSE,
-                       header = FALSE, sep = "")[[1]]
-endo_data <- t(as.matrix(read.csv(endo_file, header = FALSE)))
-dynare_result <- regts(endo_data, start = start_period(mdl$get_period()) - 1,
-                       names = endo_names)[, mdl$get_endo_names()]
-dynare_result <- update_ts_labels(dynare_result, mdl$get_labels())
-dynare_result <- update_ts_labels(dynare_result, mdl$get_labels())
+dynare_result <- read_dynare_result(model_name, mdl)
+dynare_endo <- update_ts_labels(dynare_result$endo, mdl$get_labels())
 
 test_that("dynare result equal to islm result", {
-  p <- get_period_range(dynare_result)
-  expect_equal(dynare_result, mdl$get_endo_data(period = p))
+  p <- mdl$get_period()
+  expect_equal(dynare_endo, mdl$get_endo_data(period = p))
 })
