@@ -21,6 +21,7 @@ read_dynare_result <- function(model_name, mdl) {
   max_lag_dynare  <- min(mdl$get_max_lag(), 1)
   nper <- nperiod(model_period) + max_lag_dynare + max_lead_dynare
   if (nper != nrow(endo_data)) {
+    stop("Error: length endo_data is not equal to the number of periods")
   }
   dyn_period <- period_range(start_period(model_period) - max_lag_dynare,
                              end_period(model_period) + max_lead_dynare)

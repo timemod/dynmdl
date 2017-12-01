@@ -167,8 +167,12 @@ DynMdl <- R6Class("DynMdl",
       if (private$aux_vars$aux_count > 0) {
         max_aux_lag <-  max(max(-private$aux_vars$orig_leads), 0)
         max_aux_lead <- max(max(private$aux_vars$orig_leads), 0)
-        private$max_lag <- max(private$max_lag, max_aux_lag + 1)
-        private$max_lead <- max(private$max_lead, max_aux_lead + 1)
+        if (max_aux_lag > 0) {
+          private$max_lag <- max(private$max_lag, max_aux_lag + 1)
+        }
+        if (max_aux_lead > 0) {
+          private$max_lead <- max(private$max_lead, max_aux_lead + 1)
+        }
       }
       
       # add column names and row names to the lead lag incidence matrix

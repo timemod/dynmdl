@@ -32,7 +32,6 @@ endo_data <- t(as.matrix(read.csv(endo_file, header = FALSE)))
 dynare_result <- regts(endo_data, start = start_period(mdl$get_period()) - 1,
                        names = endo_names)[, mdl$get_endo_names()]
 dynare_result <- update_ts_labels(dynare_result, mdl$get_labels())
-dynare_result <- dynare_result[, order(colnames(dynare_result))]
 dynare_result <- update_ts_labels(dynare_result, mdl$get_labels())
 
 test_that("dynare result equal to islm result", {
