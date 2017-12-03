@@ -2548,8 +2548,26 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
     }
 }
 
-void DynamicModel::genPolishModel(PolishModel &mdl) const {
-    genPolishEquations(mdl);
+PolishModel* DynamicModel::makePolishModel() const {
+
+    PolishModel* mdl = new PolishModel(symbol_table.endo_nbr(), 
+                                      first_derivatives.size(),
+                                      num_constants.get_double_vals());
+    
+    // model equations
+    genPolishEquations(*mdl);
+
+    // first derivatives
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        int eq = it->first.first;
+        int col = getDynJacobianCol(it->first.second);
+        mdl->new_jac_equation(eq, col);
+        expr_t d1 = it->second;
+        d1->genPolishCode(*mdl);
+    }
+
+    return mdl;
 }
 
 void

@@ -1,9 +1,6 @@
 #include "PolishModels.hh"
 
-int PolishModels::create_model(PolishModel *&mdl, int nrow, int ncol,
-                               const vector<double>& constants) {
-
-    mdl = new PolishModel(nrow, ncol, constants);
+int PolishModels::add_model(PolishModel *mdl) {
     models.push_back(mdl);
     return model_index++;
 }

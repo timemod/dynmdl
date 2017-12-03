@@ -1272,10 +1272,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
 
     int model_index;
     if (internal_calc) {
-        PolishModel *mdl;
-        model_index = PolishModels::create_model(mdl, 2, 4, 
-                                                 num_constants.get_double_vals());
-        dynamic_model.genPolishModel(*mdl);
+        PolishModel *mdl = dynamic_model.makePolishModel();
+        model_index = PolishModels::add_model(mdl);
     } else {
         model_index = 0;
     }
