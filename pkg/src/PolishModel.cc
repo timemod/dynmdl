@@ -170,10 +170,14 @@ void PolishModel::get_residuals(const double y[], double residuals[], int it) {
 void PolishModel::get_jac(const double y[], int rows[], int cols[], 
                           double values[], int it) {
     set_endo(y);
+    //cout << "get_jac, it =  " << it << endl;
     for (int ieq = 0; ieq < njac; ieq++) {
         rows[ieq] = jac_rows[ieq];
         cols[ieq] = jac_cols[ieq];
         values[ieq] = eval_eq(jac_equations[ieq], it);
+        //cout << "get_jac, ieq, row, col =  " << ieq << " " << rows[ieq] <<
+        //      " " << cols[ieq]  << endl;
+        //cout << "get_jac, value = " << values[ieq] << endl;
     }
 }
 

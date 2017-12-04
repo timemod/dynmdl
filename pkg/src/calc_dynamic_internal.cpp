@@ -84,7 +84,7 @@ List get_triplet_jac_internal(int model_index, NumericVector endos,
         for (int ideriv = 0; ideriv < njac_t;  ideriv++) {
             int ieq  = rows_t[ideriv];
             int icol = cols_t[ideriv];
-            if (icol > nendo) {
+            if (icol > nendo - 1) {
                 // the calculated Jacobian also contains
                 // derivatives w.r.t. the exogenous variables.
                 // we don't need that. TODO: do not calculate 
