@@ -5,27 +5,37 @@
 
 using namespace Rcpp;
 
+// prepare_internal_calc
+void prepare_internal_calc(int model_index, NumericVector exos, NumericVector params);
+RcppExport SEXP _dynmdl_prepare_internal_calc(SEXP model_indexSEXP, SEXP exosSEXP, SEXP paramsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type exos(exosSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
+    prepare_internal_calc(model_index, exos, params);
+    return R_NilValue;
+END_RCPP
+}
 // get_residuals_internal
-NumericVector get_residuals_internal(int model_index, NumericVector endos, NumericVector icols, NumericVector exo_data, NumericVector params, int n_endo, int nper, int period_shift);
-RcppExport SEXP _dynmdl_get_residuals_internal(SEXP model_indexSEXP, SEXP endosSEXP, SEXP icolsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP) {
+NumericVector get_residuals_internal(int model_index, NumericVector endos, NumericVector icols, int n_endo, int nper, int period_shift);
+RcppExport SEXP _dynmdl_get_residuals_internal(SEXP model_indexSEXP, SEXP endosSEXP, SEXP icolsSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type icols(icolsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type exo_data(exo_dataSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< int >::type n_endo(n_endoSEXP);
     Rcpp::traits::input_parameter< int >::type nper(nperSEXP);
     Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_residuals_internal(model_index, endos, icols, exo_data, params, n_endo, nper, period_shift));
+    rcpp_result_gen = Rcpp::wrap(get_residuals_internal(model_index, endos, icols, n_endo, nper, period_shift));
     return rcpp_result_gen;
 END_RCPP
 }
 // get_triplet_jac_internal
-List get_triplet_jac_internal(int model_index, NumericVector endos, IntegerMatrix lead_lag_incidence, IntegerVector tshift, NumericVector exo_data, NumericVector params, int n_endo, int nper, int period_shift);
-RcppExport SEXP _dynmdl_get_triplet_jac_internal(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP) {
+List get_triplet_jac_internal(int model_index, NumericVector endos, IntegerMatrix lead_lag_incidence, IntegerVector tshift, int n_endo, int nper, int period_shift);
+RcppExport SEXP _dynmdl_get_triplet_jac_internal(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -33,12 +43,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type lead_lag_incidence(lead_lag_incidenceSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type tshift(tshiftSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type exo_data(exo_dataSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< int >::type n_endo(n_endoSEXP);
     Rcpp::traits::input_parameter< int >::type nper(nperSEXP);
     Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_triplet_jac_internal(model_index, endos, lead_lag_incidence, tshift, exo_data, params, n_endo, nper, period_shift));
+    rcpp_result_gen = Rcpp::wrap(get_triplet_jac_internal(model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -136,8 +144,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dynmdl_get_residuals_internal", (DL_FUNC) &_dynmdl_get_residuals_internal, 8},
-    {"_dynmdl_get_triplet_jac_internal", (DL_FUNC) &_dynmdl_get_triplet_jac_internal, 9},
+    {"_dynmdl_prepare_internal_calc", (DL_FUNC) &_dynmdl_prepare_internal_calc, 3},
+    {"_dynmdl_get_residuals_internal", (DL_FUNC) &_dynmdl_get_residuals_internal, 6},
+    {"_dynmdl_get_triplet_jac_internal", (DL_FUNC) &_dynmdl_get_triplet_jac_internal, 7},
     {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 5},
     {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 1},
     {"_dynmdl_get_residuals_", (DL_FUNC) &_dynmdl_get_residuals_, 8},

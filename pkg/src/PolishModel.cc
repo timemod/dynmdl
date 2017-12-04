@@ -3,9 +3,9 @@
 #include <algorithm>
 using namespace std;
 
-PolishModel::PolishModel(int neq, int njac,
+PolishModel::PolishModel(int neq, int nexo, int njac,
                          const vector<double> &constants_arg) 
-                                 : neq(neq), njac(njac) {
+                                 : neq(neq), nexo(nexo), njac(njac) {
 
     ieq = 0; ieq_jac = 0;
     equations = new vector<int>*[neq];
@@ -51,6 +51,15 @@ void PolishModel::add_endo(int index) {
     cur_eq->push_back(index);
 }
 
+void PolishModel::add_exo(int index, int lag) {
+    ecode code = lag == 0 ? EXO : EXO_LAG;
+    cur_eq->push_back(code);
+    cur_eq->push_back(index);
+    if (lag != 0) {
+        cur_eq->push_back(lag);
+    }
+}
+
 void PolishModel::add_param(int index) {
     cur_eq->push_back(PARAM);
     cur_eq->push_back(index);
@@ -83,12 +92,16 @@ void PolishModel::set_param(double const p[]) {
     this->p = p;
 }
 
-double PolishModel::eval_eq(vector<int> *eq) {
+void PolishModel::set_exo(double const x[]) {
+    this->x = x;
+}
+
+double PolishModel::eval_eq(vector<int> *eq, int it) {
 
    unsigned int pos = 0;
 
    int *codes = &((*eq)[0]);
-   int index;
+   int index, lag;
    double op, lop, rop, res;
    while (pos < eq->size()) {
        int code = codes[pos];
@@ -99,6 +112,13 @@ double PolishModel::eval_eq(vector<int> *eq) {
            case ENDO:  index = codes[++pos];
                        stk.push(y[index]);
                        break;
+           case EXO:   index = codes[++pos];
+                       stk.push(x[index * nexo + it]);
+                       break;
+           case EXO_LAG: index = codes[++pos];
+                         lag = codes[++pos];
+                         stk.push(x[index * nexo + it + lag]);
+                         break;
            case PARAM: index = codes[++pos];
                        stk.push(p[index]);
                        break;
@@ -135,7 +155,7 @@ double PolishModel::eval_eq(vector<int> *eq) {
 void PolishModel::get_residuals(const double y[], double residuals[], int it) {
     set_endo(y);
     for (int ieq = 0; ieq < neq; ieq++) {
-        residuals[ieq] = eval_eq(equations[ieq]);
+        residuals[ieq] = eval_eq(equations[ieq], it);
     }
 }
 
@@ -145,7 +165,7 @@ void PolishModel::get_jac(const double y[], int rows[], int cols[],
     for (int ieq = 0; ieq < njac; ieq++) {
         rows[ieq] = jac_rows[ieq];
         cols[ieq] = jac_cols[ieq];
-        values[ieq] = eval_eq(jac_equations[ieq]);
+        values[ieq] = eval_eq(jac_equations[ieq], it);
     }
 }
 

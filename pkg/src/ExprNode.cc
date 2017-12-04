@@ -868,6 +868,10 @@ void VariableNode::genPolishCode(PolishModel &mdl) const {
         i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag));
         mdl.add_endo(i);
         break;
+    case eExogenous:
+        i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        mdl.add_exo(i, lag);
+        break;
     default:
         dyn_error("Internal error: internal evalution not yet supported"
                   " for exogenous variables");

@@ -519,6 +519,8 @@ DynMdl <- R6Class("DynMdl",
     residual_check = function(tol = 0) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       if (private$use_dll) private$prepare_solve()
+      if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
+                                                       private$params)
       
       if (private$aux_vars$aux_count > 0) {
         private$prepare_aux_vars()
@@ -575,6 +577,8 @@ DynMdl <- R6Class("DynMdl",
       control_[names(control)] <- control
       
       if (private$use_dll) private$prepare_solve()
+      if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
+                                                       private$params)
       
       if (private$aux_vars$aux_count > 0) {
         private$prepare_aux_vars()
@@ -664,6 +668,8 @@ DynMdl <- R6Class("DynMdl",
       nper <- nperiod(private$model_period)
       x <- private$get_solve_endo()
       if (private$use_dll) private$prepare_solve()
+      if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
+                                                       private$params)
       jac <- private$get_jac(x, lags, leads, nper)
       if (private$use_dll) private$clean_after_solve()
       if (!sparse) {
@@ -999,9 +1005,7 @@ DynMdl <- R6Class("DynMdl",
         # for the time begin, assume that the model index is 0
         return(get_residuals_internal(0L, endos,
                               which(private$lead_lag_incidence != 0) - 1,
-                              private$exo_data, private$params,
-                              private$endo_count,
-                              nper, private$period_shift))
+                              private$endo_count, nper, private$period_shift))
       } else {
         return(get_residuals_(endos,
                             which(private$lead_lag_incidence != 0) - 1,
@@ -1017,9 +1021,8 @@ DynMdl <- R6Class("DynMdl",
       if (private$internal_calc) {
         # for the time begin, assume that the model index is 0
         mat_info <- get_triplet_jac_internal(0L, endos, 
-                          private$lead_lag_incidence, tshift, private$exo_data, 
-                          private$params, private$endo_count, nper, 
-                          private$period_shift)
+                          private$lead_lag_incidence, tshift, 
+                          private$endo_count, nper, private$period_shift)
       } else {
         mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
                                   tshift, private$exo_data,

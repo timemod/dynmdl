@@ -10,6 +10,8 @@ using std::stack;
 enum ecode {
     CONST,
     ENDO,
+    EXO,
+    EXO_LAG, // an exogenous variable with a lag or lead
     PARAM,
     PLUS,
     MULT,
@@ -21,7 +23,8 @@ enum ecode {
 
 class PolishModel {
     public:
-        PolishModel(int neq, int njac, const vector<double> &constants_arg);
+        PolishModel(int neq, int nexo, int njac,
+                    const vector<double> &constants_arg);
         int get_equation_count();
         int get_jac_count();
 
@@ -30,12 +33,14 @@ class PolishModel {
         void new_jac_equation(int row, int col);
         void add_constant(int index);
         void add_endo(int index);
+        void add_exo(int index, int lag);
         void add_param(int index);
         void add_binop(char op);
         void add_unary_minus();
 
         // functions for evaluating the model
         void set_endo(double const y[]);
+        void set_exo(double const x[]);
         void set_param(double const p[]);
         void get_residuals(const double y[], double residuals[], int it);
         void get_jac(const double y[], int rows[], int cols[], double values[], 
@@ -43,7 +48,7 @@ class PolishModel {
 
     private:
        // member defining the model
-       int neq, njac;
+       int neq, njac, nexo;
        vector<int> **equations; 
        int *jac_rows;
        int *jac_cols;
@@ -55,9 +60,9 @@ class PolishModel {
        vector<int> *cur_eq;
 
        // members for evaluating the model
-       const double *y, *p;
+       const double *y, *p, *x;
        stack<double> stk;
-       double eval_eq(vector<int> *eq);
+       double eval_eq(vector<int> *eq, int it);
 };
 
 #endif
