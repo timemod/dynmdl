@@ -217,7 +217,7 @@ DynMdl <- R6Class("DynMdl",
                 PACKAGE = "mdl_functions")
           return(private$jac)
         }
-      } else {
+      } else if (!private$internal_calc) {
         # no dll, functions implemented in R
         eval(parse(text = model_info$static_model$static_functions))
         eval(parse(text = model_info$dynamic_model$dynamic_functions))

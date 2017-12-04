@@ -1244,7 +1244,7 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
             Rcpp::Named("orig_endos") = aux_orig_endos,
             Rcpp::Named("orig_leads") = aux_orig_leads);
 
-    Rcpp::List dynmdl = dynamic_model.getDynamicModelR();
+    Rcpp::List dynmdl = dynamic_model.getDynamicModelR(internal_calc);
     Rcpp::List statmdl = static_model.getStaticModelR();
 
     Rcpp::NumericVector exos(exo_count);

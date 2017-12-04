@@ -2548,27 +2548,6 @@ void DynamicModel::writeDynamicModel(ostream &DynamicOutput,
     }
 }
 
-PolishModel* DynamicModel::makePolishModel() const {
-
-    PolishModel* mdl = new PolishModel(symbol_table.endo_nbr(), 
-                                      first_derivatives.size(),
-                                      num_constants.get_double_vals());
-    
-    // model equations
-    genPolishEquations(*mdl);
-
-    // first derivatives
-    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
-         it != first_derivatives.end(); it++) {
-        int eq = it->first.first;
-        int col = getDynJacobianCol(it->first.second);
-        mdl->new_jac_equation(eq, col);
-        expr_t d1 = it->second;
-        d1->genPolishCode(*mdl);
-    }
-
-    return mdl;
-}
 
 void
 DynamicModel::writeOutput(ostream &output, const string &basename, bool block_decomposition, bool byte_code, bool use_dll, int order, bool estimation_present, bool compute_xrefs, bool julia) const
@@ -5301,7 +5280,8 @@ DynamicModel::writeCCOutput(ostream &output, const string &basename, bool block_
 }
 
 #ifdef USE_R
-Rcpp::List DynamicModel::getDynamicModelR() const {
+
+Rcpp::List DynamicModel::getDynamicModelR(bool internal_calc) const {
 
     // create lead_lag_indicence matrix 
     Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);
@@ -5319,13 +5299,17 @@ Rcpp::List DynamicModel::getDynamicModelR() const {
     }
 
     // function body
-    std::ostringstream dynout;
-    writeDynamicModel(dynout, oRDynamicModel);
+    Rcpp::String dynamic_functions;
+    if (!internal_calc) {
+        std::ostringstream dynout;
+        writeDynamicModel(dynout, oRDynamicModel);
+        dynamic_functions = Rcpp::String(dynout.str());
+    }
 
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
                               Rcpp::Named("jac_size")           = 
                                          (int) first_derivatives.size(),
-                              Rcpp::Named("dynamic_functions")  = Rcpp::String(dynout.str()),
+                              Rcpp::Named("dynamic_functions")  = dynamic_functions,
                               Rcpp::Named("max_endo_lag")       = max_endo_lag,
                               Rcpp::Named("max_endo_lead")      = max_endo_lead,
                               Rcpp::Named("max_exo_lag")        = max_exo_lag,
@@ -5333,7 +5317,32 @@ Rcpp::List DynamicModel::getDynamicModelR() const {
                              );
 }
 
+
+PolishModel* DynamicModel::makePolishModel() const {
+
+    PolishModel* mdl = new PolishModel(symbol_table.endo_nbr(), 
+                                      first_derivatives.size(),
+                                      num_constants.get_double_vals());
+    
+    // model equations
+    genPolishEquations(*mdl);
+
+    // first derivatives
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        int eq = it->first.first;
+        int col = getDynJacobianCol(it->first.second);
+        mdl->new_jac_equation(eq, col);
+        expr_t d1 = it->second;
+        d1->genPolishCode(*mdl);
+    }
+
+    return mdl;
+}
+
 Rcpp::List DynamicModel::getDerivativeInfoR() const {
+    // return the first derivative equations, used to construct the
+    // first order condition for the fit procedure.
 
     // create lead_lag_indicence matrix 
     Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);
@@ -5373,5 +5382,6 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
                               Rcpp::Named("max_exo_lead")  = max_exo_lead
                              );
 }
+
 #endif
 
