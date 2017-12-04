@@ -6,14 +6,15 @@
 using namespace Rcpp;
 
 // prepare_internal_calc
-void prepare_internal_calc(int model_index, NumericVector exos, NumericVector params);
-RcppExport SEXP _dynmdl_prepare_internal_calc(SEXP model_indexSEXP, SEXP exosSEXP, SEXP paramsSEXP) {
+void prepare_internal_calc(int model_index, NumericVector exos, int nrow_exo, NumericVector params);
+RcppExport SEXP _dynmdl_prepare_internal_calc(SEXP model_indexSEXP, SEXP exosSEXP, SEXP nrow_exoSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type exos(exosSEXP);
+    Rcpp::traits::input_parameter< int >::type nrow_exo(nrow_exoSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
-    prepare_internal_calc(model_index, exos, params);
+    prepare_internal_calc(model_index, exos, nrow_exo, params);
     return R_NilValue;
 END_RCPP
 }
@@ -144,7 +145,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dynmdl_prepare_internal_calc", (DL_FUNC) &_dynmdl_prepare_internal_calc, 3},
+    {"_dynmdl_prepare_internal_calc", (DL_FUNC) &_dynmdl_prepare_internal_calc, 4},
     {"_dynmdl_get_residuals_internal", (DL_FUNC) &_dynmdl_get_residuals_internal, 6},
     {"_dynmdl_get_triplet_jac_internal", (DL_FUNC) &_dynmdl_get_triplet_jac_internal, 7},
     {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 5},

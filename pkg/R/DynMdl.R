@@ -520,6 +520,7 @@ DynMdl <- R6Class("DynMdl",
       if (is.null(private$model_period)) stop(private$period_error_msg)
       if (private$use_dll) private$prepare_solve()
       if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
+                                                       nrow(private$exo_data),
                                                        private$params)
       
       if (private$aux_vars$aux_count > 0) {
@@ -578,6 +579,7 @@ DynMdl <- R6Class("DynMdl",
       
       if (private$use_dll) private$prepare_solve()
       if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
+                                                       nrow(private$exo_data),
                                                        private$params)
       
       if (private$aux_vars$aux_count > 0) {
@@ -669,6 +671,7 @@ DynMdl <- R6Class("DynMdl",
       x <- private$get_solve_endo()
       if (private$use_dll) private$prepare_solve()
       if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
+                                                       nrow(private$exo_data),
                                                        private$params)
       jac <- private$get_jac(x, lags, leads, nper)
       if (private$use_dll) private$clean_after_solve()

@@ -825,7 +825,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           break;
         case oCStaticModel:
         case oJuliaStaticModel:
-        case oMatlabStaticModel:
+        case oMatlabStaticModel :
         case oMatlabStaticModelSparse:
           output << "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
@@ -3311,8 +3311,12 @@ void BinaryOpNode::genPolishCode(PolishModel &mdl) const {
         break;
     case oDivide:
         mdl.add_binop('/');
+        break;
+    case oPower:
+        mdl.add_binop('^');
+        break;
     default:
-      dyn_error("genPolishCode not implemented for this type");
+      dyn_error("genPolishCode not implemented for this binary operator");
     }
 }
 

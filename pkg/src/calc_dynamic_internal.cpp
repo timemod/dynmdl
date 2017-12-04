@@ -7,12 +7,12 @@ using namespace Rcpp;
 using namespace std;
 
 // [[Rcpp::export]]
-void prepare_internal_calc(int model_index, NumericVector exos,
+void prepare_internal_calc(int model_index, NumericVector exos, int nrow_exo,
                            NumericVector params) {
 
     PolishModel *mdl = PolishModels::get_model(model_index);
     mdl->set_param(REAL(params));
-    mdl->set_exo(REAL(exos));
+    mdl->set_exo(REAL(exos), nrow_exo);
 }
 
 // [[Rcpp::export]]

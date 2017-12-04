@@ -1,11 +1,11 @@
 #include "PolishModel.hh"
 #include <iostream>
 #include <algorithm>
+#include <math.h>
 using namespace std;
 
-PolishModel::PolishModel(int neq, int nexo, int njac,
-                         const vector<double> &constants_arg) 
-                                 : neq(neq), nexo(nexo), njac(njac) {
+PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg) 
+                                 : neq(neq), njac(njac) {
 
     ieq = 0; ieq_jac = 0;
     equations = new vector<int>*[neq];
@@ -72,6 +72,7 @@ void PolishModel::add_binop(char op) {
         case '-': code = MINUS; break;
         case '*': code = MULT; break;
         case '/': code = DIV; break;
+        case '^': code = POW; break;
     }
     cur_eq->push_back(code);
 }
@@ -92,8 +93,9 @@ void PolishModel::set_param(double const p[]) {
     this->p = p;
 }
 
-void PolishModel::set_exo(double const x[]) {
+void PolishModel::set_exo(double const x[], int nrow_exo) {
     this->x = x;
+    this->nrow_exo = nrow_exo;
 }
 
 double PolishModel::eval_eq(vector<int> *eq, int it) {
@@ -113,7 +115,9 @@ double PolishModel::eval_eq(vector<int> *eq, int it) {
                        stk.push(y[index]);
                        break;
            case EXO:   index = codes[++pos];
-                       stk.push(x[index * nexo + it]);
+                       stk.push(x[index * nrow_exo + it]);
+                       //cout << "EXO, index " << index << endl;
+                       //cout << "EXO, value " << x[index * nrow_exo + it] << endl;
                        break;
            case EXO_LAG: index = codes[++pos];
                          lag = codes[++pos];
@@ -126,6 +130,7 @@ double PolishModel::eval_eq(vector<int> *eq, int it) {
            case PLUS: 
            case DIV: 
            case MINUS: 
+           case POW: 
                       rop = stk.top();
                       stk.pop();
                       lop = stk.top();
@@ -135,6 +140,7 @@ double PolishModel::eval_eq(vector<int> *eq, int it) {
                           case PLUS: res = lop + rop; break;
                           case MINUS: res = lop - rop; break;
                           case DIV: res = lop / rop; break;
+                          case POW: res = pow(lop, rop); break;
                        }
                       stk.push(res);
                       break;
@@ -154,7 +160,9 @@ double PolishModel::eval_eq(vector<int> *eq, int it) {
 
 void PolishModel::get_residuals(const double y[], double residuals[], int it) {
     set_endo(y);
+    //cout << "get_residuals, it =  " << it << endl;
     for (int ieq = 0; ieq < neq; ieq++) {
+        //cout << "get_residuals, ieq " << ieq << endl;
         residuals[ieq] = eval_eq(equations[ieq], it);
     }
 }

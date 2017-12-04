@@ -17,14 +17,14 @@ enum ecode {
     MULT,
     MINUS,
     DIV,
+    POW,
     UMIN  // unary minus
 };
 
 
 class PolishModel {
     public:
-        PolishModel(int neq, int nexo, int njac,
-                    const vector<double> &constants_arg);
+        PolishModel(int neq, int njac, const vector<double> &constants_arg);
         int get_equation_count();
         int get_jac_count();
 
@@ -40,7 +40,7 @@ class PolishModel {
 
         // functions for evaluating the model
         void set_endo(double const y[]);
-        void set_exo(double const x[]);
+        void set_exo(double const x[], int nrow_exo);
         void set_param(double const p[]);
         void get_residuals(const double y[], double residuals[], int it);
         void get_jac(const double y[], int rows[], int cols[], double values[], 
@@ -61,6 +61,7 @@ class PolishModel {
 
        // members for evaluating the model
        const double *y, *p, *x;
+       int nrow_exo;
        stack<double> stk;
        double eval_eq(vector<int> *eq, int it);
 };
