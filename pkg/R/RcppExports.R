@@ -5,6 +5,10 @@ get_residuals_internal <- function(model_index, endos, icols, exo_data, params, 
     .Call(`_dynmdl_get_residuals_internal`, model_index, endos, icols, exo_data, params, n_endo, nper, period_shift)
 }
 
+get_triplet_jac_internal <- function(model_index, endos, lead_lag_incidence, tshift, exo_data, params, n_endo, nper, period_shift) {
+    .Call(`_dynmdl_get_triplet_jac_internal`, model_index, endos, lead_lag_incidence, tshift, exo_data, params, n_endo, nper, period_shift)
+}
+
 compile_model_ <- function(modfile, use_dll, dll_dir, max_laglead_1, internal_calc) {
     .Call(`_dynmdl_compile_model_`, modfile, use_dll, dll_dir, max_laglead_1, internal_calc)
 }

@@ -38,7 +38,8 @@ class PolishModel {
         void set_endo(double const y[]);
         void set_param(double const p[]);
         void get_residuals(const double y[], double residuals[], int it);
-        void get_jac(int rows[], int cols[], double values[]);
+        void get_jac(const double y[], int rows[], int cols[], double values[], 
+                     int it);
 
     private:
        // member defining the model

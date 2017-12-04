@@ -996,8 +996,7 @@ DynMdl <- R6Class("DynMdl",
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
       if (private$internal_calc) {
-        # for the time begin, assume that the model index is 1
-        cat("get_residuals_internal aangeroepen\n")
+        # for the time begin, assume that the model index is 0
         return(get_residuals_internal(0L, endos,
                               which(private$lead_lag_incidence != 0) - 1,
                               private$exo_data, private$params,
@@ -1015,11 +1014,19 @@ DynMdl <- R6Class("DynMdl",
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
       tshift  <- -private$max_endo_lag : private$max_endo_lead
-      mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
+      if (private$internal_calc) {
+        # for the time begin, assume that the model index is 0
+        mat_info <- get_triplet_jac_internal(0L, endos, 
+                          private$lead_lag_incidence, tshift, private$exo_data, 
+                          private$params, private$endo_count, nper, 
+                          private$period_shift)
+      } else {
+        mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
                                   tshift, private$exo_data,
                                   private$params, private$jac_dynamic,
                                   private$endo_count, nper,
                                   private$period_shift)
+      }
       n <- nper * private$endo_count
       # NOTE: the function sparseMatrix of the Matrix package
       # only works correctly when package methods has been attached.

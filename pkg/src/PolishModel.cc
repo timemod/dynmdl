@@ -139,7 +139,9 @@ void PolishModel::get_residuals(const double y[], double residuals[], int it) {
     }
 }
 
-void PolishModel::get_jac(int rows[], int cols[], double values[]) {
+void PolishModel::get_jac(const double y[], int rows[], int cols[], 
+                          double values[], int it) {
+    set_endo(y);
     for (int ieq = 0; ieq < njac; ieq++) {
         rows[ieq] = jac_rows[ieq];
         cols[ieq] = jac_cols[ieq];
