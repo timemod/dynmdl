@@ -2,7 +2,7 @@
 
 library(dynmdl)
 
-mdl <- dyn_mdl("islm.mod", calc = "internal")
+mdl <- dyn_mdl("mod/islm.mod", calc = "internal")
 #print(mdl, short = FALSE)
 
 mdl$set_period("2017Q1/2017Q4")

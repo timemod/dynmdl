@@ -1,6 +1,6 @@
 library(dynmdl)
 
-mdl <- dyn_mdl("testje.mod", calc = "internal")
+mdl <- dyn_mdl("mod/testje.mod", calc = "internal")
 #print(mdl, short = FALSE)
 
 mdl$set_period("2010Q1/2010Q2");

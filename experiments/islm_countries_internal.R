@@ -1,9 +1,9 @@
 library(dynmdl)
 
-mod_file <- "mod/islm_countries_150.mod"
+mod_file <- "mod/islm_countries.mod"
 
 
-t <- system.time(mdl <- dyn_mdl(mod_file, calc = "dll"))
+t <- system.time(mdl <- dyn_mdl(mod_file, calc = "internal"))
 cat("compiling:\n")
 print(t)
 

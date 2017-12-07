@@ -125,7 +125,7 @@ DynMdl <- R6Class("DynMdl",
       private$model_info <- model_info
       private$equations <- equations
       
-      if (calc == "use_dll") {
+      if (calc == "dll") {
         reg.finalizer(self,
                       function(e) {
                         #unlink(private$dll_dir, recursive = TRUE)
@@ -133,7 +133,7 @@ DynMdl <- R6Class("DynMdl",
                       onexit = TRUE)
       } 
       
-      if (calc == "use_dll") {
+      if (calc == "dll") {
         private$use_dll <- TRUE
         private$dll_dir <- dll_dir
         private$dll_file <- dll_file
