@@ -102,7 +102,7 @@ List get_jac_backwards(NumericVector endos, NumericVector lags,
                        SEXP exo_data, SEXP params, Function jac_dynamic,
                        int it, int period_shift) {
 
-    int nlags  = lags.size();
+    int nlags = lags.size();
     int nendo = endos.size();
     int nx = nlags + nendo;
     NumericVector x(nx);
@@ -113,7 +113,7 @@ List get_jac_backwards(NumericVector endos, NumericVector lags,
         x[i + nlags] = endos[i];
     }
 
-    List jac_data = jac_dynamic(x, exo_data, params, it + 1 + period_shift);
+    List jac_data = jac_dynamic(x, exo_data, params, it + period_shift);
     IntegerVector rows_t   = jac_data[0];
     IntegerVector cols_t   = jac_data[1];
     NumericVector values_t = jac_data[2];
