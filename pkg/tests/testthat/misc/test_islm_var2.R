@@ -20,6 +20,7 @@ dynare_result <- read_dynare_result("islm_var2", mdl)
 
 create_solve_mdl <- function(mdl) {
   mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
   p1 <- start_period(mdl2$get_period())
   mdl2$set_exo_values(c(245, 250, 260), names = "g", 
                       period = period_range(p1, p1 + 2))

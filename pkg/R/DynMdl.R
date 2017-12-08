@@ -366,18 +366,18 @@ DynMdl <- R6Class("DynMdl",
     },
     get_lag_period = function() {
       if (private$max_lag > 0) {
-        p <- start_period(private$data_period)
-        return (period_range(p, p + private$max_lag - 1))
+        p <- start_period(private$model_period) - private$max_lag
+        return(period_range(p, p + private$max_lag - 1))
       } else {
-        return (NULL)
+        return(NULL)
       }
     },
     get_lead_period = function() {
       if (private$max_lead > 0) {
-        p <- end_period(private$data_period)
-        return (period_range(p - private$max_lead + 1, p))
+        p <- end_period(private$model_period) + 1
+        return(period_range(p, p + private$max_lead - 1))
       } else {
-        return (NULL)
+        return(NULL)
       }
     },
     get_exo_data = function(pattern = NULL, names = NULL, 
@@ -439,8 +439,7 @@ DynMdl <- R6Class("DynMdl",
                                period = private$data_period , ...) {
       return(private$change_data_(fun, names, pattern, period, "exo", ...))
     },
-    solve_steady = function(init_data = TRUE, control = NULL,
-                            solver = c("umfpackr", "nleqslv")) {
+    solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv")) {
 
       solver <- match.arg(solver)
       
@@ -477,20 +476,19 @@ DynMdl <- R6Class("DynMdl",
       if (error) {
         stop(paste0("Error solving the steady state.\n", out$message))
       }
-      
-      if (init_data && !is.null(private$endo_data)) {
-        # update the model data
-        nper <- nperiod(private$data_period)
-        private$endo_data[ , ] <- matrix(rep(private$endos, each = nper),
-                                         nrow = nper)
-      }
-      
-      
       return (invisible(self))
+    },
+    put_static_endos = function(period = private$data_period) {
+      # copy the static endogenous variables to the endogenous model data
+      if (is.null(private$model_period)) stop(private$period_error_msg)
+      period <- private$convert_period_arg(period)
+      nper <- nperiod(period)
+      private$endo_data[period, ] <- 
+              matrix(rep(private$endos, each = nper), nrow = nper)
     },
     check = function() {
 
-      self$solve_steady(init_data = FALSE, control = list(silent = TRUE))
+      self$solve_steady(control = list(silent = TRUE))
       
       if (private$use_dll) private$prepare_solve()
       private$ss  <- solve_first_order(private$ss,
@@ -621,7 +619,7 @@ DynMdl <- R6Class("DynMdl",
 
       if (is.null(private$model_period)) stop(private$period_error_msg)
 
-      self$solve_steady(init_data = FALSE, control = list(silent = TRUE))
+      self$solve_steady(control = list(silent = TRUE))
       
       if (private$use_dll) private$prepare_solve()
       

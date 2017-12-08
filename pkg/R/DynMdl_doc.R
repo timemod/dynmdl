@@ -450,14 +450,13 @@ NULL
 #' The static variables can be modified with methods
 #' \code{\link{set_static_exos}} and \code{\link{set_static_endos}}.
 #' 
-#' The function \code{\link{get_static_endos}} cab be used to retrieve the
+#' The function \code{\link{get_static_endos}} can be used to retrieve the
 #' steady state solution.
 #'
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
-#' mdl$solve_steady(init_data = TRUE, control,
-#'                  solver = c("umfpackr", "nleqslv"))
+#' mdl$solve_steady(control, solver = c("umfpackr", "nleqslv"))
 #'
 #' }
 #'
@@ -466,9 +465,6 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{init_data}}{a logical. If \code{TRUE}, then if the 
-#' solve was succesfull the endogenous model variables are set to
-#' the computed steady state values.}
 #' \item{\code{control}}{A named list of control parameters passed to function
 #' \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
 #' depending on argument \code{solver}}
@@ -477,13 +473,55 @@ NULL
 #' For large model, the \code{umfpackr} solve can be much faster.}
 #' }
 #' @seealso \code{\link{set_static_endos}}, \code{\link{set_static_exos}},
-#' \code{\link{get_static_endos}} and \code{\link{get_static_exos}}
+#' \code{\link{get_static_endos}}, \code{\link{get_static_exos}}
+#' and \code{\link{put_static_endos}}
 #' @examples
 #' mdl <- islm_mdl()
 #' mdl$solve_steady(control = list(trace = 1))
-#' 
+#'
 #' # print the solution
 #' print(mdl$get_static_endos())
+#' 
+#' # update the model data with steady state values of endogenous variables
+#' mdl$put_static_endos()
+NULL
+
+#' \code{\link{DynMdl}} method: Transfers the static endogenous
+#' variables to the model data.
+#' @name put_static_endos
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} transfers the static endogenous
+#' variables to the model data.
+#' 
+#'
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$put_static_endos(period = mdl$get_data_period())
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{period}}{
+#' A \code{\link[regts]{period_range}} object or an object that can be 
+#' coerced to a \code{period_range}}, specifying the period for which the 
+#' endogenous model data will be updated with the computed steady state values.
+#' }
+#' @seealso \code{\link{solve_steady}}, \code{\link{set_static_endsos}} 
+#' and \code{\link{get_static_endos}}.
+#' @examples
+#' mdl <- islm_mdl()
+#' 
+#' # transfer static endogenous variables for the full data period 
+#' mdl$put_static_endos()
+#' 
+#' # now only for the lead period
+#' mdl$put_static_endos(period = mdl$get_lead_period()))
 NULL
 
 #' \code{\link{DynMdl}} method: Solves the model

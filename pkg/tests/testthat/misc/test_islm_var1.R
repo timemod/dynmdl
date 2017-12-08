@@ -18,6 +18,7 @@ dynare_result <- read_dynare_result("islm_var1", mdl)
 
 create_solve_mdl <- function(mdl) {
   mdl2 <- mdl$clone()
+ 
   p1 <- start_period(mdl2$get_period())
   mdl2$set_exo_values(c(245, 250, 260), names = "g", 
                       period = period_range(p1, p1 + 2))
@@ -28,6 +29,7 @@ create_solve_mdl <- function(mdl) {
 
 test_that("solve_steady and set_static_endos", {
   mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  mdl$put_static_endos()
   mdl$set_static_endos(c(yd = 4800))
   expect_equal(mdl$get_static_endos(), dynare_result$steady)
 })
@@ -52,6 +54,7 @@ report <- capture_output(mdl_new <- dyn_mdl(mod_file, period = "2015/2032",
 
 test_that("solve_steady with max_laglead_1", {
   mdl_new$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  mdl_new$put_static_endos()
   mdl_new$set_static_endos(c(yd = 4800))
   expect_equal(mdl_new$get_static_endos(), dynare_result$steady)
 })
@@ -105,6 +108,7 @@ report <- capture_output(mdl_dll <- dyn_mdl(mod_file, period = "2015/2032",
 
 test_that("solve_steady with max_laglead_1, dll", {
   mdl_dll$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  mdl_dll$put_static_endos()
   mdl_dll$set_static_endos(c(yd = 4800))
   expect_equal(mdl_dll$get_static_endos(), dynare_result$steady)
 })
