@@ -316,6 +316,7 @@ DynMdl <- R6Class("DynMdl",
       endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
       private$endo_data <- regts(endo_mat, start = start_period(data_period),
                                  names = names(private$endos))
+      
       if (private$exo_count > 0) {
         exo_mat <- matrix(rep(private$exos, each = nper), nrow = nper)
         colnames(exo_mat) <- private$exo_names
@@ -485,6 +486,7 @@ DynMdl <- R6Class("DynMdl",
       nper <- nperiod(period)
       private$endo_data[period, ] <- 
               matrix(rep(private$endos, each = nper), nrow = nper)
+      return(invisible(self))
     },
     check = function() {
 

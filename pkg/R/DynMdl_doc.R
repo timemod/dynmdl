@@ -509,8 +509,8 @@ NULL
 #' \describe{
 #' \item{\code{period}}{
 #' A \code{\link[regts]{period_range}} object or an object that can be 
-#' coerced to a \code{period_range}}, specifying the period for which the 
-#' endogenous model data will be updated with the computed steady state values.
+#' coerced to a \code{period_range}, specifying the period for which the 
+#' endogenous model data will be updated with the static endogenous variables.}
 #' }
 #' @seealso \code{\link{solve_steady}}, \code{\link{set_static_endsos}} 
 #' and \code{\link{get_static_endos}}.

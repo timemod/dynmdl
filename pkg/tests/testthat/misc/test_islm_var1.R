@@ -17,7 +17,7 @@ report <- capture_output(mdl <- dyn_mdl(mod_file, period = "2015/2032"))
 dynare_result <- read_dynare_result("islm_var1", mdl)
 
 create_solve_mdl <- function(mdl) {
-  mdl2 <- mdl$clone()
+  mdl2 <- mdl$copy()
  
   p1 <- start_period(mdl2$get_period())
   mdl2$set_exo_values(c(245, 250, 260), names = "g", 
@@ -139,5 +139,17 @@ test_that("eigenvalues with dll", {
                tolerance = 1e-7)
   expect_equal(Im(eigval)[1:10], dynare_result$eigval[1:10, 2],
                tolerance = 1e-7)
+})
+
+test_that("put_static_endos", {
+  mdl2 <- mdl$copy()
+  mdl2$set_static_exos(c(ms = 220))
+  mdl2$solve_steady(control = list(silent = TRUE))
+  mdl2$put_static_endos("2030/")
+  
+  expect_equal(mdl2$get_endo_data(period = "/2029"),
+               mdl$get_endo_data(period = "/2029"))
+  expect_false(isTRUE(all.equal(mdl2$get_endo_data(period = "2030/"),
+                                mdl$get_endo_data(period = "2030/"))))
 })
 

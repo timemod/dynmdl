@@ -30,6 +30,8 @@ islm_mdl <- function(period, fit = FALSE) {
                    ms = "money supply"))
   
   mdl$solve_steady(control = list(trace = FALSE))
-  mdl$put_static_endos()
+  if (!missing(period)) {
+    mdl$put_static_endos()
+  }
   return(mdl)
 }
