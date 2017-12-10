@@ -1,6 +1,17 @@
 %Declaring variables
-var y yd c i md r t;       % endogenous variables
-varexo g ms;               % exogenous variables
+
+% endogenous variables
+var y $Y$ (long_name = 'Income')
+    yd $Y_d$ (long_name = 'Disposable income')
+    c $C$ (long_name = 'Consumption')
+    i $I$ (long_name = 'Investment')
+    md $M_d$ (long_name = 'Monet demand')
+    r $r$ (long_name = 'Interest rate')
+    t $T$ (long_name = 'Tax');
+
+% exogenous variables
+varexo g $G$ (long_name = 'Government spending')
+       ms $M_s$ (long_name = 'Money supply');      
 
 %$fit$
 varexo ut uc umd ui;       % residuals

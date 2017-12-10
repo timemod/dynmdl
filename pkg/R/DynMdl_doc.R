@@ -69,38 +69,67 @@ NULL
 #' mdl$set_period("2017Q2/2021Q3")
 NULL
 
-#' \code{\link{DynMdl}} method: returns the model period
-#' @name get_period
+#' \code{\link{DynMdl}} method: return the model, data, lead or lag period
+#' @name get_period-methods
+#' @aliases get_period get_data_period get_lag_period get_lead_period
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMdl}} returns the model period.
+#' These methods of R6 class \code{\link{DynMdl}} return the model period,
+#' data period, lag period and lead period, respectively.
+#' 
+#' The \emph{model period} is the default period for which the model will be 
+#' solved. The \emph{data period} is the period for which the model contains
+#' the values for the endogenous and exogenous variables. If a model has lags,
+#' then the data period always include the \emph{lag period}: the period
+#' before the model period where the lags needed to solve the model in the
+#' model period are stored. For a model with leads the model
+#' data period also includes a \emph{lead_period}. Thus, the data period
+#' always contains the lag period, model period and lead period, but it may
+#' also be longer. See the example below.
 #'
 #' @section Usage:
 #' \preformatted{
+#' 
 #' mdl$get_period()
 #'
-#' }
-#'
-#' \code{mdl} is a \code{DynMdl} object
-#' @seealso
-#' \code{\link{set_period}}
-NULL
-
-#' \code{\link{DynMdl}} method: returns the model data period
-#' @name get_data_period
-#'
-#' @description
-#' This method of R6 class \code{\link{DynMdl}} returns the model data period.
-#'
-#' @section Usage:
-#' \preformatted{
 #' mdl$get_data_period()
-#'
+#' 
+#' mdl$get_lag_period()
+#' 
+#' mdl$get_lead_period()
+#' 
 #' }
 #'
 #' \code{mdl} is a \code{DynMdl} object
+#' 
+#' @section Methods:
+#' \itemize{
+#' \item \code{get_period}: Returns the model period
+#' \item \code{get_data_period}: Returns the data period
+#' \item \code{get_lag_period}: Returns the lag period, or \code{NULL} is the
+#' model has no lags
+#' \item \code{get_lead_period}: Returns the lead period or \code{NULL} is the
+#' model has no leads
+#' }
+#' 
+#' @examples
+#'
+#' # For this example we first create a model with a data period 
+#' # starting many periods before the model period.
+#' mdl <- islm_mdl()
+#' mdl$init_data("1997Q1/2022Q4")
+#' mdl$set_period("2017Q4/2022Q3")
+#' 
+#' print(mdl$get_period())        # result: "2017Q1/2022Q3"
+#' print(mdl$get_data_period())   # result: "1997Q1/2022Q4"
+#' 
+#' # This model has a maximum lag and lead of 1, so the lag
+#' # and lag period are simple the period before and after the model period.
+#' print(mdl$get_lag_period())    # result: "2017Q3"
+#' print(mdl$get_lead_period())   # result: "2022Q4"
+#'
 #' @seealso
-#' \code{\link{set_period}}
+#' \code{\link{set_period}} and \code{\link{init_data}}
 NULL
 
 #' \code{\link{DynMdl}} methods: Retrieve timeseries from the model data
@@ -396,18 +425,33 @@ NULL
 #' \code{\link{get_labels}}
 NULL
 
-#' \code{\link{DynMdl}} method: Returns the labels of the model variables.
-#' @name get_labels
+#' \code{\link{DynMdl}} method: Returns the labels or LaTeX names 
+#' of the model variables and parameters
+#' @name get_labels/get_tex_names
+#' @aliases get_labels get_tex_names
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMdl}}
-#' returns the labels of the model variables.
+#' These methods of R6 class \code{\link{DynMdl}}
+#' return the labels (long names) or LaTeX names of the model variables and 
+#' parameters. The return value is a named character vector.
+#' 
+#' The labels and LaTeX names are defined in the mod file (consult the documentation
+#' of Dynare, in Dynare labels are called 'long names'). Method \code{\link{set_labels}}
+#' can be used to modify these labels. By default the labels are equal to the variable names.
 #' @section Usage:
 #' \preformatted{
 #' mdl$get_labels()
 #'
+#' mdl$get_tex_names()
+#' 
 #' }
 #' \code{mdl} is an \code{\link{DynMdl}} object
+#' @section Methods:
+#' \itemize{
+#' \item \code{get_labels}: Returns the labels (long names), 
+#' e.g. \code{"Disposable income"}
+#' \item \code{get_tex_names}: Returns the LaTeX names (e.g. \code{"Y_d"})
+#' }
 #' @seealso
 #' \code{\link{set_labels}}
 NULL
@@ -450,14 +494,13 @@ NULL
 #' The static variables can be modified with methods
 #' \code{\link{set_static_exos}} and \code{\link{set_static_endos}}.
 #' 
-#' The function \code{\link{get_static_endos}} cab be used to retrieve the
+#' The function \code{\link{get_static_endos}} can be used to retrieve the
 #' steady state solution.
 #'
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
-#' mdl$solve_steady(init_data = TRUE, control,
-#'                  solver = c("umfpackr", "nleqslv"))
+#' mdl$solve_steady(control, solver = c("umfpackr", "nleqslv"))
 #'
 #' }
 #'
@@ -466,9 +509,6 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{init_data}}{a logical. If \code{TRUE}, then if the 
-#' solve was succesfull the endogenous model variables are set to
-#' the computed steady state values.}
 #' \item{\code{control}}{A named list of control parameters passed to function
 #' \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
 #' depending on argument \code{solver}}
@@ -477,13 +517,55 @@ NULL
 #' For large model, the \code{umfpackr} solve can be much faster.}
 #' }
 #' @seealso \code{\link{set_static_endos}}, \code{\link{set_static_exos}},
-#' \code{\link{get_static_endos}} and \code{\link{get_static_exos}}
+#' \code{\link{get_static_endos}}, \code{\link{get_static_exos}}
+#' and \code{\link{put_static_endos}}
 #' @examples
 #' mdl <- islm_mdl()
 #' mdl$solve_steady(control = list(trace = 1))
-#' 
+#'
 #' # print the solution
 #' print(mdl$get_static_endos())
+#' 
+#' # update the model data with steady state values of endogenous variables
+#' mdl$put_static_endos()
+NULL
+
+#' \code{\link{DynMdl}} method: Transfers the static endogenous
+#' variables to the model data.
+#' @name put_static_endos
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} transfers the static endogenous
+#' variables to the model data.
+#' 
+#'
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$put_static_endos(period = mdl$get_data_period())
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{period}}{
+#' A \code{\link[regts]{period_range}} object or an object that can be 
+#' coerced to a \code{period_range}, specifying the period for which the 
+#' endogenous model data will be updated with the static endogenous variables.}
+#' }
+#' @seealso \code{\link{solve_steady}}, \code{\link{set_static_endsos}} 
+#' and \code{\link{get_static_endos}}.
+#' @examples
+#' mdl <- islm_mdl()
+#' 
+#' # transfer static endogenous variables for the full data period 
+#' mdl$put_static_endos()
+#' 
+#' # now only for the lead period
+#' mdl$put_static_endos(period = mdl$get_lead_period()))
 NULL
 
 #' \code{\link{DynMdl}} method: Solves the model

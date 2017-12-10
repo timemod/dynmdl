@@ -37,6 +37,7 @@ test_that("eigenvalues", {
 
 test_that("solve", {
   mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
   p <- start_period(model_period)
   with (as.list(mdl2$get_param()), {
     mdl2$set_exo_values(exp(sigma_d), names = "epsd", period = p);
@@ -63,6 +64,7 @@ test_that("get_equations", {
 
 test_that("solve_perturbation (1) compare with dynare result", {
     mdl2 <- mdl$clone()
+    mdl2$put_static_endos(period = mdl$get_lag_period())
     p <- start_period(model_period)
     with (as.list(mdl2$get_param()), {
         mdl2$set_exo_values(exp(sigma_d), names = "epsd", period = p);

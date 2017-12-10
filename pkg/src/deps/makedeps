@@ -98,7 +98,9 @@ SteadyStateModel.o : CodeInterpreter.hh DataTree.hh ExprNode.hh \
                     location.hh
 SymbolList.o : SymbolList.hh
 SymbolTable.o : CodeInterpreter.hh ExprNode.hh \
-               ExternalFunctionsTable.hh SymbolTable.hh dyn_error.hh
+               ExternalFunctionsTable.hh PolishModel.hh SymbolTable.hh dyn_error.hh
+SymbolTable.o : CodeInterpreter.hh ExprNode.hh \
+               ExternalFunctionsTable.hh PolishModel.hh SymbolTable.hh
 WarningConsolidation.o : WarningConsolidation.hh dynout.hh location.hh
 calc_dynamic_internal.o : PolishModel.hh PolishModels.hh
 compile_model.o : CodeInterpreter.hh ConfigFile.hh DataTree.hh \

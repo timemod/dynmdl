@@ -26,7 +26,8 @@ read_dynare_result <- function(model_name, mdl) {
   }
   dyn_period <- period_range(start_period(model_period) - max_lag_dynare,
                              end_period(model_period) + max_lead_dynare)
-  endo <- regts(endo_data, period = dyn_period, names = endo_names_dynare)
+  endo <- regts(endo_data, period = dyn_period, names = endo_names_dynare,
+                labels = endo_names_dynare)
   endo <- endo[model_period, endo_names]
   
   if (file.exists(stoch_endo_data_file)) {
@@ -34,7 +35,7 @@ read_dynare_result <- function(model_name, mdl) {
     stoch_endo_data <- t(as.matrix(read.csv(stoch_endo_data_file, header = FALSE)))
     stoch_per <- period_range(start_period(model_period), end_period(data_period))
     stoch_endo <- regts(stoch_endo_data, period = stoch_per, 
-                        names = endo_names_dynare)
+                        names = endo_names_dynare, labels = endo_names_dynare)
     stoch_endo <- stoch_endo[ , endo_names]
   } else {
     stoch_endo <- NULL

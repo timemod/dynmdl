@@ -15,15 +15,14 @@ the mod file, or to zero if they are not specified in the initval block.
 The static variables can be modified with methods
 \code{\link{set_static_exos}} and \code{\link{set_static_endos}}.
 
-The function \code{\link{get_static_endos}} cab be used to retrieve the
+The function \code{\link{get_static_endos}} can be used to retrieve the
 steady state solution.
 }
 \section{Usage}{
 
 \code{DynMdl} method:
 \preformatted{
-mdl$solve_steady(init_data = TRUE, control,
-                 solver = c("umfpackr", "nleqslv"))
+mdl$solve_steady(control, solver = c("umfpackr", "nleqslv"))
 
 }
 
@@ -34,9 +33,6 @@ mdl$solve_steady(init_data = TRUE, control,
 
 
 \describe{
-\item{\code{init_data}}{a logical. If \code{TRUE}, then if the 
-solve was succesfull the endogenous model variables are set to
-the computed steady state values.}
 \item{\code{control}}{A named list of control parameters passed to function
 \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
 depending on argument \code{solver}}
@@ -52,8 +48,12 @@ mdl$solve_steady(control = list(trace = 1))
 
 # print the solution
 print(mdl$get_static_endos())
+
+# update the model data with steady state values of endogenous variables
+mdl$put_static_endos()
 }
 \seealso{
 \code{\link{set_static_endos}}, \code{\link{set_static_exos}},
-\code{\link{get_static_endos}} and \code{\link{get_static_exos}}
+\code{\link{get_static_endos}}, \code{\link{get_static_exos}}
+and \code{\link{put_static_endos}}
 }

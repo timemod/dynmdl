@@ -42,6 +42,7 @@ test_that("solve_perturb linear model", {
   # set all non-linear parameters to 0
   mdl2$set_param(c(c5 = 0, i5 = 0, m3 = 0))
   mdl2$solve_steady(control = list(silent = TRUE))
+  mdl2$put_static_endos()
   mdl2$set_endo_values(1200, names = "y", period = lag_per)
   # use a large shock, this should not matter if the model
   # is exactly linear

@@ -29,6 +29,7 @@ colnames(yplus_ref1) <- "yplus"
 exo_ref1   <- regts(0, period = data_per)
 ref1 <- cbind(y_ref1, yplus_ref1, ymin_ref1, exo = exo_ref1)[data_per]
 ref1[lag_per, "ymin"] <- 0
+ts_labels(ref1) <- colnames(ref1)
 
 ymin_ref2 <- lag(y_ref2, -1)[data_per]
 colnames(ymin_ref2) <- "ymin"
@@ -37,6 +38,7 @@ colnames(yplus_ref2) <- "yplus"
 exo_ref2 <- regts(c(0, 1, rep(0, nper - 2)), period = data_per)
 ref2 <- cbind(y_ref2, yplus_ref2, ymin_ref2, exo = exo_ref2)[data_per]
 ref2[lag_per, "ymin"] <- 0
+ts_labels(ref2) <- colnames(ref2)
 
 mdl$set_data(regts(1, period = lag_per), names = "y")
 

@@ -11,7 +11,7 @@ i <- regts(200, start = '2016Q1')
 c <- regts(c(600, NA, 600), start = '2016Q1')
 y <- regts(c(990, NA, 1010), start = '2016Q1')
 fit <- cbind(i, c, y)
-ts_labels(fit) <- c("investment", "consumption", "income")
+ts_labels(fit) <- c("Investment", "Consumption", "Income")
 
 # an ordered list of fit values without identities:
 fit_ordered <- fit[, order(colnames(fit))]

@@ -11,8 +11,9 @@ make_mdl <- function(model_name, ..., show_report = FALSE) {
   nperiods <- 18
   model_period <- period_range(p1, p1 + nperiods - 1)
   report <- capture_output({
-    mdl <- dyn_mdl(mod_file, ...)
+    mdl <- dyn_mdl(mod_file, period = model_period, ...)
     mdl$solve_steady(control = list(silent = TRUE))
+    mdl$put_static_endos()
   })
   if (show_report) {
     cat(report)

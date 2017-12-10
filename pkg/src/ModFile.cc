@@ -1214,7 +1214,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
     int exo_count = symbol_table.exo_nbr();
     int endo_count =  symbol_table.endo_nbr();
     int param_count = symbol_table.param_nbr();
-
+    
+    // names
     Rcpp::CharacterVector exo_names(exo_count);
     for (int i = 0; i < exo_count; i++) {
         exo_names[i] = symbol_table.getName(eExogenous, i).c_str();
@@ -1226,6 +1227,34 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
     Rcpp::CharacterVector param_names(param_count);
     for (int i = 0; i < param_count; i++) {
         param_names[i] = symbol_table.getName(eParameter, i).c_str();
+    }
+
+    // tex names
+    Rcpp::CharacterVector exo_tex_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_tex_names[i] = symbol_table.getTeXName(eExogenous, i).c_str();
+    }
+    Rcpp::CharacterVector endo_tex_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_tex_names[i] = symbol_table.getTeXName(eEndogenous, i).c_str();
+    }
+    Rcpp::CharacterVector param_tex_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_tex_names[i] = symbol_table.getTeXName(eParameter, i).c_str();
+    }
+
+    // long names
+    Rcpp::CharacterVector exo_long_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_long_names[i] = symbol_table.getLongName(eExogenous, i).c_str();
+    }
+    Rcpp::CharacterVector endo_long_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_long_names[i] = symbol_table.getLongName(eEndogenous, i).c_str();
+    }
+    Rcpp::CharacterVector param_long_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_long_names[i] = symbol_table.getLongName(eParameter, i).c_str();
     }
     
     // auxiliary variables (only used for check_mdl)
@@ -1283,6 +1312,12 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
                               Rcpp::Named("endos") = endos,
                               Rcpp::Named("params") = params,
                               Rcpp::Named("model_index") = model_index,
+                              Rcpp::Named("exo_tex_names") = exo_tex_names,
+                              Rcpp::Named("endo_tex_names") = endo_tex_names,
+                              Rcpp::Named("param_tex_names") = param_tex_names,
+                              Rcpp::Named("exo_long_names") = exo_long_names,
+                              Rcpp::Named("endo_long_names") = endo_long_names,
+                              Rcpp::Named("param_long_names") = param_long_names,
                               Rcpp::Named("aux_vars") = aux_vars,
                               Rcpp::Named("dynamic_model") = dynmdl,
                               Rcpp::Named("static_model") = statmdl);

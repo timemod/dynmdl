@@ -39,7 +39,11 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{set_labels}}}{Set labels for the model variables}
 #'
-#' \item{\code{\link{get_labels}}}{Returns the labels of the model variables.}
+#' \item{\code{\link{get_labels}}}{Returns the labels of the model variables and
+#' parameters}
+#'
+#' \item{\code{\link{get_tex_names}}}{Returns the LaTeX names of the model 
+#' variables and parameters}
 #'
 #' \item{\code{get_par_names}}{Returns the names of the parameters.}
 #'
@@ -160,6 +164,18 @@ DynMdl <- R6Class("DynMdl",
         private$jac_dynamic_size   <- dynamic_model$jac_size
       })
       
+      # labels and tex_names
+      names <- c(private$endo_names, private$exo_names, private$param_names)
+      labels <- c(model_info$endo_long_names, model_info$exo_long_names, 
+                  model_info$param_long_names)
+      tex_names <- c(model_info$endo_tex_names, model_info$exo_tex_names, 
+                     model_info$param_tex_names)
+      names(labels) <- names
+      names(tex_names) <- names
+      ord <- order(names)
+      private$labels <- labels[ord]
+      private$tex_names <- tex_names[ord]
+    
       private$exo_count  <- length(private$exos)
       private$endo_count <- length(private$endo_names)
       
@@ -259,6 +275,9 @@ DynMdl <- R6Class("DynMdl",
     get_labels = function() {
       return(private$labels)
     },
+    get_tex_names = function() {
+      return(private$tex_names)
+    },
     get_par_names = function(pattern = ".*") {
       names <- private$param_names
       if (!missing(pattern)) {
@@ -321,6 +340,7 @@ DynMdl <- R6Class("DynMdl",
       endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
       private$endo_data <- regts(endo_mat, start = start_period(data_period),
                                  names = names(private$endos))
+      
       if (private$exo_count > 0) {
         exo_mat <- matrix(rep(private$exos, each = nper), nrow = nper)
         colnames(exo_mat) <- private$exo_names
@@ -371,18 +391,18 @@ DynMdl <- R6Class("DynMdl",
     },
     get_lag_period = function() {
       if (private$max_lag > 0) {
-        p <- start_period(private$data_period)
-        return (period_range(p, p + private$max_lag - 1))
+        p <- start_period(private$model_period) - private$max_lag
+        return(period_range(p, p + private$max_lag - 1))
       } else {
-        return (NULL)
+        return(NULL)
       }
     },
     get_lead_period = function() {
       if (private$max_lead > 0) {
-        p <- end_period(private$data_period)
-        return (period_range(p - private$max_lead + 1, p))
+        p <- end_period(private$model_period) + 1
+        return(period_range(p, p + private$max_lead - 1))
       } else {
-        return (NULL)
+        return(NULL)
       }
     },
     get_exo_data = function(pattern = NULL, names = NULL, 
@@ -444,8 +464,7 @@ DynMdl <- R6Class("DynMdl",
                                period = private$data_period , ...) {
       return(private$change_data_(fun, names, pattern, period, "exo", ...))
     },
-    solve_steady = function(init_data = TRUE, control = NULL,
-                            solver = c("umfpackr", "nleqslv")) {
+    solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv")) {
 
       solver <- match.arg(solver)
       
@@ -482,20 +501,20 @@ DynMdl <- R6Class("DynMdl",
       if (error) {
         stop(paste0("Error solving the steady state.\n", out$message))
       }
-      
-      if (init_data && !is.null(private$endo_data)) {
-        # update the model data
-        nper <- nperiod(private$data_period)
-        private$endo_data[ , ] <- matrix(rep(private$endos, each = nper),
-                                         nrow = nper)
-      }
-      
-      
       return (invisible(self))
+    },
+    put_static_endos = function(period = private$data_period) {
+      # copy the static endogenous variables to the endogenous model data
+      if (is.null(private$model_period)) stop(private$period_error_msg)
+      period <- private$convert_period_arg(period)
+      nper <- nperiod(period)
+      private$endo_data[period, ] <- 
+              matrix(rep(private$endos, each = nper), nrow = nper)
+      return(invisible(self))
     },
     check = function() {
 
-      self$solve_steady(init_data = FALSE, control = list(silent = TRUE))
+      self$solve_steady(control = list(silent = TRUE))
       
       if (private$use_dll) private$prepare_solve()
       private$ss  <- solve_first_order(private$ss,
@@ -632,7 +651,7 @@ DynMdl <- R6Class("DynMdl",
 
       if (is.null(private$model_period)) stop(private$period_error_msg)
 
-      self$solve_steady(init_data = FALSE, control = list(silent = TRUE))
+      self$solve_steady(control = list(silent = TRUE))
       
       if (private$use_dll) private$prepare_solve()
       
@@ -776,6 +795,7 @@ DynMdl <- R6Class("DynMdl",
     endo_names = NULL,
     aux_vars = NULL,
     labels = NULL,
+    tex_names = NULL,
     param_names = NULL,
     exos = NULL,
     endos = NULL,

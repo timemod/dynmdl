@@ -28,7 +28,11 @@ An R6 class for a Dynare model
 
 \item{\code{\link{set_labels}}}{Set labels for the model variables}
 
-\item{\code{\link{get_labels}}}{Returns the labels of the model variables.}
+\item{\code{\link{get_labels}}}{Returns the labels of the model variables and
+parameters}
+
+\item{\code{\link{get_tex_names}}}{Returns the LaTeX names of the model 
+variables and parameters}
 
 \item{\code{get_par_names}}{Returns the names of the parameters.}
 
