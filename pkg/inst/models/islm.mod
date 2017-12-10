@@ -1,6 +1,17 @@
 %Declaring variables
-var y yd t c i md r;       % endogenous variables
-varexo g ms;               % exogenous variables
+
+% endogenous variables
+var y $Y$ (long_name = 'Income')
+    yd $Y_d$ (long_name = 'Disposable income')
+    t $T$ (long_name = 'Tax')
+    c $C$ (long_name = 'Consumption')
+    i $I$ (long_name = 'Investment')
+    md $M_d$ (long_name = 'Monet demand')
+    r $r$ (long_name = 'Interest rate');
+
+% exogenous variables
+varexo g $G$ (long_name = 'Government spending')
+       ms $M_s$ (long_name = 'Money supply');      
 
 %Setting parameter values
 parameters c0 c1 c2 c3 c4 c5;

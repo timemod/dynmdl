@@ -10,7 +10,7 @@ capture_output(mdl <- read_mdl(rds_file))
 i <- regts(200, start = '2016Q1')
 y <- regts(c(990, NA, 1010), start = '2016Q1')
 fit_targets <- cbind(y, i)
-ts_labels(fit_targets) <- c("income", "investment")
+ts_labels(fit_targets) <- c("Income", "Investment")
 
 fit_targets_sorted <- fit_targets[ , c("i", "y")]
  
@@ -29,7 +29,7 @@ test_that("Testing get_fit after copying", {
   c <- regts(200, start = '2016Q1')
   t <- regts(c(990, NA, 1010), start = '2016Q1')
   fit_targets2 <- cbind(c, t)
-  ts_labels(fit_targets2) <- c("consumption", "tax")
+  ts_labels(fit_targets2) <- c("Consumption", "Tax")
   mdl3$set_fit(fit_targets2)
   expect_identical(mdl$get_fit(), fit_targets_sorted)
   res_correct <- cbind(fit_targets_sorted, fit_targets2)

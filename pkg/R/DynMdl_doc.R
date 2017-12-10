@@ -425,18 +425,33 @@ NULL
 #' \code{\link{get_labels}}
 NULL
 
-#' \code{\link{DynMdl}} method: Returns the labels of the model variables.
-#' @name get_labels
+#' \code{\link{DynMdl}} method: Returns the labels or LaTeX names 
+#' of the model variables and parameters
+#' @name get_labels/get_tex_names
+#' @aliases get_labels get_tex_names
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMdl}}
-#' returns the labels of the model variables.
+#' These methods of R6 class \code{\link{DynMdl}}
+#' return the labels (long names) or LaTeX names of the model variables and 
+#' parameters. The return value is a named character vector.
+#' 
+#' The labels and LaTeX names are defined in the mod file (consult the documentation
+#' of Dynare, in Dynare labels are called 'long names'). Method \code{\link{set_labels}}
+#' can be used to modify these labels. By default the labels are equal to the variable names.
 #' @section Usage:
 #' \preformatted{
 #' mdl$get_labels()
 #'
+#' mdl$get_tex_names()
+#' 
 #' }
 #' \code{mdl} is an \code{\link{DynMdl}} object
+#' @section Methods:
+#' \itemize{
+#' \item \code{get_labels}: Returns the labels (long names), 
+#' e.g. \code{"Disposable income"}
+#' \item \code{get_tex_names}: Returns the LaTeX names (e.g. \code{"Y_d"})
+#' }
 #' @seealso
 #' \code{\link{set_labels}}
 NULL

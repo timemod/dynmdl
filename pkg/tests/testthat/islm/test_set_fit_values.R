@@ -11,7 +11,7 @@ i <- regts(200, start = '2016Q1')
 c <- regts(c(600, NA, 600), start = '2016Q1')
 y <- regts(c(990, NA, 1010), start = '2016Q1')
 fit <- cbind(i, c, y)
-ts_labels(fit) <- c("investment", "consumption", "income")
+ts_labels(fit) <- c("Investment", "Consumption", "Income")
 mdl$set_fit(fit)
 
 new_fit <- fit[mdl$get_data_period(), ]
@@ -19,7 +19,7 @@ new_fit[ , "t" ] <- 210
 new_fit["2016Q2/2017Q1", c("y", "c")] <- 810:813
 new_fit["2017Q1", "i"] <- 190
 new_fit <- new_fit[, order(colnames(new_fit))]
-new_fit <- update_ts_labels(new_fit, c(t = "tax"))
+new_fit <- update_ts_labels(new_fit, c(t = "Tax"))
 
 test_that("set_fit_values works correctly", {
   mdl2 <- mdl$copy()

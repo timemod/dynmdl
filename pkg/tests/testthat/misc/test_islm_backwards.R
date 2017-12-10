@@ -22,7 +22,8 @@ get_dynare_endo <- function(endo_file, data_period) {
                          header = FALSE, sep = "")[[1]]
   endo_data <- t(as.matrix(read.csv(file.path(dynare_dir, endo_file),
                                     header = FALSE)))
-  return(regts(endo_data, period = data_period, names = endo_names))
+  return(regts(endo_data, period = data_period, names = endo_names,
+               labels = endo_names))
 }
 
 get_dynare_exo <- function(exo_file, data_period) {
@@ -30,7 +31,8 @@ get_dynare_exo <- function(exo_file, data_period) {
                         header = FALSE, sep = "")[[1]]
   exo_data <- as.matrix(read.csv(file.path(dynare_dir, exo_file),
                                  header = FALSE))
-  return(regts(exo_data, period = data_period, names = exo_names))
+  return(regts(exo_data, period = data_period, names = exo_names, 
+               labels = exo_names))
 }
 
 dynare_endo <- get_dynare_endo("islm_backwards_simul_endo.csv", mdl$get_data_period())

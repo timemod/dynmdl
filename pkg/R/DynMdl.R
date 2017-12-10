@@ -39,7 +39,11 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{set_labels}}}{Set labels for the model variables}
 #'
-#' \item{\code{\link{get_labels}}}{Returns the labels of the model variables.}
+#' \item{\code{\link{get_labels}}}{Returns the labels of the model variables and
+#' parameters}
+#'
+#' \item{\code{\link{get_tex_names}}}{Returns the LaTeX names of the model 
+#' variables and parameters}
 #'
 #' \item{\code{get_par_names}}{Returns the names of the parameters.}
 #'
@@ -155,6 +159,18 @@ DynMdl <- R6Class("DynMdl",
         private$jac_dynamic_size   <- dynamic_model$jac_size
       })
       
+      # labels and tex_names
+      names <- c(private$endo_names, private$exo_names, private$param_names)
+      labels <- c(model_info$endo_long_names, model_info$exo_long_names, 
+                  model_info$param_long_names)
+      tex_names <- c(model_info$endo_tex_names, model_info$exo_tex_names, 
+                     model_info$param_tex_names)
+      names(labels) <- names
+      names(tex_names) <- names
+      ord <- order(names)
+      private$labels <- labels[ord]
+      private$tex_names <- tex_names[ord]
+    
       private$exo_count  <- length(private$exos)
       private$endo_count <- length(private$endo_names)
       
@@ -253,6 +269,9 @@ DynMdl <- R6Class("DynMdl",
     },
     get_labels = function() {
       return(private$labels)
+    },
+    get_tex_names = function() {
+      return(private$tex_names)
     },
     get_par_names = function(pattern = ".*") {
       names <- private$param_names
@@ -756,6 +775,7 @@ DynMdl <- R6Class("DynMdl",
     endo_names = NULL,
     aux_vars = NULL,
     labels = NULL,
+    tex_names = NULL,
     param_names = NULL,
     exos = NULL,
     endos = NULL,

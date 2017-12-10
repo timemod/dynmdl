@@ -24,11 +24,6 @@ islm_mdl <- function(period, fit = FALSE) {
   mdl <- dyn_mdl(mod_file, period = period)
   unlink(mod_file)
   
-  mdl$set_labels(c(i = "investment", c = "consumption", md = "money demand",
-                   t = "tax", r = "interest rate", y = "income", 
-                   yd = "disposable income",  g = "government spending",
-                   ms = "money supply"))
-  
   mdl$solve_steady(control = list(trace = FALSE))
   if (!missing(period)) {
     mdl$put_static_endos()

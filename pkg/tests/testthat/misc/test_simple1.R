@@ -15,6 +15,9 @@ ref1 <- get_analytical_result(y0 = 1, x1 = 0, period = data_per,
                               params = mdl$get_param())
 ref2 <- get_analytical_result(y0 = 1, x1 = 1, period = data_per,
                               params = mdl$get_param())
+ts_labels(ref1) <- colnames(ref1)
+ts_labels(ref2) <- colnames(ref2)
+
 lead_per <- mdl$get_lead_period()
 lag_per <- mdl$get_lag_period()
 

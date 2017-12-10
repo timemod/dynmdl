@@ -262,8 +262,12 @@ public:
   string getName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
   //! Get TeX name
   inline string getTeXName(int id) const throw (UnknownSymbolIDException);
+  //! Get TEX name (by type specific ID)
+  string getTeXName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
   //! Get long name
   inline string getLongName(int id) const throw (UnknownSymbolIDException);
+  //! Get long name (by type specific ID)
+  string getLongName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
   //! Returns true if the partition name is the first encountered for the type of variable represented by id
   bool isFirstOfPartitionForType(int id) const throw (UnknownSymbolIDException);
   //! Returns a list of partitions and symbols that belong to that partition
