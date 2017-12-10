@@ -27,6 +27,13 @@ create_solve_mdl <- function(mdl) {
   return(mdl2)
 }
 
+test_that("get_period-methods", {
+  expect_equal(mdl$get_period() , as.period_range("2015/2032"))
+  expect_equal(mdl$get_data_period(), as.period_range("2011/2035"))
+  expect_equal(mdl$get_lag_period(), as.period_range("2011/2014"))
+  expect_equal(mdl$get_lead_period(), as.period_range("2033/2035"))
+})
+
 test_that("solve_steady and set_static_endos", {
   mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
   mdl$put_static_endos()
@@ -51,6 +58,13 @@ test_that("check", {
 # now compile the model with option max_laglead_1
 report <- capture_output(mdl_new <- dyn_mdl(mod_file, period = "2015/2032",
                                             max_laglead_1 = TRUE))
+
+test_that("get_period-methods with max_laglead_1", {
+  expect_equal(mdl_new$get_period() , as.period_range("2015/2032"))
+  expect_equal(mdl_new$get_data_period(), as.period_range("2011/2035"))
+  expect_equal(mdl_new$get_lag_period(), as.period_range("2011/2014"))
+  expect_equal(mdl_new$get_lead_period(), as.period_range("2033/2035"))
+})
 
 test_that("solve_steady with max_laglead_1", {
   mdl_new$solve_steady(control = list(trace = FALSE, silent = TRUE))

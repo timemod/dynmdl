@@ -25,6 +25,14 @@ create_solve_mdl <- function(mdl) {
   return(mdl2)
 }
 
+test_that("get_period-methods", {
+  expect_equal(mdl$get_period() , as.period_range("2015/2032"))
+  expect_equal(mdl$get_data_period(), as.period_range("2011/2032"))
+  expect_equal(mdl$get_lag_period(), as.period_range("2011/2014"))
+  expect_null(mdl$get_lead_period())
+})
+
+
 test_that("solve_steady", {
   mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
   expect_equal(mdl$get_static_endos(), dynare_result$steady)
