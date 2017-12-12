@@ -26,7 +26,7 @@ read_mdl <- function(file, dll_dir) {
   }
   
   # TODO: check package version 
-  if (ser$use_dll) {
+  if (ser$calc == "dll") {
     
     # check operating system. If the model is generated on a different
     # platform, then we should recompile the model!
@@ -43,7 +43,7 @@ read_mdl <- function(file, dll_dir) {
     dir.create(dll_dir)
     dll_file <- file.path(dll_dir, ser$dll_basename)
     zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
-    writeBin(ser$dll_data, con = zip_file)
+    writeBin(ser$bin_data, con = zip_file)
     unzip(zipfile = zip_file, exdir = dll_dir, junkpaths = TRUE)
     unlink(zip_file)
   } else {
@@ -51,20 +51,16 @@ read_mdl <- function(file, dll_dir) {
     dll_file <- NA_character_
   }
   
-  if (ser$use_dll) {
-    calc <- "dll"
-  } else if (ser$bytecode) {
-    calc <- "bytecode" 
-  } else {
-    # models with calc == "internal" are not yet serializable
-    calc <- "R"
+  if (ser$calc == "internal") {
+    ser$model_info$model_index <- deserialize_polish_model(ser$bin_data)
+    printobj(ser$model_info$model_index)
   }
   
   if (inherits(ser, "serialized_fitmdl")) {
     mdl <- FitMdl$new(ser$model_info, ser$fit_info, ser$params, 
-                      ser$equations, calc, dll_dir, dll_file)
+                      ser$equations, ser$calc, dll_dir, dll_file)
   } else {
-    mdl <- DynMdl$new(ser$model_info, ser$params, ser$equations, calc, 
+    mdl <- DynMdl$new(ser$model_info, ser$params, ser$equations, ser$calc, 
                       dll_dir, dll_file)
   }
   mdl$set_static_endos(ser$endos)

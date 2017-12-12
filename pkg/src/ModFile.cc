@@ -36,6 +36,9 @@
 #include "PolishModels.hh"
 #include "DataTree.hh"
 
+#include <fstream>
+
+
 ModFile::ModFile(WarningConsolidation &warnings_arg)
   : expressions_tree(symbol_table, num_constants, external_functions_table),
     original_model(symbol_table, num_constants, external_functions_table),

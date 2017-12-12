@@ -2,6 +2,8 @@
 
 int PolishModels::add_model(PolishModel *mdl) {
     models.push_back(mdl);
+    // TODO: reuse old index.
+    // TODO: smart pointers?
     return model_index++;
 }
 

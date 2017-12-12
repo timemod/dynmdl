@@ -37,3 +37,11 @@ run_macro <- function(modfile, new_modfile) {
     invisible(.Call(`_dynmdl_run_macro`, modfile, new_modfile))
 }
 
+serialize_polish_model <- function(model_index) {
+    .Call(`_dynmdl_serialize_polish_model`, model_index)
+}
+
+deserialize_polish_model <- function(src) {
+    .Call(`_dynmdl_deserialize_polish_model`, src)
+}
+

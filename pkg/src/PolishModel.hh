@@ -3,9 +3,12 @@
 
 #include <vector>
 #include <stack>
+#include <memory>
+#include <iostream>
 
 using std::vector;
 using std::stack;
+using std::shared_ptr;
 
 enum ecode {
     CONST,
@@ -24,6 +27,7 @@ enum ecode {
 
 class PolishModel {
     public:
+        PolishModel() {};
         PolishModel(int neq, int njac, const vector<double> &constants_arg);
         int get_equation_count();
         int get_jac_count();
@@ -46,24 +50,76 @@ class PolishModel {
         void get_jac(const double y[], int rows[], int cols[], double values[], 
                      int it);
 
+       // serialization
+       template<class Archive>
+       void save(Archive & ar) const {
+           ar(neq, njac, nconst);
+           std::cout << "neq  = " << neq << std::endl;
+           std::cout << "njac  = " <<  njac << std::endl;
+           std::cout << "nconst  = " << nconst << std::endl;
+           for (int i = 0; i < nconst; i++) {
+               ar(constants[i]);
+           }
+           for (int i = 0; i < neq; i++) {
+               ar(equations[i]);
+           }
+           for (int i = 0; i < njac; i++) {
+               ar(jac_rows[i]);
+           }
+           for (int i = 0; i < njac; i++) {
+               ar(jac_cols[i]);
+           }
+           for (int i = 0; i < njac; i++) {
+               ar(jac_equations[i]);
+           }
+       }
+       template<class Archive>
+       void load(Archive & ar) {
+           ar(neq, njac, nconst);
+           std::cout << "neq  = " << neq << std::endl;
+           std::cout << "njac  = " <<  njac << std::endl;
+           std::cout << "nconst  = " << nconst << std::endl;
+           equations = new shared_ptr<vector<int>>[neq];
+           jac_equations = new shared_ptr<vector<int>>[njac];
+           jac_rows = new int[njac];
+           jac_cols = new int[njac];
+           constants = new double[nconst];
+           for (int i = 0; i < nconst; i++) {
+               ar(constants[i]);
+           }
+           for (int i = 0; i < neq; i++) {
+               equations[i] = shared_ptr<vector<int>>(new vector<int>());
+               ar(equations[i]);
+           }
+           for (int i = 0; i < njac; i++) {
+               ar(jac_rows[i]);
+           }
+           for (int i = 0; i < njac; i++) {
+               ar(jac_cols[i]);
+           }
+           for (int i = 0; i < njac; i++) {
+               jac_equations[i] = shared_ptr<vector<int>>(new vector<int>());
+               ar(jac_equations[i]);
+           }
+       }
     private:
        // member defining the model
-       int neq, njac, nexo;
-       vector<int> **equations; 
+       int neq, njac, nconst;
+       shared_ptr<vector<int>> *equations; 
        int *jac_rows;
        int *jac_cols;
-       vector<int> **jac_equations; 
+       shared_ptr<vector<int>> *jac_equations; 
        double *constants;
 
        // members used for generating Polish code
        int ieq, ieq_jac;
-       vector<int> *cur_eq;
+       shared_ptr<vector<int>> cur_eq;
 
        // members for evaluating the model
        const double *y, *p, *x;
        int nrow_exo;
        stack<double> stk;
-       double eval_eq(vector<int> *eq, int it);
+       double eval_eq(shared_ptr<vector<int>> eq, int it);
 };
 
 #endif

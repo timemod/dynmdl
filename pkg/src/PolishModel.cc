@@ -2,19 +2,23 @@
 #include <iostream>
 #include <algorithm>
 #include <math.h>
+#include <memory.h>
+
 using namespace std;
 
 PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg) 
                                  : neq(neq), njac(njac) {
 
     ieq = 0; ieq_jac = 0;
-    equations = new vector<int>*[neq];
-    jac_equations = new vector<int>*[njac];
+    equations = new shared_ptr<vector<int>>[neq];
+    jac_equations = new shared_ptr<vector<int>>[njac];
     jac_rows = new int[njac];
     jac_cols = new int[njac];
 
-    constants = new double[constants_arg.size()];
+    nconst = constants_arg.size();
+    constants = new double[nconst];
     copy(constants_arg.begin(), constants_arg.end(), constants);
+
 }
 
 int PolishModel::get_equation_count() {
@@ -30,12 +34,12 @@ int PolishModel::get_jac_count() {
 //
 
 void PolishModel::new_equation() {
-    cur_eq = new vector<int>();
+    cur_eq = shared_ptr<vector<int>>(new vector<int>());
     equations[ieq++] = cur_eq;
 }
 
 void PolishModel::new_jac_equation(int row, int col) {
-    cur_eq = new vector<int>();
+    cur_eq = shared_ptr<vector<int>>(new vector<int>());
     jac_rows[ieq_jac] = row;
     jac_cols[ieq_jac] = col;
     jac_equations[ieq_jac++] = cur_eq;
@@ -98,7 +102,7 @@ void PolishModel::set_exo(double const x[], int nrow_exo) {
     this->nrow_exo = nrow_exo;
 }
 
-double PolishModel::eval_eq(vector<int> *eq, int it) {
+double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
 
    unsigned int pos = 0;
 
@@ -121,7 +125,7 @@ double PolishModel::eval_eq(vector<int> *eq, int it) {
                        break;
            case EXO_LAG: index = codes[++pos];
                          lag = codes[++pos];
-                         stk.push(x[index * nexo + it + lag]);
+                         stk.push(x[index * nrow_exo + it + lag]);
                          break;
            case PARAM: index = codes[++pos];
                        stk.push(p[index]);

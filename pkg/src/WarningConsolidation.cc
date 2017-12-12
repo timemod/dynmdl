@@ -50,7 +50,8 @@ operator<< (WarningConsolidation& wcc, const Dynare::location& loc)
   else if (loc.begin.column != last.column)
     ostr << '-' << last.column;
 
-  DynErr << ostr;
+  //DynErr << ostr;
+  DynErr << ostr.str();
   wcc.addWarning(ostr.str());
   return wcc;
 }
@@ -61,9 +62,7 @@ operator<< (WarningConsolidation& wcc, ostream& (*pf) (ostream&))
   if (wcc.no_warn)
     return wcc;
 
-  ostringstream msg;
-  msg << pf;
-  DynErr << msg;
+  DynErr << pf;
   wcc.addWarning(pf);
   return wcc;
 }

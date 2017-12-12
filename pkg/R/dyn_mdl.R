@@ -65,9 +65,9 @@ dyn_mdl <- function(mod_file, period, data,
   use_dll <- calc == "dll"
   internal_calc <- calc == "internal"
   
-  if (calc == "internal") {
-    warning("The internal calc method is still experimental.")
-  }
+  # if (calc == "internal") {
+  #   warning("The internal calc method is still experimental.")
+  # }
   
   if (!file.exists(mod_file)) {
     stop(paste("ERROR: Could not open file:", mod_file))

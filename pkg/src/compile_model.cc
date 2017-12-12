@@ -2,6 +2,12 @@
 #include <Rcpp.h>
 #include  "parse.hh"
 
+// [[Rcpp::depends(Rcereal)]]
+// [[Rcpp::depends(BH)]]
+//
+// Enable C++11 via this plugin 
+// [[Rcpp::plugins("cpp11")]]
+
 // [[Rcpp::export]]
 Rcpp::List compile_model_(std::string modfile, bool use_dll, 
                           std::string dll_dir, bool max_laglead_1, 

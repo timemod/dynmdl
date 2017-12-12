@@ -127,6 +127,7 @@ DynMdl <- R6Class("DynMdl",
                           dll_file) {
       
       private$model_info <- model_info
+      
       private$equations <- equations
       
       if (calc == "dll") {
@@ -138,16 +139,13 @@ DynMdl <- R6Class("DynMdl",
       } 
       
       if (calc == "dll") {
-        private$use_dll <- TRUE
         private$dll_dir <- dll_dir
         private$dll_file <- dll_file
-      } else if (calc == "bytecode") {
-        private$bytecode <- TRUE
-      } else if (calc == "internal") {
-        private$internal_calc <- TRUE
       }
 
       with(model_info, {
+        private$calc               <- calc
+        private$model_index        <- model_index
         private$endo_names         <- names(endos)
         private$exo_names          <- names(exos)
         private$aux_vars           <- aux_vars
@@ -203,7 +201,7 @@ DynMdl <- R6Class("DynMdl",
       
       private$njac_cols <- length(which(private$lead_lag_incidence != 0)) +
                            private$exo_count
-      if (private$use_dll) {
+      if (calc == "dll") {
         private$f_static <- function(y, x, params) {
           res <- numeric(private$endo_count)
           .Call("f_static_", y, x, params, res, PACKAGE = "mdl_functions")
@@ -233,7 +231,7 @@ DynMdl <- R6Class("DynMdl",
                 PACKAGE = "mdl_functions")
           return(private$jac)
         }
-      } else if (!private$internal_calc) {
+      } else if (calc == "R" || calc == "bytecode") {
         # no dll, functions implemented in R
         eval(parse(text = model_info$static_model$static_functions))
         eval(parse(text = model_info$dynamic_model$dynamic_functions))
@@ -242,7 +240,7 @@ DynMdl <- R6Class("DynMdl",
         private$f_dynamic   <- f_dynamic
         private$jac_dynamic <- jac_dynamic
         
-        if (private$bytecode) {
+        if (calc == "bytecode") {
           private$f_static <- compiler::cmpfun(private$f_static)
           private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
         }
@@ -479,7 +477,7 @@ DynMdl <- R6Class("DynMdl",
         return(private$f_static(endos, private$exos, private$params))
       }
       
-      if (private$use_dll) private$prepare_solve_steady()
+      if (private$calc == "dll") private$prepare_solve_steady()
 
       if (solver == "umfpackr") {
         out <- umf_solve_nl(start, fn = f, jac = private$get_static_jac, 
@@ -494,7 +492,7 @@ DynMdl <- R6Class("DynMdl",
                        control = control)
         error <- out$termcd != 1
       }
-      if (private$use_dll) private$clean_after_solve_steady()
+      if (private$calc == "dll") private$clean_after_solve_steady()
 
       private$endos <- out$x
 
@@ -516,7 +514,7 @@ DynMdl <- R6Class("DynMdl",
 
       self$solve_steady(control = list(silent = TRUE))
       
-      if (private$use_dll) private$prepare_solve()
+      if (private$calc == "dll") private$prepare_solve()
       private$ss  <- solve_first_order(private$ss,
                                        private$lead_lag_incidence,
                                        private$exos, private$endos,
@@ -525,7 +523,7 @@ DynMdl <- R6Class("DynMdl",
                                        private$endo_count,
                                        private$njac_cols,
                                        only_eigval = TRUE, debug = FALSE)
-      if (private$use_dll) private$clean_after_solve()
+      if (private$calc == "dll") private$clean_after_solve()
       
       cat("EIGENVALUES:\n")
       cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
@@ -537,11 +535,11 @@ DynMdl <- R6Class("DynMdl",
     },
     residual_check = function(tol = 0) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
-      if (private$use_dll) private$prepare_solve()
-      if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
-                                                       nrow(private$exo_data),
-                                                       private$params)
-      
+      if (private$calc == "dll") private$prepare_solve()
+      if (private$calc == "internal") {
+        prepare_internal_calc(private$model_index, private$exo_data, 
+                              nrow(private$exo_data), private$params)
+      }
       if (private$aux_vars$aux_count > 0) {
         private$prepare_aux_vars()
       }
@@ -596,11 +594,11 @@ DynMdl <- R6Class("DynMdl",
       }
       control_[names(control)] <- control
       
-      if (private$use_dll) private$prepare_solve()
-      if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
-                                                       nrow(private$exo_data),
-                                                       private$params)
-      
+      if (private$calc == "dll") private$prepare_solve()
+      if (private$calc == "internal") {
+        prepare_internal_calc(private$model_index, private$exo_data,
+                              nrow(private$exo_data), private$params)
+      }
       if (private$aux_vars$aux_count > 0) {
         private$prepare_aux_vars()
       }
@@ -638,7 +636,7 @@ DynMdl <- R6Class("DynMdl",
                                     solver = solver)
       }
       
-      if (private$use_dll) private$clean_after_solve()
+      if (private$calc == "dll") private$clean_after_solve()
       private$endo_data[private$model_period, ] <-
         t(matrix(ret$x, nrow = private$endo_count))
       
@@ -653,7 +651,7 @@ DynMdl <- R6Class("DynMdl",
 
       self$solve_steady(control = list(silent = TRUE))
       
-      if (private$use_dll) private$prepare_solve()
+      if (private$calc == "dll") private$prepare_solve()
       
       # solve_perturbation does not works for exogenous lags and leads.
       # For perturbation approaches, Dynare substitutes
@@ -679,8 +677,8 @@ DynMdl <- R6Class("DynMdl",
                                                private$exo_data, private$endo_data,
                                                private$exos, private$endos)
       
-      if (private$use_dll) private$clean_after_solve()
-      return (invisible(self))
+      if (private$calc == "dll") private$clean_after_solve()
+      return(invisible(self))
     },
     get_jacob = function(sparse = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
@@ -688,12 +686,13 @@ DynMdl <- R6Class("DynMdl",
       leads <- private$get_endo_leads()
       nper <- nperiod(private$model_period)
       x <- private$get_solve_endo()
-      if (private$use_dll) private$prepare_solve()
-      if (private$internal_calc) prepare_internal_calc(0L, private$exo_data,
-                                                       nrow(private$exo_data),
-                                                       private$params)
+      if (private$calc == "dll") private$prepare_solve()
+      if (private$calc == "internal") {
+        prepare_internal_calc(private$model_index,  private$exo_data, 
+                              nrow(private$exo_data), private$params)
+      }
       jac <- private$get_jac(x, lags, leads, nper)
-      if (private$use_dll) private$clean_after_solve()
+      if (private$calc ==  "dll") private$clean_after_solve()
       if (!sparse) {
         jac <- as(jac, "matrix")
       }
@@ -704,13 +703,13 @@ DynMdl <- R6Class("DynMdl",
       return(jac)
     },
     get_static_jacob = function(sparse = FALSE) {
-      if (private$use_dll) private$prepare_solve_steady()
+      if (private$calc == "dll") private$prepare_solve_steady()
       jac <- private$get_static_jac(private$endos)
       if (!sparse) {
         jac <- as(jac, "matrix")
       }
       colnames(jac) <- private$endo_names
-      if (private$use_dll) private$clean_after_solve_steady()
+      if (private$calc == "dll") private$clean_after_solve_steady()
       return(jac)
     },
     get_equations = function(i = 1:private$endo_count) {
@@ -729,7 +728,7 @@ DynMdl <- R6Class("DynMdl",
       }
     },
     time_functions = function() {
-      if (private$use_dll) private$prepare_solve()
+      if (private$calc == "dll") private$prepare_solve()
       time_functions(private$model_period, private$endo_data,
                      private$exo_data, private$params,
                      private$lead_lag_incidence,
@@ -747,35 +746,27 @@ DynMdl <- R6Class("DynMdl",
     },
     serialize = function() {
       
-      if (private$internal_calc) {
-        stop(paste("It is not yet possible to serialize model when the",
-                   "internal calculator is used."))
-      }
+      os_type <- .Platform$OS.type
       
-      if (private$use_dll) {
+      if (private$calc == "dll") {
         zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
         zip(zipfile = zip_file, files = private$dll_dir, extra = "-q")
         size <- file.info(zip_file)$size
-        dll_data <- readBin(zip_file, what = "raw", n = size)
+        bin_data <- readBin(zip_file, what = "raw", n = size)
         unlink(zip_file)
+      } else if (private$calc == "internal") {
+        bin_data <- serialize_polish_model(private$model_index)
       } else {
-        dll_data <- NULL
+        bin_data <- NULL
       }
-      
-      if (private$use_dll) {
-        os_type <- .Platform$OS.type
-      } else {
-        # if we do not use dll, then we don't care about the 
-        # operating system type
-        os_type <- NULL
-      }
+        
       serialized_mdl <- list(version = packageVersion("dynmdl"),
                              model_info = private$model_info, 
                              equations = private$equations,
-                             bytecode = private$bytecode,
-                             use_dll = private$use_dll, dll_data = dll_data,
+                             calc = private$calc,
+                             bin_data = bin_data,
                              dll_basename = basename(private$dll_file),
-                             os_type = .Platform$OS.type,
+                             os_type = os_type,
                              params = private$params,
                              endos = private$endos,
                              exos = private$exos,
@@ -788,6 +779,7 @@ DynMdl <- R6Class("DynMdl",
   ),
   private = list(
     model_info = NULL,
+    model_index = NA_integer_,
     equations = NULL,
     exo_count = NA_integer_,
     endo_count = NA_integer_,
@@ -820,9 +812,7 @@ DynMdl <- R6Class("DynMdl",
     endo_data = NULL,
     exo_data = NULL,
     ss = NULL,
-    bytecode = FALSE,
-    use_dll = FALSE,
-    internal_calc = FALSE,
+    calc = NA_character_,
     dll_dir = NA_character_,
     dll_file = NA_character_,
     period_error_msg = paste("The model period is not set.",
@@ -1024,9 +1014,9 @@ DynMdl <- R6Class("DynMdl",
     get_residuals = function(x, lags, leads, nper) {
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
-      if (private$internal_calc) {
+      if (private$calc == "internal") {
         # for the time begin, assume that the model index is 0
-        return(get_residuals_internal(0L, endos,
+        return(get_residuals_internal(private$model_index, endos,
                               which(private$lead_lag_incidence != 0) - 1,
                               private$endo_count, nper, private$period_shift))
       } else {
@@ -1041,9 +1031,9 @@ DynMdl <- R6Class("DynMdl",
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
       tshift  <- -private$max_endo_lag : private$max_endo_lead
-      if (private$internal_calc) {
+      if (private$calc == "internal") {
         # for the time begin, assume that the model index is 0
-        mat_info <- get_triplet_jac_internal(0L, endos, 
+        mat_info <- get_triplet_jac_internal(private$model_index, endos, 
                           private$lead_lag_incidence, tshift, 
                           private$endo_count, nper, private$period_shift)
       } else {
@@ -1153,6 +1143,11 @@ DynMdl <- R6Class("DynMdl",
     },
 
     print_info = function(short) {
+      cat(sprintf("%-60s%s\n", "Calc method:", private$calc))
+      if (private$calc == "internal") {
+        cat(sprintf("%-60s%d\n", "Model index:",
+                    private$model_info$model_index))
+      }
       cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
                   private$endo_count))
       cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
