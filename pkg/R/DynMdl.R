@@ -129,7 +129,7 @@ DynMdl <- R6Class("DynMdl",
       private$model_info <- model_info
       
       private$equations <- equations
-      
+
       if (calc == "dll") {
         reg.finalizer(self,
                       function(e) {

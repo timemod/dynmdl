@@ -54,9 +54,6 @@ class PolishModel {
        template<class Archive>
        void save(Archive & ar) const {
            ar(neq, njac, nconst);
-           std::cout << "neq  = " << neq << std::endl;
-           std::cout << "njac  = " <<  njac << std::endl;
-           std::cout << "nconst  = " << nconst << std::endl;
            for (int i = 0; i < nconst; i++) {
                ar(constants[i]);
            }
@@ -76,9 +73,6 @@ class PolishModel {
        template<class Archive>
        void load(Archive & ar) {
            ar(neq, njac, nconst);
-           std::cout << "neq  = " << neq << std::endl;
-           std::cout << "njac  = " <<  njac << std::endl;
-           std::cout << "nconst  = " << nconst << std::endl;
            equations = new shared_ptr<vector<int>>[neq];
            jac_equations = new shared_ptr<vector<int>>[njac];
            jac_rows = new int[njac];

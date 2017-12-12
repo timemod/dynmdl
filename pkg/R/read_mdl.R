@@ -50,11 +50,12 @@ read_mdl <- function(file, dll_dir) {
     dll_dir <- NA_character_
     dll_file <- NA_character_
   }
+
   
   if (ser$calc == "internal") {
     ser$model_info$model_index <- deserialize_polish_model(ser$bin_data)
-    printobj(ser$model_info$model_index)
   }
+
   
   if (inherits(ser, "serialized_fitmdl")) {
     mdl <- FitMdl$new(ser$model_info, ser$fit_info, ser$params, 
@@ -66,6 +67,9 @@ read_mdl <- function(file, dll_dir) {
   mdl$set_static_endos(ser$endos)
   mdl$set_static_exos(ser$exos)
   if (!is.null(ser$endo_data)) {
+    # TODO: the following steps takes relatively a lot of time.
+    # we can do this more efficiently, by directly updating the endogenous
+    # and exogenous data.
     mdl$init_data(data_period = get_period_range(ser$endo_data))
     mdl$set_period(ser$period)
     mdl$set_data(ser$endo_data)
