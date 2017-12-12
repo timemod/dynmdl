@@ -477,7 +477,7 @@ DynMdl <- R6Class("DynMdl",
         return(private$f_static(endos, private$exos, private$params))
       }
       
-      if (private$calc == "dll") private$prepare_solve_steady()
+      private$prepare_static_model()
 
       if (solver == "umfpackr") {
         out <- umf_solve_nl(start, fn = f, jac = private$get_static_jac, 
@@ -492,8 +492,8 @@ DynMdl <- R6Class("DynMdl",
                        control = control)
         error <- out$termcd != 1
       }
-      if (private$calc == "dll") private$clean_after_solve_steady()
-
+      private$clean_static_model()
+      
       private$endos <- out$x
 
       if (error) {
@@ -514,7 +514,7 @@ DynMdl <- R6Class("DynMdl",
 
       self$solve_steady(control = list(silent = TRUE))
       
-      if (private$calc == "dll") private$prepare_solve()
+      private$prepare_dynamic_model()
       private$ss  <- solve_first_order(private$ss,
                                        private$lead_lag_incidence,
                                        private$exos, private$endos,
@@ -523,7 +523,7 @@ DynMdl <- R6Class("DynMdl",
                                        private$endo_count,
                                        private$njac_cols,
                                        only_eigval = TRUE, debug = FALSE)
-      if (private$calc == "dll") private$clean_after_solve()
+      private$prepare_dynamic_model()
       
       cat("EIGENVALUES:\n")
       cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
@@ -534,22 +534,16 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     residual_check = function(tol = 0) {
-      if (is.null(private$model_period)) stop(private$period_error_msg)
-      if (private$calc == "dll") private$prepare_solve()
-      if (private$calc == "internal") {
-        prepare_internal_calc(private$model_index, private$exo_data, 
-                              nrow(private$exo_data), private$params)
-      }
-      if (private$aux_vars$aux_count > 0) {
-        private$prepare_aux_vars()
-      }
       
       nper <- nperiod(private$model_period)
       lags <- private$get_endo_lags()
       leads <- private$get_endo_leads()
       x <- private$get_solve_endo()
       
+      private$prepare_dynamic_model()
       residuals <- private$get_residuals(x, lags, leads, nper)
+      private$clean_dynamic_model()
+      
       dim(residuals) <- c(private$endo_count, nper)
       residuals <- t(residuals)
       colnames(residuals) <- paste0("eq_",  1 : (private$endo_count))
@@ -563,7 +557,8 @@ DynMdl <- R6Class("DynMdl",
       p_end <- end_period(private$model_period)
       
       if (tol != 0) {
-        col_sel <- apply(residuals, MARGIN = 2, FUN = function(x) max(abs(x)) > tol)
+        col_sel <- apply(residuals, MARGIN = 2, 
+                         FUN = function(x) max(abs(x)) > tol)
         residuals <- residuals[ , col_sel, drop = FALSE]
         if (ncol(residuals) > 0) {
           row_sel <-  which(apply(residuals, MARGIN = 1, 
@@ -594,15 +589,8 @@ DynMdl <- R6Class("DynMdl",
       }
       control_[names(control)] <- control
       
-      if (private$calc == "dll") private$prepare_solve()
-      if (private$calc == "internal") {
-        prepare_internal_calc(private$model_index, private$exo_data,
-                              nrow(private$exo_data), private$params)
-      }
-      if (private$aux_vars$aux_count > 0) {
-        private$prepare_aux_vars()
-      }
-      
+      private$prepare_dynamic_model()
+   
       if (private$max_endo_lead > 0 || force_stacked_time ) {
         # preparations
         if (solver != "umfpackr") {
@@ -636,7 +624,8 @@ DynMdl <- R6Class("DynMdl",
                                     solver = solver)
       }
       
-      if (private$calc == "dll") private$clean_after_solve()
+      private$clean_dynamic_model()
+      
       private$endo_data[private$model_period, ] <-
         t(matrix(ret$x, nrow = private$endo_count))
       
@@ -651,8 +640,6 @@ DynMdl <- R6Class("DynMdl",
 
       self$solve_steady(control = list(silent = TRUE))
       
-      if (private$calc == "dll") private$prepare_solve()
-      
       # solve_perturbation does not works for exogenous lags and leads.
       # For perturbation approaches, Dynare substitutes
       # these lags and leads by creating auxiliary variables and
@@ -662,9 +649,7 @@ DynMdl <- R6Class("DynMdl",
                    "with exogenous lags or leads"))
       }
       
-      if (private$aux_vars$aux_count > 0) {
-        private$prepare_aux_vars()
-      }
+      private$prepare_dynamic_model()
       
       private$ss <- solve_first_order(private$ss, private$lead_lag_incidence,
                                       private$exos, private$endos,
@@ -677,7 +662,7 @@ DynMdl <- R6Class("DynMdl",
                                                private$exo_data, private$endo_data,
                                                private$exos, private$endos)
       
-      if (private$calc == "dll") private$clean_after_solve()
+      private$clean_dynamic_model()
       return(invisible(self))
     },
     get_jacob = function(sparse = FALSE) {
@@ -686,13 +671,11 @@ DynMdl <- R6Class("DynMdl",
       leads <- private$get_endo_leads()
       nper <- nperiod(private$model_period)
       x <- private$get_solve_endo()
-      if (private$calc == "dll") private$prepare_solve()
-      if (private$calc == "internal") {
-        prepare_internal_calc(private$model_index,  private$exo_data, 
-                              nrow(private$exo_data), private$params)
-      }
+      
+      private$prepare_dynamic_model()
       jac <- private$get_jac(x, lags, leads, nper)
-      if (private$calc ==  "dll") private$clean_after_solve()
+      private$clean_dynamic_model()
+      
       if (!sparse) {
         jac <- as(jac, "matrix")
       }
@@ -703,8 +686,9 @@ DynMdl <- R6Class("DynMdl",
       return(jac)
     },
     get_static_jacob = function(sparse = FALSE) {
-      if (private$calc == "dll") private$prepare_solve_steady()
+      private$prepare_static_model()
       jac <- private$get_static_jac(private$endos)
+      private$clean_static_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
       }
@@ -728,11 +712,12 @@ DynMdl <- R6Class("DynMdl",
       }
     },
     time_functions = function() {
-      if (private$calc == "dll") private$prepare_solve()
+      private$prepare_dynamic_model()
       time_functions(private$model_period, private$endo_data,
                      private$exo_data, private$params,
                      private$lead_lag_incidence,
                      private$f_dynamic, private$jac_dynamic)
+      private$clean_dynamic_model()
       return(invisible(NULL))
     },
     write_mdl = function(file) {
@@ -1059,36 +1044,58 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values, 
                           dims = as.integer(rep(private$endo_count, 2))))
     },
-    prepare_solve = function() {
-      private$nrow_exo <- nrow(private$exo_data)
-      private$jac  <- list(rows   = integer(private$jac_dynamic_size),
-                           cols   = integer(private$jac_dynamic_size),
-                           values = numeric(private$jac_dynamic_size))
-      dyn.load(private$dll_file)
+    prepare_dynamic_model = function() {
       #
-      # NOTE: the basename of the dll_file is always "mdl_functions".
-      # Therefore we cannot solve two DynMdl objects simultaneously.
-      # This will always never occur, except when the model contains
-      # a function that calls another function.
+      # prepare dll calculations or the internal calculator
       #
+      if (private$calc == "dll") {
+        private$nrow_exo <- nrow(private$exo_data)
+        private$jac  <- list(rows   = integer(private$jac_dynamic_size),
+                             cols   = integer(private$jac_dynamic_size),
+                             values = numeric(private$jac_dynamic_size))
+        dyn.load(private$dll_file)
+        # NOTE: the basename of the dll_file is always "mdl_functions".
+        # Therefore we cannot solve two DynMdl objects simultaneously.
+        # This will always never occur, except when the model contains
+        # a function that calls another function.
+        #
+      } else if (private$calc == "internal") {
+        prepare_internal_calc(private$model_index, private$exo_data,
+                              nrow(private$exo_data), private$params)
+      }
+      
+      # prepare the auxiliary variables
+      if (private$aux_vars$aux_count > 0) {
+        private$prepare_aux_vars()
+      }
+      
       return(invisible(NULL))
     },
-    clean_after_solve = function() {
-      private$nrow_exo <- NA_integer_
-      private$jac <- NULL
-      dyn.unload(private$dll_file)
+    clean_dynamic_model = function() {
+      if (private$calc == "dll") {
+        private$nrow_exo <- NA_integer_
+        private$jac <- NULL
+        dyn.unload(private$dll_file)
+      }
       return(invisible(NULL))
     },
-    prepare_solve_steady = function() {
-      private$jac_steady <- list(rows   = integer(private$jac_static_size),
-                                 cols   = integer(private$jac_static_size),
-                                 values = numeric(private$jac_static_size))
-      dyn.load(private$dll_file)
+    prepare_static_model = function() {
+      if (private$calc == "dll") {
+        private$jac_steady <- list(rows   = integer(private$jac_static_size),
+                                   cols   = integer(private$jac_static_size),
+                                   values = numeric(private$jac_static_size))
+        dyn.load(private$dll_file)
+      } else if (private$calc == "internal") {
+        stop(paste("When the internal calculator is used it is not yet",
+                   "possible to calculate the steady state"))
+      }
       return(invisible(NULL))
     },
-    clean_after_solve_steady = function() {
-      private$jac_steady <- NULL
-      dyn.unload(private$dll_file)
+    clean_static_model = function() {
+      if (private$calc == "dll") {
+        private$jac_steady <- NULL
+        dyn.unload(private$dll_file)
+      }
       return(invisible(NULL))
     },
     prepare_aux_vars = function() {
