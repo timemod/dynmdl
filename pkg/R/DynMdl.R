@@ -764,6 +764,20 @@ DynMdl <- R6Class("DynMdl",
                              endo_data = private$endo_data,
                              exo_data = private$exo_data)
       return(structure(serialized_mdl, class = "serialized_dynmdl"))
+    },
+    deserialize_model_period_and_data = function(ser) {
+      private$exos <- ser$exos
+      private$endos <- ser$endos
+      private$model_period <- ser$period
+      
+      private$endo_data <- ser$endo_data
+      private$exo_data <- ser$exo_data
+      private$labels <- ser$labels
+      
+      # derived object members
+      private$data_period <- get_period_range(ser$endo_data)
+      private$period_shift <- start_period(private$model_period) - 
+        start_period(private$data_period)
     }
   ),
   private = list(

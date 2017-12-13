@@ -59,19 +59,21 @@ read_mdl <- function(file, dll_dir) {
     mdl <- DynMdl$new(ser$model_info, ser$params, ser$equations, ser$bytecode, 
                       ser$use_dll, dll_dir, dll_file)
   }
-  mdl$set_static_endos(ser$endos)
-  mdl$set_static_exos(ser$exos)
-  if (!is.null(ser$endo_data)) {
-    mdl$init_data(data_period = get_period_range(ser$endo_data))
-    mdl$set_period(ser$period)
-    mdl$set_data(ser$endo_data)
-    if (!is.null(ser$exo_data)) {
-      mdl$set_data(ser$exo_data)
-    }
-  }
-  if (!is.null(ser$labels)) {
-    mdl$set_labels(ser$labels)
-  }
+  
+  mdl$deserialize_model_period_and_data(ser)
+
+  # mdl$set_static_exos(ser$exos)
+  # if (!is.null(ser$endo_data)) {
+  #   mdl$init_data(data_period = get_period_range(ser$endo_data))
+  #   mdl$set_period(ser$period)
+  #   mdl$set_data(ser$endo_data)
+  #   if (!is.null(ser$exo_data)) {
+  #     mdl$set_data(ser$exo_data)
+  #   }
+  # }
+  # if (!is.null(ser$labels)) {
+  #   mdl$set_labels(ser$labels)
+  # }
   cat("Done\n")
   return(mdl)
 }
