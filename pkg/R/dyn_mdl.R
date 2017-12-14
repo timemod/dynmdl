@@ -82,10 +82,8 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     
     fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                  instruments, debug)
-    model_info <- compile_model_(fit_mod_file, use_dll, dll_dir, max_laglead_1)
+    mdldef <- compile_model(fit_mod_file, use_dll, dll_dir, max_laglead_1)
     
-    params <- model_info$params
-    model_info$params <- NULL
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
     } 
@@ -96,23 +94,21 @@ dyn_mdl <- function(mod_file, period, data, bytecode = FALSE, use_dll = FALSE,
     }
     fit_mod_text <- read_file(fit_mod_file)
     equations <- get_equations(fit_mod_text)
-    mdl <- FitMdl$new(model_info, fit_info, params, equations, 
+    mdl <- FitMdl$new(mdldef, fit_info, equations, 
                       bytecode, use_dll, dll_dir, dll_file, debug)
   } else {
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    model_info <- compile_model_(mod_file, use_dll, dll_dir, max_laglead_1)
-    params <- model_info$params
-    model_info$params <- NULL
+    mdldef <- compile_model(mod_file, use_dll, dll_dir, max_laglead_1)
+
     if (use_dll) {
       dll_file <- compile_c_functions(dll_dir)
     } else {
       dll_file <- NA_character_
     }
     equations <- get_equations(mod_text)
-    mdl <- DynMdl$new(model_info, params, equations, 
-                      bytecode, use_dll, dll_dir, dll_file)
+    mdl <- DynMdl$new(mdldef, equations, bytecode, use_dll, dll_dir, dll_file)
   }
   
   if (!debug) {
@@ -199,6 +195,75 @@ get_equations <- function(mod_text) {
   equations <- unlist(lapply(equations, FUN = trimws))
   
   return(equations)
+}
+
+# extract a mdldef object from the model_info data returned by compile_model_
+compile_model <- function(...) {
+  
+  model_info <- compile_model_(...)
+  
+  retval <- list()
+  with(model_info, {
+    retval$endos              <<- endos
+    retval$exos               <<- exos
+    retval$params             <<- params
+    retval$aux_vars           <<- aux_vars
+    retval$max_endo_lag       <<- dynamic_model$max_endo_lag
+    retval$max_endo_lead      <<- dynamic_model$max_endo_lead
+    retval$max_exo_lag        <<- dynamic_model$max_exo_lag
+    retval$max_exo_lead       <<- dynamic_model$max_exo_lead
+    retval$lead_lag_incidence <<- dynamic_model$lead_lag_incidence
+    retval$jac_static_size    <<- static_model$jac_size
+    retval$jac_dynamic_size   <<- dynamic_model$jac_size
+    retval$static_functions   <<- static_model$static_functions
+    retval$dynamic_functions  <<- dynamic_model$dynamic_functions
+  })
+  
+  # endo and exo_count
+  retval$exo_count  <- length(retval$exos)
+  retval$endo_count <- length(retval$endos)
+  
+  #
+  # row and column names for the lead_lag_incidence
+  #
+  colnames(retval$lead_lag_incidence) <- as.character(
+    - retval$max_endo_lag : retval$max_endo_lead)
+  rownames(retval$lead_lag_incidence) <- names(retval$endos)
+  
+  #
+  # labels and tex names
+  #
+  names <- c(names(retval$endos), names(retval$exos), names(retval$params))
+  labels <- c(model_info$endo_long_names, model_info$exo_long_names, 
+              model_info$param_long_names)
+  tex_names <- c(model_info$endo_tex_names, model_info$exo_tex_names, 
+                 model_info$param_tex_names)
+  names(labels) <- names
+  names(tex_names) <- names
+  ord <- order(names)
+  retval$labels <- labels[ord]
+  retval$tex_names <- tex_names[ord]
+  
+  #
+  # maximum lag and lead, taking auxiliary variables into account
+  #
+  retval$max_lag    <- max(retval$max_endo_lag,  retval$max_exo_lag)
+  retval$max_lead   <- max(retval$max_endo_lead, retval$max_exo_lead)
+  if (retval$aux_vars$aux_count > 0) {
+    max_aux_lag <-  max(max(-retval$aux_vars$orig_leads), 0)
+    max_aux_lead <- max(max(retval$aux_vars$orig_leads), 0)
+    if (max_aux_lag > 0) {
+      retval$max_lag <- max(retval$max_lag, max_aux_lag + 1)
+    }
+    if (max_aux_lead > 0) {
+      retval$max_lead <- max(retval$max_lead, max_aux_lead + 1)
+    }
+  }
+  
+  retval$njac_cols <- length(which(retval$lead_lag_incidence != 0)) +
+                             retval$exo_count
+  
+  return(retval)
 }
 
 
