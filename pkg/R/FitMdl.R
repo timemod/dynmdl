@@ -66,6 +66,10 @@ FitMdl <- R6Class("FitMdl",
   public = list(
     initialize = function(model_info, fit_info, params, equations,
                           bytecode, use_dll, dll_dir, dll_file, debug = FALSE) {
+      
+      # no arguments supplied
+      if (nargs() == 0) return()
+      
       super$initialize(model_info, params, equations, bytecode, use_dll, 
                        dll_dir,  dll_file)
       private$fit_info <- fit_info
@@ -219,6 +223,11 @@ FitMdl <- R6Class("FitMdl",
       ser <- as.list(super$serialize())
       ret <- c(ser, list(fit_info = private$fit_info))
       return(structure(ret, class = "serialized_fitmdl"))
+    },
+    deserialize = function(ser, dll_dir) {
+      private$fit_info <- ser$fit_info
+      ser$fit_info <- NULL
+      return(super$deserialize(ser, dll_dir))
     },
     solve = function(...) {
       

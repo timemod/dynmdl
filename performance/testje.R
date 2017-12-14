@@ -20,3 +20,5 @@ print(t)
 #print(mdl2$get_endo_data())
 
 unlink("tmp.rds")
+
+#print(mdl2, short = FALSE)

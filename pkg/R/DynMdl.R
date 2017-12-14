@@ -125,17 +125,12 @@ DynMdl <- R6Class("DynMdl",
   public = list(
     initialize = function(model_info, params, equations, 
                           bytecode, use_dll, dll_dir, dll_file) {
+
+      # no arguments supplied
+      if (nargs() == 0) return()
       
       private$model_info <- model_info
       private$equations <- equations
-      
-      if (use_dll) {
-        reg.finalizer(self,
-                      function(e) {
-                        #unlink(private$dll_dir, recursive = TRUE)
-                      },
-                      onexit = TRUE)
-      } 
       
       private$bytecode <- bytecode
       private$use_dll <- use_dll
@@ -198,49 +193,13 @@ DynMdl <- R6Class("DynMdl",
       
       private$njac_cols <- length(which(private$lead_lag_incidence != 0)) +
                            private$exo_count
+      
+      # now create the functions for evaluating the model
       if (use_dll) {
-        private$f_static <- function(y, x, params) {
-          res <- numeric(private$endo_count)
-          .Call("f_static_", y, x, params, res, PACKAGE = "mdl_functions")
-          return(res)
-        }
-        private$jac_static <- function(y, x, params) {
-          # NOTE: creating a new jac_steady every function call is
-          # inefficient, therefore use private$jac_steady that is
-          # created just before solve_steady is called.
-          .Call("jac_static_", y, x, params, private$jac_steady$rows,
-                private$jac_steady$cols, private$jac_steady$values,
-                PACKAGE = "mdl_functions")
-          return(private$jac_steady)
-        }
-        private$f_dynamic <- function(y, x, params, it) {
-          res <- numeric(private$endo_count)
-          .Call("f_dynamic_", y, x, params, it - 1, private$nrow_exo,
-                res, PACKAGE = "mdl_functions")
-          return(res)
-        }
-        private$jac_dynamic <- function(y, x, params, it) {
-          # NOTE: creating a new jac every function call is
-          # inefficient, therefore use private$jac that is
-          # created just before solve is called.
-          .Call("jac_dynamic_", y, x, params, it - 1, private$nrow_exo,
-                private$jac$rows, private$jac$cols, private$jac$values,
-                PACKAGE = "mdl_functions")
-          return(private$jac)
-        }
+        private$make_functions_dll()
       } else {
-        # no dll, functions implemented in R
-        eval(parse(text = model_info$static_model$static_functions))
-        eval(parse(text = model_info$dynamic_model$dynamic_functions))
-        private$f_static    <- f_static
-        private$jac_static  <- jac_static
-        private$f_dynamic   <- f_dynamic
-        private$jac_dynamic <- jac_dynamic
-        
-        if (bytecode) {
-          private$f_static <- compiler::cmpfun(private$f_static)
-          private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
-        }
+        private$make_functions(model_info$static_model$static_functions,
+                               model_info$dynamic_model$dynamic_functions)
       }
     },
     print = function(short = TRUE) {
@@ -544,6 +503,8 @@ DynMdl <- R6Class("DynMdl",
       x <- private$get_solve_endo()
       
       residuals <- private$get_residuals(x, lags, leads, nper)
+      
+      if (private$use_dll) private$clean_after_solve()
       dim(residuals) <- c(private$endo_count, nper)
       residuals <- t(residuals)
       colnames(residuals) <- paste0("eq_",  1 : (private$endo_count))
@@ -732,6 +693,7 @@ DynMdl <- R6Class("DynMdl",
       return(self$clone(deep = TRUE))
     },
     serialize = function() {
+      
       if (private$use_dll) {
         zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
         zip(zipfile = zip_file, files = private$dll_dir, extra = "-q")
@@ -751,6 +713,12 @@ DynMdl <- R6Class("DynMdl",
       }
       serialized_mdl <- list(version = packageVersion("dynmdl"),
                              model_info = private$model_info, 
+                             max_lag = private$max_lag,
+                             max_lead = private$max_lead,
+                             max_endo_lag = private$max_endo_lag,
+                             max_endo_lead = private$max_endo_lead,
+                             max_exo_lag = private$max_exo_lag,
+                             max_exo_lead = private$max_exo_lead,
                              equations = private$equations,
                              bytecode = private$bytecode,
                              use_dll = private$use_dll, dll_data = dll_data,
@@ -760,26 +728,77 @@ DynMdl <- R6Class("DynMdl",
                              endos = private$endos,
                              exos = private$exos,
                              labels = private$labels,
-                             period = private$model_period,
+                             lead_lag_incidence = private$lead_lag_incidence,
+                             aux_vars = private$aux_vars,
+                             model_period = private$model_period,
                              endo_data = private$endo_data,
-                             exo_data = private$exo_data)
+                             exo_data = private$exo_data,
+                             static_functions = private$model_info$static_model$static_functions,
+                             dynamic_functions = private$model_info$dynamic_model$dynamic_functions,
+                             jac_static_size = private$jac_static_size,
+                             jac_dynamic_size = private$jac_dynamic_size)
+                             
       return(structure(serialized_mdl, class = "serialized_dynmdl"))
     },
-    deserialize_model_period_and_data = function(ser) {
-      private$exos <- ser$exos
-      private$endos <- ser$endos
-      private$model_period <- ser$period
+    deserialize = function(ser, dll_dir) {
       
-      private$endo_data <- ser$endo_data
-      private$exo_data <- ser$exo_data
-      private$labels <- ser$labels
+      # TODO: check package version ser$version 
       
-      # derived object members
-      private$data_period <- get_period_range(ser$endo_data)
-      private$period_shift <- start_period(private$model_period) - 
-        start_period(private$data_period)
-    }
-  ),
+      if (ser$use_dll) {
+        
+        # check operating system. If the model is generated on a different
+        # platform, then we should recompile the model!
+        if (ser$os_type != .Platform$OS.type) {
+          # TODO: simply recompile the model
+          stop("The model functions have been compiled on a different platform")
+        }
+        
+        if (missing(dll_dir)) {
+          private$dll_dir <- tempfile(pattern = "dynmdl_dll_")
+        } else {
+          private$dll_dir <- dll_dir
+          if (dir.exists(dll_dir)) unlink(dll_dir, recursive = TRUE)
+        }
+        dir.create(private$dll_dir)
+        private$dll_file <- file.path(private$dll_dir, ser$dll_basename)
+        zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
+        writeBin(ser$dll_data, con = zip_file)
+        unzip(zipfile = zip_file, exdir = private$dll_dir, junkpaths = TRUE)
+        unlink(zip_file)
+        
+        private$make_functions_dll()
+        
+      } else {
+        private$make_functions(ser$static_functions, ser$dynamic_functions)
+      }
+    
+      # we don't need these elements anymore
+      ser$dll_data <- NULL
+      ser$version <- NULL
+      ser$dll_basename <- NULL
+      ser$os_type <- NULL
+      ser$static_functions <- NULL
+      ser$dynamic_functions <- NULL
+      # copy elements to the local environment
+      list2env(ser, private)
+      
+      # compute derived object members
+      private$param_names <- names(private$params)
+      private$endo_names <- names(private$endos)
+      private$exo_names  <- names(private$exos)
+      private$endo_count <- length(private$endo_names)
+      private$exo_count <- length(private$exo_names)
+      if (!is.null(ser$endo_data)) {
+        private$data_period <- get_period_range(ser$endo_data)
+        private$period_shift <- start_period(private$model_period) - 
+                                start_period(private$data_period)
+      }
+      
+      private$njac_cols <- length(which(private$lead_lag_incidence != 0)) +
+                                  private$exo_count
+      
+      return(invisible(self))
+  }),
   private = list(
     model_info = NULL,
     equations = NULL,
@@ -1130,7 +1149,56 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(NULL))
     },
-
+    make_functions = function(static_functions, dynamic_functions) {
+      
+      # no dll, functions implemented in R
+      eval(parse(text = static_functions))
+      eval(parse(text = dynamic_functions))
+      private$f_static    <- f_static
+      private$jac_static  <- jac_static
+      private$f_dynamic   <- f_dynamic
+      private$jac_dynamic <- jac_dynamic
+    
+      if (private$bytecode) {
+        private$f_static <- compiler::cmpfun(private$f_static)
+        private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
+      }
+    },
+    make_functions_dll = function() {
+      
+      private$f_static <- function(y, x, params) {
+        res <- numeric(private$endo_count)
+        .Call("f_static_", y, x, params, res, PACKAGE = "mdl_functions")
+        return(res)
+      }
+      
+      private$jac_static <- function(y, x, params) {
+        # NOTE: creating a new jac_steady every function call is
+        # inefficient, therefore use private$jac_steady that is
+        # created just before solve_steady is called.
+        .Call("jac_static_", y, x, params, private$jac_steady$rows,
+              private$jac_steady$cols, private$jac_steady$values,
+              PACKAGE = "mdl_functions")
+        return(private$jac_steady)
+      }
+      
+      private$f_dynamic <- function(y, x, params, it) {
+        res <- numeric(private$endo_count)
+        .Call("f_dynamic_", y, x, params, it - 1, private$nrow_exo,
+              res, PACKAGE = "mdl_functions")
+        return(res)
+      }
+      
+      private$jac_dynamic <- function(y, x, params, it) {
+        # NOTE: creating a new jac every function call is
+        # inefficient, therefore use private$jac that is
+        # created just before solve is called.
+        .Call("jac_dynamic_", y, x, params, it - 1, private$nrow_exo,
+              private$jac$rows, private$jac$cols, private$jac$values,
+              PACKAGE = "mdl_functions")
+        return(private$jac)
+      }
+    },
     print_info = function(short) {
       cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
                   private$endo_count))
