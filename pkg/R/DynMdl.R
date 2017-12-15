@@ -686,8 +686,6 @@ DynMdl <- R6Class("DynMdl",
       ser$os_type <- NULL
       ser$mdldef <- NULL
 
-      printobj(ser)
-      
       # copy remaining elements to the private environment
       list2env(ser, private)
       
