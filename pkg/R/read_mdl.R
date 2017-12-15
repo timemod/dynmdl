@@ -18,68 +18,22 @@
 read_mdl <- function(file, dll_dir) {
   
   cat(paste("Reading model from", file, "\n"))
-  ser <- readRDS(file)
   
+  ser <- readRDS(file)
+
   if (!(inherits(ser, "serialized_fitmdl") || 
         inherits(ser, "serialized_dynmdl"))) {
     stop(paste("File", file, "does not contain a serialized dynmdl or fitmdl"))
   }
   
-  # TODO: check package version 
-  if (ser$calc == "dll") {
-    
-    # check operating system. If the model is generated on a different
-    # platform, then we should recompile the model!
-    if (ser$os_type != .Platform$OS.type) {
-      # TODO: simply recompile the model
-      stop("The model functions have been compiled on a different platform")
-    }
-    
-    if (missing(dll_dir)) {
-      dll_dir <- tempfile(pattern = "dynmdl_dll_")
-    } else if (dir.exists(dll_dir)) {
-      unlink(dll_dir, recursive = TRUE)
-    }
-    dir.create(dll_dir)
-    dll_file <- file.path(dll_dir, ser$dll_basename)
-    zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
-    writeBin(ser$bin_data, con = zip_file)
-    unzip(zipfile = zip_file, exdir = dll_dir, junkpaths = TRUE)
-    unlink(zip_file)
-  } else {
-    dll_dir <- NA_character_
-    dll_file <- NA_character_
-  }
-
-  
-  if (ser$calc == "internal") {
-    ser$model_info$model_index <- deserialize_polish_model(ser$bin_data)
-  }
-
-  
   if (inherits(ser, "serialized_fitmdl")) {
-    mdl <- FitMdl$new(ser$model_info, ser$fit_info, ser$params, 
-                      ser$equations, ser$calc, dll_dir, dll_file)
+    mdl <- FitMdl$new()
   } else {
-    mdl <- DynMdl$new(ser$model_info, ser$params, ser$equations, ser$calc, 
-                      dll_dir, dll_file)
+    mdl <- DynMdl$new()
   }
-  mdl$set_static_endos(ser$endos)
-  mdl$set_static_exos(ser$exos)
-  if (!is.null(ser$endo_data)) {
-    # TODO: the following steps takes relatively a lot of time.
-    # we can do this more efficiently, by directly updating the endogenous
-    # and exogenous data.
-    mdl$init_data(data_period = get_period_range(ser$endo_data))
-    mdl$set_period(ser$period)
-    mdl$set_data(ser$endo_data)
-    if (!is.null(ser$exo_data)) {
-      mdl$set_data(ser$exo_data)
-    }
-  }
-  if (!is.null(ser$labels)) {
-    mdl$set_labels(ser$labels)
-  }
+
+  mdl$deserialize(ser, dll_dir)
+
   cat("Done\n")
   return(mdl)
 }

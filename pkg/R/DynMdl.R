@@ -123,128 +123,20 @@ setOldClass("regts")
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(
-    initialize = function(model_info, params, equations, calc, dll_dir, 
-                          dll_file) {
+    initialize = function(mdldef, equations, calc, dll_dir, dll_file) {
+
+      # no arguments supplied
+      if (nargs() == 0) return()
       
-      private$model_info <- model_info
+      private$set_mdldef(mdldef)
       
       private$equations <- equations
+      private$calc <- calc
+      private$dll_dir <- dll_dir
+      private$dll_file <- dll_file
 
-      if (calc == "dll") {
-        reg.finalizer(self,
-                      function(e) {
-                        #unlink(private$dll_dir, recursive = TRUE)
-                      },
-                      onexit = TRUE)
-      } 
-      
-      if (calc == "dll") {
-        private$dll_dir <- dll_dir
-        private$dll_file <- dll_file
-      }
-
-      with(model_info, {
-        private$calc               <- calc
-        private$model_index        <- model_index
-        private$endo_names         <- names(endos)
-        private$exo_names          <- names(exos)
-        private$aux_vars           <- aux_vars
-        private$param_names        <- names(params)
-        private$endos              <- endos
-        private$exos               <- exos
-        private$params             <- params
-        private$max_endo_lag       <- dynamic_model$max_endo_lag
-        private$max_endo_lead      <- dynamic_model$max_endo_lead
-        private$max_exo_lag        <- dynamic_model$max_exo_lag
-        private$max_exo_lead       <- dynamic_model$max_exo_lead
-        private$lead_lag_incidence <- dynamic_model$lead_lag_incidence
-        private$jac_static_size    <- static_model$jac_size
-        private$jac_dynamic_size   <- dynamic_model$jac_size
-      })
-      
-      # labels and tex_names
-      names <- c(private$endo_names, private$exo_names, private$param_names)
-      labels <- c(model_info$endo_long_names, model_info$exo_long_names, 
-                  model_info$param_long_names)
-      tex_names <- c(model_info$endo_tex_names, model_info$exo_tex_names, 
-                     model_info$param_tex_names)
-      names(labels) <- names
-      names(tex_names) <- names
-      ord <- order(names)
-      private$labels <- labels[ord]
-      private$tex_names <- tex_names[ord]
-    
-      private$exo_count  <- length(private$exos)
-      private$endo_count <- length(private$endo_names)
-      
-      # Determine the maximum lag and lead for the model data administration.
-      # note that if there are auxiliary variables (when max_laglead_1 is TRUE),
-      # then the maximum lag en lead is not the same as max_endo_lead and 
-      # max_exo_lead
-      private$max_lag    <- max(private$max_endo_lag,  private$max_exo_lag)
-      private$max_lead   <- max(private$max_endo_lead, private$max_exo_lead)
-      if (private$aux_vars$aux_count > 0) {
-        max_aux_lag <-  max(max(-private$aux_vars$orig_leads), 0)
-        max_aux_lead <- max(max(private$aux_vars$orig_leads), 0)
-        if (max_aux_lag > 0) {
-          private$max_lag <- max(private$max_lag, max_aux_lag + 1)
-        }
-        if (max_aux_lead > 0) {
-          private$max_lead <- max(private$max_lead, max_aux_lead + 1)
-        }
-      }
-      
-      # add column names and row names to the lead lag incidence matrix
-      colnames(private$lead_lag_incidence) <- as.character(
-        -private$max_endo_lag : private$max_endo_lead)
-      rownames(private$lead_lag_incidence) <- names(model_info$endos)
-      
-      private$njac_cols <- length(which(private$lead_lag_incidence != 0)) +
-                           private$exo_count
-      if (calc == "dll") {
-        private$f_static <- function(y, x, params) {
-          res <- numeric(private$endo_count)
-          .Call("f_static_", y, x, params, res, PACKAGE = "mdl_functions")
-          return(res)
-        }
-        private$jac_static <- function(y, x, params) {
-          # NOTE: creating a new jac_steady every function call is
-          # inefficient, therefore use private$jac_steady that is
-          # created just before solve_steady is called.
-          .Call("jac_static_", y, x, params, private$jac_steady$rows,
-                private$jac_steady$cols, private$jac_steady$values,
-                PACKAGE = "mdl_functions")
-          return(private$jac_steady)
-        }
-        private$f_dynamic <- function(y, x, params, it) {
-          res <- numeric(private$endo_count)
-          .Call("f_dynamic_", y, x, params, it - 1, private$nrow_exo,
-                res, PACKAGE = "mdl_functions")
-          return(res)
-        }
-        private$jac_dynamic <- function(y, x, params, it) {
-          # NOTE: creating a new jac every function call is
-          # inefficient, therefore use private$jac that is
-          # created just before solve is called.
-          .Call("jac_dynamic_", y, x, params, it - 1, private$nrow_exo,
-                private$jac$rows, private$jac$cols, private$jac$values,
-                PACKAGE = "mdl_functions")
-          return(private$jac)
-        }
-      } else if (calc == "R" || calc == "bytecode") {
-        # no dll, functions implemented in R
-        eval(parse(text = model_info$static_model$static_functions))
-        eval(parse(text = model_info$dynamic_model$dynamic_functions))
-        private$f_static    <- f_static
-        private$jac_static  <- jac_static
-        private$f_dynamic   <- f_dynamic
-        private$jac_dynamic <- jac_dynamic
-        
-        if (calc == "bytecode") {
-          private$f_static <- compiler::cmpfun(private$f_static)
-          private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
-        }
-      }
+      # now create the functions for evaluating the model
+      private$make_functions()
     },
     print = function(short = TRUE) {
       cat("DynMdl object\n")
@@ -252,14 +144,14 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(NULL))
     },
     get_max_lag = function() {
-      return(private$max_lag)
+      return(private$mdldef$max_lag)
     },
     get_max_lead = function() {
-      return(private$max_lead)
+      return(private$mdldef$max_lead)
     },
     get_endo_names = function() {
-      if (private$aux_vars$aux_count > 0) {
-        return(private$endo_names[-private$aux_vars$endos])
+      if (private$mdldef$aux_vars$aux_count > 0) {
+        return(private$endo_names[-private$mdldef$aux_vars$endos])
       } else {
         return(private$endo_names)
       }
@@ -271,10 +163,10 @@ DynMdl <- R6Class("DynMdl",
       private$update_labels(labels)
     },
     get_labels = function() {
-      return(private$labels)
+      return(private$mdldef$labels)
     },
     get_tex_names = function() {
-      return(private$tex_names)
+      return(private$mdldef$tex_names)
     },
     get_par_names = function(pattern = ".*") {
       names <- private$param_names
@@ -285,8 +177,8 @@ DynMdl <- R6Class("DynMdl",
       return(sort(names))
     },
     set_param = function(params) {
-      private$params[names(params)] <- params
-      return (invisible(self))
+      private$mdldef$params[names(params)] <- params
+      return(invisible(self))
     },
     get_param = function(pattern, names) {
       if (missing(pattern) && missing(names)) {
@@ -296,26 +188,26 @@ DynMdl <- R6Class("DynMdl",
       } else if (!missing(pattern)) {
         names <- union(names, self$get_par_names(pattern))
       }
-      return(private$params[names])
+      return(private$mdldef$params[names])
     },
     set_static_exos = function(exos) {
       exo_names <- intersect(private$exo_names, names(exos))
-      private$exos[exo_names] <- exos[exo_names]
+      private$mdldef$exos[exo_names] <- exos[exo_names]
       return(invisible(self))
     },
     get_static_exos = function() {
-      return(private$exos)
+      return(private$mdldef$exos)
     },
     set_static_endos = function(endos) {
       endo_names <- intersect(private$endo_names, names(endos))
-      private$endos[endo_names] <- endos[endo_names]
+      private$mdldef$endos[endo_names] <- endos[endo_names]
       return(invisible(self))
     },
     get_static_endos = function() {
-      if (private$aux_vars$aux_count > 0) {
-        return(private$endos[-private$aux_vars$endos])
+      if (private$mdldef$aux_vars$aux_count > 0) {
+        return(private$mdldef$endos[-private$mdldef$aux_vars$endos])
       } else {
-        return(private$endos)
+        return(private$mdldef$endos)
       }
     },
     init_data = function(data_period, data)  {
@@ -335,12 +227,12 @@ DynMdl <- R6Class("DynMdl",
       
       private$data_period <- data_period
       nper <- nperiod(data_period)
-      endo_mat <- matrix(rep(private$endos, each = nper), nrow = nper)
+      endo_mat <- matrix(rep(private$mdldef$endos, each = nper), nrow = nper)
       private$endo_data <- regts(endo_mat, start = start_period(data_period),
-                                 names = names(private$endos))
+                                 names = names(private$mdldef$endos))
       
-      if (private$exo_count > 0) {
-        exo_mat <- matrix(rep(private$exos, each = nper), nrow = nper)
+      if (private$mdldef$exo_count > 0) {
+        exo_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
         colnames(exo_mat) <- private$exo_names
       } else {
         exo_mat <- matrix(NA_real_, nrow = nper, ncol = 0)
@@ -348,15 +240,15 @@ DynMdl <- R6Class("DynMdl",
       private$exo_data <- regts(exo_mat, start = start_period(data_period))
       
       # update the model period
-      startp <- start_period(data_period) + private$max_lag
-      endp <- end_period(data_period) - private$max_lead
+      startp <- start_period(data_period) + private$mdldef$max_lag
+      endp <- end_period(data_period) - private$mdldef$max_lead
       if (endp >= startp) {
         private$model_period <- period_range(startp, endp)
         private$period_shift <- start_period(private$model_period) - 
                                 start_period(private$data_period)
       } else {
         stop(paste("The data period is too short. It should contain at least",
-                   private$max_lag + private$max_lead + 1, "periods"))
+                   private$mdldef$max_lag + private$mdldef$max_lead + 1, "periods"))
       }
       
       if (!missing(data)) {
@@ -370,8 +262,8 @@ DynMdl <- R6Class("DynMdl",
       }
       if (is.null(private$data_period)) {
         data_period <- period_range(
-          start_period(period) - private$max_lag,
-          end_period(period)   + private$max_lead)
+          start_period(period) - private$mdldef$max_lag,
+          end_period(period)   + private$mdldef$max_lead)
         self$init_data(data_period)
       } else  {
         private$check_model_period(period) 
@@ -388,17 +280,17 @@ DynMdl <- R6Class("DynMdl",
       return (private$data_period)
     },
     get_lag_period = function() {
-      if (private$max_lag > 0) {
-        p <- start_period(private$model_period) - private$max_lag
-        return(period_range(p, p + private$max_lag - 1))
+      if (private$mdldef$max_lag > 0) {
+        p <- start_period(private$model_period) - private$mdldef$max_lag
+        return(period_range(p, p + private$mdldef$max_lag - 1))
       } else {
         return(NULL)
       }
     },
     get_lead_period = function() {
-      if (private$max_lead > 0) {
+      if (private$mdldef$max_lead > 0) {
         p <- end_period(private$model_period) + 1
-        return(period_range(p, p + private$max_lead - 1))
+        return(period_range(p, p + private$mdldef$max_lead - 1))
       } else {
         return(NULL)
       }
@@ -406,7 +298,7 @@ DynMdl <- R6Class("DynMdl",
     get_exo_data = function(pattern = NULL, names = NULL, 
                             period = private$data_period) {
       period <- private$convert_period_arg(period)
-      if (private$exo_count == 0) {
+      if (private$mdldef$exo_count == 0) {
         return(private$exo_data[period, ])
       }
       if (missing(pattern) && missing(names)) {
@@ -418,17 +310,17 @@ DynMdl <- R6Class("DynMdl",
         }
         ret <- private$exo_data[period, names, drop = FALSE]
       }
-      return(update_ts_labels(ret, private$labels))
+      return(update_ts_labels(ret, private$mdldef$labels))
     },
     set_endo_values = function(value, names = NULL, pattern = NULL,
                                period = private$data_period) {
       private$set_values_(value, names, pattern, period, type = "endo")
-      return (invisible(self))
+      return(invisible(self))
     },
     set_exo_values = function(value, names = NULL, pattern = NULL,
                               period = private$data_period) {
       private$set_values_(value, names, pattern, period, type = "exo")
-      return (invisible(self))
+      return(invisible(self))
     },
     set_data = function(data, names = colnames(data), 
                         upd_mode = c("upd", "updval"), fun) {
@@ -443,7 +335,7 @@ DynMdl <- R6Class("DynMdl",
                              period = private$data_period) {
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
-          !private$aux_vars$aux_count > 0) {
+          !private$mdldef$aux_vars$aux_count > 0) {
         ret <- private$endo_data[period, ]
       } else {
         names <- private$get_names_("endo", names, pattern)
@@ -452,7 +344,7 @@ DynMdl <- R6Class("DynMdl",
         }
         ret <- private$endo_data[period, names, drop = FALSE]
       }
-      return(update_ts_labels(ret, private$labels))
+      return(update_ts_labels(ret, private$mdldef$labels))
     },
     change_endo_data = function(fun, names= NULL, pattern = NULL, 
                                 period = private$data_period , ...) {
@@ -466,15 +358,15 @@ DynMdl <- R6Class("DynMdl",
 
       solver <- match.arg(solver)
       
-      start <- private$endos
-      if (private$aux_vars$aux_count > 0) {
+      start <- private$mdldef$endos
+      if (private$mdldef$aux_vars$aux_count > 0) {
         # make sure that they are ok
-        aux_endos <- private$endos[private$aux_vars$orig_endos]
-        start[private$aux_vars$endos]  <- aux_endos
+        aux_endos <- private$mdldef$endos[private$mdldef$aux_vars$orig_endos]
+        start[private$mdldef$aux_vars$endos]  <- aux_endos
       }
       
       f <- function(endos) {
-        return(private$f_static(endos, private$exos, private$params))
+        return(private$f_static(endos, private$mdldef$exos, private$mdldef$params))
       }
       
       private$prepare_static_model()
@@ -493,8 +385,7 @@ DynMdl <- R6Class("DynMdl",
         error <- out$termcd != 1
       }
       private$clean_static_model()
-      
-      private$endos <- out$x
+      private$mdldef$endos <- out$x
 
       if (error) {
         stop(paste0("Error solving the steady state.\n", out$message))
@@ -507,7 +398,7 @@ DynMdl <- R6Class("DynMdl",
       period <- private$convert_period_arg(period)
       nper <- nperiod(period)
       private$endo_data[period, ] <- 
-              matrix(rep(private$endos, each = nper), nrow = nper)
+              matrix(rep(private$mdldef$endos, each = nper), nrow = nper)
       return(invisible(self))
     },
     check = function() {
@@ -516,12 +407,12 @@ DynMdl <- R6Class("DynMdl",
       
       private$prepare_dynamic_model()
       private$ss  <- solve_first_order(private$ss,
-                                       private$lead_lag_incidence,
-                                       private$exos, private$endos,
-                                       private$params,
+                                       private$mdldef$lead_lag_incidence,
+                                       private$mdldef$exos, private$mdldef$endos,
+                                       private$mdldef$params,
                                        private$jac_dynamic,
-                                       private$endo_count,
-                                       private$njac_cols,
+                                       private$mdldef$endo_count,
+                                       private$mdldef$njac_cols,
                                        only_eigval = TRUE, debug = FALSE)
       private$prepare_dynamic_model()
       
@@ -534,6 +425,8 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     residual_check = function(tol = 0) {
+      if (is.null(private$model_period)) stop(private$period_error_msg)
+      private$prepare_dynamic_model()
       
       nper <- nperiod(private$model_period)
       lags <- private$get_endo_lags()
@@ -544,13 +437,13 @@ DynMdl <- R6Class("DynMdl",
       residuals <- private$get_residuals(x, lags, leads, nper)
       private$clean_dynamic_model()
       
-      dim(residuals) <- c(private$endo_count, nper)
+      dim(residuals) <- c(private$mdldef$endo_count, nper)
       residuals <- t(residuals)
-      colnames(residuals) <- paste0("eq_",  1 : (private$endo_count))
+      colnames(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
       
-      if (private$aux_vars$aux_count > 0) {
+      if (private$mdldef$aux_vars$aux_count > 0) {
         # remove the residuals for the auxiliary equations
-        residuals <- residuals[, -private$aux_vars$endos]
+        residuals <- residuals[, -private$mdldef$aux_vars$endos]
       }
 
       p_start <- start_period(private$model_period)
@@ -573,7 +466,7 @@ DynMdl <- R6Class("DynMdl",
         }
       }
       return(regts(residuals, start = p_start, end = p_end))
-     },
+    },
     solve = function(control = list(), force_stacked_time = FALSE,
                      solver = c("umfpackr", "nleqslv")) {
       
@@ -591,7 +484,7 @@ DynMdl <- R6Class("DynMdl",
       
       private$prepare_dynamic_model()
    
-      if (private$max_endo_lead > 0 || force_stacked_time ) {
+      if (private$mdldef$max_endo_lead > 0 || force_stacked_time ) {
         # preparations
         if (solver != "umfpackr") {
           stop(paste("For forward looking models only the umfpackr",
@@ -615,9 +508,9 @@ DynMdl <- R6Class("DynMdl",
         ret <- solve_backward_model(private$model_period,
                                     private$period_shift,
                                     private$endo_data,
-                                    private$exo_data, private$params,
-                                    private$lead_lag_incidence,
-                                    private$njac_cols,
+                                    private$exo_data, private$mdldef$params,
+                                    private$mdldef$lead_lag_incidence,
+                                    private$mdldef$njac_cols,
                                     private$f_dynamic,
                                     private$jac_dynamic,
                                     control = control_,
@@ -627,7 +520,7 @@ DynMdl <- R6Class("DynMdl",
       private$clean_dynamic_model()
       
       private$endo_data[private$model_period, ] <-
-        t(matrix(ret$x, nrow = private$endo_count))
+        t(matrix(ret$x, nrow = private$mdldef$endo_count))
       
       if (!ret$solved) {
         stop(paste("Model solving not succesfull.\n", ret$message))
@@ -644,23 +537,24 @@ DynMdl <- R6Class("DynMdl",
       # For perturbation approaches, Dynare substitutes
       # these lags and leads by creating auxiliary variables and
       # equations. dynmdl does not do that.
-      if (private$max_exo_lag > 0 || private$max_exo_lead > 0) {
+      if (private$mdldef$max_exo_lag > 0 || private$mdldef$max_exo_lead > 0) {
         stop(paste("Method solve_perturbation does not work for models",
                    "with exogenous lags or leads"))
       }
       
       private$prepare_dynamic_model()
       
-      private$ss <- solve_first_order(private$ss, private$lead_lag_incidence,
-                                      private$exos, private$endos,
-                                      private$params, private$jac_dynamic,
-                                      private$endo_count, private$njac_cols,
+      private$ss <- solve_first_order(private$ss, private$mdldef$lead_lag_incidence,
+                                      private$mdldef$exos, private$mdldef$endos,
+                                      private$mdldef$params, private$jac_dynamic,
+                                      private$mdldef$endo_count, 
+                                      private$mdldef$njac_cols,
                                       only_eigval = FALSE, debug = FALSE)
       
       private$endo_data <- solve_perturbation_(private$ss,
-                                               private$max_endo_lag,
+                                               private$mdldef$max_endo_lag,
                                                private$exo_data, private$endo_data,
-                                               private$exos, private$endos)
+                                               private$mdldef$exos, private$mdldef$endos)
       
       private$clean_dynamic_model()
       return(invisible(self))
@@ -681,22 +575,21 @@ DynMdl <- R6Class("DynMdl",
       }
       colnames(jac) <- as.character(outer(private$endo_names, 1:nper, 
                                           FUN = "paste", sep ="_t"))
-      rownames(jac) <- as.character(outer(paste0("eq_", 1:private$endo_count), 
+      rownames(jac) <- as.character(outer(paste0("eq_", 1:private$mdldef$endo_count), 
                                           1:nper, FUN = "paste", sep ="_t"))
       return(jac)
     },
     get_static_jacob = function(sparse = FALSE) {
       private$prepare_static_model()
-      jac <- private$get_static_jac(private$endos)
+      jac <- private$get_static_jac(private$mdldef$endos)
       private$clean_static_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
       }
       colnames(jac) <- private$endo_names
-      if (private$calc == "dll") private$clean_after_solve_steady()
       return(jac)
     },
-    get_equations = function(i = 1:private$endo_count) {
+    get_equations = function(i = 1:private$mdldef$endo_count) {
       if (!is.numeric(i)) {
         stop("Argument i should be a numeric")
       }
@@ -714,8 +607,8 @@ DynMdl <- R6Class("DynMdl",
     time_functions = function() {
       private$prepare_dynamic_model()
       time_functions(private$model_period, private$endo_data,
-                     private$exo_data, private$params,
-                     private$lead_lag_incidence,
+                     private$exo_data, private$mdldef$params,
+                     private$mdldef$lead_lag_incidence,
                      private$f_dynamic, private$jac_dynamic)
       private$clean_dynamic_model()
       return(invisible(NULL))
@@ -746,51 +639,80 @@ DynMdl <- R6Class("DynMdl",
       }
         
       serialized_mdl <- list(version = packageVersion("dynmdl"),
-                             model_info = private$model_info, 
+                             mdldef = private$mdldef,
                              equations = private$equations,
                              calc = private$calc,
                              bin_data = bin_data,
                              dll_basename = basename(private$dll_file),
                              os_type = os_type,
-                             params = private$params,
-                             endos = private$endos,
-                             exos = private$exos,
-                             labels = private$labels,
-                             period = private$model_period,
+                             model_period = private$model_period,
                              endo_data = private$endo_data,
                              exo_data = private$exo_data)
       return(structure(serialized_mdl, class = "serialized_dynmdl"))
-    }
-  ),
+    },
+    deserialize = function(ser, dll_dir) {
+      
+      # TODO: check package version ser$version 
+      
+      private$set_mdldef(ser$mdldef)
+      
+      if (ser$calc == "dll") {
+        
+        # check operating system. If the model is generated on a different
+        # platform, then we should recompile the model!
+        if (ser$os_type != .Platform$OS.type) {
+          # TODO: simply recompile the model
+          stop("The model functions have been compiled on a different platform")
+        }
+        
+        if (missing(dll_dir)) {
+          private$dll_dir <- tempfile(pattern = "dynmdl_dll_")
+        } else {
+          private$dll_dir <- dll_dir
+          if (dir.exists(dll_dir)) unlink(dll_dir, recursive = TRUE)
+        }
+        dir.create(private$dll_dir)
+        private$dll_file <- file.path(private$dll_dir, ser$dll_basename)
+        zip_file <- tempfile(pattern = "dynmdl_dll_", fileext = ".zip")
+        writeBin(ser$bin_data, con = zip_file)
+        unzip(zipfile = zip_file, exdir = private$dll_dir, junkpaths = TRUE)
+        unlink(zip_file)
+      }
+      
+      # we don't need these elements anymore
+      ser$bin_data <- NULL
+      ser$version <- NULL
+      ser$dll_basename <- NULL
+      ser$os_type <- NULL
+      ser$mdldef <- NULL
+
+      printobj(ser)
+      
+      # copy remaining elements to the private environment
+      list2env(ser, private)
+      
+      private$make_functions()
+      
+      # compute derived object members
+      if (!is.null(ser$endo_data)) {
+        private$data_period <- get_period_range(ser$endo_data)
+        private$period_shift <- start_period(private$model_period) - 
+                                start_period(private$data_period)
+      }
+      
+      return(invisible(self))
+  }),
   private = list(
-    model_info = NULL,
+    mdldef = NULL,
     model_index = NA_integer_,
     equations = NULL,
-    exo_count = NA_integer_,
-    endo_count = NA_integer_,
     exo_names = NULL,
     endo_names = NULL,
-    aux_vars = NULL,
-    labels = NULL,
-    tex_names = NULL,
     param_names = NULL,
-    exos = NULL,
-    endos = NULL,
-    params = NULL,
-    max_endo_lag = NA_integer_,
-    max_endo_lead = NA_integer_,
-    max_lead = NA_integer_,
-    max_exo_lag =  NA_integer_,
-    max_exo_lead =  NA_integer_,
-    max_lag  = NA_integer_,
-    lead_lag_incidence = NULL,
-    njac_cols = NA_integer_,
     f_static = NULL,
     jac_static = NULL,
     f_dynamic = NULL,
     jac_dynamic = NULL,
-    jac_static_size = NA_integer_,
-    jac_dynamic_size = NA_integer_,
     model_period = NULL,
     data_period =  NULL,
     period_shift =  NA,
@@ -808,8 +730,8 @@ DynMdl <- R6Class("DynMdl",
     get_names_ = function(type, names, pattern) {
       if (type == "endo") {
         vnames <- private$endo_names
-        if (private$aux_vars$aux_count > 0) {
-          vnames <- vnames[-private$aux_vars$endos]
+        if (private$mdldef$aux_vars$aux_count > 0) {
+          vnames <- vnames[-private$mdldef$aux_vars$endos]
         }
       } else {
         vnames <- private$exo_names
@@ -843,7 +765,7 @@ DynMdl <- R6Class("DynMdl",
       }
       return(names)
     },
-    set_data_= function(data, names, names_missing, type, upd_mode = "upd", 
+    set_data_ = function(data, names, names_missing, type, upd_mode = "upd", 
                         fun) {
       # generic function to set or update the endogenous or exogenous
       # variables
@@ -859,8 +781,7 @@ DynMdl <- R6Class("DynMdl",
                     " period ", as.character(private$data_period), "."))
       }
       
-      per <- range_intersect(get_period_range(data),
-                             private$data_period)
+      per <- range_intersect(get_period_range(data), private$data_period)
       if (NCOL(data) == 0) {
         return(invisible(NULL))
       }
@@ -973,18 +894,18 @@ DynMdl <- R6Class("DynMdl",
                         type = type)
     },
     get_endo_lags = function() {
-      if (private$max_endo_lag > 0) {
+      if (private$mdldef$max_endo_lag > 0) {
         p <- start_period(private$model_period)
-        lag_per <- period_range(p - private$max_endo_lag, p - 1)
+        lag_per <- period_range(p - private$mdldef$max_endo_lag, p - 1)
         return(t(private$endo_data[lag_per, ]))
       } else {
         return(NULL)
       }
     },
     get_endo_leads = function() {
-      if (private$max_endo_lead > 0) {
+      if (private$mdldef$max_endo_lead > 0) {
         p <- end_period(private$model_period)
-        lead_per <- period_range(p + 1, p + private$max_endo_lead)
+        lead_per <- period_range(p + 1, p + private$mdldef$max_endo_lead)
         return(t(private$endo_data[lead_per, ]))
       } else {
         return(NULL)
@@ -1001,34 +922,35 @@ DynMdl <- R6Class("DynMdl",
       nper <- nperiod(private$model_period)
       if (private$calc == "internal") {
         # for the time begin, assume that the model index is 0
-        return(get_residuals_internal(private$model_index, endos,
-                              which(private$lead_lag_incidence != 0) - 1,
-                              private$endo_count, nper, private$period_shift))
+        return(get_residuals_internal(private$mdldef$model_index, endos,
+                              which(private$mdldef$lead_lag_incidence != 0) - 1,
+                              private$mdldef$endo_count, nper,
+                              private$period_shift))
       } else {
         return(get_residuals_(endos,
-                            which(private$lead_lag_incidence != 0) - 1,
-                            private$exo_data, private$params,
-                            private$f_dynamic, private$endo_count,
-                            nper, private$period_shift))
+                              which(private$mdldef$lead_lag_incidence != 0) - 1,
+                              private$exo_data, private$mdldef$params,
+                              private$f_dynamic, private$mdldef$endo_count,
+                              nper, private$period_shift))
       }
     },
     get_jac = function(x, lags, leads, nper) {
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
-      tshift  <- -private$max_endo_lag : private$max_endo_lead
+      tshift  <- -private$mdldef$max_endo_lag : private$mdldef$max_endo_lead
       if (private$calc == "internal") {
         # for the time begin, assume that the model index is 0
         mat_info <- get_triplet_jac_internal(private$model_index, endos, 
-                          private$lead_lag_incidence, tshift, 
-                          private$endo_count, nper, private$period_shift)
+                          private$mdldef$lead_lag_incidence, tshift, 
+                          private$mdldef$endo_count, nper, private$period_shift)
       } else {
-        mat_info <- get_triplet_jac(endos, private$lead_lag_incidence,
-                                  tshift, private$exo_data,
-                                  private$params, private$jac_dynamic,
-                                  private$endo_count, nper,
-                                  private$period_shift)
+        mat_info <- get_triplet_jac(endos, private$mdldef$lead_lag_incidence,
+                                    tshift, private$exo_data,
+                                    private$mdldef$params, private$jac_dynamic,
+                                    private$mdldef$endo_count, nper,
+                                    private$period_shift)
       }
-      n <- nper * private$endo_count
+      n <- nper * private$mdldef$endo_count
       # NOTE: the function sparseMatrix of the Matrix package
       # only works correctly when package methods has been attached.
       # Therefore "methods" is added to Depends in the DESCRIPTION file.
@@ -1039,10 +961,10 @@ DynMdl <- R6Class("DynMdl",
                           dims = as.integer(rep(n, 2))))
     },
     get_static_jac = function(x) {
-      mat_info <- private$jac_static(x, private$exos, private$params)
+      mat_info <- private$jac_static(x, private$mdldef$exos, private$mdldef$params)
       return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
                           x = mat_info$values, 
-                          dims = as.integer(rep(private$endo_count, 2))))
+                          dims = as.integer(rep(private$mdldef$endo_count, 2))))
     },
     prepare_dynamic_model = function() {
       #
@@ -1050,9 +972,9 @@ DynMdl <- R6Class("DynMdl",
       #
       if (private$calc == "dll") {
         private$nrow_exo <- nrow(private$exo_data)
-        private$jac  <- list(rows   = integer(private$jac_dynamic_size),
-                             cols   = integer(private$jac_dynamic_size),
-                             values = numeric(private$jac_dynamic_size))
+        private$jac  <- list(rows   = integer(private$mdldef$jac_dynamic_size),
+                           cols   = integer(private$mdldef$jac_dynamic_size),
+                           values = numeric(private$mdldef$jac_dynamic_size))
         dyn.load(private$dll_file)
         # NOTE: the basename of the dll_file is always "mdl_functions".
         # Therefore we cannot solve two DynMdl objects simultaneously.
@@ -1061,11 +983,11 @@ DynMdl <- R6Class("DynMdl",
         #
       } else if (private$calc == "internal") {
         prepare_internal_calc(private$model_index, private$exo_data,
-                              nrow(private$exo_data), private$params)
+                              nrow(private$exo_data), private$mdldef$params)
       }
       
       # prepare the auxiliary variables
-      if (private$aux_vars$aux_count > 0) {
+      if (private$mdldef$aux_vars$aux_count > 0) {
         private$prepare_aux_vars()
       }
       
@@ -1081,9 +1003,9 @@ DynMdl <- R6Class("DynMdl",
     },
     prepare_static_model = function() {
       if (private$calc == "dll") {
-        private$jac_steady <- list(rows   = integer(private$jac_static_size),
-                                   cols   = integer(private$jac_static_size),
-                                   values = numeric(private$jac_static_size))
+        private$jac_steady <- list(rows   = integer(private$mdldef$jac_static_size),
+                                   cols   = integer(private$mdldef$jac_static_size),
+                                   values = numeric(private$mdldef$jac_static_size))
         dyn.load(private$dll_file)
       } else if (private$calc == "internal") {
         stop(paste("When the internal calculator is used it is not yet",
@@ -1100,11 +1022,11 @@ DynMdl <- R6Class("DynMdl",
     },
     prepare_aux_vars = function() {
       # calculate the auxiliary auxiliary variables before solving
-      if (private$aux_vars$aux_count == 0) {
+      if (private$mdldef$aux_vars$aux_count == 0) {
         return(invisible(NULL))
       }
       nper <- nrow(private$endo_data)
-      with(private$aux_vars, {
+      with(private$mdldef$aux_vars, {
         for (i in seq_len(aux_count)) {
           if (orig_leads[i] > 0) {
             sel_orig <- (1 + orig_leads[i]) : nper
@@ -1120,8 +1042,8 @@ DynMdl <- R6Class("DynMdl",
     },
     check_model_period = function(period) {
       
-      ps <- start_period(private$data_period) + private$max_lag
-      pe <- end_period(private$data_period)   - private$max_lead
+      ps <- start_period(private$data_period) + private$mdldef$max_lag
+      pe <- end_period(private$data_period)   - private$mdldef$max_lead
       
       if ((start_period(period) < ps)  || (end_period(period)   > pe)) { 
         stop(paste0("The specified period (", period, 
@@ -1134,21 +1056,80 @@ DynMdl <- R6Class("DynMdl",
     },
     update_labels = function(labels) {
       if (is.null(labels)) {
-        private$labels <- NULL
+        private$mdldef$labels <- NULL
       } else {
         names <- intersect(names(labels), union(private$endo_names, 
                                                 private$exo_names))
-        if (is.null(private$labels)) {
-          private$labels <-character(0)
+        if (is.null(private$mdldef$labels)) {
+          private$mdldef$labels <-character(0)
         }
-        private$labels[names] <- labels[names]
-        if (length(private$labels) > 0) {
-          private$labels <- private$labels[order(names(private$labels))]
+        private$mdldef$labels[names] <- labels[names]
+        if (length(private$mdldef$labels) > 0) {
+          private$mdldef$labels <- private$mdldef$labels[order(
+                                              names(private$mdldef$labels))]
         }
       }
       return(invisible(NULL))
     },
-
+    set_mdldef = function(mdldef) {
+      private$mdldef <- mdldef
+      private$endo_names <- names(private$mdldef$endos)
+      private$exo_names <- names(private$mdldef$exos)
+      private$param_names <- names(private$mdldef$params)
+    },
+    make_functions = function() {
+      
+      if (private$calc == "R" || private$calc == "bytecode") {
+        
+        # no dll, functions implemented in R
+        eval(parse(text = private$mdldef$static_functions))
+        eval(parse(text = private$mdldef$dynamic_functions))
+        private$f_static    <- f_static
+        private$jac_static  <- jac_static
+        private$f_dynamic   <- f_dynamic
+        private$jac_dynamic <- jac_dynamic
+        
+        if (private$calc == "bytecode") {
+          private$f_static < - compiler::cmpfun(private$f_static)
+          private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
+        }
+        
+      } else if (private$calc == "dll") {    # dll option
+        
+        private$f_static <- function(y, x, params) {
+          res <- numeric(private$mdldef$endo_count)
+          .Call("f_static_", y, x, params, res, PACKAGE = "mdl_functions")
+          return(res)
+        }
+        
+        private$jac_static <- function(y, x, params) {
+          # NOTE: creating a new jac_steady every function call is
+          # inefficient, therefore use private$jac_steady that is
+          # created just before solve_steady is called.
+          .Call("jac_static_", y, x, params, private$jac_steady$rows,
+                private$jac_steady$cols, private$jac_steady$values,
+                PACKAGE = "mdl_functions")
+          return(private$jac_steady)
+        }
+        
+        private$f_dynamic <- function(y, x, params, it) {
+          res <- numeric(private$mdldef$endo_count)
+          .Call("f_dynamic_", y, x, params, it - 1, private$nrow_exo,
+                res, PACKAGE = "mdl_functions")
+          return(res)
+        }
+        
+        private$jac_dynamic <- function(y, x, params, it) {
+          # NOTE: creating a new jac every function call is
+          # inefficient, therefore use private$jac that is
+          # created just before solve is called.
+          .Call("jac_dynamic_", y, x, params, it - 1, private$nrow_exo,
+                private$jac$rows, private$jac$cols, private$jac$values,
+                PACKAGE = "mdl_functions")
+          return(private$jac)
+        }
+      }
+    },
     print_info = function(short) {
       cat(sprintf("%-60s%s\n", "Calc method:", private$calc))
       if (private$calc == "internal") {
@@ -1156,21 +1137,21 @@ DynMdl <- R6Class("DynMdl",
                     private$model_info$model_index))
       }
       cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
-                  private$endo_count))
+                  private$mdldef$endo_count))
       cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
-                  private$exo_count))
+                  private$mdldef$exo_count))
       cat(sprintf("%-60s%d\n", "Maximum endogenous lead:",
-                  private$max_endo_lead))
+                  private$mdldef$max_endo_lead))
       cat(sprintf("%-60s%d\n", "Maximum endogenous lag:",
-                  private$max_endo_lag))
+                  private$mdldef$max_endo_lag))
       cat(sprintf("%-60s%d\n", "Maximum exogenous lead:",
-                  private$max_exo_lead))
+                  private$mdldef$max_exo_lead))
       cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
-                  private$max_exo_lag))
+                  private$mdldef$max_exo_lag))
       cat(sprintf("%-60s%d\n", "Number of nonzeros static. jac:",
-                  private$jac_static_size))
+                  private$mdldef$jac_static_size))
       cat(sprintf("%-60s%d\n", "Number of nonzeros dyn. jac:",
-                  private$jac_dynamic_size))
+                  private$mdldef$jac_dynamic_size))
       if (!is.null(private$model_period)) {
         cat(sprintf("%-60s%s\n", "Model period:",
                     as.character(private$model_period)))
@@ -1185,7 +1166,7 @@ DynMdl <- R6Class("DynMdl",
         cat("Names of the parameters:\n")
         print(private$param_names)
         cat("Lead lag incidence matrix:\n")
-        print(private$lead_lag_incidence)
+        print(private$mdldef$lead_lag_incidence)
         cat("\nstatic function:\n")
         print(private$f_static)
         cat("\nstatic Jacobian:\n")
