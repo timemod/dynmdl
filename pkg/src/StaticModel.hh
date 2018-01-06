@@ -27,6 +27,7 @@ using namespace std;
 #include <Rcpp.h>
 #endif
 #include "ModelTree.hh"
+#include "PolishModel.hh"
 
 //! Stores a static model, as derived from the "model" block when leads and lags have been removed
 class StaticModel : public ModelTree
@@ -318,7 +319,8 @@ public:
     return -1;
   };
 #ifdef USE_R
-  Rcpp::List getStaticModelR() const;
+  Rcpp::List getStaticModelR(bool internal_calc) const;
+  PolishModel* makePolishModel() const;
 #endif
 };
 

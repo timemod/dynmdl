@@ -1,7 +1,8 @@
 library(dynmdl)
 
 mdl <- dyn_mdl("mod/testje.mod", calc = "internal")
-#print(mdl, short = FALSE)
+print(mdl, short = FALSE)
+
 
 mdl$set_period("2010Q1/2010Q2");
 mdl$set_endo_values(names = "z", value = 1:4)

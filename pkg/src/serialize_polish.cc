@@ -16,7 +16,7 @@ using namespace std;
 // [[Rcpp::export]]
 RawVector serialize_polish_model(int model_index) {
 
-    PolishModel *mdl = PolishModels::get_model(model_index);
+    PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
     std::stringstream ss; // any stream can be used
     {
@@ -33,15 +33,17 @@ RawVector serialize_polish_model(int model_index) {
 // [[Rcpp::export]]
 int deserialize_polish_model(RawVector src) {
 
-    PolishModel *mdl = new PolishModel();
-    int model_index = PolishModels::add_model(mdl);
+    PolishModel *stat_mdl = new PolishModel();
+    PolishModel *dyn_mdl = new PolishModel();
+    int model_index = PolishModels::add_model(stat_mdl, dyn_mdl);
 
+    // deserialize dynamic model TODO: also static model
     std::stringstream ss;
     ss.write(reinterpret_cast<char*>(&src[0]), src.size());
     ss.seekg(0, ss.beg);
     {
     cereal::BinaryInputArchive iarchive(ss);
-    iarchive(*mdl);
+    iarchive(*dyn_mdl);
     }
 
     return model_index;

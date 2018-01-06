@@ -19,6 +19,10 @@ PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg)
     constants = new double[nconst];
     copy(constants_arg.begin(), constants_arg.end(), constants);
 
+    //cout << "neq = " << neq << endl;
+    //cout << "njac = " << njac << endl;
+    //cout << "nconst = " << nconst << endl;
+
 }
 
 int PolishModel::get_equation_count() {
@@ -35,6 +39,7 @@ int PolishModel::get_jac_count() {
 
 void PolishModel::new_equation() {
     cur_eq = shared_ptr<vector<int>>(new vector<int>());
+    //cout << "new equation " << ieq << endl;
     equations[ieq++] = cur_eq;
 }
 
@@ -46,16 +51,19 @@ void PolishModel::new_jac_equation(int row, int col) {
 }
 
 void PolishModel::add_constant(int index) {
+    //cout << "constant " << index << endl;
     cur_eq->push_back(CONST);
     cur_eq->push_back(index);
 }
 
 void PolishModel::add_endo(int index) {
+    //cout << "endo " << index << endl;
     cur_eq->push_back(ENDO);
     cur_eq->push_back(index);
 }
 
 void PolishModel::add_exo(int index, int lag) {
+    //cout << "exo " << index << " met lag " << lag << endl;
     ecode code = lag == 0 ? EXO : EXO_LAG;
     cur_eq->push_back(code);
     cur_eq->push_back(index);
@@ -65,11 +73,13 @@ void PolishModel::add_exo(int index, int lag) {
 }
 
 void PolishModel::add_param(int index) {
+    //cout << "param " << index << endl;
     cur_eq->push_back(PARAM);
     cur_eq->push_back(index);
 }
 
 void PolishModel::add_binop(char op) {
+    //cout << "binop " << op << endl;
     ecode code;
     switch (op) {
         case '+': code = PLUS; break;
@@ -82,6 +92,7 @@ void PolishModel::add_binop(char op) {
 }
 
 void PolishModel::add_unary_minus() {
+    //cout << "unary minus " << endl;
     cur_eq->push_back(UMIN);
 }
 

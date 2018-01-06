@@ -1432,7 +1432,7 @@ ModelTree::writeModelEquations(ostream &output, ExprNodeOutputType output_type) 
     }
 }
 
-void ModelTree::genPolishEquations(PolishModel &mdl) const {
+void ModelTree::genPolishEquations(PolishModel &mdl, bool dynamic) const {
 
     for (int eq = 0; eq < (int) equations.size(); eq++) {
 
@@ -1452,12 +1452,12 @@ void ModelTree::genPolishEquations(PolishModel &mdl) const {
         if (vrhs != 0) { 
             // The right hand side of the equation is not empty 
             //   ==> residual=lhs-rhs;
-            lhs->genPolishCode(mdl);
-            rhs->genPolishCode(mdl);
+            lhs->genPolishCode(mdl, dynamic);
+            rhs->genPolishCode(mdl, dynamic);
             mdl.add_binop('-');
         } else  {
             // The right hand side of the equation is empty ==> residual=lhs;
-            lhs->genPolishCode(mdl);
+            lhs->genPolishCode(mdl, dynamic);
         }
     }
 }

@@ -231,7 +231,7 @@ public:
 
   //! Writes output of node, using a Txxx notation for nodes in temporary_terms
   void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const = 0;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const = 0;
 
   //! Writes the output for an external function, ensuring that the external function is called as few times as possible using temporary terms
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
@@ -487,7 +487,7 @@ public:
   };
   virtual void prepareForDerivation();
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void collectDynamicVariables(SymbolType type_arg, set<pair<int, int> > &result) const;
   virtual void collectTemporary_terms(const temporary_terms_t &temporary_terms, temporary_terms_inuse_t &temporary_terms_inuse, int Curr_Block) const;
@@ -536,7 +536,7 @@ public:
   VariableNode(DataTree &datatree_arg, int symb_id_arg, int lag_arg);
   virtual void prepareForDerivation();
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void collectDynamicVariables(SymbolType type_arg, set<pair<int, int> > &result) const;
   virtual void computeTemporaryTerms(map<expr_t, int > &reference_count,
@@ -611,7 +611,7 @@ public:
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const;
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
@@ -698,7 +698,7 @@ public:
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const;
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
@@ -803,7 +803,7 @@ public:
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const;
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
@@ -881,7 +881,7 @@ public:
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const = 0;
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const = 0;
-  virtual void genPolishCode(PolishModel &mdl) const = 0;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const = 0;
   virtual bool containsExternalFunction() const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
@@ -947,7 +947,7 @@ public:
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const;
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
                                            deriv_node_temp_terms_t &tef_terms) const;
@@ -988,7 +988,7 @@ public:
                                      vector< vector<temporary_terms_t> > &v_temporary_terms,
                                      int equation) const;
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual void compile(ostream &CompileCode, unsigned int &instruction_number,
                        bool lhs_rhs, const temporary_terms_t &temporary_terms,
                        const map_idx_t &map_idx, bool dynamic, bool steady_dynamic,
@@ -1028,7 +1028,7 @@ public:
                                      vector< vector<temporary_terms_t> > &v_temporary_terms,
                                      int equation) const;
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
-  virtual void genPolishCode(PolishModel &mdl) const;
+  virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual void compile(ostream &CompileCode, unsigned int &instruction_number,
                        bool lhs_rhs, const temporary_terms_t &temporary_terms,
                        const map_idx_t &map_idx, bool dynamic, bool steady_dynamic,

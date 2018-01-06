@@ -2406,15 +2406,42 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
 
 
 #ifdef USE_R
-Rcpp::List StaticModel::getStaticModelR() const {
+Rcpp::List StaticModel::getStaticModelR(bool internal_calc) const {
 
     // function body
-    std::ostringstream dynout;
-    writeStaticModel(dynout, oRStaticModel);
+    Rcpp::String static_functions;
+    if (!internal_calc) {
+        std::ostringstream statout;
+        writeStaticModel(statout, oRStaticModel);
+        static_functions = Rcpp::String(statout.str());
+    }
 
     return Rcpp::List::create(
              Rcpp::Named("jac_size") = (int) first_derivatives.size(),
-             Rcpp::Named("static_functions")  = Rcpp::String(dynout.str()));
+             Rcpp::Named("static_functions")  = static_functions);
 }
+
+PolishModel* StaticModel::makePolishModel() const {
+
+    PolishModel* mdl = new PolishModel(symbol_table.endo_nbr(), 
+                                       first_derivatives.size(),
+                                       num_constants.get_double_vals());
+    
+    // model equations
+    genPolishEquations(*mdl, false);
+
+    // first derivatives
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        int eq = it->first.first;
+        int col = it->first.second;
+        mdl->new_jac_equation(eq, col);
+        expr_t d1 = it->second;
+        d1->genPolishCode(*mdl, false);
+    }
+
+    return mdl;
+}
+
 #endif
 

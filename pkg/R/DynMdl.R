@@ -633,7 +633,7 @@ DynMdl <- R6Class("DynMdl",
         bin_data <- readBin(zip_file, what = "raw", n = size)
         unlink(zip_file)
       } else if (private$calc == "internal") {
-        bin_data <- serialize_polish_model(private$model_index)
+        bin_data <- serialize_polish_model(private$mdldef$model_index)
       } else {
         bin_data <- NULL
       }
@@ -677,6 +677,8 @@ DynMdl <- R6Class("DynMdl",
         writeBin(ser$bin_data, con = zip_file)
         unzip(zipfile = zip_file, exdir = private$dll_dir, junkpaths = TRUE)
         unlink(zip_file)
+      } else if (ser$calc == "internal") {
+        private$mdldef$model_index <- deserialize_polish_model(ser$bin_data)
       }
       
       # we don't need these elements anymore
@@ -938,7 +940,7 @@ DynMdl <- R6Class("DynMdl",
       tshift  <- -private$mdldef$max_endo_lag : private$mdldef$max_endo_lead
       if (private$calc == "internal") {
         # for the time begin, assume that the model index is 0
-        mat_info <- get_triplet_jac_internal(private$model_index, endos, 
+        mat_info <- get_triplet_jac_internal(private$mdldef$model_index, endos, 
                           private$mdldef$lead_lag_incidence, tshift, 
                           private$mdldef$endo_count, nper, private$period_shift)
       } else {
@@ -980,7 +982,7 @@ DynMdl <- R6Class("DynMdl",
         # a function that calls another function.
         #
       } else if (private$calc == "internal") {
-        prepare_internal_calc(private$model_index, private$exo_data,
+        prepare_internal_calc(private$mdldef$model_index, private$exo_data,
                               nrow(private$exo_data), private$mdldef$params)
       }
       
@@ -1132,7 +1134,7 @@ DynMdl <- R6Class("DynMdl",
       cat(sprintf("%-60s%s\n", "Calc method:", private$calc))
       if (private$calc == "internal") {
         cat(sprintf("%-60s%d\n", "Model index:",
-                    private$model_info$model_index))
+                    private$mdldef$model_index))
       }
       cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
                   private$mdldef$endo_count))

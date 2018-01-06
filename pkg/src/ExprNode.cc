@@ -324,7 +324,7 @@ NumConstNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << datatree.num_constants.get(id);
 }
 
-void NumConstNode::genPolishCode(PolishModel &mdl) const {
+void NumConstNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     mdl.add_constant(id);
 }
 
@@ -857,7 +857,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     }
 }
 
-void VariableNode::genPolishCode(PolishModel &mdl) const {
+void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     int i;
     switch (type) {
     case eParameter:
@@ -865,7 +865,11 @@ void VariableNode::genPolishCode(PolishModel &mdl) const {
         mdl.add_param(i);
         break;
     case eEndogenous:
-        i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag));
+        if (dynamic) {
+            i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag));
+        } else {
+            i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        }
         mdl.add_endo(i);
         break;
     case eExogenous:
@@ -2080,8 +2084,8 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << RIGHT_PAR(output_type);
 }
 
-void UnaryOpNode::genPolishCode(PolishModel &mdl) const {
-    arg->genPolishCode(mdl);
+void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    arg->genPolishCode(mdl, dynamic);
     switch (op_code) {
     case oUminus:
       mdl.add_unary_minus();
@@ -3296,9 +3300,9 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << RIGHT_PAR(output_type);
 }
 
-void BinaryOpNode::genPolishCode(PolishModel &mdl) const {
-    arg1->genPolishCode(mdl);
-    arg2->genPolishCode(mdl);
+void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    arg1->genPolishCode(mdl, dynamic);
+    arg2->genPolishCode(mdl, dynamic);
     switch (op_code) {
     case oPlus:
         mdl.add_binop('+');
@@ -4336,7 +4340,7 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     }
 }
 
-void TrinaryOpNode::genPolishCode(PolishModel &mdl) const {
+void TrinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     dyn_error("genPolishCode not implemented for this type");
 }
 
@@ -5140,7 +5144,7 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
   output << "tef_" << getIndxInTefTerms(symb_id, tef_terms);
 }
 
-void ExternalFunctionNode::genPolishCode(PolishModel &mdl) const {
+void ExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     dyn_error("genPolishCode not implemented for this type");
 }
 
@@ -5351,7 +5355,7 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
   }
 }
 
-void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl) const {
+void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     dyn_error("genPolishCode not implemented for this type");
 }
 
@@ -5660,7 +5664,7 @@ SecondDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType
              << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndex1 << "," << tmpIndex2 << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
 
-void SecondDerivExternalFunctionNode::genPolishCode(PolishModel &mdl) const {
+void SecondDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     dyn_error("genPolishCode not implemented for this type");
 }
 

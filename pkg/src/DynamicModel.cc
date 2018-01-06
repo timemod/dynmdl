@@ -5325,7 +5325,7 @@ PolishModel* DynamicModel::makePolishModel() const {
                                        num_constants.get_double_vals());
     
     // model equations
-    genPolishEquations(*mdl);
+    genPolishEquations(*mdl, true);
 
     // first derivatives
     for (first_derivatives_t::const_iterator it = first_derivatives.begin();
@@ -5334,7 +5334,7 @@ PolishModel* DynamicModel::makePolishModel() const {
         int col = getDynJacobianCol(it->first.second);
         mdl->new_jac_equation(eq, col);
         expr_t d1 = it->second;
-        d1->genPolishCode(*mdl);
+        d1->genPolishCode(*mdl, true);
     }
 
     return mdl;

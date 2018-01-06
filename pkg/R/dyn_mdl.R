@@ -139,7 +139,7 @@ dyn_mdl <- function(mod_file, period, data,
     }
     mdldef <- compile_model(mod_file, use_dll, dll_dir, max_laglead_1,
                             internal_calc)
-
+    
     if (calc == "dll") {
       dll_file <- compile_c_functions(dll_dir)
     } else {
@@ -245,6 +245,7 @@ compile_model <- function(...) {
     retval$endos              <<- endos
     retval$exos               <<- exos
     retval$params             <<- params
+    retval$model_index        <<- model_index
     retval$aux_vars           <<- aux_vars
     retval$max_endo_lag       <<- dynamic_model$max_endo_lag
     retval$max_endo_lead      <<- dynamic_model$max_endo_lead

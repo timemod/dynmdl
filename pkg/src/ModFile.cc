@@ -1277,7 +1277,7 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
             Rcpp::Named("orig_leads") = aux_orig_leads);
 
     Rcpp::List dynmdl = dynamic_model.getDynamicModelR(internal_calc);
-    Rcpp::List statmdl = static_model.getStaticModelR();
+    Rcpp::List statmdl = static_model.getStaticModelR(internal_calc);
 
     Rcpp::NumericVector exos(exo_count);
     Rcpp::NumericVector endos(endo_count);
@@ -1304,8 +1304,9 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
 
     int model_index;
     if (internal_calc) {
-        PolishModel *mdl = dynamic_model.makePolishModel();
-        model_index = PolishModels::add_model(mdl);
+        PolishModel *stat_mdl = static_model.makePolishModel();
+        PolishModel *dyn_mdl = dynamic_model.makePolishModel();
+        model_index = PolishModels::add_model(stat_mdl, dyn_mdl);
     } else {
         model_index = 0;
     }

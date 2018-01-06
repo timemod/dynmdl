@@ -10,7 +10,7 @@ using namespace std;
 void prepare_internal_calc(int model_index, NumericVector exos, int nrow_exo,
                            NumericVector params) {
 
-    PolishModel *mdl = PolishModels::get_model(model_index);
+    PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
     mdl->set_param(REAL(params));
     mdl->set_exo(REAL(exos), nrow_exo);
 }
@@ -20,7 +20,7 @@ NumericVector get_residuals_internal(int model_index, NumericVector endos,
                                      NumericVector icols, int n_endo, int nper,
                                      int period_shift) {
 
-    PolishModel *mdl = PolishModels::get_model(model_index);
+    PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
     NumericVector res(nper * n_endo);
 
@@ -45,7 +45,7 @@ List get_triplet_jac_internal(int model_index, NumericVector endos,
        IntegerMatrix lead_lag_incidence, IntegerVector tshift, 
        int n_endo, int nper, int period_shift) {
 
-    PolishModel *mdl = PolishModels::get_model(model_index);
+    PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
         
     int nendo = max(lead_lag_incidence);
     int *jac_var_id = new int[nendo];
