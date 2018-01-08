@@ -11,12 +11,6 @@
 #' @param calc Method used to evaluate the model equations. 
 #' Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and 
 #' \code{"internal"}. See details.
-#' @param bytecode Deprecated (replaced by argument \code{calc}. 
-#' If \code{TRUE}, then the functions used to calculate the
-#' residuals and Jacobian are byte compiled
-#' @param  use_dll Deprecated (replaced by argument \code{calc}. If \code{TRUE}, then the  functions used to calculate the
-#' residuals and Jacobian are converted to C code that is subsequently
-#' converted to a dynamically linked library.
 #' @param fit_mod_file the name of the generated fit mod file. If not specified,
 #' then the fit mod file is destroyed after the model has been parsed.
 #' @param debug If \code{TRUE}, then some print statements
@@ -39,28 +33,10 @@
 #' @importFrom regts range_union
 dyn_mdl <- function(mod_file, period, data, 
                     calc = c("R", "bytecode", "dll", "internal"),
-                    fit_mod_file, debug = FALSE, dll_dir, max_laglead_1 = FALSE,
-                    bytecode, use_dll) {
+                    fit_mod_file, debug = FALSE, dll_dir, 
+                    max_laglead_1 = FALSE) {
   
-  calc_missing <- missing(calc)
   calc <- match.arg(calc)
-  if (calc_missing) {
-    calc <- "R"
-    if (!missing(use_dll)) {
-      warning("Argument use_dll is deprecated! Please use argument calc.")
-      if (use_dll) calc <- "dll"
-    } else if (!missing(bytecode) && calc != "dll") {
-      warning("Argument bytcode is deprecated! Please use argument calc.")
-      if (bytecode) calc <- "bytecode"
-    } 
-  } else {
-    if (!missing(use_dll)) {
-      warning("Argument calc overrules deprecated argument use_dll.")
-    }
-    if (!missing(bytecode)) {
-      warning("Argument calc overrules deprecated argument bytecode.")
-    }
-  }
   
   use_dll <- calc == "dll"
   internal_calc <- calc == "internal"

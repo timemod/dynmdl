@@ -118,7 +118,7 @@ test_that("get_equations", {
 
 report <- capture_output(mdl_dll <- dyn_mdl(mod_file, period = "2015/2032",
                                             max_laglead_1 = TRUE, 
-                                            use_dll = TRUE))
+                                            calc = "dll"))
 
 test_that("solve_steady with max_laglead_1, dll", {
   mdl_dll$solve_steady(control = list(trace = FALSE, silent = TRUE))

@@ -16,7 +16,7 @@ multiply <<- function(x, y) {
   return(list(x * y, c(y,  x)))
 }
 
-mdl <- make_mdl(mod_name, use_dll = TRUE)
+mdl <- make_mdl(mod_name, calc = "dll")
 model_period <- mdl$get_period()
 
 dynare_result <- read_dynare_result("islm", mdl)

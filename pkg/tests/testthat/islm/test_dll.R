@@ -9,7 +9,7 @@ source("utils.R")
 
 mod_name <- "islm"
 
-mdl <- make_mdl(mod_name, use_dll = TRUE)
+mdl <- make_mdl(mod_name, calc = "dll")
 model_period <- mdl$get_period()
 lag_per <- mdl$get_lag_period()
 

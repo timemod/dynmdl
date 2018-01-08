@@ -5,8 +5,7 @@
 \title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
 \usage{
 dyn_mdl(mod_file, period, data, calc = c("R", "bytecode", "dll", "internal"),
-  fit_mod_file, debug = FALSE, dll_dir, max_laglead_1 = FALSE, bytecode,
-  use_dll)
+  fit_mod_file, debug = FALSE, dll_dir, max_laglead_1 = FALSE)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -36,14 +35,6 @@ The default is \code{FALSE}. This option has no effect if the maximum lag
 and lead of the original model is 1. Set this argument to
 \code{TRUE} if you want to analyse the stability of the steady state with 
 method \code{\link{check}} for models with a maximum lag or lead larger than 1.}
-
-\item{bytecode}{Deprecated (replaced by argument \code{calc}. 
-If \code{TRUE}, then the functions used to calculate the
-residuals and Jacobian are byte compiled}
-
-\item{use_dll}{Deprecated (replaced by argument \code{calc}. If \code{TRUE}, then the  functions used to calculate the
-residuals and Jacobian are converted to C code that is subsequently
-converted to a dynamically linked library.}
 }
 \value{
 an \code{DynMdl} object or, if the mod file contains a
