@@ -882,7 +882,7 @@ void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         break;
     default:
         dyn_error("Internal error: internal evalution not yet supported"
-                  " for exogenous variables");
+                  " for this type of variable");
     }
 }
 
@@ -3322,6 +3322,24 @@ void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         break;
     case oPower:
         mdl.add_binop('^');
+        break;
+    case oEqual:
+        mdl.add_logical_binop(EQ);
+        break;
+    case oLess:
+        mdl.add_logical_binop(LT);
+        break;
+    case oGreater:
+        mdl.add_logical_binop(GT);
+        break;
+    case oLessEqual:
+        mdl.add_logical_binop(LE);
+        break;
+    case oGreaterEqual:
+        mdl.add_logical_binop(GE);
+        break;
+    case oDifferent:
+        mdl.add_logical_binop(NEQ);
         break;
     default:
       dyn_error("genPolishCode not implemented for this binary operator");

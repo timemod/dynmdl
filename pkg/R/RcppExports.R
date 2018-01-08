@@ -25,6 +25,10 @@ get_triplet_jac_dyn <- function(model_index, endos, lead_lag_incidence, tshift, 
     .Call(`_dynmdl_get_triplet_jac_dyn`, model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift)
 }
 
+get_jac_dyn <- function(model_index, endos, it) {
+    .Call(`_dynmdl_get_jac_dyn`, model_index, endos, it)
+}
+
 prepare_internal_stat <- function(model_index, exos, params) {
     invisible(.Call(`_dynmdl_prepare_internal_stat`, model_index, exos, params))
 }

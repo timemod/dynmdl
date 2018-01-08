@@ -97,6 +97,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_jac_dyn
+List get_jac_dyn(int model_index, NumericVector endos, int it);
+RcppExport SEXP _dynmdl_get_jac_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP itSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
+    Rcpp::traits::input_parameter< int >::type it(itSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_jac_dyn(model_index, endos, it));
+    return rcpp_result_gen;
+END_RCPP
+}
 // prepare_internal_stat
 void prepare_internal_stat(int model_index, NumericVector exos, NumericVector params);
 RcppExport SEXP _dynmdl_prepare_internal_stat(SEXP model_indexSEXP, SEXP exosSEXP, SEXP paramsSEXP) {
@@ -301,6 +314,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_prepare_internal_dyn", (DL_FUNC) &_dynmdl_prepare_internal_dyn, 4},
     {"_dynmdl_get_residuals_dyn", (DL_FUNC) &_dynmdl_get_residuals_dyn, 6},
     {"_dynmdl_get_triplet_jac_dyn", (DL_FUNC) &_dynmdl_get_triplet_jac_dyn, 7},
+    {"_dynmdl_get_jac_dyn", (DL_FUNC) &_dynmdl_get_jac_dyn, 3},
     {"_dynmdl_prepare_internal_stat", (DL_FUNC) &_dynmdl_prepare_internal_stat, 3},
     {"_dynmdl_get_residuals_stat", (DL_FUNC) &_dynmdl_get_residuals_stat, 2},
     {"_dynmdl_get_triplet_jac_stat", (DL_FUNC) &_dynmdl_get_triplet_jac_stat, 2},

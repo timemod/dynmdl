@@ -91,6 +91,11 @@ void PolishModel::add_binop(char op) {
     cur_eq->push_back(code);
 }
 
+void PolishModel::add_logical_binop(ecode op_code) {
+    //cout << "logical_binop " << op_code << endl;
+    cur_eq->push_back(op_code);
+}
+
 void PolishModel::add_unary_minus() {
     //cout << "unary minus " << endl;
     cur_eq->push_back(UMIN);
@@ -162,6 +167,26 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
            case UMIN: op = stk.top();
                       stk.pop();
                       stk.push(-op);
+                      break;
+           case EQ: 
+           case NEQ: 
+           case GT: 
+           case GE: 
+           case LT: 
+           case LE: 
+                      rop = stk.top();
+                      stk.pop();
+                      lop = stk.top();
+                      stk.pop();
+                      switch (code) {
+                          case EQ: res = lop == rop; break;
+                          case NEQ: res = lop != rop; break;
+                          case GT: res = lop > rop; break;
+                          case GE: res = lop >= rop; break;
+                          case LT: res = lop < rop; break;
+                          case LE: res = lop <= rop; break;
+                      }
+                      stk.push(res);
                       break;
        }
        ++pos;

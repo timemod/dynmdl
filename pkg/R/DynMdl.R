@@ -1140,6 +1140,13 @@ DynMdl <- R6Class("DynMdl",
                 PACKAGE = "mdl_functions")
           return(private$jac)
         }
+        
+      } else if (private$calc == "internal") {
+        
+        private$jac_dynamic <- function(y, x, params, it) {
+          # note: x and params set by prepare_dynamic_model
+          return(get_jac_dyn(private$mdldef$model_index, y, it - 1))
+        }
       }
     },
     print_info = function(short) {

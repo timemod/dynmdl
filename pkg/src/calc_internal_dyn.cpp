@@ -116,3 +116,22 @@ List get_triplet_jac_dyn(int model_index, NumericVector endos,
                         Rcpp::Named("values") = values_r);
 }
 
+// [[Rcpp::export]]
+List get_jac_dyn(int model_index, NumericVector endos, int it) {
+
+    PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
+
+    int njac = mdl->get_jac_count();
+    IntegerVector rows(njac), cols(njac);
+    NumericVector values(njac);
+
+    mdl->get_jac(REAL(endos), INTEGER(rows), INTEGER(cols), REAL(values), it);
+
+     // add 1 because the index origin in R is 1
+    rows = rows + 1;
+    cols = cols + 1;
+
+    return List::create(Rcpp::Named("rows") = rows, 
+                        Rcpp::Named("cols") = cols,
+                        Rcpp::Named("values") = values);
+}

@@ -21,7 +21,13 @@ enum ecode {
     MINUS,
     DIV,
     POW,
-    UMIN  // unary minus
+    UMIN,  // unary minus
+    EQ,
+    NEQ,
+    GT,
+    GE,
+    LT,
+    LE
 };
 
 
@@ -40,6 +46,7 @@ class PolishModel {
         void add_exo(int index, int lag);
         void add_param(int index);
         void add_binop(char op);
+        void add_logical_binop(ecode op_code);
         void add_unary_minus();
 
         // functions for evaluating the model
