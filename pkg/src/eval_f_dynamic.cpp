@@ -92,7 +92,7 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
     Rcpp::IntegerVector columns_r(columns.begin(), columns.end());
     Rcpp::NumericVector values_r(values.begin(), values.end());
     return List::create(Rcpp::Named("rows") = rows_r,
-                        Rcpp::Named("columns") = columns_r,
+                        Rcpp::Named("cols") = columns_r,
                         Rcpp::Named("values") = values_r);
     }
 
@@ -143,6 +143,6 @@ List get_jac_backwards(NumericVector endos, NumericVector lags,
     Rcpp::NumericVector values_r(values.begin(), values.end());
 
     return List::create(Rcpp::Named("rows")    = rows_r,
-                        Rcpp::Named("columns") = columns_r,
+                        Rcpp::Named("cols") = columns_r,
                         Rcpp::Named("values")  = values_r);
 }

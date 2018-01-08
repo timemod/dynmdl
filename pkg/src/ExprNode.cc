@@ -874,7 +874,11 @@ void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         break;
     case eExogenous:
         i = datatree.symbol_table.getTypeSpecificID(symb_id);
-        mdl.add_exo(i, lag);
+        if (dynamic) {
+            mdl.add_exo(i, lag);
+        } else {
+            mdl.add_exo(i, 0);
+        }
         break;
     default:
         dyn_error("Internal error: internal evalution not yet supported"

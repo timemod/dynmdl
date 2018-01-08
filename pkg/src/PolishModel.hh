@@ -46,9 +46,9 @@ class PolishModel {
         void set_endo(double const y[]);
         void set_exo(double const x[], int nrow_exo);
         void set_param(double const p[]);
-        void get_residuals(const double y[], double residuals[], int it);
+        void get_residuals(const double y[], double residuals[], int it = 0);
         void get_jac(const double y[], int rows[], int cols[], double values[], 
-                     int it);
+                     int it = 0);
 
        // serialization
        template<class Archive>

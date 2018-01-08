@@ -358,6 +358,8 @@ DynMdl <- R6Class("DynMdl",
 
       solver <- match.arg(solver)
       
+      private$prepare_static_model()
+      
       start <- private$mdldef$endos
       if (private$mdldef$aux_vars$aux_count > 0) {
         # make sure that they are ok
@@ -365,14 +367,18 @@ DynMdl <- R6Class("DynMdl",
         start[private$mdldef$aux_vars$endos]  <- aux_endos
       }
       
-      f <- function(endos) {
-        return(private$f_static(endos, private$mdldef$exos, private$mdldef$params))
+      if (private$calc == "internal") {
+        f_res <- function(endos) {
+          return(get_residuals_stat(private$mdldef$model_index, endos))
+        }
+      } else {
+        f_res <- function(endos) {
+          return(private$f_static(endos, private$mdldef$exos, private$mdldef$params))
+        }
       }
       
-      private$prepare_static_model()
-
       if (solver == "umfpackr") {
-        out <- umf_solve_nl(start, fn = f, jac = private$get_static_jac, 
+        out <- umf_solve_nl(start, fn = f_res, jac = private$get_static_jac, 
                             control = control)
         error <- !out$solved
       } else {
@@ -380,7 +386,7 @@ DynMdl <- R6Class("DynMdl",
           j <- private$get_static_jac(endos)
           return(as(j, "matrix"))
         }
-        out <- nleqslv(start, fn = f, jac = jacf, method = "Newton",
+        out <- nleqslv(start, fn = f_res, jac = jacf, method = "Newton",
                        control = control)
         error <- out$termcd != 1
       }
@@ -922,10 +928,10 @@ DynMdl <- R6Class("DynMdl",
       nper <- nperiod(private$model_period)
       if (private$calc == "internal") {
         # for the time begin, assume that the model index is 0
-        return(get_residuals_internal(private$mdldef$model_index, endos,
-                              which(private$mdldef$lead_lag_incidence != 0) - 1,
-                              private$mdldef$endo_count, nper,
-                              private$period_shift))
+        return(get_residuals_dyn(private$mdldef$model_index, endos,
+                                 which(private$mdldef$lead_lag_incidence != 0) - 1,
+                                 private$mdldef$endo_count, nper,
+                                private$period_shift))
       } else {
         return(get_residuals_(endos,
                               which(private$mdldef$lead_lag_incidence != 0) - 1,
@@ -940,7 +946,7 @@ DynMdl <- R6Class("DynMdl",
       tshift  <- -private$mdldef$max_endo_lag : private$mdldef$max_endo_lead
       if (private$calc == "internal") {
         # for the time begin, assume that the model index is 0
-        mat_info <- get_triplet_jac_internal(private$mdldef$model_index, endos, 
+        mat_info <- get_triplet_jac_dyn(private$mdldef$model_index, endos, 
                           private$mdldef$lead_lag_incidence, tshift, 
                           private$mdldef$endo_count, nper, private$period_shift)
       } else {
@@ -956,12 +962,18 @@ DynMdl <- R6Class("DynMdl",
       # Therefore "methods" is added to Depends in the DESCRIPTION file.
       # Possibly, in the Matrix package one of functions of methods is
       # not imported from.
-      return(sparseMatrix(i = mat_info$rows, j = mat_info$columns,
+      return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
                           x = mat_info$values,
                           dims = as.integer(rep(n, 2))))
     },
     get_static_jac = function(x) {
-      mat_info <- private$jac_static(x, private$mdldef$exos, private$mdldef$params)
+      if (private$calc == "internal") {
+        mat_info <- get_triplet_jac_stat(private$mdldef$model_index, 
+                                         private$mdldef$endos)
+      } else {
+        mat_info <- private$jac_static(x, private$mdldef$exos, 
+                                       private$mdldef$params)
+      }
       return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
                           x = mat_info$values, 
                           dims = as.integer(rep(private$mdldef$endo_count, 2))))
@@ -982,7 +994,7 @@ DynMdl <- R6Class("DynMdl",
         # a function that calls another function.
         #
       } else if (private$calc == "internal") {
-        prepare_internal_calc(private$mdldef$model_index, private$exo_data,
+        prepare_internal_dyn(private$mdldef$model_index, private$exo_data,
                               nrow(private$exo_data), private$mdldef$params)
       }
       
@@ -1008,8 +1020,8 @@ DynMdl <- R6Class("DynMdl",
                                    values = numeric(private$mdldef$jac_static_size))
         dyn.load(private$dll_file)
       } else if (private$calc == "internal") {
-        stop(paste("When the internal calculator is used it is not yet",
-                   "possible to calculate the steady state"))
+        prepare_internal_stat(private$mdldef$model_index, private$mdldef$exos,
+                              private$mdldef$params)
       }
       return(invisible(NULL))
     },

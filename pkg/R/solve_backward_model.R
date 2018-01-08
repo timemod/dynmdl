@@ -29,9 +29,8 @@ solve_backward_model <- function(model_period, period_shift, endo_data, exo_data
   jac_sparse <- function(x, lags, iper) {
     mat_info <- get_jac_backwards(x, lags, jac_cols, exo_data, 
                                   params, jac_dynamic, iper, period_shift)
-    return(sparseMatrix(i = mat_info$rows, j = mat_info$columns,
-                        x = mat_info$values,
-                        dims = as.integer(rep(nendo, 2))))
+    return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
+                        x = mat_info$values, dims = as.integer(rep(nendo, 2))))
   }
   
   if (solver == "nleqslv") {

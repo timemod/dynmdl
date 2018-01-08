@@ -13,6 +13,42 @@ get_triplet_jac_internal <- function(model_index, endos, lead_lag_incidence, tsh
     .Call(`_dynmdl_get_triplet_jac_internal`, model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift)
 }
 
+prepare_internal_dyn <- function(model_index, exos, nrow_exo, params) {
+    invisible(.Call(`_dynmdl_prepare_internal_dyn`, model_index, exos, nrow_exo, params))
+}
+
+get_residuals_dyn <- function(model_index, endos, icols, n_endo, nper, period_shift) {
+    .Call(`_dynmdl_get_residuals_dyn`, model_index, endos, icols, n_endo, nper, period_shift)
+}
+
+get_triplet_jac_dyn <- function(model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift) {
+    .Call(`_dynmdl_get_triplet_jac_dyn`, model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift)
+}
+
+prepare_internal_stat <- function(model_index, exos, params) {
+    invisible(.Call(`_dynmdl_prepare_internal_stat`, model_index, exos, params))
+}
+
+get_residuals_stat <- function(model_index, endos) {
+    .Call(`_dynmdl_get_residuals_stat`, model_index, endos)
+}
+
+get_triplet_jac_stat <- function(model_index, endos) {
+    .Call(`_dynmdl_get_triplet_jac_stat`, model_index, endos)
+}
+
+prepare_internal_calc_stat <- function(model_index, exos, nrow_exo, params) {
+    invisible(.Call(`_dynmdl_prepare_internal_calc_stat`, model_index, exos, nrow_exo, params))
+}
+
+get_residuals_internal_stat <- function(model_index, endos, icols, n_endo, nper, period_shift) {
+    .Call(`_dynmdl_get_residuals_internal_stat`, model_index, endos, icols, n_endo, nper, period_shift)
+}
+
+get_triplet_jac_internal_stat <- function(model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift) {
+    .Call(`_dynmdl_get_triplet_jac_internal_stat`, model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift)
+}
+
 compile_model_ <- function(modfile, use_dll, dll_dir, max_laglead_1, internal_calc) {
     .Call(`_dynmdl_compile_model_`, modfile, use_dll, dll_dir, max_laglead_1, internal_calc)
 }
