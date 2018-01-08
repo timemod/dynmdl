@@ -3,7 +3,11 @@
 library(dynmdl)
 
 mdl <- dyn_mdl("mod/islm.mod", calc = "internal")
-#print(mdl, short = FALSE)
+print(mdl, short = FALSE)
+
+print(mdl$get_static_jacob())
+mdl$solve_steady()
+print(mdl$get_static_endos())
 
 mdl$set_period("2017Q1/2017Q4")
 
@@ -12,6 +16,7 @@ mdl$set_exo_values(280, names = "g", period = "2017Q1")
 
 print(mdl$residual_check())
 print(mdl$get_jacob())
+
 mdl$solve(control = list(trace = TRUE))
 
 print(mdl$get_endo_data())

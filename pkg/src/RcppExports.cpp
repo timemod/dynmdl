@@ -271,25 +271,25 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// serialize_polish_model
-RawVector serialize_polish_model(int model_index);
-RcppExport SEXP _dynmdl_serialize_polish_model(SEXP model_indexSEXP) {
+// serialize_polish_models
+List serialize_polish_models(int model_index);
+RcppExport SEXP _dynmdl_serialize_polish_models(SEXP model_indexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
-    rcpp_result_gen = Rcpp::wrap(serialize_polish_model(model_index));
+    rcpp_result_gen = Rcpp::wrap(serialize_polish_models(model_index));
     return rcpp_result_gen;
 END_RCPP
 }
-// deserialize_polish_model
-int deserialize_polish_model(RawVector src);
-RcppExport SEXP _dynmdl_deserialize_polish_model(SEXP srcSEXP) {
+// deserialize_polish_models
+int deserialize_polish_models(List bin_data);
+RcppExport SEXP _dynmdl_deserialize_polish_models(SEXP bin_dataSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< RawVector >::type src(srcSEXP);
-    rcpp_result_gen = Rcpp::wrap(deserialize_polish_model(src));
+    Rcpp::traits::input_parameter< List >::type bin_data(bin_dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(deserialize_polish_models(bin_data));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -313,8 +313,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_get_triplet_jac", (DL_FUNC) &_dynmdl_get_triplet_jac, 9},
     {"_dynmdl_get_jac_backwards", (DL_FUNC) &_dynmdl_get_jac_backwards, 8},
     {"_dynmdl_run_macro", (DL_FUNC) &_dynmdl_run_macro, 2},
-    {"_dynmdl_serialize_polish_model", (DL_FUNC) &_dynmdl_serialize_polish_model, 1},
-    {"_dynmdl_deserialize_polish_model", (DL_FUNC) &_dynmdl_deserialize_polish_model, 1},
+    {"_dynmdl_serialize_polish_models", (DL_FUNC) &_dynmdl_serialize_polish_models, 1},
+    {"_dynmdl_deserialize_polish_models", (DL_FUNC) &_dynmdl_deserialize_polish_models, 1},
     {NULL, NULL, 0}
 };
 

@@ -5,6 +5,10 @@ library(dynmdl)
 mdl <- dyn_mdl("mod/islm.mod")
 print(mdl, short = FALSE)
 
+print(mdl$get_static_jacob())
+mdl$solve_steady()
+print(mdl$get_static_endos())
+
 mdl$set_period("2017Q1/2017Q4")
 
 #  set exogenous variables

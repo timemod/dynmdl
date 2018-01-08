@@ -639,7 +639,7 @@ DynMdl <- R6Class("DynMdl",
         bin_data <- readBin(zip_file, what = "raw", n = size)
         unlink(zip_file)
       } else if (private$calc == "internal") {
-        bin_data <- serialize_polish_model(private$mdldef$model_index)
+        bin_data <- serialize_polish_models(private$mdldef$model_index)
       } else {
         bin_data <- NULL
       }
@@ -684,7 +684,7 @@ DynMdl <- R6Class("DynMdl",
         unzip(zipfile = zip_file, exdir = private$dll_dir, junkpaths = TRUE)
         unlink(zip_file)
       } else if (ser$calc == "internal") {
-        private$mdldef$model_index <- deserialize_polish_model(ser$bin_data)
+        private$mdldef$model_index <- deserialize_polish_models(ser$bin_data)
       }
       
       # we don't need these elements anymore
