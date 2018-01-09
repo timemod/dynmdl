@@ -6,8 +6,9 @@
 
 using namespace std;
 
-PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg) 
-                                 : neq(neq), njac(njac) {
+PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg,
+                         ExternalFunctionCalc *ext_calc_arg) : neq(neq), 
+                                                               njac(njac) {
 
     ieq = 0; ieq_jac = 0;
     equations = new shared_ptr<vector<int>>[neq];
@@ -18,6 +19,9 @@ PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg)
     nconst = constants_arg.size();
     constants = new double[nconst];
     copy(constants_arg.begin(), constants_arg.end(), constants);
+
+    ext_calc = ext_calc_arg;
+    extfun_args = new double[ext_calc->get_narg_max()];
 
     //cout << "neq = " << neq << endl;
     //cout << "njac = " << njac << endl;
@@ -99,6 +103,19 @@ void PolishModel::add_logical_binop(ecode op_code) {
 void PolishModel::add_unary_minus() {
     //cout << "unary minus " << endl;
     cur_eq->push_back(UMIN);
+}
+
+void PolishModel::add_external_function_call(int index) {
+    //cout << "unary minus " << endl;
+    cur_eq->push_back(EXTFUN);
+    cur_eq->push_back(index);
+}
+
+void PolishModel::add_external_function_numderiv(int index, int deriv) {
+    //cout << "unary minus " << endl;
+    cur_eq->push_back(EXTFUN_NUMDERIV);
+    cur_eq->push_back(index);
+    cur_eq->push_back(deriv);
 }
 
 //
@@ -188,6 +205,26 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                       }
                       stk.push(res);
                       break;
+           case EXTFUN:
+                      {
+                      index = codes[++pos];
+                      int nargs = ext_calc->get_narg(index);
+                      for (int i = 0; i < nargs; i++) {
+                          extfun_args[i] = stk.top();
+                          stk.pop();
+                      }
+                      res = ext_calc->eval_extfun(index, extfun_args);
+                      stk.push(res);
+                      }
+                      break;
+
+           case EXTFUN_NUMDERIV:
+                      {
+                      index = codes[++pos];
+                      int deriv = codes[++pos];
+                      // TODO: handle code
+                      }
+                      break;
        }
        ++pos;
    }
@@ -199,16 +236,19 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
 }
 
 void PolishModel::get_residuals(const double y[], double residuals[], int it) {
+    ext_calc->init();
     set_endo(y);
     //cout << "get_residuals, it =  " << it << endl;
     for (int ieq = 0; ieq < neq; ieq++) {
         //cout << "get_residuals, ieq " << ieq << endl;
         residuals[ieq] = eval_eq(equations[ieq], it);
     }
+    ext_calc->close();
 }
 
 void PolishModel::get_jac(const double y[], int rows[], int cols[], 
                           double values[], int it) {
+    ext_calc->init();
     set_endo(y);
     //cout << "get_jac, it =  " << it << endl;
     for (int ieq = 0; ieq < njac; ieq++) {
@@ -219,6 +259,7 @@ void PolishModel::get_jac(const double y[], int rows[], int cols[],
         //      " " << cols[ieq]  << endl;
         //cout << "get_jac, value = " << values[ieq] << endl;
     }
+    ext_calc->close();
 }
 
 // TODO:

@@ -5,6 +5,7 @@
 #include <stack>
 #include <memory>
 #include <iostream>
+#include "ExternalFunctionCalc.hh"
 
 using std::vector;
 using std::stack;
@@ -27,14 +28,17 @@ enum ecode {
     GT,
     GE,
     LT,
-    LE
+    LE,
+    EXTFUN,    // external function
+    EXTFUN_NUMDERIV // external function numerical derivative
 };
 
 
 class PolishModel {
     public:
         PolishModel() {};
-        PolishModel(int neq, int njac, const vector<double> &constants_arg);
+        PolishModel(int neq, int njac, const vector<double> &constants_arg,
+                    ExternalFunctionCalc *ext_calc);
         int get_equation_count();
         int get_jac_count();
 
@@ -48,6 +52,8 @@ class PolishModel {
         void add_binop(char op);
         void add_logical_binop(ecode op_code);
         void add_unary_minus();
+        void add_external_function_call(int index);
+        void add_external_function_numderiv(int index, int deriv);
 
         // functions for evaluating the model
         void set_endo(double const y[]);
@@ -117,7 +123,9 @@ class PolishModel {
        shared_ptr<vector<int>> cur_eq;
 
        // members for evaluating the model
+       ExternalFunctionCalc *ext_calc;
        const double *y, *p, *x;
+       double *extfun_args;
        int nrow_exo;
        stack<double> stk;
        double eval_eq(shared_ptr<vector<int>> eq, int it);

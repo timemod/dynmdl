@@ -32,6 +32,7 @@
 #include "ComputingTasks.hh"
 #include "dyn_error.hh"
 #include "dynout.hh"
+#include "ExternalFunctionCalc.hh"
 #include "PolishModel.hh"
 #include "PolishModels.hh"
 #include "DataTree.hh"
@@ -1304,8 +1305,17 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
 
     int model_index;
     if (internal_calc) {
-        PolishModel *stat_mdl = static_model.makePolishModel();
-        PolishModel *dyn_mdl = dynamic_model.makePolishModel();
+
+        ExternalFunctionCalc *ext_calc = new ExternalFunctionCalc();
+        for (int i = 0; i < external_functions_table.get_external_function_count(); 
+             i++) {
+            int symb_id = external_functions_table.get_external_function_symb_id(i);
+            int narg  = external_functions_table.getNargs(symb_id);
+            ext_calc->add_function(symbol_table.getName(symb_id), narg);
+        }
+
+        PolishModel *stat_mdl = static_model.makePolishModel(ext_calc);
+        PolishModel *dyn_mdl  = dynamic_model.makePolishModel(ext_calc);
         model_index = PolishModels::add_model(stat_mdl, dyn_mdl);
     } else {
         model_index = 0;

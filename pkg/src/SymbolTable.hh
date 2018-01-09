@@ -112,6 +112,8 @@ private:
   vector<int> exo_det_ids;
   //! Maps type specific IDs of parameters to symbol IDs
   vector<int> param_ids;
+  //! Maps type specific IDs of external functions to symbol IDs
+  vector<int> extfun_ids;
   //! Information about auxiliary variables
   vector<AuxVarInfo> aux_vars;
 

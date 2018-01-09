@@ -206,7 +206,7 @@ public:
   //! Adds a variable node
   /*! This implementation allows for non-zero lag */
   virtual VariableNode *AddVariable(int symb_id, int lag = 0);
-  PolishModel* makePolishModel() const;
+  PolishModel* makePolishModel(ExternalFunctionCalc *ext_calc) const;
   
   //! Execute computations (variable sorting + derivation)
   /*!

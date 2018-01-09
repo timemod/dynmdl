@@ -2421,11 +2421,12 @@ Rcpp::List StaticModel::getStaticModelR(bool internal_calc) const {
              Rcpp::Named("static_functions")  = static_functions);
 }
 
-PolishModel* StaticModel::makePolishModel() const {
+PolishModel* StaticModel::makePolishModel(ExternalFunctionCalc *ext_calc) const {
 
     PolishModel* mdl = new PolishModel(symbol_table.endo_nbr(), 
                                        first_derivatives.size(),
-                                       num_constants.get_double_vals());
+                                       num_constants.get_double_vals(),
+                                       ext_calc);
     
     // model equations
     genPolishEquations(*mdl, false);

@@ -79,8 +79,7 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
     }
 
   // Ensure that if we're overwriting something, we mean to do it
-  if (exists(symb_id))
-    {
+  if (exists(symb_id)) {
       bool ok_to_overwrite = false;
       if (getNargs(symb_id) == eExtFunNotSet) // implies that the information stored about this function is not important
         ok_to_overwrite = true;
@@ -105,7 +104,18 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
                         "match the second derivative function passed to a previous call or declaration of the top-level function.");
             }
         }
-    }
+  } else {  
+      // symbol does not yet exist.
+      external_function_symb_ids.push_back(symb_id);
+  }
 
   externalFunctionTable[symb_id] = external_function_options_chng;
+}
+
+int ExternalFunctionsTable::get_external_function_count() const {
+    return external_function_symb_ids.size();
+}
+
+int ExternalFunctionsTable::get_external_function_symb_id(int index) const {
+    return external_function_symb_ids[index];
 }

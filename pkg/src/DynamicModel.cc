@@ -5318,11 +5318,12 @@ Rcpp::List DynamicModel::getDynamicModelR(bool internal_calc) const {
 }
 
 
-PolishModel* DynamicModel::makePolishModel() const {
+PolishModel* DynamicModel::makePolishModel(ExternalFunctionCalc *ext_calc) const {
 
     PolishModel* mdl = new PolishModel(symbol_table.endo_nbr(), 
                                        first_derivatives.size(),
-                                       num_constants.get_double_vals());
+                                       num_constants.get_double_vals(),
+                                       ext_calc);
     
     // model equations
     genPolishEquations(*mdl, true);

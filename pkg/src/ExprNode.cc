@@ -5167,7 +5167,16 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
 }
 
 void ExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    dyn_error("genPolishCode not implemented for this type");
+
+    // arguments
+    for (vector<expr_t>::const_iterator it = arguments.begin(); 
+         it != arguments.end(); it++) {
+        (*it)->genPolishCode(mdl, dynamic);
+    }
+
+    // function call
+    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
+    mdl.add_external_function_call(id);
 }
 
 void
@@ -5378,7 +5387,16 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
 }
 
 void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    dyn_error("genPolishCode not implemented for this type");
+
+    // arguments
+    for (vector<expr_t>::const_iterator it = arguments.begin(); 
+         it != arguments.end(); it++) {
+        (*it)->genPolishCode(mdl, dynamic);
+    }
+
+    // function call
+    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
+    mdl.add_external_function_numderiv(id, inputIndex);
 }
 
 void

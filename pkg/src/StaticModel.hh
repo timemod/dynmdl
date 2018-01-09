@@ -28,6 +28,7 @@ using namespace std;
 #endif
 #include "ModelTree.hh"
 #include "PolishModel.hh"
+#include "ExternalFunctionCalc.hh"
 
 //! Stores a static model, as derived from the "model" block when leads and lags have been removed
 class StaticModel : public ModelTree
@@ -320,7 +321,7 @@ public:
   };
 #ifdef USE_R
   Rcpp::List getStaticModelR(bool internal_calc) const;
-  PolishModel* makePolishModel() const;
+  PolishModel* makePolishModel(ExternalFunctionCalc *ext_calc) const;
 #endif
 };
 

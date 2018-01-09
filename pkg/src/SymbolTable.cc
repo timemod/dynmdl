@@ -110,8 +110,7 @@ SymbolTable::freeze() throw (FrozenException)
 
   frozen = true;
 
-  for (int i = 0; i < size; i++)
-    {
+  for (int i = 0; i < size; i++) {
       int tsi;
       switch (getType(i))
         {
@@ -130,6 +129,10 @@ SymbolTable::freeze() throw (FrozenException)
         case eParameter:
           tsi = param_ids.size();
           param_ids.push_back(i);
+          break;
+        case eExternalFunction:
+          tsi = extfun_ids.size();
+          extfun_ids.push_back(i);
           break;
         default:
           tsi = -1;

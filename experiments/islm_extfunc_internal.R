@@ -10,7 +10,7 @@ square <- function(x) {
   return(x**2);
 }
 
-mdl <- dyn_mdl("mod/islm_extfunc.mod", calc = "R",
+mdl <- dyn_mdl("mod/islm_extfunc.mod", calc = "internal",
                period = "2018")
 
 print(mdl$residual_check())
