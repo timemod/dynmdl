@@ -42,6 +42,14 @@ double ExternalFunctionCalc::eval_extfun(int index, double *args) const {
     return retval;
 }
 
+double ExternalFunctionCalc::eval_extfun_numderiv(int index, int deriv,
+              double *args) const {
+
+    return call_R_function.call_function_numderiv(function_names[index], 
+            nargs[index], deriv, args);
+}
+
+
 void ExternalFunctionCalc::init() {
     call_R_function.init();
 }

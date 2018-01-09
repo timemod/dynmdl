@@ -14,3 +14,4 @@ mdl <- dyn_mdl("mod/islm_extfunc.mod", calc = "R",
                period = "2018")
 
 print(mdl$residual_check())
+print(mdl$get_jacob())

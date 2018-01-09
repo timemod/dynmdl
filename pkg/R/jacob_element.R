@@ -5,7 +5,7 @@ jacob_element <- function(fun, index, args) {
     args[index] <- x
     return(do.call(fun, as.list(args)))
   }
-  return(numDeriv::grad(f, args[index]))
+  return(numDeriv::grad(f, args[[index]]))
 }
 
 # hypot <- function(x, y) {

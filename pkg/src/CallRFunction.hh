@@ -10,6 +10,8 @@ class CallRFunction {
         void init();
         void close();
         double call_function(string func_name, int narg, double *args) const;
+        double call_function_numderiv(string func_name, int narg, int deriv,
+                 double *args) const;
 };
 #endif
 

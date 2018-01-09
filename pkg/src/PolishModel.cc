@@ -206,25 +206,28 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                       stk.push(res);
                       break;
            case EXTFUN:
+           case EXTFUN_NUMDERIV:
                       {
                       index = codes[++pos];
+
+                      // collect arguments
                       int nargs = ext_calc->get_narg(index);
                       for (int i = 0; i < nargs; i++) {
-                          extfun_args[i] = stk.top();
+                          extfun_args[nargs - i - 1] = stk.top();
                           stk.pop();
                       }
-                      res = ext_calc->eval_extfun(index, extfun_args);
+
+                      if (code == EXTFUN) {
+                          res = ext_calc->eval_extfun(index, extfun_args);
+                      } else {
+                        int deriv = codes[++pos];
+                        res = ext_calc->eval_extfun_numderiv(index, deriv, 
+                                      extfun_args);
+                      }
                       stk.push(res);
                       }
                       break;
 
-           case EXTFUN_NUMDERIV:
-                      {
-                      index = codes[++pos];
-                      int deriv = codes[++pos];
-                      // TODO: handle code
-                      }
-                      break;
        }
        ++pos;
    }

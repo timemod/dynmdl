@@ -17,6 +17,8 @@ class ExternalFunctionCalc {
         int get_narg(int index) const;
         int get_narg_max() const;
         double eval_extfun(int index, double *args) const;
+        double eval_extfun_numderiv(int index, int deriv,
+              double *args) const;
         void init();
         void close();
 
