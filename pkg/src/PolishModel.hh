@@ -37,7 +37,7 @@ enum ecode {
 
 class PolishModel {
     public:
-        PolishModel() {};
+        PolishModel(ExternalFunctionCalc *ext_calc);
         PolishModel(int neq, int njac, const vector<double> &constants_arg,
                     ExternalFunctionCalc *ext_calc);
         int get_equation_count();
@@ -131,6 +131,9 @@ class PolishModel {
        int nrow_exo;
        stack<double> stk;
        double eval_eq(shared_ptr<vector<int>> eq, int it);
+
+       // private functions
+       void allocate_extfun_args();
 };
 
 #endif

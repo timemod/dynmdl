@@ -1316,7 +1316,7 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
 
         PolishModel *stat_mdl = static_model.makePolishModel(ext_calc);
         PolishModel *dyn_mdl  = dynamic_model.makePolishModel(ext_calc);
-        model_index = PolishModels::add_model(stat_mdl, dyn_mdl);
+        model_index = PolishModels::add_model(stat_mdl, dyn_mdl, ext_calc);
     } else {
         model_index = 0;
     }

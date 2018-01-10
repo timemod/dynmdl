@@ -6,9 +6,14 @@
 
 using namespace std;
 
+PolishModel::PolishModel(ExternalFunctionCalc *ext_calc) : ext_calc(ext_calc) {
+
+    allocate_extfun_args();
+}
+
 PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg,
-                         ExternalFunctionCalc *ext_calc_arg) : neq(neq), 
-                                                               njac(njac) {
+                         ExternalFunctionCalc *ext_calc) : neq(neq), 
+                                                njac(njac), ext_calc(ext_calc) {
 
     ieq = 0; ieq_jac = 0;
     equations = new shared_ptr<vector<int>>[neq];
@@ -20,13 +25,16 @@ PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg,
     constants = new double[nconst];
     copy(constants_arg.begin(), constants_arg.end(), constants);
 
-    ext_calc = ext_calc_arg;
-    extfun_args = new double[ext_calc->get_narg_max()];
+    allocate_extfun_args();
 
     //cout << "neq = " << neq << endl;
     //cout << "njac = " << njac << endl;
     //cout << "nconst = " << nconst << endl;
 
+}
+
+void PolishModel::allocate_extfun_args() {
+    extfun_args = new double[ext_calc->get_narg_max()];
 }
 
 int PolishModel::get_equation_count() {

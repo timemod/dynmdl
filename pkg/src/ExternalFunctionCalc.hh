@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 #include "CallRFunction.hh"
 
 using std::vector;
@@ -23,6 +24,12 @@ class ExternalFunctionCalc {
               double *args) const;
         void init();
         void close();
+
+        // serialization
+        template<class Archive>
+        void serialize(Archive & ar) {
+            ar(narg_max, function_names, nargs);
+        }
 
     private:
         vector<string> function_names;

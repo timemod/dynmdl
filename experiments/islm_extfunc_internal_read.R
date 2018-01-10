@@ -10,13 +10,12 @@ square <- function(x) {
   return(x**2);
 }
 
-mdl <- dyn_mdl("mod/islm_extfunc.mod", calc = "internal",
-               period = "2018")
+aap <- islm_mdl()
+
+mdl <- read_mdl("testje.rds")
 
 print(mdl$residual_check())
 print(mdl$get_jacob())
 
 mdl$solve_steady()
 mdl$solve()
-
-mdl$write_mdl("testje.rds")

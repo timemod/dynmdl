@@ -82,8 +82,10 @@ ParsingDriver.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
 PolishModel.o : CallRFunction.hh ExternalFunctionCalc.hh \
                PolishModel.hh
 PolishModel.o : CallRFunction.hh ExternalFunctionCalc.hh
-PolishModels.o : PolishModel.hh PolishModels.hh
-PolishModels.o : PolishModel.hh
+PolishModels.o : CallRFunction.hh ExternalFunctionCalc.hh \
+                PolishModel.hh PolishModels.hh
+PolishModels.o : CallRFunction.hh ExternalFunctionCalc.hh \
+                PolishModel.hh
 Shocks.o : CodeInterpreter.hh ExprNode.hh ExternalFunctionsTable.hh \
           Shocks.hh Statement.hh SymbolList.hh SymbolTable.hh \
           WarningConsolidation.hh dyn_error.hh location.hh
@@ -159,4 +161,5 @@ run_macro_.o : CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
               StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
               WarningConsolidation.hh dynout.hh location.hh parse.hh run_dynare.hh \
               run_macro_.hh
-serialize_polish.o : PolishModel.hh PolishModels.hh
+serialize_polish.o : CallRFunction.hh ExternalFunctionCalc.hh \
+                    PolishModel.hh PolishModels.hh
