@@ -30,6 +30,7 @@ enum ecode {
     LT,
     LE,
     EXTFUN,    // external function
+    EXTFUN_DERIV, // external function with analytical numerical derivative
     EXTFUN_NUMDERIV // external function numerical derivative
 };
 
@@ -53,6 +54,7 @@ class PolishModel {
         void add_logical_binop(ecode op_code);
         void add_unary_minus();
         void add_external_function_call(int index);
+        void add_external_function_deriv(int index, int deriv);
         void add_external_function_numderiv(int index, int deriv);
 
         // functions for evaluating the model

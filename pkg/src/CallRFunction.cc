@@ -47,6 +47,27 @@ double CallRFunction::call_function(string func_name, int narg, double *args)
   return retval;
 }
 
+double CallRFunction::call_function_deriv(string func_name, int narg, 
+                                          int deriv, double *args) const {
+
+  // collect arguments
+  SEXP arg_r = PROTECT(allocVector(VECSXP, narg));
+  for (int i = 0; i < narg; i++) {
+      SET_VECTOR_ELT(arg_r, i, ScalarReal(args[i]));
+  }
+
+  string fname = func_name + "_d" + std::to_string(deriv);
+  SETCADR(rcall_do_call, mkString(fname.c_str()));
+  SETCADDR(rcall_do_call, arg_r);
+
+  // call R
+  SEXP result_ = PROTECT(eval(rcall_do_call, base_package));
+
+  double retval = REAL(result_)[0];
+  UNPROTECT(2);
+  return retval;
+}
+
 double CallRFunction::call_function_numderiv(string func_name, int narg, 
             int deriv, double *args) const {
 

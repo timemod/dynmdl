@@ -111,6 +111,13 @@ void PolishModel::add_external_function_call(int index) {
     cur_eq->push_back(index);
 }
 
+void PolishModel::add_external_function_deriv(int index, int deriv) {
+    //cout << "unary minus " << endl;
+    cur_eq->push_back(EXTFUN_DERIV);
+    cur_eq->push_back(index);
+    cur_eq->push_back(deriv);
+}
+
 void PolishModel::add_external_function_numderiv(int index, int deriv) {
     //cout << "unary minus " << endl;
     cur_eq->push_back(EXTFUN_NUMDERIV);
@@ -206,6 +213,7 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                       stk.push(res);
                       break;
            case EXTFUN:
+           case EXTFUN_DERIV:
            case EXTFUN_NUMDERIV:
                       {
                       index = codes[++pos];
@@ -217,12 +225,20 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                           stk.pop();
                       }
 
-                      if (code == EXTFUN) {
+                      int deriv = code != EXTFUN  ? codes[++pos] : -1;
+
+                      switch (code) {
+                       case EXTFUN:
                           res = ext_calc->eval_extfun(index, extfun_args);
-                      } else {
-                        int deriv = codes[++pos];
-                        res = ext_calc->eval_extfun_numderiv(index, deriv, 
-                                      extfun_args);
+                          break;
+                       case EXTFUN_DERIV:
+                          res = ext_calc->eval_extfun_deriv(index, deriv,
+                                                            extfun_args);
+                          break;
+                       case EXTFUN_NUMDERIV:
+                          res = ext_calc->eval_extfun_numderiv(index, deriv,
+                                                               extfun_args);
+                          break;
                       }
                       stk.push(res);
                       }

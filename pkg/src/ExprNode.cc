@@ -5394,9 +5394,18 @@ void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynami
         (*it)->genPolishCode(mdl, dynamic);
     }
 
-    // function call
     int id = datatree.symbol_table.getTypeSpecificID(symb_id);
-    mdl.add_external_function_numderiv(id, inputIndex);
+
+    const int first_deriv_symb_id = datatree.external_functions_table.getFirstDerivSymbID(symb_id);
+    if (first_deriv_symb_id < 0) {
+        mdl.add_external_function_numderiv(id, inputIndex);
+    } else if (first_deriv_symb_id == symb_id) {
+        mdl.add_external_function_deriv(id, inputIndex);
+    } else {
+        dyn_error("For the internal calculation mode it is not yet possible to specify a name"
+                  " for the first derivative function");
+    }
+
 }
 
 void
