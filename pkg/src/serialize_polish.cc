@@ -65,7 +65,7 @@ RawVector serialize_polish_model(int model_index, bool dynamic) {
     ss.read(reinterpret_cast<char*>(&retval[0]), retval.size());
     
     return(retval);
-};
+}
 
 RawVector serialize_ext_calc(int model_index) {
 
@@ -82,7 +82,7 @@ RawVector serialize_ext_calc(int model_index) {
     ss.read(reinterpret_cast<char*>(&retval[0]), retval.size());
     
     return(retval);
-};
+}
 
 void deserialize_polish_model(PolishModel *mdl, RawVector src) {
     std::stringstream ss;

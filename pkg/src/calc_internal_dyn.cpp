@@ -106,7 +106,9 @@ List get_triplet_jac_dyn(int model_index, NumericVector endos,
     delete[] jac_var_id;
     delete[] jac_shift;
     delete[] icols;
-    delete[] rows_t, cols_t, values_t;
+    delete[] rows_t;
+    delete[] cols_t;
+    delete[] values_t;
     
     Rcpp::IntegerVector rows_r(rows.begin(), rows.end());
     Rcpp::IntegerVector columns_r(columns.begin(), columns.end());
