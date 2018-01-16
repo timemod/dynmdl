@@ -20,7 +20,7 @@ read_mdl <- function(file, dll_dir) {
   cat(paste("Reading model from", file, "\n"))
   
   ser <- readRDS(file)
-
+  
   if (!(inherits(ser, "serialized_fitmdl") || 
         inherits(ser, "serialized_dynmdl"))) {
     stop(paste("File", file, "does not contain a serialized dynmdl or fitmdl"))

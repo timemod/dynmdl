@@ -21,6 +21,7 @@ setOldClass("regts")
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom compiler compile
 #' @importFrom utils zip
+#' @importFrom utils compareVersion
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -674,7 +675,15 @@ DynMdl <- R6Class("DynMdl",
     },
     deserialize = function(ser, dll_dir) {
       
-      # TODO: check package version ser$version 
+      # for the time being we will not make the serialized model file
+      # backwards compatible
+      minimal_version <- as.character(packageVersion("dynmdl"))
+      if (compareVersion(as.character(ser$version), minimal_version)) {
+        stop(paste("It is not possible to read model files",
+                   "created with dynmdl versions prior to",
+                  minimal_version, "\nPlease regenerate the model with function",
+                  "dynmdl"))
+      } 
       
       private$set_mdldef(ser$mdldef)
       
