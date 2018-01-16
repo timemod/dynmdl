@@ -76,3 +76,21 @@ test_that("solve_perturbation (1) compare with dynare result", {
         rep(mdl2$get_static_endos(), each = nperiod(stoch_per))
     expect_equal(mdl2$get_endo_data(period = stoch_per), stoch_endo)
 })
+
+test_that("get_names", {
+  
+  expect_known_output(mdl$get_endo_names(), 
+                      "expected_output/NK_baseline_endo_names.rds")
+  
+  expect_known_output(mdl$get_endo_names(type = "lag"), 
+                      "expected_output/NK_baseline_endo_lag_names.rds")
+  
+  expect_known_output(mdl$get_endo_names(type = "lead"),
+                      "expected_output/NK_baseline_endo_lead_names.rds")
+  
+  expect_known_output(mdl$get_exo_names(),
+                      "expected_output/NK_baseline_exo_names.rds")
+  
+  expect_known_output(mdl$get_par_names(),
+                      "expected_output/NK_baseline_par_names.rds")
+})

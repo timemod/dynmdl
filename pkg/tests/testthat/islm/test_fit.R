@@ -33,3 +33,18 @@ test_that("dynare result equal to islm result", {
   p <- mdl$get_period()
   expect_equal(dynare_endo, mdl$get_endo_data(period = p))
 })
+
+test_that("get_names", {
+  endo_names <- c("y", "yd", "c", "i", "md", "r", "t") 
+  expect_equal(mdl$get_endo_names(), endo_names)
+  
+  expect_equal(mdl$get_endo_names(type = "lag"), c("y", "yd"))
+  expect_equal(mdl$get_endo_names(type = "lead"), c("y", "yd"))
+  
+  expect_equal(mdl$get_exo_names(), c("g", "ms"))
+  
+  par_names <- c(paste0("sigma_u", c("t", "c", "i", "md")),
+                 paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
+                 paste0("t", 0:1))
+  expect_equal(mdl$get_par_names(), par_names)
+})

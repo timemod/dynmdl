@@ -55,3 +55,18 @@ test_that("solve with the stacked time method", {
   mdl2$solve(control = list(silent = TRUE), force_stacked_time = TRUE)
   expect_equal(dynare_endo, mdl2$get_endo_data())
 })
+
+test_that("get_names", {
+  endo_names <- c("y", "yd", "t",  "c", "i", "md", "r") 
+  expect_equal(mdl$get_endo_names(), endo_names)
+  
+  expect_equal(mdl$get_endo_names(type = "lag"), c("y", "yd"))
+  expect_equal(mdl$get_endo_names(type = "lead"), character(0))
+  
+  expect_equal(mdl$get_exo_names(), c("g", "ms"))
+  
+  par_names <- c(paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
+                 paste0("t", 0:1))
+  par_names <- setdiff(par_names, c("c3", "i3"))
+  expect_equal(mdl$get_par_names(), par_names)
+})

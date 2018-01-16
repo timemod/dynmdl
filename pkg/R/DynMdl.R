@@ -33,9 +33,9 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{get_max_lead}}}{Returns the maximum lead}
 #'
-#' \item{\code{get_endo_names}}{Returns the names of the endogenous variables.}
+#' \item{\code{\link{get_endo_names}}}{Returns the names of the endogenous variables.}
 #'
-#' \item{\code{get_exo_names}}{Returns the names of the exogenous variables.}
+#' \item{\code{\link{get_exo_names}}}{Returns the names of the exogenous variables.}
 #'
 #' \item{\code{\link{set_labels}}}{Set labels for the model variables}
 #'
@@ -45,11 +45,11 @@ setOldClass("regts")
 #' \item{\code{\link{get_tex_names}}}{Returns the LaTeX names of the model 
 #' variables and parameters}
 #'
-#' \item{\code{get_par_names}}{Returns the names of the parameters.}
+#' \item{\code{\link{get_par_names}}}{Returns the names of the parameters.}
 #'
-#' \item{\code{set_param}}{Sets the parameters of the model.}
+#' \item{\code{\link{set_param}}}{Sets the parameters of the model.}
 #'
-#' \item{\code{get_param}}{Returns the parameters of the model.}
+#' \item{\code{\link{get_param}}}{Returns the parameters of the model.}
 #'
 #' \item{\code{\link{set_static_exos}}}{Sets the static values of
 #' the exogenous variables used to compute the steady state.}
@@ -149,12 +149,28 @@ DynMdl <- R6Class("DynMdl",
     get_max_lead = function() {
       return(private$mdldef$max_lead)
     },
-    get_endo_names = function() {
-      if (private$mdldef$aux_vars$aux_count > 0) {
-        return(private$endo_names[-private$mdldef$aux_vars$endos])
+    get_endo_names = function(type = c("all", "leads", "lags")) {
+      type <- match.arg(type)
+      if (type == "leads" || type == "lags") {
+        lli <- private$mdldef$lead_lag_incidence
+        if (type == "leads") {
+            lli <- lli[, as.integer(colnames(lli)) > 0, drop = FALSE]
+        } else {
+            lli <- lli[, as.integer(colnames(lli)) < 0, drop = FALSE]
+        }
+        lli <- rowSums(lli)
+        names <- names(lli[lli > 0])
+        if (private$mdldef$aux_vars$aux_count > 0) {
+          aux_endo_names <- private$endo_names[private$mdldef$aux_vars$endos]
+          names <- setdiff(names, aux_endo_names)
+        }
       } else {
-        return(private$endo_names)
+        names <- private$endo_names
+        if (private$mdldef$aux_vars$aux_count > 0) {
+            names <- names[-private$mdldef$aux_vars$endos]
+        }
       }
+      return(names)
     },
     get_exo_names = function() {
       return(private$exo_names)
@@ -174,7 +190,7 @@ DynMdl <- R6Class("DynMdl",
         sel <- grep(pattern, names)
         names <- names[sel]
       }
-      return(sort(names))
+      return(names)
     },
     set_param = function(params) {
       private$mdldef$params[names(params)] <- params

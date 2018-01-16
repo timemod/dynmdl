@@ -752,4 +752,96 @@ NULL
 #' @seealso \code{\link{solve_steady}}and \code{\link{check}}
 NULL
 
+#' \code{\link{DynMdl}} methods: Retrieve the names of model variables or
+#' parameters
+#' @name get_name-methods
+#' @aliases get_endo_names get_exo_names get_par_names
+#' @description
+#' These methods of R6 class \code{\link{DynMdl}} 
+#' return the names of the model variables or parameters
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$get_endo_names(type = c("all", "lags", "leads")
+#'
+#' mdl$get_exo_names()
+#'
+#' mdl$get_par_names()
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{type}}{a character describing the type of the endogenous variables:
+#'  \code{"lags"} or \code{"leads"} for endogenous variables with lags or leads,
+#' respectively. The default is \code{"all"} (all endogenous variables).}
+#' }
+#' @section Methods:
+#' \itemize{
+#' \item \code{get_endo_names}: Names of the endogenous model variables
+#'
+#' \item \code{get_exo_names}: Names of the endogenous model variables
+#'
+#' \item \code{get_par_names}: Names of the model parameters
+#'
+#' }
+#'
+NULL
 
+
+#' \code{\link{DynMdl}} method: Sets the model parameters
+#' @name set_param
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}}
+#' sets the model parameters
+#' @section Usage:
+#' \preformatted{
+#' mdl$set_param(p)
+#'
+#' }
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{p}}{a named numeric vector with parameter values.
+#' The names are the names of the parameter}
+#' }
+#' @examples
+#' mdl <- islm_mdl()
+#' mdl$set_param(c(i0 = 101))
+NULL
+
+
+#' \code{\link{DynMdl}} method: Returns model parameters
+#' @name get_param
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}}
+#' returns model parameters
+#' @section Usage:
+#' \preformatted{
+#' mdl$get_param(pattern, names)
+#'
+#' }
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{pattern}}{a regular expression specifying parameter names}
+#' \item{\code{names}}{a character vector with parameter names}
+#' }
+#' @examples
+#' mdl <- islm_mdl()
+#'
+#' # print all model parameters
+#' print(mdl$get_param())
+#'
+#' # print parameters c0, c1, c2 and c3
+#' print(mdl$get_param(pattern = "^c.*"))
+#' @seealso
+#' \code{\link{set_param}}
+NULL

@@ -38,3 +38,18 @@ test_that("dynare result equal to dynr result", {
   p <- mdl$get_period()
   expect_equal(dynare_result$endo, mdl$get_endo_data(period = p))
 })
+
+test_that("get_names", {
+  endo_names <- c("y", "yd", "t", "c", "i", "md", "r", "y_year") 
+  expect_equal(mdl$get_endo_names(), endo_names)
+  
+  expect_equal(mdl$get_endo_names(type = "lag"), c("y", "yd"))
+  expect_equal(mdl$get_endo_names(type = "lead"), c("y", "yd"))
+  
+  expect_equal(mdl$get_exo_names(), c("g", "ms"))
+  
+  par_names <- c(paste0("sigma_u", c("i", "md", "t", "c")),
+                 paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
+                 paste0("t", 0:1))
+  expect_equal(mdl$get_par_names(), par_names)
+})

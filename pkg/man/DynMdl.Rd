@@ -22,9 +22,9 @@ An R6 class for a Dynare model
 
 \item{\code{\link{get_max_lead}}}{Returns the maximum lead}
 
-\item{\code{get_endo_names}}{Returns the names of the endogenous variables.}
+\item{\code{\link{get_endo_names}}}{Returns the names of the endogenous variables.}
 
-\item{\code{get_exo_names}}{Returns the names of the exogenous variables.}
+\item{\code{\link{get_exo_names}}}{Returns the names of the exogenous variables.}
 
 \item{\code{\link{set_labels}}}{Set labels for the model variables}
 
@@ -34,11 +34,11 @@ parameters}
 \item{\code{\link{get_tex_names}}}{Returns the LaTeX names of the model 
 variables and parameters}
 
-\item{\code{get_par_names}}{Returns the names of the parameters.}
+\item{\code{\link{get_par_names}}}{Returns the names of the parameters.}
 
-\item{\code{set_param}}{Sets the parameters of the model.}
+\item{\code{\link{set_param}}}{Sets the parameters of the model.}
 
-\item{\code{get_param}}{Returns the parameters of the model.}
+\item{\code{\link{get_param}}}{Returns the parameters of the model.}
 
 \item{\code{\link{set_static_exos}}}{Sets the static values of
 the exogenous variables used to compute the steady state.}

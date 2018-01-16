@@ -90,8 +90,14 @@ FitMdl <- R6Class("FitMdl",
       private$print_info(short)
       return (invisible(NULL))
     },
-    get_endo_names = function() {
-      return(private$fit_info$orig_endos)
+    get_endo_names = function(type = c("all", "lag", "lead")) {
+      type <- match.arg(type)
+      if (type != "all") {
+        names <- super$get_endo_names(type)
+        return(intersect(private$fit_info$orig_endos, names))
+      } else {
+        return(private$fit_info$orig_endos)
+      }
     },
     get_exo_names = function() {
       return(private$fit_info$orig_exos)
