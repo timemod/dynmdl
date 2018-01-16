@@ -520,7 +520,7 @@ NULL
 #' \code{\link{get_static_endos}}, \code{\link{get_static_exos}}
 #' and \code{\link{put_static_endos}}
 #' @examples
-#' mdl <- islm_mdl()
+#' mdl <- islm_mdl(period = "2018Q1/2080Q1")
 #' mdl$solve_steady(control = list(trace = 1))
 #'
 #' # print the solution
@@ -556,16 +556,16 @@ NULL
 #' coerced to a \code{period_range}, specifying the period for which the 
 #' endogenous model data will be updated with the static endogenous variables.}
 #' }
-#' @seealso \code{\link{solve_steady}}, \code{\link{set_static_endsos}} 
+#' @seealso \code{\link{solve_steady}}, \code{\link{set_static_endos}} 
 #' and \code{\link{get_static_endos}}.
 #' @examples
-#' mdl <- islm_mdl()
+#' mdl <- islm_mdl(period = "2018Q1/2040Q3")
 #' 
 #' # transfer static endogenous variables for the full data period 
 #' mdl$put_static_endos()
 #' 
 #' # now only for the lead period
-#' mdl$put_static_endos(period = mdl$get_lead_period()))
+#' mdl$put_static_endos(period = mdl$get_lead_period())
 NULL
 
 #' \code{\link{DynMdl}} method: Solves the model

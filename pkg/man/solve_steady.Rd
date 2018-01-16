@@ -43,7 +43,7 @@ For large model, the \code{umfpackr} solve can be much faster.}
 }
 
 \examples{
-mdl <- islm_mdl()
+mdl <- islm_mdl(period = "2018Q1/2080Q1")
 mdl$solve_steady(control = list(trace = 1))
 
 # print the solution

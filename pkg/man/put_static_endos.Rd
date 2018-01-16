@@ -31,15 +31,15 @@ endogenous model data will be updated with the static endogenous variables.}
 }
 
 \examples{
-mdl <- islm_mdl()
+mdl <- islm_mdl(period = "2018Q1/2040Q3")
 
 # transfer static endogenous variables for the full data period 
 mdl$put_static_endos()
 
 # now only for the lead period
-mdl$put_static_endos(period = mdl$get_lead_period()))
+mdl$put_static_endos(period = mdl$get_lead_period())
 }
 \seealso{
-\code{\link{solve_steady}}, \code{\link{set_static_endsos}} 
+\code{\link{solve_steady}}, \code{\link{set_static_endos}} 
 and \code{\link{get_static_endos}}.
 }
