@@ -3324,22 +3324,29 @@ void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         mdl.add_binop('^');
         break;
     case oEqual:
-        mdl.add_logical_binop(EQ);
+    case oEqualEqual:
+        mdl.add_op(EQ);
         break;
     case oLess:
-        mdl.add_logical_binop(LT);
+        mdl.add_op(LT);
         break;
     case oGreater:
-        mdl.add_logical_binop(GT);
+        mdl.add_op(GT);
         break;
     case oLessEqual:
-        mdl.add_logical_binop(LE);
+        mdl.add_op(LE);
         break;
     case oGreaterEqual:
-        mdl.add_logical_binop(GE);
+        mdl.add_op(GE);
         break;
     case oDifferent:
-        mdl.add_logical_binop(NEQ);
+        mdl.add_op(NEQ);
+        break;
+    case oMax:
+        mdl.add_op(MAX);
+        break;
+    case oMin:
+        mdl.add_op(MIN);
         break;
     default:
       dyn_error("genPolishCode not implemented for this binary operator");

@@ -103,8 +103,7 @@ void PolishModel::add_binop(char op) {
     cur_eq->push_back(code);
 }
 
-void PolishModel::add_logical_binop(ecode op_code) {
-    //cout << "logical_binop " << op_code << endl;
+void PolishModel::add_op(ecode op_code) {
     cur_eq->push_back(op_code);
 }
 
@@ -206,6 +205,8 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
            case GE: 
            case LT: 
            case LE: 
+           case MIN:
+           case MAX: 
                       rop = stk.top();
                       stk.pop();
                       lop = stk.top();
@@ -217,6 +218,8 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                           case GE: res = lop >= rop; break;
                           case LT: res = lop < rop; break;
                           case LE: res = lop <= rop; break;
+                          case MAX: res = max(lop, rop); break;
+                          case MIN: res = min(lop, rop); break;
                       }
                       stk.push(res);
                       break;

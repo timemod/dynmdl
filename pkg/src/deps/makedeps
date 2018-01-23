@@ -74,6 +74,7 @@ ParsingDriver.o : CallRFunction.hh CodeInterpreter.hh \
                  SymbolTable.hh WarningConsolidation.hh dyn_error.hh location.hh
 PolishModel.o : CallRFunction.hh ExternalFunctionCalc.hh \
                PolishModel.hh
+PolishModel.o : CallRFunction.hh ExternalFunctionCalc.hh
 PolishModels.o : CallRFunction.hh ExternalFunctionCalc.hh \
                 PolishModel.hh PolishModels.hh
 Shocks.o : CallRFunction.hh CodeInterpreter.hh ExprNode.hh \
