@@ -22,7 +22,7 @@ steady state solution.
 
 \code{DynMdl} method:
 \preformatted{
-mdl$solve_steady(control, solver = c("umfpackr", "nleqslv"))
+mdl$solve_steady(control, solver = c("umfpackr", "nleqslv"), ...)
 
 }
 
@@ -39,6 +39,7 @@ depending on argument \code{solver}}
 \item{\code{solver}}{Specifies the solver employed to solve the model:
 \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
 For large model, the \code{umfpackr} solve can be much faster.}
+\item{\code{...}}{Other arguments passed to the solver}
 }
 }
 

@@ -371,7 +371,8 @@ DynMdl <- R6Class("DynMdl",
                                period = private$data_period , ...) {
       return(private$change_data_(fun, names, pattern, period, "exo", ...))
     },
-    solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv")) {
+    solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv"),
+                            ...) {
 
       solver <- match.arg(solver)
       
@@ -396,7 +397,7 @@ DynMdl <- R6Class("DynMdl",
       
       if (solver == "umfpackr") {
         out <- umf_solve_nl(start, fn = f_res, jac = private$get_static_jac, 
-                            control = control)
+                            control = control, ...)
         error <- !out$solved
       } else {
         jacf <- function(endos) {
@@ -491,7 +492,7 @@ DynMdl <- R6Class("DynMdl",
       return(regts(residuals, start = p_start, end = p_end))
     },
     solve = function(control = list(), force_stacked_time = FALSE,
-                     solver = c("umfpackr", "nleqslv")) {
+                     solver = c("umfpackr", "nleqslv"), ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       solver <- match.arg(solver)
@@ -520,7 +521,7 @@ DynMdl <- R6Class("DynMdl",
         ret <- umf_solve_nl(x, private$get_residuals,
                             private$get_jac, lags = lags,
                             leads = leads, nper = nper,
-                            control = control_)
+                            control = control_, ...)
         if (!control_$silent) {
           cat(sprintf("Total time function eval. : %g\n", ret$t_f))
           cat(sprintf("Total time Jacobian.      : %g\n", ret$t_jac))

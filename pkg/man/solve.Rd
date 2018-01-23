@@ -12,7 +12,7 @@ the model.
 \code{DynMdl} method:
 \preformatted{
  md$solve(control = list(), force_stacked_time = FALSE,
-            solver = c("umfpackr", "nleqslv"))
+            solver = c("umfpackr", "nleqslv"), ...)
 }
 
 \code{mdl} is an \code{\link{DynMdl}} object
@@ -31,6 +31,7 @@ purely backward looking models.}
 \item{\code{solver}}{Specifies the solver employed to solve the model:
 \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
 For large model, the \code{umfpackr} solve can be much faster.}
+\item{\code{...}}{Other arguments passed to the solver}
 }
 }
 
