@@ -2094,8 +2094,17 @@ void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     case oUminus:
       mdl.add_unary_minus();
       break;
+    case oExp:
+      mdl.add_op(EXP);
+      break;
+    case oLog:
+      mdl.add_op(LOG);
+      break;
+    case oSqrt:
+      mdl.add_op(SQRT);
+      break;
     default:
-      dyn_error("genPolishCode not implemented for this type");
+      dyn_error("genPolishCode not implemented for unary operator");
     }
 }
 
@@ -3322,6 +3331,12 @@ void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         break;
     case oPower:
         mdl.add_binop('^');
+        break;
+    case oPowerDeriv:
+        if (powerDerivOrder != 1) {
+            dyn_error("genPolishCode not implemented for power deriv order != 1");
+        }
+        mdl.add_op(POW_DERIV);
         break;
     case oEqual:
     case oEqualEqual:
@@ -5406,12 +5421,13 @@ void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynami
     const int first_deriv_symb_id = datatree.external_functions_table.getFirstDerivSymbID(symb_id);
     if (first_deriv_symb_id < 0) {
         mdl.add_external_function_numderiv(id, inputIndex);
-    } else if (first_deriv_symb_id == symb_id) {
-        mdl.add_external_function_deriv(id, inputIndex);
     } else {
-        dyn_error("For the internal calculation mode it is not yet possible to specify a name"
-                  " for the first derivative function");
-    }
+        if (first_deriv_symb_id != symb_id) {
+            dyn_warning("For the internal calculation mode the specified"
+                  " name of the first derivative function is ignored");
+        }
+        mdl.add_external_function_deriv(id, inputIndex);
+    } 
 
 }
 

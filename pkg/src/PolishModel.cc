@@ -181,23 +181,19 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
            case PLUS: 
            case DIV: 
            case MINUS: 
-           case POW: 
-                      rop = stk.top();
+           case POW:  rop = stk.top();
                       stk.pop();
                       lop = stk.top();
-                      stk.pop();
                       switch (code) {
                           case MULT: res = lop * rop; break;
                           case PLUS: res = lop + rop; break;
                           case MINUS: res = lop - rop; break;
                           case DIV: res = lop / rop; break;
                           case POW: res = pow(lop, rop); break;
-                       }
-                      stk.push(res);
+                      }
+                      stk.top() = res;
                       break;
-           case UMIN: op = stk.top();
-                      stk.pop();
-                      stk.push(-op);
+           case UMIN: stk.top() *= -1;
                       break;
            case EQ: 
            case NEQ: 
@@ -210,7 +206,6 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                       rop = stk.top();
                       stk.pop();
                       lop = stk.top();
-                      stk.pop();
                       switch (code) {
                           case EQ: res = lop == rop; break;
                           case NEQ: res = lop != rop; break;
@@ -221,8 +216,17 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                           case MAX: res = max(lop, rop); break;
                           case MIN: res = min(lop, rop); break;
                       }
-                      stk.push(res);
+                      stk.top() = res;
                       break;
+           case EXP:
+           case LOG:
+           case SQRT: stk.top() = eval_function(code, stk.top());
+                      break;
+           case POW_DERIV:  rop = stk.top();
+                            stk.pop();
+                            lop = stk.top();
+                            stk.top() = get_pow_deriv(lop, rop, 1);
+                            break;
            case EXTFUN:
            case EXTFUN_DERIV:
            case EXTFUN_NUMDERIV:
@@ -291,6 +295,33 @@ void PolishModel::get_jac(const double y[], int rows[], int cols[],
     }
     ext_calc->close();
 }
+
+double PolishModel::eval_function(int  code, double arg) const {  
+    switch(code) {
+        case EXP: return exp(arg);
+        case LOG: return log(arg);
+        case SQRT: return sqrt(arg);
+        default: return 0;
+    }
+}
+
+
+/*
+ * The k-th derivative of x^p
+ */
+double PolishModel::get_pow_deriv(double x, double p, int k) const {
+    if (abs(x) < NEAR_ZERO && p > 0 && k > p && 
+            abs(p - nearbyint(p)) < NEAR_ZERO) {
+        return 0.0;
+    } else {
+        double dxp = pow(x, p - k);
+        for (int i = 0; i < k; i++) {
+            dxp *= p--;
+        }
+        return dxp;
+    }
+}
+
 
 // TODO:
 // 1. Destructor  (release memory)

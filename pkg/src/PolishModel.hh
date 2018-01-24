@@ -1,6 +1,9 @@
 #ifndef _POLISH_MODEL_HH
 #define _POLISH_MODEL_HH
 
+
+#define NEAR_ZERO (1e-12)
+
 #include <vector>
 #include <stack>
 #include <memory>
@@ -22,6 +25,7 @@ enum ecode {
     MINUS,
     DIV,
     POW,
+    POW_DERIV,
     UMIN,  // unary minus
     EQ,
     NEQ,
@@ -31,6 +35,9 @@ enum ecode {
     LE,
     MAX,
     MIN,
+    EXP,
+    LOG,
+    SQRT,
     EXTFUN,    // external function
     EXTFUN_DERIV, // external function with analytical numerical derivative
     EXTFUN_NUMDERIV // external function numerical derivative
@@ -136,6 +143,8 @@ class PolishModel {
 
        // private functions
        void allocate_extfun_args();
+       inline double eval_function(int code, double arg) const;
+       inline double get_pow_deriv(double x, double p, int k) const;
 };
 
 #endif
