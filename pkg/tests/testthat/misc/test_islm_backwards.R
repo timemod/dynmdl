@@ -14,7 +14,11 @@ model_period <- period_range(p1, p1 + nperiods - 1)
 
 report <- capture_output(mdl <- dyn_mdl(mod_file))
 report2 <- capture_output(mdl$solve_steady())
+report3 <- capture_output(mdl_int <- dyn_mdl(mod_file, calc = "internal"))
+report4 <- capture_output(mdl_int$solve_steady())
+
 mdl$set_period(model_period)
+mdl_int$set_period(model_period)
 lag_per <- mdl$get_lag_period()
 
 get_dynare_endo <- function(endo_file, data_period) {
@@ -48,6 +52,16 @@ test_that("solve", {
                "No explosive roots. solve_first_order cannot handle this situation yet.")
 })
 
+test_that("solve with internal method", {
+  mdl2 <- mdl_int$clone()
+  mdl2$set_data(dynare_endo[lag_per])
+  mdl2$set_data(dynare_exo)
+  mdl2$solve(control = list(silent = TRUE))
+  expect_equal(dynare_endo, mdl2$get_endo_data())
+  expect_error(mdl2$solve_perturbation(),
+               "No explosive roots. solve_first_order cannot handle this situation yet.")
+})
+
 test_that("solve with the stacked time method", {
   mdl2 <- mdl$clone()
   mdl2$set_data(dynare_endo[lag_per])
@@ -69,4 +83,19 @@ test_that("get_names", {
                  paste0("t", 0:1))
   par_names <- setdiff(par_names, c("c3", "i3"))
   expect_equal(mdl$get_par_names(), par_names)
+})
+
+
+test_that("get_jacob", {
+  
+  # create two copies of the model with only two periods
+  mdl_2 <- mdl$copy()
+  mdl_int_2 <- mdl_int$copy()
+  p <- period_range("2013Q1/2013Q2")
+  mdl_2$set_period(p)
+  mdl_int_2$set_period(p)
+  
+  jac <- mdl_2$get_jacob()
+  jac_int <- mdl_int_2$get_jacob()
+  expect_equal(jac, jac_int)
 })

@@ -37,6 +37,10 @@ NumericVector get_residuals_dyn(int model_index, NumericVector endos,
             residuals[id + it * n_endo] = res_t[id];
         }
     }
+
+    delete[] y;
+    delete[] res_t;
+
     return res;
 }
 
@@ -127,7 +131,7 @@ List get_jac_dyn(int model_index, NumericVector endos, int it) {
     IntegerVector rows(njac), cols(njac);
     NumericVector values(njac);
 
-    mdl->get_jac(REAL(endos), INTEGER(rows), INTEGER(cols), REAL(values), it);
+    mdl->get_jac(REAL(endos), INTEGER(rows), INTEGER(cols), REAL(values), it - 1);
 
      // add 1 because the index origin in R is 1
     rows = rows + 1;
@@ -137,3 +141,89 @@ List get_jac_dyn(int model_index, NumericVector endos, int it) {
                         Rcpp::Named("cols") = cols,
                         Rcpp::Named("values") = values);
 }
+
+// [[Rcpp::export]]
+NumericVector get_res_back_dyn(int model_index, NumericVector endos,
+                               NumericVector lags, int it, int period_shift) {
+
+    PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
+
+    int nlags = lags.size();
+    int nendo = endos.size();
+    int nx = nlags + nendo;
+
+    double *x = new double[nx];
+    for (int i = 0; i < nlags; i++) {
+        x[i] = lags[i];
+    }
+    for (int i = 0; i < nendo; i++) {
+        x[i + nlags] = endos[i];
+    }
+    
+    NumericVector res(nendo);
+    mdl->get_residuals(x, REAL(res), it + period_shift - 1);
+
+    delete[] x;
+
+    return res;
+}
+
+// [[Rcpp::export]]
+List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags,
+                      NumericVector cols, int it, int period_shift) {
+
+    PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
+
+    int nlags = lags.size();
+    int nendo = endos.size();
+    int nx = nlags + nendo;
+
+    double *x = new double[nx];
+    for (int i = 0; i < nlags; i++) {
+        x[i] = lags[i];
+    }
+    for (int i = 0; i < nendo; i++) {
+        x[i + nlags] = endos[i];
+    }
+
+    int njac = mdl->get_jac_count();
+    int *rows_t = new int[njac];
+    int *cols_t = new int[njac];
+    double *values_t = new double[njac];
+
+    mdl->get_jac(x, rows_t, cols_t, values_t, it + period_shift - 1);
+
+    vector<int> rows; 
+    vector<int> columns;
+    vector<double> values;
+
+    for (int ideriv = 0; ideriv < njac;  ideriv++) {
+        int ieq  = rows_t[ideriv];
+        int icol = cols_t[ideriv];
+        int ic = icol - nlags;
+        if (ic < 0 || ic >=  nendo) {
+             continue;
+        }
+        double value = values_t[ideriv];
+        if (value != 0) {
+            // add 1 because the index origin in R is 1.
+            rows.push_back(ieq + 1);
+            columns.push_back(ic + 1);
+            values.push_back(value);
+        }
+    }
+
+    delete[] x;
+    delete[] rows_t;
+    delete[] cols_t;
+    delete[] values_t;
+        
+    Rcpp::IntegerVector rows_r(rows.begin(), rows.end());
+    Rcpp::IntegerVector columns_r(columns.begin(), columns.end());
+    Rcpp::NumericVector values_r(values.begin(), values.end());
+
+    return List::create(Rcpp::Named("rows")    = rows_r,
+                        Rcpp::Named("cols")    = columns_r,
+                        Rcpp::Named("values")  = values_r);
+}
+

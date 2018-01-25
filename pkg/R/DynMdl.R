@@ -529,7 +529,9 @@ DynMdl <- R6Class("DynMdl",
           cat(sprintf("Total time solve          : %g\n", ret$t_solve))
         }
       } else {
-        ret <- solve_backward_model(private$model_period,
+        ret <- solve_backward_model(private$mdldef$model_index, 
+                                    private$calc,
+                                    private$model_period,
                                     private$period_shift,
                                     private$endo_data,
                                     private$exo_data, private$mdldef$params,

@@ -64,6 +64,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_res_back_dyn
+NumericVector get_res_back_dyn(int model_index, NumericVector endos, NumericVector lags, int it, int period_shift);
+RcppExport SEXP _dynmdl_get_res_back_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lagsSEXP, SEXP itSEXP, SEXP period_shiftSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lags(lagsSEXP);
+    Rcpp::traits::input_parameter< int >::type it(itSEXP);
+    Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_res_back_dyn(model_index, endos, lags, it, period_shift));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_jac_back_dyn
+List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags, NumericVector cols, int it, int period_shift);
+RcppExport SEXP _dynmdl_get_jac_back_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP itSEXP, SEXP period_shiftSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lags(lagsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type cols(colsSEXP);
+    Rcpp::traits::input_parameter< int >::type it(itSEXP);
+    Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_jac_back_dyn(model_index, endos, lags, cols, it, period_shift));
+    return rcpp_result_gen;
+END_RCPP
+}
 // prepare_internal_stat
 void prepare_internal_stat(int model_index, NumericVector exos, NumericVector params);
 RcppExport SEXP _dynmdl_prepare_internal_stat(SEXP model_indexSEXP, SEXP exosSEXP, SEXP paramsSEXP) {
@@ -220,6 +251,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_get_residuals_dyn", (DL_FUNC) &_dynmdl_get_residuals_dyn, 6},
     {"_dynmdl_get_triplet_jac_dyn", (DL_FUNC) &_dynmdl_get_triplet_jac_dyn, 7},
     {"_dynmdl_get_jac_dyn", (DL_FUNC) &_dynmdl_get_jac_dyn, 3},
+    {"_dynmdl_get_res_back_dyn", (DL_FUNC) &_dynmdl_get_res_back_dyn, 5},
+    {"_dynmdl_get_jac_back_dyn", (DL_FUNC) &_dynmdl_get_jac_back_dyn, 6},
     {"_dynmdl_prepare_internal_stat", (DL_FUNC) &_dynmdl_prepare_internal_stat, 3},
     {"_dynmdl_get_residuals_stat", (DL_FUNC) &_dynmdl_get_residuals_stat, 2},
     {"_dynmdl_get_triplet_jac_stat", (DL_FUNC) &_dynmdl_get_triplet_jac_stat, 2},

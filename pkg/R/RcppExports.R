@@ -17,6 +17,14 @@ get_jac_dyn <- function(model_index, endos, it) {
     .Call(`_dynmdl_get_jac_dyn`, model_index, endos, it)
 }
 
+get_res_back_dyn <- function(model_index, endos, lags, it, period_shift) {
+    .Call(`_dynmdl_get_res_back_dyn`, model_index, endos, lags, it, period_shift)
+}
+
+get_jac_back_dyn <- function(model_index, endos, lags, cols, it, period_shift) {
+    .Call(`_dynmdl_get_jac_back_dyn`, model_index, endos, lags, cols, it, period_shift)
+}
+
 prepare_internal_stat <- function(model_index, exos, params) {
     invisible(.Call(`_dynmdl_prepare_internal_stat`, model_index, exos, params))
 }

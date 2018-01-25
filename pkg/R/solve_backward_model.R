@@ -6,8 +6,9 @@
 #' @importFrom nleqslv nleqslv
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom methods as
-solve_backward_model <- function(model_period, period_shift, endo_data, exo_data, 
-                                 params, lead_lag_incidence, njac_cols, f_dynamic, 
+solve_backward_model <- function(model_index, calc, model_period, period_shift, 
+                                 endo_data, exo_data,  params, 
+                                 lead_lag_incidence, njac_cols, f_dynamic, 
                                  jac_dynamic, control, solver) {
   
   start_per <- start_period(model_period)
@@ -22,17 +23,33 @@ solve_backward_model <- function(model_period, period_shift, endo_data, exo_data
   lag_indices <- which(lead_lag_incidence[, 1 : max_lag] != 0) + 
                     (period_shift - max_lag) * nendo
   
-  f <- function(x, lags, iper) {
-    return(f_dynamic(c(lags, x), exo_data, params, iper + period_shift))
+  is_internal = calc == "internal"
+  
+  if (is_internal) {
+    f <- function(x, lags, iper) {
+      return(get_res_back_dyn(model_index, x, lags, iper, period_shift))
+    }
+  } else {
+    f <- function(x, lags, iper) {
+      return(f_dynamic(c(lags, x), exo_data, params, iper + period_shift))
+    }
   }
   
-  jac_sparse <- function(x, lags, iper) {
-    mat_info <- get_jac_backwards(x, lags, jac_cols, exo_data, 
-                                  params, jac_dynamic, iper, period_shift)
-    return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
-                        x = mat_info$values, dims = as.integer(rep(nendo, 2))))
+  jac_sparse  <- function(x, lags, iper) {
+      # note: x and params set by prepare_dynamic_model
+      if (is_internal) {
+        mat_info <- get_jac_back_dyn(model_index, x, lags, jac_cols, iper, 
+                                     period_shift)
+      } else {
+        mat_info <- get_jac_backwards(x, lags, jac_cols, exo_data, 
+                                      params, jac_dynamic, iper, period_shift)
+      }
+      ret <- sparseMatrix(i = mat_info$rows, j = mat_info$cols,
+                          x = mat_info$values, 
+                          dims = as.integer(rep(nendo, 2)))
+      return(ret)
   }
-  
+
   if (solver == "nleqslv") {
     jac_fun <- function(x, lags, iper) {
       return(as(jac_sparse(x, lags, iper), "matrix"))
