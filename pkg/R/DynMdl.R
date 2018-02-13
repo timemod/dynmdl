@@ -437,15 +437,8 @@ DynMdl <- R6Class("DynMdl",
                                        private$jac_dynamic,
                                        private$mdldef$endo_count,
                                        private$mdldef$njac_cols,
-                                       only_eigval = TRUE, debug = FALSE)
-      private$prepare_dynamic_model()
-      
-      cat("EIGENVALUES:\n")
-      cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
-      for (eigv in private$ss$eigval) {
-        cat(sprintf("%16g%16g%16g\n", Mod(eigv), Re(eigv), Im(eigv)))
-      }
-      cat("\n")
+                                       check_only = TRUE, debug = FALSE)
+      private$close_dynamic_model()
       return(invisible(self))
     },
     residual_check = function(tol = 0) {
@@ -575,7 +568,7 @@ DynMdl <- R6Class("DynMdl",
                                       private$mdldef$params, private$jac_dynamic,
                                       private$mdldef$endo_count, 
                                       private$mdldef$njac_cols,
-                                      only_eigval = FALSE, debug = FALSE)
+                                      check_only = FALSE, debug = FALSE)
       
       private$endo_data <- solve_perturbation_(private$ss,
                                                private$mdldef$max_endo_lag,
