@@ -69,7 +69,7 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
   if (debug) {
     printobj(D)
     printobj(E)
-    printobj(qz_result)
+    if (!check_only) printobj(qz_result)
   }
   
   sdim <- sum(abs(ss$eigval) <= 1)

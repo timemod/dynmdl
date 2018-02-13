@@ -71,18 +71,14 @@ init_state_space <- function(nexo, lead_lag_incidence, debug = FALSE) {
   if (max_lead > 0) {
     
     ss$kstate[1 : nendo, 3] <- kiy[1 : nendo] -
-      nnz(lead_lag_incidence[, max_lag+ 1 ])
+                  nnz(lead_lag_incidence[, max_lag+ 1 ])
     ss$kstate[ss$kstate[ , 3] < 0, 3] <- 0
     
-    #printobj(kiy)
-    #printobj(ss$kstate)
-    #printobj((nendo + 1): nrow(ss$kstate))
-    #printobj((2 * nendo + 1) : length(kiy))
-    
-    if (length(kiy) >= (2 * nendo + 1)) {
+    if (nrow(ss$kstate) > nendo) {
       ss$kstate[(nendo + 1): nrow(ss$kstate), 4] <-
                         kiy[(2 * nendo + 1) : length(kiy)]
     }
+    
   } else {
     ss$kstate[, 4] <- kiy[(nendo + 1) : length(kiy)]
   }

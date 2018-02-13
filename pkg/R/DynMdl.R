@@ -438,7 +438,7 @@ DynMdl <- R6Class("DynMdl",
                                        private$mdldef$endo_count,
                                        private$mdldef$njac_cols,
                                        check_only = TRUE, debug = FALSE)
-      private$close_dynamic_model()
+      private$clean_dynamic_model()
       return(invisible(self))
     },
     residual_check = function(tol = 0) {
@@ -617,7 +617,7 @@ DynMdl <- R6Class("DynMdl",
     get_eigval = function() {
       if (!is.null(private$ss) && !is.null(private$ss$eigval)) {
         i <- order(abs(private$ss$eigval))
-        return (private$ss$eigval[i])
+        return(private$ss$eigval[i])
       } else {
         stop(paste("Eigen values not available. Calculate the eigenvalues",
                    "with method check()."))

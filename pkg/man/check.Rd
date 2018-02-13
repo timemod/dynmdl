@@ -3,7 +3,7 @@
 \name{check}
 \alias{check}
 \title{\code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model 
-around thesteady state.}
+around the steady state.}
 \description{
 This method of R6 class \code{\link{DynMdl}} computes the steady state,
 constructs a linear model around the state steady and finally

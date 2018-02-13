@@ -661,7 +661,7 @@ NULL
 NULL
 
 #' \code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model 
-#' around thesteady state.
+#' around the steady state.
 #' @name check
 #'
 #' @description
