@@ -539,7 +539,7 @@ DynMdl <- R6Class("DynMdl",
       private$clean_dynamic_model()
       
       private$endo_data[private$model_period, ] <-
-        t(matrix(ret$x, nrow = private$mdldef$endo_count))
+                      t(matrix(ret$x, nrow = private$mdldef$endo_count))
       
       if (!ret$solved) {
         stop(paste("Model solving not succesfull.\n", ret$message))

@@ -104,12 +104,16 @@ solve_backward_model <- function(model_index, calc, model_period, period_shift,
                     out$iter))
       }
     }
+    
+    # update data
+    data[cur_indices] <- out$x
+    
+    itr_tot <- itr_tot + out$iter
+    
     if (error) {
       break
     }
 
-    itr_tot <- itr_tot + out$iter
-    data[cur_indices] <- out$x
   }
   
   if (!control$silent) {
@@ -119,11 +123,7 @@ solve_backward_model <- function(model_index, calc, model_period, period_shift,
     cat(sprintf("Total time LU fact.       : %g\n", t_lu))
     cat(sprintf("Total time solve          : %g\n", t_solve))
   }
-  
-  if (error) {
-    stop("Solving backwards model not succesful")
-  }
-  
+
   # update data
   x <- data[(1 : (nper * nendo)) + period_shift * nendo]
   return (list(solved = !error, itr_tot = itr_tot, x = x,
