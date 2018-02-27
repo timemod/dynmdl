@@ -1222,6 +1222,7 @@ DynMdl <- R6Class("DynMdl",
         stop(private$period_error_msg)
       }
       period <- as.period_range(period)
+      period <- change_frequency(period, frequency(private$data_period))
       if (frequency(period) != frequency(private$data_period)) {
         stop(paste0("Period ", period, " has a different frequency than ",
                     "the model period ", private$model_period, "."))

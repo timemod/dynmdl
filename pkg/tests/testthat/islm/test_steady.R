@@ -74,7 +74,4 @@ test_that("put_static_endos with period", {
   #
   msg <- "The start period \\(2040\\) is after the end period \\(2023\\)"
   expect_error(mdl_steady3$put_static_endos("2040/"), msg)
-  
-  msg <- "Period 2012Q2 has a different frequency than the model period 2017/2022."
-  expect_error(mdl_steady3$put_static_endos("2012Q2"), msg)
 })

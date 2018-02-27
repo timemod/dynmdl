@@ -60,9 +60,6 @@ test_that("change_data handles errors correctly", {
   expect_error(mdl2$change_endo_data(f, names = c("y", "xxx")), msg)
   msg <- "The variables p xxx are no endogenous model variables"
   expect_error(mdl2$change_endo_data(f, names = c("p", "xxx")), msg)
-  msg <- paste("Period 2012 has a different frequency than the model",
-               "period 2015Q2/2016Q3.")
-  expect_error(mdl2$change_endo_data(f, names = "c", period = "2012Y"), msg)
   msg <- "argument fun is not a function"
   expect_error(mdl2$change_endo_data(2, names), msg)
 })
