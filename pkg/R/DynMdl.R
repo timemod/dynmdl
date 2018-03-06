@@ -1075,6 +1075,12 @@ DynMdl <- R6Class("DynMdl",
     },
     check_model_period = function(period) {
       
+      if (frequency(period) != frequency(private$data_period)) {
+        stop(paste0("The specified period (", period, 
+                    ") has a different frequency than the data period (",
+                    private$data_period, ")."))
+      }
+      
       ps <- start_period(private$data_period) + private$mdldef$max_lag
       pe <- end_period(private$data_period)   - private$mdldef$max_lead
       
