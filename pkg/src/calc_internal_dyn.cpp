@@ -170,7 +170,7 @@ NumericVector get_res_back_dyn(int model_index, NumericVector endos,
 
 // [[Rcpp::export]]
 List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags,
-                      NumericVector cols, int it, int period_shift) {
+                      NumericVector cols, int iper) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
@@ -191,7 +191,7 @@ List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags,
     int *cols_t = new int[njac];
     double *values_t = new double[njac];
 
-    mdl->get_jac(x, rows_t, cols_t, values_t, it + period_shift - 1);
+    mdl->get_jac(x, rows_t, cols_t, values_t, iper - 1);
 
     vector<int> rows; 
     vector<int> columns;

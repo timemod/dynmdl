@@ -9,15 +9,13 @@
 solve_backward_model <- function(model_index, calc, model_period, period_shift, 
                                  endo_data, exo_data,  params, 
                                  lead_lag_incidence, njac_cols, f_dynamic, 
-                                 jac_dynamic, control, solver) {
+                                 get_back_jac, control, solver) {
   
   start_per <- start_period(model_period)
   nper <- nperiod(model_period)
   nendo <- ncol(endo_data)
   
   data <- t(endo_data)
-  
-  jac_cols <- lead_lag_incidence[, "0"]
   
   max_lag <- abs(as.numeric(colnames(lead_lag_incidence)[1]))
   lag_indices <- which(lead_lag_incidence[, 1 : max_lag] != 0) + 
@@ -35,27 +33,12 @@ solve_backward_model <- function(model_index, calc, model_period, period_shift,
     }
   }
   
-  jac_sparse  <- function(x, lags, iper) {
-      # note: x and params set by prepare_dynamic_model
-      if (is_internal) {
-        mat_info <- get_jac_back_dyn(model_index, x, lags, jac_cols, iper, 
-                                     period_shift)
-      } else {
-        mat_info <- get_jac_backwards(x, lags, jac_cols, exo_data, 
-                                      params, jac_dynamic, iper, period_shift)
-      }
-      ret <- sparseMatrix(i = mat_info$rows, j = mat_info$cols,
-                          x = mat_info$values, 
-                          dims = as.integer(rep(nendo, 2)))
-      return(ret)
-  }
-
   if (solver == "nleqslv") {
     jac_fun <- function(x, lags, iper) {
-      return(as(jac_sparse(x, lags, iper), "matrix"))
+      return(as(get_back_jac(x, lags, iper), "matrix"))
     }
   } else {
-    jac_fun <- jac_sparse
+    jac_fun <- get_back_jac
   }
   
   itr_tot <- 0

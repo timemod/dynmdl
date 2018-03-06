@@ -21,8 +21,8 @@ get_res_back_dyn <- function(model_index, endos, lags, it, period_shift) {
     .Call(`_dynmdl_get_res_back_dyn`, model_index, endos, lags, it, period_shift)
 }
 
-get_jac_back_dyn <- function(model_index, endos, lags, cols, it, period_shift) {
-    .Call(`_dynmdl_get_jac_back_dyn`, model_index, endos, lags, cols, it, period_shift)
+get_jac_back_dyn <- function(model_index, endos, lags, cols, iper) {
+    .Call(`_dynmdl_get_jac_back_dyn`, model_index, endos, lags, cols, iper)
 }
 
 prepare_internal_stat <- function(model_index, exos, params) {
@@ -53,8 +53,8 @@ get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params,
     .Call(`_dynmdl_get_triplet_jac`, endos, lead_lag_incidence, tshift, exo_data, params, jac_dynamic, n_endo, nper, period_shift)
 }
 
-get_jac_backwards <- function(endos, lags, cols, exo_data, params, jac_dynamic, it, period_shift) {
-    .Call(`_dynmdl_get_jac_backwards`, endos, lags, cols, exo_data, params, jac_dynamic, it, period_shift)
+get_jac_backwards <- function(endos, lags, cols, exo_data, params, jac_dynamic, iper) {
+    .Call(`_dynmdl_get_jac_backwards`, endos, lags, cols, exo_data, params, jac_dynamic, iper)
 }
 
 run_macro <- function(modfile, new_modfile) {

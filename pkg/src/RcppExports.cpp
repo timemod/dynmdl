@@ -80,8 +80,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_jac_back_dyn
-List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags, NumericVector cols, int it, int period_shift);
-RcppExport SEXP _dynmdl_get_jac_back_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP itSEXP, SEXP period_shiftSEXP) {
+List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags, NumericVector cols, int iper);
+RcppExport SEXP _dynmdl_get_jac_back_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP iperSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -89,9 +89,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type lags(lagsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type cols(colsSEXP);
-    Rcpp::traits::input_parameter< int >::type it(itSEXP);
-    Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_jac_back_dyn(model_index, endos, lags, cols, it, period_shift));
+    Rcpp::traits::input_parameter< int >::type iper(iperSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_jac_back_dyn(model_index, endos, lags, cols, iper));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -195,8 +194,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_jac_backwards
-List get_jac_backwards(NumericVector endos, NumericVector lags, NumericVector cols, SEXP exo_data, SEXP params, Function jac_dynamic, int it, int period_shift);
-RcppExport SEXP _dynmdl_get_jac_backwards(SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP itSEXP, SEXP period_shiftSEXP) {
+List get_jac_backwards(NumericVector endos, NumericVector lags, NumericVector cols, SEXP exo_data, SEXP params, Function jac_dynamic, int iper);
+RcppExport SEXP _dynmdl_get_jac_backwards(SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP exo_dataSEXP, SEXP paramsSEXP, SEXP jac_dynamicSEXP, SEXP iperSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -206,9 +205,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type exo_data(exo_dataSEXP);
     Rcpp::traits::input_parameter< SEXP >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< Function >::type jac_dynamic(jac_dynamicSEXP);
-    Rcpp::traits::input_parameter< int >::type it(itSEXP);
-    Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_jac_backwards(endos, lags, cols, exo_data, params, jac_dynamic, it, period_shift));
+    Rcpp::traits::input_parameter< int >::type iper(iperSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_jac_backwards(endos, lags, cols, exo_data, params, jac_dynamic, iper));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -252,7 +250,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_get_triplet_jac_dyn", (DL_FUNC) &_dynmdl_get_triplet_jac_dyn, 7},
     {"_dynmdl_get_jac_dyn", (DL_FUNC) &_dynmdl_get_jac_dyn, 3},
     {"_dynmdl_get_res_back_dyn", (DL_FUNC) &_dynmdl_get_res_back_dyn, 5},
-    {"_dynmdl_get_jac_back_dyn", (DL_FUNC) &_dynmdl_get_jac_back_dyn, 6},
+    {"_dynmdl_get_jac_back_dyn", (DL_FUNC) &_dynmdl_get_jac_back_dyn, 5},
     {"_dynmdl_prepare_internal_stat", (DL_FUNC) &_dynmdl_prepare_internal_stat, 3},
     {"_dynmdl_get_residuals_stat", (DL_FUNC) &_dynmdl_get_residuals_stat, 2},
     {"_dynmdl_get_triplet_jac_stat", (DL_FUNC) &_dynmdl_get_triplet_jac_stat, 2},
@@ -260,7 +258,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 1},
     {"_dynmdl_get_residuals_", (DL_FUNC) &_dynmdl_get_residuals_, 8},
     {"_dynmdl_get_triplet_jac", (DL_FUNC) &_dynmdl_get_triplet_jac, 9},
-    {"_dynmdl_get_jac_backwards", (DL_FUNC) &_dynmdl_get_jac_backwards, 8},
+    {"_dynmdl_get_jac_backwards", (DL_FUNC) &_dynmdl_get_jac_backwards, 7},
     {"_dynmdl_run_macro", (DL_FUNC) &_dynmdl_run_macro, 2},
     {"_dynmdl_serialize_polish_models", (DL_FUNC) &_dynmdl_serialize_polish_models, 1},
     {"_dynmdl_deserialize_polish_models", (DL_FUNC) &_dynmdl_deserialize_polish_models, 1},

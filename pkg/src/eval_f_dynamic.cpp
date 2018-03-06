@@ -100,7 +100,7 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
 List get_jac_backwards(NumericVector endos, NumericVector lags,
                        NumericVector cols, 
                        SEXP exo_data, SEXP params, Function jac_dynamic,
-                       int it, int period_shift) {
+                       int iper) {
 
     int nlags = lags.size();
     int nendo = endos.size();
@@ -113,7 +113,7 @@ List get_jac_backwards(NumericVector endos, NumericVector lags,
         x[i + nlags] = endos[i];
     }
 
-    List jac_data = jac_dynamic(x, exo_data, params, it + period_shift);
+    List jac_data = jac_dynamic(x, exo_data, params, iper);
     IntegerVector rows_t   = jac_data[0];
     IntegerVector cols_t   = jac_data[1];
     NumericVector values_t = jac_data[2];

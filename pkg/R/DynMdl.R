@@ -531,7 +531,7 @@ DynMdl <- R6Class("DynMdl",
                                     private$mdldef$lead_lag_incidence,
                                     private$mdldef$njac_cols,
                                     private$f_dynamic,
-                                    private$jac_dynamic,
+                                    private$get_back_jac,
                                     control = control_,
                                     solver = solver)
       }
@@ -602,6 +602,51 @@ DynMdl <- R6Class("DynMdl",
       private$prepare_static_model()
       jac <- private$get_static_jac(private$mdldef$endos)
       private$clean_static_model()
+      if (!sparse) {
+        jac <- as(jac, "matrix")
+      }
+      colnames(jac) <- private$endo_names
+      return(jac)
+    },
+    get_back_jacob = function(period, sparse = FALSE) {
+      # returns the Jacobian for the backward looking model
+      if (private$mdldef$max_endo_lead > 0) {
+        stop("Method get_back_jacob can only be used for backward looking models")
+      }
+      if (is.null(private$model_period)) {
+        stop(private$period_error_msg)
+      }
+      period <- as.period(period)
+      if (frequency(period) != frequency(private$model_period)) {
+        stop(paste0("The frequency of period (", period, ") does not agree",
+                    "with the model period (", private$model_period, ")"))
+      }
+      # check period
+      allowed_range <- period_range(start_period(private$data_period) + 
+                                    private$mdldef$max_lag,
+                                    end_period(private$data_period))
+      if (period < start_period(allowed_range)  ||
+          period > end_period(allowed_range)) { 
+        stop(paste0("The specified period (", period, 
+                    ") should lie within the range ",
+                    allowed_range, "."))
+      }
+      
+      iper <- period - start_period(private$data_period)
+      
+      nendo <- private$mdldef$endo_count
+      
+      max_lag <- abs(as.numeric(colnames(private$mdldef$lead_lag_incidence)[1]))
+      lag_indices <- which(private$mdldef$lead_lag_incidence[, 1 : max_lag] != 0) + 
+                                (private$period_shift - max_lag) * nendo
+      data <- t(private$endo_data)
+      lags <- data[lag_indices + (iper - 1) * nendo]
+      cur_indices <- (1:nendo) + (iper - 1 + private$period_shift) * nendo
+      x <- data[cur_indices]
+      
+      private$prepare_dynamic_model()
+      jac <- private$get_back_jac(x, lags, iper)
+      private$clean_dynamic_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
       }
@@ -994,6 +1039,21 @@ DynMdl <- R6Class("DynMdl",
       } else {
         mat_info <- private$jac_static(x, private$mdldef$exos, 
                                        private$mdldef$params)
+      }
+      return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
+                          x = mat_info$values, 
+                          dims = as.integer(rep(private$mdldef$endo_count, 2))))
+    },
+    get_back_jac = function(x, lags, iper) {
+      # private function to obtain the backward jacobian at period iper
+      jac_cols <- private$mdldef$lead_lag_incidence[, "0"]
+      if (private$calc == "internal") {
+        mat_info <- get_jac_back_dyn(private$mdldef$model_index, x, lags, 
+                                     jac_cols, iper)
+      } else {
+        mat_info <- get_jac_backwards(x, lags, jac_cols, private$exo_data, 
+                                      private$mdldef$params, 
+                                      private$jac_dynamic, iper)
       }
       return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
                           x = mat_info$values, 

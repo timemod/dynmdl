@@ -98,4 +98,17 @@ test_that("get_jacob", {
   jac <- mdl_2$get_jacob()
   jac_int <- mdl_int_2$get_jacob()
   expect_equal(jac, jac_int)
+  
+  back_jac <- mdl$get_back_jacob("2013Q1")
+
+  # check that back_jac is equivalent with the full stacked-time Jacobian
+  expected_result <- jac[1:7, 1:7]
+  rownames(expected_result) <- NULL
+  colnames(expected_result) <- sub("_t\\d$", "", colnames(expected_result))
+  expect_equal(back_jac, expected_result)
+  
+  msg <- "The specified period \\(2011Q2\\) should lie within the range 2011Q3/2015Q4."
+  expect_error(mdl$get_back_jacob("2011Q2"),  msg)
 })
+
+
