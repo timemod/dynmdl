@@ -17,8 +17,8 @@ get_jac_dyn <- function(model_index, endos, it) {
     .Call(`_dynmdl_get_jac_dyn`, model_index, endos, it)
 }
 
-get_res_back_dyn <- function(model_index, endos, lags, it, period_shift) {
-    .Call(`_dynmdl_get_res_back_dyn`, model_index, endos, lags, it, period_shift)
+get_res_back_dyn <- function(model_index, endos, lags, it) {
+    .Call(`_dynmdl_get_res_back_dyn`, model_index, endos, lags, it)
 }
 
 get_jac_back_dyn <- function(model_index, endos, lags, cols, iper) {

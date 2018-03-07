@@ -526,7 +526,7 @@ DynMdl <- R6Class("DynMdl",
         }
       } else {
         ret <- solve_backward_model(private$mdldef, private$calc,
-                                    private$model_period, private$period_shift,
+                                    private$model_period, private$data_period,
                                     private$endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
                                     control = control_, solver = solver)
@@ -1025,6 +1025,7 @@ DynMdl <- R6Class("DynMdl",
                           dims = as.integer(rep(n, 2))))
     },
     get_static_jac = function(x) {
+      # private function to obtain the jacobian for the static model
       if (private$calc == "internal") {
         mat_info <- get_triplet_jac_stat(private$mdldef$model_index, 
                                          private$mdldef$endos)
@@ -1036,16 +1037,16 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values, 
                           dims = as.integer(rep(private$mdldef$endo_count, 2))))
     },
-    get_back_jac = function(x, lags, iper) {
-      # private function to obtain the backward jacobian at period iper
+    get_back_jac = function(x, lags, period_index) {
+      # private function to obtain the backward jacobian at period period_index
       jac_cols <- private$mdldef$lead_lag_incidence[, "0"]
       if (private$calc == "internal") {
         mat_info <- get_jac_back_dyn(private$mdldef$model_index, x, lags, 
-                                     jac_cols, iper)
+                                     jac_cols, period_index)
       } else {
         mat_info <- get_jac_backwards(x, lags, jac_cols, private$exo_data, 
                                       private$mdldef$params, 
-                                      private$jac_dynamic, iper)
+                                      private$jac_dynamic, period_index)
       }
       return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
                           x = mat_info$values, 

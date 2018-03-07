@@ -144,7 +144,7 @@ List get_jac_dyn(int model_index, NumericVector endos, int it) {
 
 // [[Rcpp::export]]
 NumericVector get_res_back_dyn(int model_index, NumericVector endos,
-                               NumericVector lags, int it, int period_shift) {
+                               NumericVector lags, int it) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
@@ -161,7 +161,7 @@ NumericVector get_res_back_dyn(int model_index, NumericVector endos,
     }
     
     NumericVector res(nendo);
-    mdl->get_residuals(x, REAL(res), it + period_shift - 1);
+    mdl->get_residuals(x, REAL(res), it - 1);
 
     delete[] x;
 
