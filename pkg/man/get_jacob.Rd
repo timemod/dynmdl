@@ -57,7 +57,7 @@ This Jacobian is used to solve backward looking models.
 }
 
 \examples{
-mdl <- islm_mdl()
+mdl <- islm_mdl("2018Q1/2019Q4")
 print(mdl$get_static_jacob())
 print(mdl$get_jacob())
 
