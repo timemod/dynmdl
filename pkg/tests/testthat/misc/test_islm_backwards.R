@@ -103,8 +103,15 @@ test_that("get_jacob", {
   jac_int <- mdl_int_2$get_jacob()
   expect_equal(jac, jac_int)
   
-  back_jac <- mdl$get_back_jacob("2013Q1")
-
+  # modify data in some periods, this should not affect the result of 
+  # get_back_jacob.
+  mdl_2$set_endo_values(999, names = "r", period = "2012Q4") 
+  mdl_2$set_endo_values(999, names = "r", period = "2013Q2") 
+  
+  back_jac <- mdl_2$get_back_jacob("2013Q1")
+  back_jac_int <- mdl_int_2$get_back_jacob("2013Q1")
+  expect_equal(back_jac, back_jac_int)
+  
   # check that back_jac is equivalent with the full stacked-time Jacobian
   expected_result <- jac[1:7, 1:7]
   rownames(expected_result) <- NULL

@@ -525,19 +525,13 @@ DynMdl <- R6Class("DynMdl",
           cat(sprintf("Total time solve          : %g\n", ret$t_solve))
         }
       } else {
-        ret <- solve_backward_model(private$mdldef$model_index, 
-                                    private$calc,
-                                    private$model_period,
-                                    private$period_shift,
-                                    private$endo_data,
-                                    private$exo_data, private$mdldef$params,
-                                    private$mdldef$lead_lag_incidence,
-                                    private$mdldef$njac_cols,
-                                    private$f_dynamic,
-                                    private$get_back_jac,
-                                    control = control_,
-                                    solver = solver)
+        ret <- solve_backward_model(private$mdldef, private$calc,
+                                    private$model_period, private$period_shift,
+                                    private$endo_data, private$exo_data, 
+                                    private$f_dynamic, private$get_back_jac,
+                                    control = control_, solver = solver)
       }
+
       
       private$clean_dynamic_model()
       
@@ -635,20 +629,15 @@ DynMdl <- R6Class("DynMdl",
                     allowed_range, "."))
       }
       
-      iper <- period - start_period(private$data_period)
+      period_index <- period - start_period(private$data_period) + 1
+      var_indices <- get_var_indices_back(private$mdldef,  period_index)
       
-      nendo <- private$mdldef$endo_count
-      
-      max_lag <- abs(as.numeric(colnames(private$mdldef$lead_lag_incidence)[1]))
-      lag_indices <- which(private$mdldef$lead_lag_incidence[, 1 : max_lag] != 0) + 
-                                (private$period_shift - max_lag) * nendo
       data <- t(private$endo_data)
-      lags <- data[lag_indices + (iper - 1) * nendo]
-      cur_indices <- (1:nendo) + (iper - 1 + private$period_shift) * nendo
-      x <- data[cur_indices]
+      lags <- data[var_indices$lags]
+      x    <- data[var_indices$curvars]
       
       private$prepare_dynamic_model()
-      jac <- private$get_back_jac(x, lags, iper)
+      jac <- private$get_back_jac(x, lags, period_index - 1)
       private$clean_dynamic_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
