@@ -91,11 +91,15 @@ test_that("get_jacob", {
   # create two copies of the model with only two periods
   mdl_2 <- mdl$copy()
   mdl_int_2 <- mdl_int$copy()
+  
   p <- period_range("2013Q1/2013Q2")
   mdl_2$set_period(p)
   mdl_int_2$set_period(p)
   
   jac <- mdl_2$get_jacob()
+  
+  expect_known_value(jac,  "expected_output/islm_back_jac.rds")
+  
   jac_int <- mdl_int_2$get_jacob()
   expect_equal(jac, jac_int)
   
@@ -109,6 +113,9 @@ test_that("get_jacob", {
   
   msg <- "The specified period \\(2011Q2\\) should lie within the range 2011Q3/2015Q4."
   expect_error(mdl$get_back_jacob("2011Q2"),  msg)
+  
+  jac_sparse <- mdl$get_back_jacob("2013Q1", sparse = TRUE)
+  expect_s4_class(jac_sparse, "dgCMatrix")
 })
 
 

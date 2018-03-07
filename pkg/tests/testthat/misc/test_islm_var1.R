@@ -167,3 +167,12 @@ test_that("put_static_endos", {
                                 mdl$get_endo_data(period = "2030/"))))
 })
 
+test_that("get_jacob", {
+  mdl2 <- mdl$copy()
+  mdl2$set_period("2015/2020")
+  
+  jac <- mdl2$get_jacob()
+  expect_known_value(jac,  "expected_output/islm_var1_jac.rds")
+})
+
+
