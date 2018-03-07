@@ -53,4 +53,13 @@ test_that("solve_perturb linear model", {
   expect_equal(mdl2$get_endo_data(), mdl3$get_endo_data())
 })
 
+test_that("get_static_jacob and get_jacob", {
+  mdl2 <- mdl$clone()
+  mdl2$set_period("2015Q3/2015Q4")
+  stat_jac <- mdl2$get_static_jacob()
+  jac <- mdl2$get_jacob()
+  expect_known_value(stat_jac,  "expected_output/islm_static_jac.rds")
+  expect_known_value(jac,  "expected_output/islm_jac.rds")
+})
+
 

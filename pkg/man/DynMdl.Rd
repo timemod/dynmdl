@@ -96,10 +96,13 @@ and report the differences larger than a tolerance parameters}
 theory used in the Dynare function stoch_simul. Only shocks in the first
 solution period are allowed.}
 
-\item{\code{get_jacob}}{Returns the Jacobian for the static problem}
+\item{\code{\link{get_jacob}}}{Returns the Jacobian for the dynamic model}
 
-\item{\code{get_static_jacob}}{Returns the Jacobian for the
-stacked-time Newton problem}
+\item{\code{\link{get_static_jacob}}}{Returns the Jacobian for the
+static version of the model}
+
+\item{\code{\link{get_back_jacob}}}{Returns the Jacobian for a
+backward looking model at a specific period}
 
 \item{\code{\link{get_eigval}}}{Returns the eigenvalues computed with 
 method \code{\link{check}} or \code{solve_perturbation}}
