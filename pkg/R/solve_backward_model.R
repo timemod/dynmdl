@@ -4,7 +4,8 @@
 #' @importFrom methods as
 solve_backward_model <- function(mdldef, calc, solve_period, data_period, 
                                  endo_data, exo_data, f_dynamic, 
-                                 get_back_jac, control, solver, ...) {
+                                 get_back_jac, control, solver, 
+                                 start_option, ...) {
   
   if (calc == "internal") {
     f <- function(x, lags, period_index) {
@@ -49,13 +50,15 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
   t_lu    <- 0
   t_solve <- 0
   error   <- FALSE
- 
+  
   for (iper in 1:nper) {
     period_index <- start_per_index + iper - 1
     per_txt <- as.character(start_per + (iper - 1))
     lags <- data[var_indices$lags + (iper - 1) * nendo]
     curvar_indices <- var_indices$curvars + (iper - 1) * nendo
-    start <- data[curvar_indices]
+    if (start_option == "current" || iper == 1) {
+      start <- data[curvar_indices]
+    }
     if (solver == "nleqslv") {
       out <- nleqslv(start, fn = f, jac = jac_fun, method = "Newton",
                      lags = lags, period_index = period_index, 
@@ -83,6 +86,8 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     
     # update data
     data[curvar_indices] <- out$x
+    
+    if (start_option == "previous") start <- out$x
     
     itr_tot <- itr_tot + out$iter
     

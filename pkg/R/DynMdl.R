@@ -488,10 +488,12 @@ DynMdl <- R6Class("DynMdl",
       return(regts(residuals, start = p_start, end = p_end))
     },
     solve = function(control = list(), force_stacked_time = FALSE,
-                     solver = c("umfpackr", "nleqslv"), ...) {
+                     solver = c("umfpackr", "nleqslv"),  
+                     start = c("current", "previous"), ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       solver <- match.arg(solver)
+      start <- match.arg(start)
       
       control_ <- list(ftol = 1e-8, trace = FALSE, cndtol = 1e-12, 
                        silent = FALSE)
@@ -505,6 +507,7 @@ DynMdl <- R6Class("DynMdl",
       private$prepare_dynamic_model()
    
       if (private$mdldef$max_endo_lead > 0 || force_stacked_time ) {
+        
         # preparations
         if (solver != "umfpackr") {
           stop(paste("For forward looking models only the umfpackr",
@@ -529,7 +532,8 @@ DynMdl <- R6Class("DynMdl",
                                     private$model_period, private$data_period,
                                     private$endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
-                                    control = control_, solver = solver, ...)
+                                    control = control_, solver = solver,
+                                    start_option = start, ...)
       }
 
       

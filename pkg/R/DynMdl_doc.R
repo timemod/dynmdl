@@ -580,7 +580,8 @@ NULL
 #' \code{DynMdl} method:
 #' \preformatted{
 #'  md$solve(control = list(), force_stacked_time = FALSE,
-#'             solver = c("umfpackr", "nleqslv"), ...)
+#'           solver = c("umfpackr", "nleqslv"), 
+#'           start = c("current", "previous"), ...)
 #' }
 #'
 #' \code{mdl} is an \code{\link{DynMdl}} object
@@ -597,6 +598,13 @@ NULL
 #' \item{\code{solver}}{Specifies the solver employed to solve the model:
 #' \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
 #' For large model, the \code{umfpackr} solve can be much faster.}
+#' \item{\code{start}}{Method used to initialize starting values when solving
+#' the model backwards. For \code{"current"} (the default) the current values 
+#' of the endogenous variables are used as starting values. For 
+#' \code{"previous"} the solution of the previous period is used to create 
+#' starting values (except for the first period when the model is solved). 
+#' This argument is ignored if the model if solved with the stacked time Newton 
+#' method}
 #' \item{\code{...}}{Other arguments passed to the solver}
 #' }
 #' @seealso \code{\link{solve_steady}}
