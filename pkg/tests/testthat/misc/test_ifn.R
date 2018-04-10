@@ -43,7 +43,8 @@ test_that("solve_steady, check and solve_perturb give an error", {
               "singular. The inverse condition is 0.\n")
   outp <- capture_output(expect_warning(mdl$solve_steady(), msg))
   expect_equal(outp, "No convergence after 1 iterations")
-  outp <- capture_output(expect_warning(mdl$check(), msg))
+  outp <- capture_output(expect_error(expect_warning(mdl$check(), msg), 
+                                      "No steady state ... checking model is not possible"))
   error_msg <-  "Method solve_perturbation does not work for models with exogenous lags or leads"
   expect_warning(expect_error(mdl$solve_perturbation(), error_msg), msg)
 })

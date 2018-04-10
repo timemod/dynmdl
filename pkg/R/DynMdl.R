@@ -413,9 +413,13 @@ DynMdl <- R6Class("DynMdl",
       }
       private$clean_static_model()
       private$mdldef$endos <- out$x
+      
 
       if (error) {
+        private$solve_status <- "ERROR"
         warning(paste0("Solving the steady state not succesful.\n", out$message))
+      } else {
+        private$solve_status <- "OK"
       }
       return (invisible(self))
     },
@@ -431,6 +435,10 @@ DynMdl <- R6Class("DynMdl",
     check = function() {
 
       self$solve_steady(control = list(silent = TRUE))
+      
+      if (private$solve_status != "OK") {
+        stop("No steady state ... checking model is not possible")
+      }
       
       private$prepare_dynamic_model()
       private$ss  <- solve_first_order(private$ss,
@@ -543,7 +551,10 @@ DynMdl <- R6Class("DynMdl",
                       t(matrix(ret$x, nrow = private$mdldef$endo_count))
       
       if (!ret$solved) {
+        private$solve_status <- "ERROR"
         warning(paste("Model solving not succesful.\n", ret$message))
+      } else {
+        private$solve_status <- "OK"
       }
       return(invisible(self))
     },
@@ -795,6 +806,7 @@ DynMdl <- R6Class("DynMdl",
     nrow_exo = NA_integer_,
     jac = NULL,
     jac_steady = NULL,
+    solve_status = NA_character_,
     get_names_ = function(type, names, pattern) {
       if (type == "endo") {
         vnames <- private$endo_names
