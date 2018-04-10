@@ -415,7 +415,7 @@ DynMdl <- R6Class("DynMdl",
       private$mdldef$endos <- out$x
 
       if (error) {
-        stop(paste0("Error solving the steady state.\n", out$message))
+        warning(paste0("Solving the steady state not succesful.\n", out$message))
       }
       return (invisible(self))
     },
@@ -543,7 +543,7 @@ DynMdl <- R6Class("DynMdl",
                       t(matrix(ret$x, nrow = private$mdldef$endo_count))
       
       if (!ret$solved) {
-        stop(paste("Model solving not succesfull.\n", ret$message))
+        warning(paste("Model solving not succesful.\n", ret$message))
       }
       return(invisible(self))
     },

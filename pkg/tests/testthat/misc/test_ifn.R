@@ -39,10 +39,11 @@ test_that("solve", {
 
 test_that("solve_steady, check and solve_perturb give an error", {
   # for the ifn model the steady state cannot be computed  
-  msg <- paste("Error solving the steady state.\nThe Jacobian is \\(nearly\\)",
+  msg <- paste("Solving the steady state not succesful.\nThe Jacobian is \\(nearly\\)",
               "singular. The inverse condition is 0.\n")
-  outp <- capture_output(expect_error(mdl$solve_steady(), msg))
+  outp <- capture_output(expect_warning(mdl$solve_steady(), msg))
   expect_equal(outp, "No convergence after 1 iterations")
-  expect_error(mdl$check(), msg)
-  expect_error(mdl$solve_perturbation(), msg)
+  outp <- capture_output(expect_warning(mdl$check(), msg))
+  error_msg <-  "Method solve_perturbation does not work for models with exogenous lags or leads"
+  expect_warning(expect_error(mdl$solve_perturbation(), error_msg), msg)
 })
