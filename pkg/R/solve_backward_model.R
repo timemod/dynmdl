@@ -4,7 +4,7 @@
 #' @importFrom methods as
 solve_backward_model <- function(mdldef, calc, solve_period, data_period, 
                                  endo_data, exo_data, f_dynamic, 
-                                 get_back_jac, control, solver) {
+                                 get_back_jac, control, solver, ...) {
   
   if (calc == "internal") {
     f <- function(x, lags, period_index) {
@@ -58,11 +58,13 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     start <- data[curvar_indices]
     if (solver == "nleqslv") {
       out <- nleqslv(start, fn = f, jac = jac_fun, method = "Newton",
-                     lags = lags, period_index = period_index, control = control_)
+                     lags = lags, period_index = period_index, 
+                     control = control_, ...)
       error <- out$termcd != 1
     } else {
       out <- umf_solve_nl(start, fn = f, jac = jac_fun, lags = lags,
-                          period_index = period_index, control = control_)
+                          period_index = period_index, control = control_,
+                          ...)
       error <- !out$solved
       t_f     <- t_f     + out$t_f
       t_jac   <- t_jac   + out$t_jac

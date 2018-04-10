@@ -529,7 +529,7 @@ DynMdl <- R6Class("DynMdl",
                                     private$model_period, private$data_period,
                                     private$endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
-                                    control = control_, solver = solver)
+                                    control = control_, solver = solver, ...)
       }
 
       
