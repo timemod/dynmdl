@@ -408,7 +408,7 @@ DynMdl <- R6Class("DynMdl",
           return(as(j, "matrix"))
         }
         out <- nleqslv(start, fn = f_res, jac = jacf, method = "Newton",
-                       control = control)
+                       control = control,  ...)
         error <- out$termcd != 1
       }
       private$clean_static_model()
