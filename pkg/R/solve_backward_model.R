@@ -78,6 +78,9 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
       if (error) {
         cat(sprintf("No convergence for %s in %d iterations\n", 
                     per_txt, out$iter))
+        if (solver == "umfpackr") {
+          cat(out$message)
+        }
       } else {
         cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
                     out$iter))
