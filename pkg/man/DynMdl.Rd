@@ -112,6 +112,9 @@ equations of the model.}
 
 \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} 
 object}
+
+\item{\code{\link{get_solve_status}}}{Returns the status of the last model
+solve attempt}
 }
 }
 

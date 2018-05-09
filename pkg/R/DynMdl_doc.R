@@ -497,6 +497,11 @@ NULL
 #' The function \code{\link{get_static_endos}} can be used to retrieve the
 #' steady state solution.
 #'
+#' \code{solve_steady} does \emph{not} raise an error when the solve was
+#' not successful. In that case a warning may be issued. 
+#' Method \code{\link{get_solve_status}} can be used to check
+#' whether the solve was successfully terminated or not.
+#'
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
@@ -518,8 +523,8 @@ NULL
 #' \item{\code{...}}{Other arguments passed to the solver}
 #' }
 #' @seealso \code{\link{set_static_endos}}, \code{\link{set_static_exos}},
-#' \code{\link{get_static_endos}}, \code{\link{get_static_exos}}
-#' and \code{\link{put_static_endos}}
+#' \code{\link{get_static_endos}}, \code{\link{get_static_exos}},
+#' \code{\link{put_static_endos}} and \code{\link{get_solve_status}}
 #' @examples
 #' mdl <- islm_mdl(period = "2018Q1/2080Q1")
 #' mdl$solve_steady(control = list(trace = 1))
@@ -576,6 +581,12 @@ NULL
 #' This method of R6 class \code{\link{DynMdl}} solves
 #' the model.
 #' 
+#' \code{solve_steady} does \emph{not} raise an error when the solve was
+#' not successful. In that case a warning may be issued. 
+#' Method \code{\link{get_solve_status}} can be used to check
+#' whether the solve was successfully terminated or not.
+#'
+#' 
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
@@ -607,7 +618,7 @@ NULL
 #' method}
 #' \item{\code{...}}{Other arguments passed to the solver}
 #' }
-#' @seealso \code{\link{solve_steady}}
+#' @seealso \code{\link{solve_steady}} and \code{\link{get_solve_status}}
 #' @examples
 #' mdl <- islm_mdl(period = "2018Q1/2023Q3")
 #' mdl$solve(control = list(trace = TRUE))
@@ -759,7 +770,7 @@ NULL
 #' @examples
 #' mdl <- islm_mdl(period = "2018Q1/2023Q3")
 #' mdl$set_static_endos(c(y = 1250))
-#' @seealso \code{\link{solve_steady}}and \code{\link{check}}
+#' @seealso \code{\link{solve_steady}}, \code{\link{check}}
 NULL
 
 #' \code{\link{DynMdl}} methods: Retrieve the names of model variables or
@@ -914,10 +925,39 @@ NULL
 #' }
 NULL
 
-##' 
-##' @examples
-##' mdl <- islm_mdl()
-##' print(mdl$get_static_jacob())
-##' print(mdl$get_jacob())
-##'
+#' \code{\link{DynMdl}} method: Returns the solve status of the last model solve.
+#' @name get_solve_status
+#' @md
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} returns the status
+#' of the last model solve as a text string. If the last model solve
+#' was succesfull, it returns the string \code{"OK"}.
+#'
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$get_solve_status()
+#'
+#' }
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Details:
+#'
+#' The possible return values are:
+#'  * \code{NA_character_} (method solve has not yet been called)
+#'  * \code{"OK"}
+#'  * \code{"ERROR"} (an error has occurred, check the warnings).
+#'
+#' @seealso \code{\link{solve} and \code{\link{solve_steady}}}
+#' @examples
+#' \dontrun{
+#' mdl <- islm_mdl(period = "2017Q1/2018Q4")
+#' mdl$set_endo_values(NA, names = "y", period = "2017Q1")
+#' mdl$solve()
+#' if (mdl$get_solve_status() != "OK") {
+#'    stop("Error solving the model. Check the warnings!")
+#' }
+#' }
+NULL
 

@@ -55,5 +55,5 @@ mdl <- islm_mdl(period = "2018Q1/2023Q3")
 mdl$set_static_endos(c(y = 1250))
 }
 \seealso{
-\code{\link{solve_steady}}and \code{\link{check}}
+\code{\link{solve_steady}}, \code{\link{check}}
 }

@@ -17,6 +17,11 @@ The static variables can be modified with methods
 
 The function \code{\link{get_static_endos}} can be used to retrieve the
 steady state solution.
+
+\code{solve_steady} does \emph{not} raise an error when the solve was
+not successful. In that case a warning may be issued. 
+Method \code{\link{get_solve_status}} can be used to check
+whether the solve was successfully terminated or not.
 }
 \section{Usage}{
 
@@ -55,6 +60,6 @@ mdl$put_static_endos()
 }
 \seealso{
 \code{\link{set_static_endos}}, \code{\link{set_static_exos}},
-\code{\link{get_static_endos}}, \code{\link{get_static_exos}}
-and \code{\link{put_static_endos}}
+\code{\link{get_static_endos}}, \code{\link{get_static_exos}},
+\code{\link{put_static_endos}} and \code{\link{get_solve_status}}
 }

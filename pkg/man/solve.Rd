@@ -6,6 +6,11 @@
 \description{
 This method of R6 class \code{\link{DynMdl}} solves
 the model.
+
+\code{solve_steady} does \emph{not} raise an error when the solve was
+not successful. In that case a warning may be issued. 
+Method \code{\link{get_solve_status}} can be used to check
+whether the solve was successfully terminated or not.
 }
 \section{Usage}{
 
@@ -48,5 +53,5 @@ mdl <- islm_mdl(period = "2018Q1/2023Q3")
 mdl$solve(control = list(trace = TRUE))
 }
 \seealso{
-\code{\link{solve_steady}}
+\code{\link{solve_steady}} and \code{\link{get_solve_status}}
 }

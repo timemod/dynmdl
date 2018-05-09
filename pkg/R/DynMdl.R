@@ -124,6 +124,9 @@ setOldClass("regts")
 #' 
 #' \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} 
 #' object}
+#' 
+#' \item{\code{\link{get_solve_status}}}{Returns the status of the last model
+#' solve attempt}
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(
@@ -780,7 +783,11 @@ DynMdl <- R6Class("DynMdl",
       }
       
       return(invisible(self))
-  }),
+  },
+  get_solve_status = function() {
+    return(private$solve_status)
+  }
+  ),
   private = list(
     mdldef = NULL,
     model_index = NA_integer_,
