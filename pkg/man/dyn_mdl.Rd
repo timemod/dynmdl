@@ -5,7 +5,7 @@
 \title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
 \usage{
 dyn_mdl(mod_file, period, data, calc = c("R", "bytecode", "dll", "internal"),
-  fit_mod_file, debug = FALSE, dll_dir, max_laglead_1 = FALSE)
+  fit_mod_file, debug = FALSE, dll_dir, max_laglead_1 = FALSE, fit = TRUE)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -35,6 +35,10 @@ The default is \code{FALSE}. This option has no effect if the maximum lag
 and lead of the original model is 1. Set this argument to
 \code{TRUE} if you want to analyse the stability of the steady state with 
 method \code{\link{check}} for models with a maximum lag or lead larger than 1.}
+
+\item{fit}{a logical. If \code{TRUE}, then the function returns
+a  \code{FitMdl} object if a fit block has been found in the mod file.
+If \code{FALSE} then this function does not return a \code{FitMdl} object.}
 }
 \value{
 an \code{DynMdl} object or, if the mod file contains a

@@ -24,6 +24,9 @@
 #' and lead of the original model is 1. Set this argument to
 #' \code{TRUE} if you want to analyse the stability of the steady state with 
 #' method \code{\link{check}} for models with a maximum lag or lead larger than 1.
+#' @param fit a logical. If \code{TRUE}, then the function returns
+#' a  \code{FitMdl} object if a fit block has been found in the mod file.
+#' If \code{FALSE} then this function does not return a \code{FitMdl} object.
 #' @return an \code{DynMdl} object or, if the mod file contains a
 #' fit block, a \code{\link{FitMdl}} object.
 #' @export
@@ -34,7 +37,8 @@
 dyn_mdl <- function(mod_file, period, data, 
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
-                    max_laglead_1 = FALSE) {
+                    max_laglead_1 = FALSE,
+                    fit = TRUE) {
   
   calc <- match.arg(calc)
   
@@ -82,7 +86,13 @@ dyn_mdl <- function(mod_file, period, data,
   
   instruments <- get_fit_instruments(mod_text)
   
-  if (!is.null(instruments))  {
+  if (!missing(fit) && fit && is.null(instruments)) {
+    stop("No fit block in model file, fit procedure not possible")
+  }
+  
+  if (!is.null(instruments) && fit)  {
+    
+    # FIT PROCEDURE
     
     if (missing(fit_mod_file)) {
       fit_mod_file <- tempfile()
