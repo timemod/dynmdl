@@ -19,12 +19,18 @@
 #' @section Methods:
 #' \describe{
 #'
-#' \item{\code{get_endo_names()}}{Returns the names of the endogenous variables
+#' \item{\code{get_endo_names}}{Returns the names of the endogenous variables
 #' of the model (excluding the instruments and Lagrange multipliers used in the
 #' fit procedure).}
 #'
-#' \item{\code{get_exo_names()}}{Returns the names of the exogenous variables
+#' \item{\code{get_exo_names}}{Returns the names of the exogenous variables
 #' of the model (excluding the fit control variables).}
+#'
+#' \item{\code{\link{get_instrument_names}}}{Returns the names of the fit 
+#' instruments.}
+#' 
+#' \item{\code{\link{get_sigma_names}}}{Returns the names of the sigma
+#' parameters used in the fit procedure.} 
 #'
 #' \item{\code{\link{set_fit_values}}}{Sets the values of the fit targets}
 #'
@@ -39,9 +45,9 @@
 #' \item{\code{get_fit_instruments}}{Returns all non-zero fit instruments
 #' used in the fit procedure}
 #' 
-#' \item{\code{get_sigmas}}{Returns all  sigma parameters >= 0(rms values)
-#' used in the fit procedure. If a sigma parameter is negative, the corresponding
-#' fit instrument is not included}
+#' \item{\code{get_sigmas}}{Returns all sigma parameters >= 0(rms values)
+#' used in the fit procedure. If a sigma parameter is negative, then the 
+#' corresponding fit instrument is not included}
 #' 
 #' \item{\code{get_lagrange}}{Returns the Lagrange multipliers
 #' used in the fit procedure.}
@@ -101,6 +107,12 @@ FitMdl <- R6Class("FitMdl",
     },
     get_exo_names = function() {
       return(private$fit_info$orig_exos)
+    },
+    get_instrument_names = function() {
+      return(private$fit_info$instruments)
+    },
+    get_sigma_names = function() {
+      return(private$fit_info$sigmas)
     },
     set_fit = function(data, names = colnames(data), 
                        upd_mode = c("upd", "updval")) {
@@ -259,7 +271,7 @@ FitMdl <- R6Class("FitMdl",
     },
     residual_check = function(...) {
       ret <- super$residual_check(...)
-      return(ret[, seq_along(private$fit_info$orig_endos)])
+      return(ret[, seq_along(private$fit_info$orig_endos), drop = FALSE])
     }
   ), 
   private = list(

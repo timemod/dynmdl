@@ -117,3 +117,30 @@ NULL
 #' \code{mdl} is an \code{\link{FitMdl}} object
 #' @seealso \code{\link{set_fit}} and \code{\link{get_fit}}
 NULL
+
+
+#' \code{\link{FitMdl}} methods: Retrieve the names of the fit instruments
+#' or sigma parameters used in the fit procedure.
+#' @name get_instrument_names/get_sigma_names
+#' @aliases get_instrument_names get_sigma_names
+#' @description
+#' These methods of R6 class \code{\link{FitMdl}} 
+#' return the names of the fit instruments or sigma parameters
+#' used in the fit procedure.
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$get_instrument_names()
+#'
+#' mdl$get_sigma_names()
+#'
+#' }
+#' \code{mdl} is an \code{\link{FitMdl}} object
+#' @examples
+#'
+#' mdl <- islm_mdl(period = "2017Q1/2018Q3", fit = TRUE)
+#' print(mdl$get_instrument_names())
+#' print(mdl$get_sigma_names())
+#'
+#' @seealso \code{\link{get_fit_instruments}} and \code{\link{get_sigmas}}
+NULL

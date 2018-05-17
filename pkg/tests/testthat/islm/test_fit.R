@@ -47,4 +47,8 @@ test_that("get_names", {
                  paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
                  paste0("t", 0:1))
   expect_equal(mdl$get_par_names(), par_names)
+  
+  inames <- c("ut", "uc", "umd", "ui")
+  expect_equal(mdl$get_instrument_names(), inames)
+  expect_equal(mdl$get_sigma_names(), paste0("sigma_", inames))
 })
