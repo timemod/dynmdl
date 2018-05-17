@@ -2,23 +2,17 @@
 % Please edit documentation in R/FitMdl_doc.R
 \name{set_fit}
 \alias{set_fit}
-\alias{get_fit}
 \title{\code{\link{FitMdl}} method: transfers data from a timeseries
 object to the fit targets.}
 \description{
 The method \code{set_fit} of R6 class \code{\link{FitMdl}}
 transfers data from a timeseries object to the fit targets.
-
-Method \code{get_fit} can be used to retrieve the fit targets.
 }
 \section{Usage}{
 
 \preformatted{
 
 mdl$set_fit(data, names = colnames(data), upd_mode = c("upd", "updval"))
-
-mdl$get_fit()
-
 }
 
 \code{mdl} is an \code{\link{FitMdl}} object
@@ -75,5 +69,5 @@ mdl$set_fit(fit_targets)
 print(mdl$get_fit())
 }
 \seealso{
-\code{\link{clear_fit}} and \code{\link{set_data}}.
+\code{\link{get_fit}}
 }

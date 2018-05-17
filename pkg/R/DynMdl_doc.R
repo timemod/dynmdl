@@ -139,6 +139,13 @@ NULL
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' can be used to retrieve timeseries from the model data.
 #'
+#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' the \code{get-data} methods do not include the the auxiliary endogenous and
+#' exogenous variables used in the fit procedure. Use 
+#' \code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
+#' \code{\link{get_lagrange}} to obtain the various variables used 
+#' in the fit procedure.
+#'
 #' @section Usage:
 #' \preformatted{
 #' mdl$get_endo_data(pattern, names, period = mdl$get_data_period())
@@ -164,6 +171,8 @@ NULL
 #' \item \code{get_exo_data}: Exogenous model variables
 #' }
 #'
+#' @seealso \code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
+#' \code{\link{get_lagrange}}
 NULL
 
 #' \code{\link{DynMdl}} method: transfers data from a timeseries 
@@ -781,6 +790,12 @@ NULL
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' return the names of the model variables or parameters
 #'
+#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' \code{get_endo_names} and \code{get_exo_names} do not include the names of 
+#' the auxiliary endogenous and exogenous variables used in the fit procedure.
+#' Use \code{\link{get_instrument_names}} to obtain the names of the fit 
+#' instruments.
+#' 
 #' @section Usage:
 #' \preformatted{
 #' mdl$get_endo_names(type = c("all", "lags", "leads")
@@ -810,8 +825,8 @@ NULL
 #'
 #' }
 #'
+#' @seealso \code{\link{get_instrument_names}} and \code{\link{get_sigma_names}}
 NULL
-
 
 #' \code{\link{DynMdl}} method: Sets the model parameters
 #' @name set_param
@@ -949,7 +964,7 @@ NULL
 #'  * \code{"OK"}
 #'  * \code{"ERROR"} (an error has occurred, check the warnings).
 #'
-#' @seealso \code{\link{solve} and \code{\link{solve_steady}}}
+#' @seealso \code{\link{solve}} and \code{\link{solve_steady}}
 #' @examples
 #' \dontrun{
 #' mdl <- islm_mdl(period = "2017Q1/2018Q4")

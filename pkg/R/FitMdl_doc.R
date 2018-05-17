@@ -1,21 +1,14 @@
 #' \code{\link{FitMdl}} method: transfers data from a timeseries
 #' object to the fit targets.
 #' @name set_fit
-#' @aliases get_fit
-
 #' @description
 #' The method \code{set_fit} of R6 class \code{\link{FitMdl}}
 #' transfers data from a timeseries object to the fit targets.
-#' 
-#' Method \code{get_fit} can be used to retrieve the fit targets.
 #' 
 #' @section Usage:
 #' \preformatted{
 #'
 #' mdl$set_fit(data, names = colnames(data), upd_mode = c("upd", "updval"))
-#' 
-#' mdl$get_fit()
-#' 
 #' }
 #'
 #' \code{mdl} is an \code{\link{FitMdl}} object
@@ -66,7 +59,7 @@
 #' 
 #' print(mdl$get_fit())
 #
-#' @seealso \code{\link{clear_fit}} and \code{\link{set_data}}.
+#' @seealso \code{\link{get_fit}}
 NULL
 
 #' \code{\link{FitMdl}} method: Sets the values of the fit targets
@@ -142,5 +135,65 @@ NULL
 #' print(mdl$get_instrument_names())
 #' print(mdl$get_sigma_names())
 #'
-#' @seealso \code{\link{get_fit_instruments}} and \code{\link{get_sigmas}}
+#' @seealso \code{\link{get_fit_instruments}}
+NULL
+
+#' \code{\link{FitMdl}} methods: get variables used in the fit procedure.
+#' @name get_fit-methods
+#' @aliases get_fit get_fit_instruments get_lagrange
+
+#' @description
+#' These methods of R6 class \code{FitMdl} can be used
+#' to retrieve the variables used in the fit procedure:
+#' the fit targets, fit instruments or Lagrange multipliers.
+#' 
+#' For method \code{get_fit} there are corresponding \code{\link{set_fit}} and
+#' \code{\link{set_fit_values}} methods. There are currently no special
+#' methods to set or change the fit instruments and Lagrange multipliers.
+#' However, since they are internally implemented as endogenous variables
+#' you can use methods \code{\link{set_data}}, \code{\link{set_endo_values}},
+#' and \code{\link{change_endo_data}} to change the fit instruments
+#' or Lagrange multipliers.
+#' 
+#' @section Usage:
+#' \preformatted{
+#' 
+#' mdl$get_fit() # fit targets
+#' 
+#' mdl$get_fit_instruments(names, period = mdl$get_period())
+#' 
+#' mdl$get_lagrange(names, period = mdl$get_period())
+#' }
+#'
+#' \code{mdl} is an \code{\link{FitMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{names}}{a character vector with variable names}
+#' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
+#' object that can be coerced to a \code{period_range}}
+#' }
+#'
+#' @examples
+#'
+#' mdl <- islm_mdl(period = "2016Q1/2017Q3", fit = TRUE)
+#'
+#' # create a regts with fit targets
+#' y <- regts(c(1250, 1255, 1260), start = "2016Q1")
+#' t <- regts(c(250, 255), start = "2016Q1")
+#' fit_targets <- cbind(y, t)
+#' 
+#' # register the fit targets in the FitMdl object
+#' mdl$set_fit(fit_targets)
+#' 
+#' mdl$solve()
+#' 
+#' print(mdl$get_fit())
+#' print(mdl$get_fit_instruments())
+#' print(mdl$get_lagrange())
+#' 
+#' @seealso \code{\link{set_fit}}, \code{\link{set_fit_values}}, 
+#' \code{\link{clear_fit}}, \code{\link{set_data}}, 
+#' \code{\link{set_endo_values}} and \code{\link{change_endo_data}}
 NULL

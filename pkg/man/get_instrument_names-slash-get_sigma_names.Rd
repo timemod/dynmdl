@@ -30,5 +30,5 @@ print(mdl$get_sigma_names())
 
 }
 \seealso{
-\code{\link{get_fit_instruments}} and \code{\link{get_sigmas}}
+\code{\link{get_fit_instruments}}
 }

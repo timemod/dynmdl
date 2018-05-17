@@ -19,11 +19,11 @@ special methods for the fit procedure.
 
 \describe{
 
-\item{\code{get_endo_names}}{Returns the names of the endogenous variables
+\item{\code{\link{get_endo_names}}}{Returns the names of the endogenous variables
 of the model (excluding the instruments and Lagrange multipliers used in the
 fit procedure).}
 
-\item{\code{get_exo_names}}{Returns the names of the exogenous variables
+\item{\code{\link{get_exo_names}}}{Returns the names of the exogenous variables
 of the model (excluding the fit control variables).}
 
 \item{\code{\link{get_instrument_names}}}{Returns the names of the fit 
@@ -42,29 +42,15 @@ used in the fit procedure}
 \item{\code{\link{clear_fit}}}{Remove all fit targets and set all fit sigmas 
 to zero. Also all Lagrange multipliers are set to zero}
 
-\item{\code{get_fit_instruments}}{Returns all non-zero fit instruments
+\item{\code{\link{get_fit_instruments}}}{Returns all non-zero fit instruments
 used in the fit procedure}
 
-\item{\code{get_sigmas}}{Returns all sigma parameters >= 0(rms values)
+\item{\code{get_sigmas}}{Returns all sigma parameters >= 0 (rms values)
 used in the fit procedure. If a sigma parameter is negative, then the 
 corresponding fit instrument is not included}
 
-\item{\code{get_lagrange}}{Returns the Lagrange multipliers
+\item{\code{\link{get_lagrange}}}{Returns the Lagrange multipliers
 used in the fit procedure.}
-
-\item{\code{get_exo_data(names, period = self$get_data_period()}}{Returns
-the exogenous data excluding the control variables of the
-fit procedure.
-\code{pattern} is a regular expression,  \code{names} a list of variables
- and \code{period} an \code{\link[regts]{period_range}} object
- or an object that can be coerced to \code{period_range}.}
-
-\item{\code{get_endo_data(pattern, names, period = self$get_data_period()}}{Returns
-the endogenous data excluding the auxiliary endogenous variables
- for the fit procedure (the instruments and the Lagrange multipliers).
-\code{pattern} is a regular expression,  \code{names} a list of variables
- and \code{period} an \code{\link[regts]{period_range}} object
- or an object that can be coerced to \code{period_range}.}
 }
 }
 

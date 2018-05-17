@@ -40,5 +40,5 @@ if (mdl$get_solve_status() != "OK") {
 }
 }
 \seealso{
-\code{\link{solve} and \code{\link{solve_steady}}}
+\code{\link{solve}} and \code{\link{solve_steady}}
 }

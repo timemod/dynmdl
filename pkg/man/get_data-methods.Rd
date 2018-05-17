@@ -8,6 +8,13 @@
 \description{
 These methods of R6 class \code{\link{DynMdl}} 
 can be used to retrieve timeseries from the model data.
+
+If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+the \code{get-data} methods do not include the the auxiliary endogenous and
+exogenous variables used in the fit procedure. Use 
+\code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
+\code{\link{get_lagrange}} to obtain the various variables used 
+in the fit procedure.
 }
 \section{Usage}{
 
@@ -41,3 +48,7 @@ object that can be coerced to a \code{period_range}}
 }
 }
 
+\seealso{
+\code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
+\code{\link{get_lagrange}}
+}
