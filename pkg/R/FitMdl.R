@@ -39,8 +39,8 @@
 #' \item{\code{\link{get_fit}}}{Returns the fit targets
 #' used in the fit procedure}
 #'
-#' \item{\code{\link{clear_fit}}}{Remove all fit targets and set all fit sigmas 
-#' to zero. Also all Lagrange multipliers are set to zero}
+#' \item{\code{\link{clear_fit}}}{Remove all fit targets. Also all Lagrange 
+#' multipliers are set to zero}
 #'
 #' \item{\code{\link{get_fit_instruments}}}{Returns all non-zero fit instruments
 #' used in the fit procedure}
@@ -158,9 +158,6 @@ FitMdl <- R6Class("FitMdl",
     clear_fit = function() {
       super$set_exo_values(0, names = private$fit_info$fit_vars)
       super$set_endo_values(0, names = private$fit_info$l_vars)
-      sigmas <- self$get_sigmas()
-      sigmas[] <- -1
-      self$set_param(sigmas)
     },
     get_endo_data = function(pattern = NULL, names = NULL, 
                              period = private$data_period) {
