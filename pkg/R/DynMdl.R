@@ -655,7 +655,7 @@ DynMdl <- R6Class("DynMdl",
       x    <- data[var_indices$curvars]
       
       private$prepare_dynamic_model()
-      jac <- private$get_back_jac(x, lags, period_index - 1)
+      jac <- private$get_back_jac(x, lags, period_index)
       private$clean_dynamic_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
