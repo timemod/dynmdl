@@ -863,6 +863,7 @@ DynMdl <- R6Class("DynMdl",
         # length(x) == 0
         stop("Argument data is not a timeseries object")
       }
+      data <- as.regts(data)
       if (frequency(data) != frequency(private$data_period)) {
         stop(paste0("The frequency of data does not agree with the data",
                     " period ", as.character(private$data_period), "."))
