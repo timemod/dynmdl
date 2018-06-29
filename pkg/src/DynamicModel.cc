@@ -5351,13 +5351,29 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
         Rcpp::IntegerMatrix::Row endo_row = lead_lag_incidence(endoID, Rcpp::_);
         // Loop on periods
         for (int lag = -max_endo_lag; lag <= max_endo_lead; lag++) {
-            // Print variableID if exists with current period, otherwise print 0
             try {
                 int varID = getDerivID(symbol_table.getID(eEndogenous, endoID), lag);
                 endo_row[lag + max_endo_lag] = getDynJacobianCol(varID) + 1;
             } catch (UnknownDerivIDException &e) {
             }
         }
+    }
+
+    // create a logical vector with elements true if the corresponding
+    // exogenous variable occurs with a lag or lead
+    Rcpp::LogicalVector exo_has_lag(symbol_table.exo_nbr());
+    for (int exoID = 0; exoID < symbol_table.exo_nbr(); exoID++) {
+        bool has_lag = false;
+        // Loop on periods
+        for (int lag = -max_exo_lag; lag <= max_exo_lead; lag++) {
+            try {
+                int varID = getDerivID(symbol_table.getID(eExogenous, exoID), lag);
+                has_lag = lag != 0;
+                if (has_lag) break;
+            } catch (UnknownDerivIDException &e) {
+            }
+        }
+        exo_has_lag[exoID] = has_lag;
     }
 
     // derivative matrix
@@ -5376,6 +5392,7 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
         derivatives(eq, col) = Rcpp::String(txt.str());
     }
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
+                              Rcpp::Named("exo_has_lag") = exo_has_lag,
                               Rcpp::Named("derivatives")   = derivatives,
                               Rcpp::Named("max_endo_lag")  = max_endo_lag,
                               Rcpp::Named("max_endo_lead") = max_endo_lead,
