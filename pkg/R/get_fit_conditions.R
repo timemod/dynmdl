@@ -19,8 +19,9 @@ get_fit_conditions <- function(mod_file, instruments) {
     endo_deriv <- model_info$dynamic_model$derivatives[, 1:length(endo_names)]
     colnames(endo_deriv) <- paste0(endo_names, paste0("(", endo_lags, ")"))
 
-    # check lags/leads on instruments. Dynare ignores lags and leads on
-    # exogeneous variables when computing the derivative.
+    # Check if there are lags/leads on instruments. Dynare ignores lags and 
+    # leads on exogeneous variables when computing the derivative, therefore
+    # the fit procedure cannot handle this situation.
     exo_has_lag <- model_info$dynamic_model$exo_has_lag
     names(exo_has_lag) <- model_info$exo_names
     if (any(exo_has_lag[instruments])) {
