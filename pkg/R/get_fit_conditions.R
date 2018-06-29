@@ -10,19 +10,6 @@ get_fit_conditions <- function(mod_file, instruments) {
     lag_pattern <- "\\[(-?\\d+)\\]"
 
     model_info <- compute_derivatives(mod_file)
-    with(model_info, {
-        # a problem will occur if the instruments have
-        # lags or leads. When computing derivatives with respect to the
-        # exogenous variables, the dynare preprocessor ignores
-        # leads and leads. For other variables a lag or lead > 1
-        # would not result in an error
-        # TODO: maybe we could search for lags and leads of instruments
-        # in tbe mod file, and given an error only if the instruments
-        # occur with this leads.
-        if (dynamic_model$max_exo_lag > 0 ||  dynamic_model$max_exo_lead > 1) {
-            stop("compute_first_order cannot handle exogenous lags and leads > 0")
-        }
-    })
     lli <- model_info$dynamic_model$lead_lag_incidence
     sel <- lli != 0
     rows <- row(lli)[sel]
@@ -31,6 +18,18 @@ get_fit_conditions <- function(mod_file, instruments) {
     endo_names <- model_info$endo_names[rows]
     endo_deriv <- model_info$dynamic_model$derivatives[, 1:length(endo_names)]
     colnames(endo_deriv) <- paste0(endo_names, paste0("(", endo_lags, ")"))
+
+    # Check if there are lags/leads on instruments. Dynare ignores lags and 
+    # leads on exogeneous variables when computing the derivative, therefore
+    # the fit procedure cannot handle this situation.
+    exo_has_lag <- model_info$dynamic_model$exo_has_lag
+    names(exo_has_lag) <- model_info$exo_names
+    if (any(exo_has_lag[instruments])) {
+      problem_instruments <- instruments[exo_has_lag[instruments]]
+      stop(paste0("There are fit instruments with lags or leads: ", 
+                  paste(problem_instruments, collapse = ", "), 
+                  "."))
+    }
 
     exo_deriv <- model_info$dynamic_model$derivatives[, -(1:length(endo_names))]
     colnames(exo_deriv) <- model_info$exo_names
@@ -93,6 +92,12 @@ get_fit_conditions <- function(mod_file, instruments) {
     }
     if (nres > 0) {
       deriv1 <- apply(res_deriv, MARGIN = 2, FUN = sum_derivatives)
+      if (any(deriv1 == "")) {
+        problem_instruments <- colnames(res_deriv)[deriv1 == ""]
+        stop(paste0("The following fit instruments do not occur in the model",
+                    " equations: ", paste(problem_instruments, collapse = ", "), 
+                    "."))
+      }
       deriv0 <- paste(instruments, paste0(sigmas, "^2"), sep = " / ")
       res_equations <- paste0("(", sigmas, " >= 0) * (", 
                                paste(deriv0, deriv1, sep = " + "), 

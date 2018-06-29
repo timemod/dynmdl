@@ -58,8 +58,7 @@ test_that("solve", {
 test_that("eigenvalues", {
   capture_output(mdl$check())
   eigval <- mdl$get_eigval()
- 
-  # the last eigenvalues is Inf or almost infinite
+
   expect_equal(abs(Re(eigval)), abs(dynare_result$eigval[ , 1]), 
                tolerance = 1e-5)
   expect_equal(abs(Im(eigval)), abs(dynare_result$eigval[ , 2]),
