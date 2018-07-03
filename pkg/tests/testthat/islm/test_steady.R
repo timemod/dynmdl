@@ -75,3 +75,15 @@ test_that("put_static_endos with period", {
   msg <- "The start period \\(2040\\) is after the end period \\(2023\\)"
   expect_error(mdl_steady3$put_static_endos("2040/"), msg)
 })
+
+test_that("non-finite values", {
+  mdl_2 <- mdl$copy()
+  mdl_2$set_static_endos(c(t  = NaN))
+  mdl_2$set_static_exos(c(g = Inf))
+  expect_known_output(expect_warning(mdl_2$solve_steady(control = list(silent = TRUE)),
+                                     "Solving the steady state not succesful"),
+                      file = "expected_output/steady_non_finite_1.txt")
+  expect_known_output(expect_warning(mdl_2$solve_steady(control = list(silent = TRUE)),
+                                     "Solving the steady state not succesful"),
+                      file = "expected_output/steady_non_finite_1.txt")
+})

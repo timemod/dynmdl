@@ -417,8 +417,15 @@ DynMdl <- R6Class("DynMdl",
       private$clean_static_model()
       private$mdldef$endos <- out$x
       
-
+     
       if (error) {
+        if (grepl("contains non-finite value", out$message)) {
+          res <- f_res(out$x)
+          names(res) <- paste("eq", seq_along(res))
+          res <- res[!is.finite(res)]
+          cat("Non-finite values in residuals for the following equations:\n")
+          print(res)
+        }
         private$solve_status <- "ERROR"
         warning(paste0("Solving the steady state not succesful.\n", out$message))
       } else {
@@ -516,8 +523,10 @@ DynMdl <- R6Class("DynMdl",
       control_[names(control)] <- control
       
       private$prepare_dynamic_model()
-   
-      if (private$mdldef$max_endo_lead > 0 || force_stacked_time ) {
+
+      stacked_time <- private$mdldef$max_endo_lead > 0 || force_stacked_time   
+      
+      if (stacked_time) {
         
         # preparations
         if (solver != "umfpackr") {
@@ -533,11 +542,6 @@ DynMdl <- R6Class("DynMdl",
                             private$get_jac, lags = lags,
                             leads = leads, nper = nper,
                             control = control_, ...)
-
-        if (startsWith(ret$message, 
-                       "Initial value of function contains non-finite values")) {
-          report_non_finite_residuals(self)
-        }
       } else {
         ret <- solve_backward_model(private$mdldef, private$calc,
                                     private$model_period, private$data_period,
@@ -550,8 +554,13 @@ DynMdl <- R6Class("DynMdl",
       
       private$clean_dynamic_model()
       
+      # update data with new iterate
       private$endo_data[private$model_period, ] <-
                       t(matrix(ret$x, nrow = private$mdldef$endo_count))
+      
+      if (stacked_time && grepl("non-finite value", ret$message)) {
+        report_non_finite_residuals(self)
+      }
       
       if (!ret$solved) {
         private$solve_status <- "ERROR"
@@ -950,6 +959,7 @@ DynMdl <- R6Class("DynMdl",
                    "length ", nper))
       }
       period <- range_intersect(period, private$data_period)
+      if (is.null(period)) return(invisible(NULL))
       names <- private$get_names_(type, names, pattern)
       if (length(names) > 0) {
         if (vlen > 1) {
@@ -1009,11 +1019,10 @@ DynMdl <- R6Class("DynMdl",
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
       if (private$calc == "internal") {
-        # for the time begin, assume that the model index is 0
         return(get_residuals_dyn(private$mdldef$model_index, endos,
                                  which(private$mdldef$lead_lag_incidence != 0) - 1,
                                  private$mdldef$endo_count, nper,
-                                private$period_shift))
+                                 private$period_shift))
       } else {
         return(get_residuals_(endos,
                               which(private$mdldef$lead_lag_incidence != 0) - 1,

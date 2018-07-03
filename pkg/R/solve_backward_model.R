@@ -45,10 +45,6 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
   data <- t(endo_data)
   
   itr_tot <- 0
-  t_f     <- 0
-  t_jac   <- 0
-  t_lu    <- 0
-  t_solve <- 0
   error   <- FALSE
   
   for (iper in 1:nper) {
@@ -69,22 +65,26 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
                           period_index = period_index, control = control_,
                           ...)
       error <- !out$solved
-      t_f     <- t_f     + out$t_f
-      t_jac   <- t_jac   + out$t_jac
-      t_lu    <- t_lu    + out$t_lu
-      t_solve <- t_solve + out$t_solve
     }
-    if (!control$silent) {
-      if (error) {
-        cat(sprintf("No convergence for %s in %d iterations\n", 
-                    per_txt, out$iter))
-        if (solver == "umfpackr") {
-          cat(out$message)
-        }
+    
+    
+    if (error) {
+      if (grepl("contains non-finite value", out$message)) {
+        res <- f(out$x, lags = lags, period_index = period_index)
+        names(res) <- paste("eq", seq_along(res))
+        res <- res[!is.finite(res)]
+        cat(sprintf(paste("Non-finite values in residuals in period %s",
+                           "for the following equations:\n"), per_txt))
+        print(res)
       } else {
-        cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
-                    out$iter))
+        cat(paste0(sprintf("Error solving model in period %s:\n", per_txt),
+            out$message))
       }
+    }
+    
+    if (!control$silent && !error) {
+      cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
+                  out$iter))
     }
     
     # update data
@@ -97,21 +97,11 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     if (error) {
       break
     }
-
-  }
-  
-  if (!control$silent) {
-    cat(sprintf("Total number of iterations: %d\n", itr_tot))
-    cat(sprintf("Total time function eval. : %g\n", t_f))
-    cat(sprintf("Total time Jacobian.      : %g\n", t_jac))
-    cat(sprintf("Total time LU fact.       : %g\n", t_lu))
-    cat(sprintf("Total time solve          : %g\n", t_solve))
   }
 
   # update data
   x <- data[(1 : (nper * nendo)) + (start_per_index - 1) * nendo]
-  return (list(solved = !error, itr_tot = itr_tot, x = x,
-               t_f = t_f, t_jac = t_jac, t_lu = t_lu, t_jac = t_jac))
+  return(list(solved = !error, itr_tot = itr_tot, x = x))
 }
 
 # Returns the indices of the lags and current variables in t(endo_data)
