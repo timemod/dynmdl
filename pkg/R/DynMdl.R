@@ -879,6 +879,7 @@ DynMdl <- R6Class("DynMdl",
       }
       
       per <- range_intersect(get_period_range(data), private$data_period)
+      if (is.null(per)) return(invisible(NULL))
       if (NCOL(data) == 0) {
         return(invisible(NULL))
       }

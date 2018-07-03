@@ -35,6 +35,15 @@ test_that("set_values works correctly (2)", {
   mdl2 <- mdl$copy()
   mdl2$set_exo_values(c(200, 210, 215, 220), names = c("ms", "g"),
                       period = "2015")
+  
+  # these two statements should have no effect, since the period
+  # lies outside the model period
+  expect_silent({
+    mdl2$set_endo_values(999999, names = "y", period = "2109q1")
+    mdl2$set_exo_values(999999, period = "2109q1")
+  })
+  
+  
   mdl2$set_endo_values(990, pattern = "^y", period = "2016")
   expect_equal(mdl2$get_endo_data(), new_endo_data)
   expect_equal(mdl2$get_exo_data(), new_exo_data)
