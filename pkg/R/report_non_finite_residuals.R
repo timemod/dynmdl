@@ -6,7 +6,7 @@ report_non_finite_residuals <- function(mdl) {
     periods <- sapply(start_period(res) + (seq_len(nrow(res)) - 1),
                        FUN  = as.character)
   } else {
-    periods <- as.character(start_period)
+    periods <- as.character(start_period(res))
   }
 
   

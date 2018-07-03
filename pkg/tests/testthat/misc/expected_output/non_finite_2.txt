@@ -1,0 +1,4 @@
+No convergence after 1 iterations
+Non-finite values in residuals for the following equations and periods:
+       eq_2
+2018Q1 -Inf

@@ -1,0 +1,4 @@
+No convergence after 1 iterations
+Non-finite values in residuals for the following equations:
+eq 2 
+-Inf 

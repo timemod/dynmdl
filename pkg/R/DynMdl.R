@@ -564,7 +564,7 @@ DynMdl <- R6Class("DynMdl",
       
       if (!ret$solved) {
         private$solve_status <- "ERROR"
-        warning(paste("Model solving not succesful.\n", ret$message))
+        warning(paste0("Model solving not succesful.\n", ret$message))
       } else {
         private$solve_status <- "OK"
       }
