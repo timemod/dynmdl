@@ -13,7 +13,7 @@ test_that("get_solve_status", {
   expect_identical(mdl$get_solve_status(), "OK")
   mdl$set_endo_values(NA, names = "y", period = "2018Q1")
   msg <- "Initial value of function contains non-finite values \\(starting at index=1\\)"
-  expect_warning(mdl$solve(control = list(silent = TRUE)),
-                 msg)
+  expect_known_output(expect_warning(mdl$solve(control = list(silent = TRUE)),
+                 msg), file = "expected_output/solve_status1.txt")
   expect_identical(mdl$get_solve_status(), "ERROR")
 })

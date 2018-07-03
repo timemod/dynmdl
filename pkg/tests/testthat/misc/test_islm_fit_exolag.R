@@ -42,7 +42,7 @@ test_that("eigenvalues", {
 })
 
 test_that("solve", {
-  mdl$solve(control = list(silent = FALSE, trace = TRUE))
+  mdl$solve(control = list(silent = TRUE, trace = FALSE))
   expect_equal(mdl$get_endo_data(period = mdl$get_period()), 
                dynare_result$endo, fun = cvgdif, tol = 1e-8)
 })
