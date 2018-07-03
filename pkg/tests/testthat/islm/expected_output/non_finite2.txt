@@ -1,0 +1,6 @@
+Non-finite values in residuals for the following equations and periods:
+       eq_1 eq_2 eq_3 eq_5 eq_6
+2015Q2 Inf  NaN  NaN           
+2015Q3 Inf                     
+2016Q2                -Inf     
+2016Q3 Inf  NaN  NaN  -Inf -Inf

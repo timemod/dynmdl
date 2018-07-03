@@ -528,15 +528,15 @@ DynMdl <- R6Class("DynMdl",
         lags <- private$get_endo_lags()
         leads <- private$get_endo_leads()
         x <- private$get_solve_endo()
+        
         ret <- umf_solve_nl(x, private$get_residuals,
                             private$get_jac, lags = lags,
                             leads = leads, nper = nper,
                             control = control_, ...)
-        if (!control_$silent) {
-          cat(sprintf("Total time function eval. : %g\n", ret$t_f))
-          cat(sprintf("Total time Jacobian.      : %g\n", ret$t_jac))
-          cat(sprintf("Total time LU fact.       : %g\n", ret$t_lu))
-          cat(sprintf("Total time solve          : %g\n", ret$t_solve))
+
+        if (startsWith(ret$message, 
+                       "Initial value of function contains non-finite values")) {
+          report_non_finite_residuals(self)
         }
       } else {
         ret <- solve_backward_model(private$mdldef, private$calc,
