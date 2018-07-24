@@ -37,7 +37,7 @@ test_that("eigenvalues", {
   sel <- -c(7, 8)
   expect_equal(Re(eigval[sel]), dynare_result$eigval[sel , 1], 
                tolerance = 1e-5)
-  expect_equal(abs(Im(eigval)), abs(dynare_result$eigval[ , 2]),
+  expect_equal(abs(Im(eigval[sel])), abs(dynare_result$eigval[sel , 2]),
                tolerance = 1e-5)
 })
 
