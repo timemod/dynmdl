@@ -57,7 +57,7 @@ test_that("put_static_endos with period", {
                mdl_steady2$get_endo_data(period = "/2021"))
   
   mdl_steady3 <- mdl_steady2$copy()
-  period <- period_range("2018")
+  period <- period_range("2018", "2018")
   mdl_steady3$put_static_endos(period)
   
   expect_false(isTRUE(all.equal(mdl_steady3$get_endo_data(), 

@@ -5,7 +5,7 @@ context("model non_finite")
 
 mod_file <- "mod/non_finite.mod"
 
-model_period <- period_range("2018q1")
+model_period <- period_range("2018q1", "2018q1")
 
 report <- capture_output(mdl <- dyn_mdl(mod_file, period = model_period))
 

@@ -19,6 +19,6 @@ test_that("get_period_methods", {
   mdl$set_period(modelp)
   expect_equal(mdl$get_period() , modelp)
   expect_equal(mdl$get_data_period() ,datap)
-  expect_equal(mdl$get_lag_period(), period_range(start_period(modelp) - 1))
+  expect_equal(mdl$get_lag_period(),  as.period_range(start_period(modelp) - 1))
   expect_equal(mdl$get_lead_period(), as.period_range(end_period(modelp) + 1))
 })
