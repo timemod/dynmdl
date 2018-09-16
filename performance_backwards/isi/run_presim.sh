@@ -1,1 +1,1 @@
-presim islm_back_countries_200.inp islm_back_countries_200.mdl PRETTY OVER
+presim islm_back_countries_1000.inp islm_back_countries_1000.mdl PRETTY OVER

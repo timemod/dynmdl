@@ -10,7 +10,7 @@ param_names <- outer(rownames(param_data), colnames(param_data),
                      FUN = "paste", sep = "_")
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
-nextra <- 100
+nextra <- 1000
 
 mod_file <- paste0("mod/islm_back_countries_",
                    as.character(nextra), ".mod")
@@ -22,9 +22,4 @@ mdl$set_endo_values(1300, names = "y_co_1", period = "2016Q4")
 mdl2 <- mdl$clone()
 t <- system.time(mdl2$solve(control = list(trace = FALSE),
               solver = "umfpack"))
-print(t)
-
-mdl3 <- mdl$clone()
-t <- system.time(mdl3$solve(control = list(trace = TRUE),
-              solver = "umfpack", force_stacked_time = TRUE))
 print(t)

@@ -1,7 +1,6 @@
 library(isismdl)
 
-ret <- compile_mdl("islm_back_countries_1000.mdl")
-mdl <- read_mdl("islm_back_countries_1000.mif")
+mdl <- isis_mdl("islm_back_countries_1000.mdl")
 print(mdl)
 
 mdl$set_period("2017Q1/2066Q4")
@@ -28,4 +27,7 @@ mdl$set_data(yd_data)
 
 mdl$set_data(regts(1300,  period = "2016Q4"), names = "y_co_1")
 
-mdl$solve(options = list(cnmtrx = 0.3))
+t <- system.time(
+  mdl$solve(options = list(cnmtrx = 0.3))
+)
+print(t)

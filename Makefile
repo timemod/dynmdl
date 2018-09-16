@@ -102,13 +102,14 @@ endif
 # build source package for submission to CRAN
 # after building do a check as CRAN does it
 mkpkg: cleanx syntax install_deps
-	R CMD build $(PKG)
-	R CMD check --as-cran $(RCHECKARG) $(PKGTAR)
+	R CMD build $(PKGDIR)
 	@cp -nv $(PKGTAR) archive
 	@echo "Today                           : $(TODAY)"
 	@echo "Checked package description date: $(PKGDATE)"
 # 	@Rscript -e 'cat("Installed version date          :",packageDescription("nleqslv", fields="Date"))'
 	@echo ""
+	./drat.sh --pkg=$(PKGTAR)
+
 
 bin: install_deps
 	$(MAKE) -f Makedeps
