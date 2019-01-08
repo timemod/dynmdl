@@ -1216,7 +1216,7 @@ DynMdl <- R6Class("DynMdl",
         private$jac_dynamic <- jac_dynamic
         
         if (private$calc == "bytecode") {
-          private$f_static < - compiler::cmpfun(private$f_static)
+          private$f_static <- compiler::cmpfun(private$f_static)
           private$f_dynamic <- compiler::cmpfun(private$f_dynamic)
         }
         

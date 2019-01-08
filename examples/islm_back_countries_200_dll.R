@@ -9,10 +9,10 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
-mdl <- dyn_mdl("mod/islm_back_countries_200.mod", use_dll = TRUE)
+mdl <- dyn_mdl("mod/islm_back_countries_200.mod", calc = "dll")
 print(mdl)
 
-mdl$set_params(params)
+mdl$set_param(params)
 
 print(system.time(
     mdl$solve_steady(control = list(trace = TRUE))
@@ -25,7 +25,6 @@ mdl$time_functions()
 
 write.csv(as.data.frame(mdl$get_endo_data()), "islm_back_countries_200_endo.csv")
 write.csv(as.data.frame(mdl$get_exo_data()), "islm_back_countries_200_exo.csv")
-quit()
 
 # set lags
 mdl$set_endo_values(1300, names = "y_nl", period = "2016Q4")

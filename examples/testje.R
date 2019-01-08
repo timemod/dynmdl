@@ -2,7 +2,7 @@
 
 library(dynmdl)
 
-mdl <- dyn_mdl("mod/islm.mod", "2010Q2/2011Q4", use_dll = TRUE)
+mdl <- dyn_mdl("mod/islm.mod", "2010Q2/2011Q4", calc = "dll")
 x <- mdl$serialize()
 mdl$residual_check()
 

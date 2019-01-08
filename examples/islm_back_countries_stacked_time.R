@@ -9,10 +9,10 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
-mdl <- dyn_mdl("mod/islm_back_countries.mod", bytecode = FALSE)
+mdl <- dyn_mdl("mod/islm_back_countries.mod", calc = "bytecode")
 print(mdl)
 
-mdl$set_params(params)
+mdl$set_param(params)
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2022Q4")

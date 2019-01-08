@@ -5,8 +5,7 @@ fit_target_csv <- "input/NK_baseline_fit_targets.csv"
 
 
 mdl <- dyn_mdl("mod/NK_baseline_fit.mod",
-	              fit_mod_file = "fmod/NK_baseline_fit.fmod",
-		          bytecode = FALSE)
+	             fit_mod_file = "fmod/NK_baseline_fit.fmod", calc = "R")
 print(mdl)
 mdl$solve_steady(control = list(trace = TRUE))
 print(mdl$get_static_endos())

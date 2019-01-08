@@ -9,7 +9,7 @@ param_names <- outer(rownames(param_data), colnames(param_data),
 params <- as.numeric(param_data)
 names(params) <- as.character(param_names)
 
-mdl <- dyn_mdl("mod/islm_back_countries.mod", bytecode = FALSE)
+mdl <- dyn_mdl("mod/islm_back_countries.mod", calc = "bytecode")
 print(mdl)
 
 mdl$set_param(params)
