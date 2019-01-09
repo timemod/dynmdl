@@ -135,12 +135,12 @@ DynMdl <- R6Class("DynMdl",
       # no arguments supplied
       if (nargs() == 0) return()
       
-      private$set_mdldef(mdldef)
-      
       private$equations <- equations
       private$calc <- calc
       private$dll_dir <- dll_dir
       private$dll_file <- dll_file
+      
+      private$set_mdldef(mdldef)
 
       # now create the functions for evaluating the model
       private$make_functions()
@@ -383,7 +383,7 @@ DynMdl <- R6Class("DynMdl",
       solver <- match.arg(solver)
       
       private$prepare_static_model()
-      
+
       start <- private$mdldef$endos
       if (private$mdldef$aux_vars$aux_count > 0) {
         # make sure that they are ok
@@ -745,6 +745,7 @@ DynMdl <- R6Class("DynMdl",
                   "dynmdl"))
       } 
       
+      private$calc <- ser$calc
       private$set_mdldef(ser$mdldef)
       
       if (ser$calc == "dll") {
@@ -819,9 +820,9 @@ DynMdl <- R6Class("DynMdl",
     dll_file = NA_character_,
     period_error_msg = paste("The model period is not set.",
                              "Set the model period with set_period()."),
-    nrow_exo = NA_integer_,
     jac = NULL,
     jac_steady = NULL,
+    res = numeric(),
     solve_status = NA_character_,
     get_names_ = function(type, names, pattern) {
       if (type == "endo") {
@@ -1091,10 +1092,6 @@ DynMdl <- R6Class("DynMdl",
       # prepare dll calculations or the internal calculator
       #
       if (private$calc == "dll") {
-        private$nrow_exo <- nrow(private$exo_data)
-        private$jac  <- list(rows   = integer(private$mdldef$jac_dynamic_size),
-                           cols   = integer(private$mdldef$jac_dynamic_size),
-                           values = numeric(private$mdldef$jac_dynamic_size))
         dyn.load(private$dll_file)
         # NOTE: the basename of the dll_file is always "mdl_functions".
         # Therefore we cannot solve two DynMdl objects simultaneously.
@@ -1115,17 +1112,12 @@ DynMdl <- R6Class("DynMdl",
     },
     clean_dynamic_model = function() {
       if (private$calc == "dll") {
-        private$nrow_exo <- NA_integer_
-        private$jac <- NULL
         dyn.unload(private$dll_file)
       }
       return(invisible(NULL))
     },
     prepare_static_model = function() {
       if (private$calc == "dll") {
-        private$jac_steady <- list(rows   = integer(private$mdldef$jac_static_size),
-                                   cols   = integer(private$mdldef$jac_static_size),
-                                   values = numeric(private$mdldef$jac_static_size))
         dyn.load(private$dll_file)
       } else if (private$calc == "internal") {
         prepare_internal_stat(private$mdldef$model_index, private$mdldef$exos,
@@ -1135,7 +1127,6 @@ DynMdl <- R6Class("DynMdl",
     },
     clean_static_model = function() {
       if (private$calc == "dll") {
-        private$jac_steady <- NULL
         dyn.unload(private$dll_file)
       }
       return(invisible(NULL))
@@ -1202,6 +1193,27 @@ DynMdl <- R6Class("DynMdl",
       private$endo_names <- names(private$mdldef$endos)
       private$exo_names <- names(private$mdldef$exos)
       private$param_names <- names(private$mdldef$params)
+      
+      if (private$calc == "dll") {
+        
+        # allocate memory for function f_static, f_dynamic, 
+        # jac_static and jac_dynamic. It is more efficient to
+        # allocate the memory once.
+        
+        private$res <- numeric(private$mdldef$endo_count)
+        
+        private$jac  <- list(
+          rows   = integer(private$mdldef$jac_dynamic_size),
+          cols   = integer(private$mdldef$jac_dynamic_size),
+          values = numeric(private$mdldef$jac_dynamic_size))
+        
+        
+        private$jac_steady <- list(
+          rows   = integer(private$mdldef$jac_static_size),
+          cols   = integer(private$mdldef$jac_static_size),
+          values = numeric(private$mdldef$jac_static_size))
+      }
+      
     },
     make_functions = function() {
       
@@ -1223,15 +1235,16 @@ DynMdl <- R6Class("DynMdl",
       } else if (private$calc == "dll") {    # dll option
         
         private$f_static <- function(y, x, params) {
-          res <- numeric(private$mdldef$endo_count)
-          .Call("f_static_", y, x, params, res, PACKAGE = "mdl_functions")
-          return(res)
+          # NOTE: creating a new res array every function call is
+          # inefficient, therefore use private$res.
+          .Call("f_static_", y, x, params, private$res, 
+                PACKAGE = "mdl_functions")
+          return(private$res)
         }
         
         private$jac_static <- function(y, x, params) {
           # NOTE: creating a new jac_steady every function call is
-          # inefficient, therefore use private$jac_steady that is
-          # created just before solve_steady is called.
+          # inefficient, therefore use private$jac_steady.
           .Call("jac_static_", y, x, params, private$jac_steady$rows,
                 private$jac_steady$cols, private$jac_steady$values,
                 PACKAGE = "mdl_functions")
@@ -1239,17 +1252,17 @@ DynMdl <- R6Class("DynMdl",
         }
         
         private$f_dynamic <- function(y, x, params, it) {
-          res <- numeric(private$mdldef$endo_count)
-          .Call("f_dynamic_", y, x, params, it - 1, private$nrow_exo,
-                res, PACKAGE = "mdl_functions")
-          return(res)
+          # NOTE: creating a new res array every function call is
+          # inefficient, therefore use private$res.
+          .Call("f_dynamic_", y, x, params, it - 1, 
+                nrow(private$exo_data), private$res, PACKAGE = "mdl_functions")
+          return(private$res)
         }
         
         private$jac_dynamic <- function(y, x, params, it) {
           # NOTE: creating a new jac every function call is
-          # inefficient, therefore use private$jac that is
-          # created just before solve is called.
-          .Call("jac_dynamic_", y, x, params, it - 1, private$nrow_exo,
+          # inefficient, therefore use private$jac
+          .Call("jac_dynamic_", y, x, params, it - 1, nrow(private$exo_data),
                 private$jac$rows, private$jac$cols, private$jac$values,
                 PACKAGE = "mdl_functions")
           return(private$jac)
