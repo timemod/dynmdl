@@ -1,7 +1,7 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("ISLM model with fit procedure")
+context("ISLM model with fit procedure and calc = \"internal\"")
 
 source("../tools/read_dynare_result.R")
 source("utils.R")
@@ -9,9 +9,9 @@ source("utils.R")
 model_name <- "islm_fit"
 
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
-capture_output(mdl <- dyn_mdl("mod/islm_fit.mod", calc = "internal",
+rep <- capture_output(mdl <- dyn_mdl("mod/islm_fit.mod", calc = "internal",
                               period = "2016Q1/2020Q2"))
-mdl$solve_steady(control = list(trace = FALSE))
+mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
 mdl$put_static_endos()
 
 mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))

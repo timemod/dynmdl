@@ -5,7 +5,7 @@ rm(list = ls())
 
 context("ISLM model with non finite residuals")
 
-mdl <- read_mdl("islm_model.rds")
+rep <- capture_output(mdl <- read_mdl("islm_model.rds"))
 
 test_that("single period", {
   mdl$set_exo_values(NA, names = "g", period = "2015q1/2015Q2")
