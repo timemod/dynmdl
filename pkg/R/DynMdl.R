@@ -49,6 +49,8 @@ setOldClass("regts")
 #' \item{\code{\link{get_par_names}}}{Returns the names of the parameters.}
 #'
 #' \item{\code{\link{set_param}}}{Sets the parameters of the model.}
+#' 
+#' \item{\code{\link{set_param_values}}}{Sets the values of one or more model parameters.}
 #'
 #' \item{\code{\link{get_param}}}{Returns the parameters of the model.}
 #'
@@ -200,17 +202,24 @@ DynMdl <- R6Class("DynMdl",
       return(names)
     },
     set_param = function(params) {
-      private$mdldef$params[names(params)] <- params
+      names <- names(params)
+      if (is.null(names) || !is.numeric(params)) {
+        stop("params is not a named numeric vector")
+      }
+      private$check_param_names(names)
+      private$mdldef$params[names] <- params
+      return(invisible(self))
+    },
+    set_param_values = function(value, names, pattern) {
+      if (!is.numeric(value) && length(value) != 1) {
+        stop("Argument value should be a scalar numeric")
+      }
+      names <- private$get_param_names_(pattern, names)
+      private$mdldef$params[names] <- value
       return(invisible(self))
     },
     get_param = function(pattern, names) {
-      if (missing(pattern) && missing(names)) {
-        names <- self$get_par_names()
-      } else if (missing(names)) {
-        names <- self$get_par_names(pattern)
-      } else if (!missing(pattern)) {
-        names <- union(names, self$get_par_names(pattern))
-      }
+      names <- private$get_param_names_(pattern, names)
       return(private$mdldef$params[names])
     },
     set_static_exos = function(exos) {
@@ -1346,6 +1355,28 @@ DynMdl <- R6Class("DynMdl",
         endp <- end_period(defaultp)
       }
       return(period_range(startp, endp))
+    },
+    check_param_names = function(names) {
+      # check if names are parameter names
+      no_params <- setdiff(names, private$param_names)
+      if (length(no_params) > 0) {
+        stop(paste(paste(no_params, collapse = ", "), 
+                  "is/are no model parameter(s)"))
+      }
+    },
+    get_param_names_ = function(pattern, names) {
+      if (!missing(names)) {
+        private$check_param_names(names)
+      }
+      if (missing(pattern) && missing(names)) {
+        return(private$param_names)
+      } else if (missing(names)) {
+        return(self$get_par_names(pattern))
+      } else if (!missing(pattern)) {
+        return(union(names, self$get_par_names(pattern)))
+      } else {
+        return(names)
+      }
     }
   )
 )

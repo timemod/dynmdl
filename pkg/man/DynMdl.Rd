@@ -38,6 +38,8 @@ variables and parameters}
 
 \item{\code{\link{set_param}}}{Sets the parameters of the model.}
 
+\item{\code{\link{set_param_values}}}{Sets the values of one or more model parameters.}
+
 \item{\code{\link{get_param}}}{Returns the parameters of the model.}
 
 \item{\code{\link{set_static_exos}}}{Sets the static values of

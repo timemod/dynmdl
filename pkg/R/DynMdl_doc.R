@@ -976,3 +976,46 @@ NULL
 #' }
 NULL
 
+#' \code{\link{DynMdl}} methods: Sets the values of the model parameters
+#' @name set_param_values
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} 
+#' can be used to set the values of the model data
+#'
+#' @section Usage:
+#' \preformatted{
+#'
+#' mdl$set_param_values(value, names, pattern)
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{value}}{a numeric vector of length 1}
+#' \item{\code{names}}{a character vector with parameter names}
+#' \item{\code{pattern}}{a regular expression}
+#' }
+#' 
+#'In neither \code{names} nor \code{pattern} have been specified,
+#'  then all model parameters are set to the specified value.
+#'
+#' @examples
+#'
+#' mdl <- islm_mdl()
+#' 
+#' # set parameters i4 and i5 to zero
+#' mdl$set_param_values(0, names = c("i4", "c5"))
+#'
+#' # set the values all parameters starting with "i" 
+#' # (i0, i1, i2, i3, i4 and i5) to 0
+#' mdl$set_param_values(0, pattern = "^i")
+#' 
+#' # set all parameters to zero
+#' mdl$set_param_values(0
+NULL
+
+
+
