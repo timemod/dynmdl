@@ -1062,8 +1062,7 @@ DynMdl <- R6Class("DynMdl",
     get_static_jac = function(x) {
       # private function to obtain the jacobian for the static model
       if (private$calc == "internal") {
-        mat_info <- get_triplet_jac_stat(private$mdldef$model_index, 
-                                         private$mdldef$endos)
+        mat_info <- get_triplet_jac_stat(private$mdldef$model_index,  x)
       } else {
         mat_info <- private$jac_static(x, private$mdldef$exos, 
                                        private$mdldef$params)
