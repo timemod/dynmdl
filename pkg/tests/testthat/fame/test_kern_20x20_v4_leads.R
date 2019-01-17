@@ -25,6 +25,18 @@ dum <- capture_output({
 test_that("steady state", {
   
   expect_true(is.na(toy_internal$get_solve_status()))
+  
+  
+  expected_warning <- paste0("Solving the steady state not succesful.\n",
+                             "The maximum number of iterations \\(1\\) has been reached")
+  expect_warning(
+    expect_output(
+      toy_internal$solve_steady(control = list(maxiter = 1, trace = T)),
+      "No convergence after 1 iterations"
+    ),
+    expected_warning
+  )
+  expect_equal(toy_internal$get_solve_status(), "ERROR")
               
   # first solve internal calculator and solve
   toy_internal$solve_steady(control = list(maxiter = 6, silent = TRUE))
@@ -60,14 +72,16 @@ test_that("steady state", {
 })
 
 
+# TODO: also check function check
+
 test_that("dynamic model", {
   
   expected_warning <- paste0("Model solving not succesful.\n",
     "The maximum number of iterations \\(1\\) has been reached")
   expect_warning(
     expect_output(
-      toy_internal$solve(control = list(maxiter = 1, silent = FALSE)),
-      "No convergence after 2 iterations"
+      toy_internal$solve(control = list(maxiter = 1)),
+      "No convergence after 1 iterations"
     ),
     expected_warning
   )
