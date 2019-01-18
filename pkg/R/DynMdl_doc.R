@@ -320,7 +320,7 @@ NULL
 #'
 #' }
 #'
-#' @seealso \code{\link{change_data-methods}} and  \code{\link{set_data-methods}}
+#' @seealso \code{\link{change_data-methods}} and  \code{\link{set_data}}
 #' @examples
 #'
 #' mdl <- islm_mdl(period = "2017Q1/2018Q3")

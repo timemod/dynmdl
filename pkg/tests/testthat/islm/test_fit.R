@@ -11,6 +11,9 @@ model_name <- "islm_fit"
 report <- capture_output(mdl <- read_mdl(rds_file))
 mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
 
+endo_names <- c("y", "yd", "c", "i", "md", "r", "t") 
+inames <- c("ut", "uc", "umd", "ui")
+
 mdl_old <- mdl$copy()
 
 test_that("all.equal works correctly for fit models", {
@@ -34,8 +37,34 @@ test_that("dynare result equal to islm result", {
   expect_equal(dynare_endo, mdl$get_endo_data(period = p))
 })
 
+
+test_that("get_data", {
+  p <- mdl$get_period()
+  endo_data <- mdl$get_endo_data()
+  exo_data <- mdl$get_exo_data()
+  expect_identical(colnames(exo_data), c("g", "ms"))
+  all_data <- cbind(endo_data, exo_data)
+  all_data <- all_data[, order(colnames(all_data))]
+
+  expect_equal(mdl$get_data(), all_data)  
+  expect_equal(mdl$get_data(names = "g", period = p), 
+              all_data[p, "g", drop = FALSE])  
+  
+  expect_equal(mdl$get_data(names = "ms", pattern = "^y",
+                             period = p), 
+                all_data[p, c("ms", "y", "yd")])  
+  
+  # errors 
+  expect_error(mdl$get_data(names = "ui"), "\"ui\" is not a model variable") 
+  expect_error(mdl$get_exo_data(names = c("ui", "aap")), 
+              "\"ui\", \"aap\" are no exogenous model variables")         
+  
+  expect_null(mdl$get_data(pattern = "^u"))
+})
+
+
 test_that("get_names", {
-  endo_names <- c("y", "yd", "c", "i", "md", "r", "t") 
+ 
   expect_equal(mdl$get_endo_names(), endo_names)
   
   expect_equal(mdl$get_endo_names(type = "lag"), c("y", "yd"))
@@ -48,7 +77,7 @@ test_that("get_names", {
                  paste0("t", 0:1))
   expect_equal(mdl$get_par_names(), par_names)
   
-  inames <- c("ut", "uc", "umd", "ui")
+  
   expect_equal(mdl$get_instrument_names(), inames)
   expect_equal(mdl$get_sigma_names(), paste0("sigma_", inames))
 })

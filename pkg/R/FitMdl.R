@@ -139,8 +139,7 @@ FitMdl <- R6Class("FitMdl",
       nper <- nperiod(period)
       vlen <- length(value)
       if (vlen != 1 && vlen < nper) {
-        stop(paste("Argument value should have length 1 or",
-                   "length ", nper))
+        stop(paste("Argument value should have length 1 or length ", nper))
       }
       period <- range_intersect(period, private$data_period)
       names <- private$get_names_fitmdl_("endo", names, pattern)
@@ -158,6 +157,11 @@ FitMdl <- R6Class("FitMdl",
     clear_fit = function() {
       super$set_exo_values(0, names = private$fit_info$fit_vars)
       super$set_endo_values(0, names = private$fit_info$l_vars)
+    },
+    get_data = function(pattern = NULL, names = NULL, 
+                        period = private$data_period) {
+      names <- private$get_names_fitmdl_("all", names, pattern)
+      return(super$get_data(period = period, names = names))
     },
     get_endo_data = function(pattern = NULL, names = NULL, 
                              period = private$data_period) {
@@ -258,35 +262,54 @@ FitMdl <- R6Class("FitMdl",
   ), 
   private = list(
     fit_info = NULL,
+    
     get_names_fitmdl_ = function(type, names, pattern) {
-      if (type == "endo") {
-        vnames <- private$fit_info$orig_endos
-      } else {
-        vnames <- private$fit_info$orig_exos
+      
+      if (private$mdldef$aux_vars$aux_count > 0) {
+        stop("FitMdl cannot handle auxiliarry variable yet")
       }
+      
+      endo_names <- private$fit_info$orig_endos
+      exo_names <- private$fit_info$orig_exos
+    
+      if (type == "all") {
+        vnames <- union(endo_names, exo_names)
+      } else if (type == "endo") {
+        vnames <- endo_names
+      } else {
+        vnames <- exo_names
+      }
+      
       if (!is.null(names)) {
         error_vars <- setdiff(names, vnames)
         if (length(error_vars) > 0) {
-          if (type == "endo") {
-            type_txt <- "endogenous "
-          } else {
-            type_txt <- "exogenous "
-          }
+          error_vars <- paste0("\"", error_vars, "\"")
+          type_texts <- c(all = "", endo = "endogenous ", exo = "exogenous ")
+          type_text <- type_texts[[type]]
           if (length(error_vars) == 1) {
-            stop(paste0(error_vars, " is not an ", type_txt, "model variable"))
+            a_word <- if (type == "all") "a " else "an "
+            stop(paste0(error_vars, " is not ", a_word, type_text, 
+                        "model variable"))
           } else {
-            stop(paste0("The variables ", paste(error_vars, collapse = " "),
-                        " are no ", type_txt, "model variables"))
+            stop(paste0(paste(error_vars, collapse = ", "),
+                        " are no ", type_text, "model variables"))
           }
         }
       }
+      
       if (is.null(pattern) && is.null(names)) {
         names <- vnames
-      } else if (is.null(names)) {
-          names <- vnames[grep(pattern, vnames)]
       } else if (!is.null(pattern)) {
-          names <- union(names, vnames[grep(pattern, vnames)])
+        sel <- grep(pattern, vnames)
+        pattern_names <- vnames[sel]
+        if (!is.null(names)) {
+          names <- union(pattern_names, names)
+        } else {
+          names <- pattern_names
+        }
       }
+      return(names)
+     
       return(names)
     }
   )

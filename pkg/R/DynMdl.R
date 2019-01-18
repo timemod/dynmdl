@@ -378,9 +378,11 @@ DynMdl <- R6Class("DynMdl",
         if (length(names) == 0) {
           return(NULL)
         }
-        endo_data <- private$endo_data[ , intersect(names, private$endo_names),
+        endo_data <- private$endo_data[period , 
+                                       intersect(names, private$endo_names),
                                        drop = FALSE]
-        exo_data <- private$exo_data[ , intersect(names, private$exo_names),
+        exo_data <- private$exo_data[period , 
+                                     intersect(names, private$exo_names),
                                      drop = FALSE]
       }
       

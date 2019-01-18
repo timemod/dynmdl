@@ -59,5 +59,5 @@ mdl$set_exo_values(c(205, 206), names = "ms", period = "2017Q1/2017Q2")
 mdl$set_endo_values(1000, pattern = "^yd?$")
 }
 \seealso{
-\code{\link{change_data-methods}} and  \code{\link{set_data-methods}}
+\code{\link{change_data-methods}} and  \code{\link{set_data}}
 }

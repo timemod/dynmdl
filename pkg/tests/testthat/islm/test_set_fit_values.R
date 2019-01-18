@@ -2,10 +2,12 @@ library(utils)
 library(dynmdl)
 library(testthat)
 
+rm(list = ls())
+
 context("set_fit_values for the ISLM model")
 
 rds_file <- "islm_model_fit.rds"
-capture_output(mdl <- read_mdl(rds_file))
+dum <- capture_output(mdl <- read_mdl(rds_file))
 
 i <- regts(200, start = '2016Q1')
 c <- regts(c(600, NA, 600), start = '2016Q1')
@@ -37,8 +39,8 @@ test_that("set_fit_values works correctly", {
 
 test_that("set_fit_values handles errors correctly", {
   mdl2 <- mdl$copy()
-  msg <- "xxx is not an endogenous model variable"
+  msg <- "\"xxx\" is not an endogenous model variable"
   expect_error(mdl2$set_fit_values(1, names = c("y", "xxx")), msg)
-  msg <- "The variables p xxx are no endogenous model variables"
+  msg <- "\"p\", \"xxx\" are no endogenous model variables"
   expect_error(mdl2$set_fit_values(1, names = c("p", "xxx")), msg)
 })
