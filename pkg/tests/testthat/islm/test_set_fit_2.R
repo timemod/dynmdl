@@ -22,7 +22,7 @@ test_that("Testing get_fit after copying", {
   expect_identical(mdl$get_fit(), fit_targets_sorted)
   mdl2 <- mdl$copy()
   expect_identical(mdl2$get_fit(), fit_targets_sorted)
-  mdl2$clear_fit()
+  mdl2$set_fit_values(NA)
   expect_null(mdl2$get_fit())
   expect_identical(mdl$get_fit(), fit_targets_sorted)
   mdl3 <- mdl$copy()

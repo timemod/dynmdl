@@ -39,9 +39,6 @@ parameters used in the fit procedure.}
 \item{\code{\link{get_fit}}}{Returns the fit targets
 used in the fit procedure}
 
-\item{\code{\link{clear_fit}}}{Remove all fit targets. Also all Lagrange 
-multipliers are set to zero}
-
 \item{\code{\link{get_fit_instruments}}}{Returns all non-zero fit instruments
 used in the fit procedure}
 

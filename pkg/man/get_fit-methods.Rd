@@ -64,6 +64,6 @@ print(mdl$get_lagrange())
 }
 \seealso{
 \code{\link{set_fit}}, \code{\link{set_fit_values}}, 
-\code{\link{clear_fit}}, \code{\link{set_data}}, 
+\code{\link{set_data}}, 
 \code{\link{set_endo_values}} and \code{\link{change_endo_data}}
 }

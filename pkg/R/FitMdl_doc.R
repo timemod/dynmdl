@@ -97,21 +97,6 @@ NULL
 #' print(mdl$get_fit())
 NULL
 
-#' \code{\link{FitMdl}} method: deletes all fit targets
-#' @name clear_fit
-#' @description
-#' This methods of R6 class \code{\link{FitMdl}}
-#' deletes all fit targets for the fit procedure.
-#'
-#' @section Usage:
-#' \preformatted{
-#' mdl$clear_fit()
-#' }
-#' \code{mdl} is an \code{\link{FitMdl}} object
-#' @seealso \code{\link{set_fit}} and \code{\link{get_fit}}
-NULL
-
-
 #' \code{\link{FitMdl}} methods: Retrieve the names of the fit instruments
 #' or sigma parameters used in the fit procedure.
 #' @name get_instrument_names/get_sigma_names
@@ -194,6 +179,6 @@ NULL
 #' print(mdl$get_lagrange())
 #' 
 #' @seealso \code{\link{set_fit}}, \code{\link{set_fit_values}}, 
-#' \code{\link{clear_fit}}, \code{\link{set_data}}, 
+#' \code{\link{set_data}}, 
 #' \code{\link{set_endo_values}} and \code{\link{change_endo_data}}
 NULL

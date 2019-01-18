@@ -23,6 +23,8 @@ test_that("all.equal works correctly for fit models", {
 mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
 mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")
 
+fit_targets <- mdl$get_fit()
+
 test_that("all.equal works correctly for fit models", {
   expect_false(isTRUE(all.equal(mdl, mdl_old)))
 })
@@ -78,6 +80,22 @@ test_that("get_names", {
   expect_equal(mdl$get_par_names(), par_names)
   
   
-  expect_equal(mdl$get_instrument_names(), inames)
   expect_equal(mdl$get_sigma_names(), paste0("sigma_", inames))
+})
+
+test_that("start solution with correct lagrange multipliers", {
+  l <- mdl$get_lagrange()
+  inst <- mdl$get_fit_instruments()
+  endo_data <- mdl$get_endo_data(period = mdl$get_period())
+  
+  mdl2 <- mdl_old$copy()
+  mdl2$set_fit(fit_targets)
+  expect_warning(
+    expect_output(
+      mdl2$solve(control = list(maxiter = 1)),
+      "No convergence after 1 iterations"),
+    "The maximum number of iterations \\(1\\) has been reached"
+  )
+  mdl2$set_data(cbind(endo_data, l, inst))
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
 })
