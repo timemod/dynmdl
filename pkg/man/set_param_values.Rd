@@ -27,8 +27,8 @@ mdl$set_param_values(value, names, pattern)
 \item{\code{pattern}}{a regular expression}
 }
 
-In neither \code{names} nor \code{pattern} have been specified,
- then all model parameters are set to the specified value.
+If neither \code{names} nor \code{pattern} have been specified,
+then all model parameters are set to the specified value.
 }
 
 \examples{
@@ -44,4 +44,7 @@ mdl$set_param_values(0, pattern = "^i")
 
 # set all parameters to zero
 mdl$set_param_values(0
+}
+\seealso{
+\code{\link{set_param}} and \code{\link{get_param}}
 }

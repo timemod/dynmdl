@@ -34,6 +34,8 @@ mdl$change_exo_data(fun names, pattern, period = mdl$get_data_period(), ...)
 object that can be coerced to a \code{period_range}}
 \item{\code{...}}{arguments passed to \code{fun}}
 }
+If neither \code{names} nor \code{pattern} have been specified,
+then the function is applied to all endogenous or exogenous variables.
 }
 
 \section{Methods}{

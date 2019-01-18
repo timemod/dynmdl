@@ -29,3 +29,6 @@ The names are the names of the parameter}
 mdl <- islm_mdl()
 mdl$set_param(c(i0 = 101))
 }
+\seealso{
+\code{\link{set_param_values}} and \code{\link{get_param}}
+}

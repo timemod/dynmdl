@@ -164,6 +164,9 @@ NULL
 #' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
 #' object that can be coerced to a \code{period_range}}
 #' }
+#' 
+#' If neither \code{names} nor \code{pattern} have been specified,
+#' then all endogenous or exogenous variables are set to the specified value.
 #' @section Methods:
 #' \itemize{
 #' \item \code{get_endo_data}: Endogenous model variables
@@ -296,6 +299,9 @@ NULL
 #' \item{\code{pattern}}{a regular expression}
 #' \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
 #' object that can be coerced to a \code{period_range}}
+#' 
+#' If neither \code{names} nor \code{pattern} have been specified,
+#' then all endogenous or exogenous variables are set to the specified value.
 #' }
 #' @section Methods:
 #' \itemize{
@@ -305,6 +311,7 @@ NULL
 #'
 #' }
 #'
+#' @seealso \code{\link{change_data-methods}} and  \code{\link{set_data-methods}}
 #' @examples
 #'
 #' mdl <- islm_mdl(period = "2017Q1/2018Q3")
@@ -345,6 +352,9 @@ NULL
 #' object that can be coerced to a \code{period_range}}
 #' \item{\code{...}}{arguments passed to \code{fun}}
 #' }
+#' If neither \code{names} nor \code{pattern} have been specified,
+#' then the function is applied to all endogenous or exogenous variables.
+#' 
 #' @section Methods:
 #' \describe{
 #' \item{\code{changes_endo_data}}{Changes the endogenous model variables}
@@ -849,6 +859,7 @@ NULL
 #' @examples
 #' mdl <- islm_mdl()
 #' mdl$set_param(c(i0 = 101))
+#' @seealso \code{\link{set_param_values}} and \code{\link{get_param}}
 NULL
 
 
@@ -878,8 +889,7 @@ NULL
 #'
 #' # print parameters c0, c1, c2 and c3
 #' print(mdl$get_param(pattern = "^c.*"))
-#' @seealso
-#' \code{\link{set_param}}
+#' @seealso \code{\link{set_param}} and \code{\link{set_param_values}} 
 NULL
 
 
@@ -999,9 +1009,10 @@ NULL
 #' \item{\code{pattern}}{a regular expression}
 #' }
 #' 
-#'In neither \code{names} nor \code{pattern} have been specified,
-#'  then all model parameters are set to the specified value.
+#' If neither \code{names} nor \code{pattern} have been specified,
+#' then all model parameters are set to the specified value.
 #'
+#' @seealso \code{\link{set_param}} and \code{\link{get_param}} 
 #' @examples
 #'
 #' mdl <- islm_mdl()

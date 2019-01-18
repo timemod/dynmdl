@@ -32,6 +32,9 @@ as the length of the range of \code{period}}
 \item{\code{pattern}}{a regular expression}
 \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
 object that can be coerced to a \code{period_range}}
+
+If neither \code{names} nor \code{pattern} have been specified,
+then all endogenous or exogenous variables are set to the specified value.
 }
 }
 
@@ -54,4 +57,7 @@ mdl$set_exo_values(c(205, 206), names = "ms", period = "2017Q1/2017Q2")
 
 # set the values for y and yd to 1000 for  the full data period
 mdl$set_endo_values(1000, pattern = "^yd?$")
+}
+\seealso{
+\code{\link{change_data-methods}} and  \code{\link{set_data-methods}}
 }

@@ -37,6 +37,9 @@ mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
 \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
 object that can be coerced to a \code{period_range}}
 }
+
+If neither \code{names} nor \code{pattern} have been specified,
+then all endogenous or exogenous variables are set to the specified value.
 }
 
 \section{Methods}{
