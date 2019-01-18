@@ -53,6 +53,19 @@ test_that("set_data, set_endo_values and set_exo_values works correctly (1)", {
   expect_equal(mdl2$get_exo_data(),  exo_data)
   expect_equal(mdl3$get_endo_data(), endo_data)
   expect_equal(mdl3$get_exo_data(),  exo_data)
+  
+  data <- cbind(endo_data, exo_data)
+  d <<- data
+  data <- data[, order(colnames(data))]
+  testp <- "2017Q1"
+  expect_equal(mdl3$get_data(period = testp), data[testp, ])
+  
+  names <- c("g", "c")
+  pattern <- "^y.?$"
+  expect_equal(mdl3$get_data(names = names, pattern = pattern), 
+               data[, c("c", "g", "y", 'yd')])
+  
+  expect_equal(mdl3$get_data(names = "i"), data[, "i", drop = FALSE])
 })
 
 test_that("mdl2 is a different object than mdl", {
@@ -97,4 +110,25 @@ test_that("get_names", {
   par_names <- c(paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
                  paste0("t", 0:1))
   expect_equal(mdl$get_par_names(), par_names)
+})
+
+test_that("get_data errors", {
+    
+  expect_error(
+    mdl$get_data(names = c("aap", "g"), pattern = "^y"),
+      "\"aap\" is not a model variable"
+  )
+  expect_error(
+    mdl$get_endo_data(names = c("aap", "g"), pattern = "^y"),
+    "\"aap\", \"g\" are no endogenous model variables"
+  )
+  
+  expect_error(
+    mdl$get_exo_data(names = c("aap", "g"), pattern = "^y"),
+    "\"aap\" is not an exogenous model variable"
+  )
+  
+  expect_null(mdl$get_data(pattern = "xxx"))
+  expect_null(mdl$get_endo_data(pattern = "xxx"))
+  expect_null(mdl$get_exo_data(pattern = "xxx"))
 })

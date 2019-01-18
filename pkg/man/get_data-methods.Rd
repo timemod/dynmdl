@@ -2,6 +2,7 @@
 % Please edit documentation in R/DynMdl_doc.R
 \name{get_data-methods}
 \alias{get_data-methods}
+\alias{get_data}
 \alias{get_endo_data}
 \alias{get_exo_data}
 \title{\code{\link{DynMdl}} methods: Retrieve timeseries from the model data}
@@ -19,6 +20,9 @@ in the fit procedure.
 \section{Usage}{
 
 \preformatted{
+
+mdl$get_data(pattern, names, period = mdl$get_data_period())
+
 mdl$get_endo_data(pattern, names, period = mdl$get_data_period())
 
 mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
@@ -45,12 +49,19 @@ then all endogenous or exogenous variables are set to the specified value.
 \section{Methods}{
 
 \itemize{
+
+\item \code{get_data}: All model variables
 \item \code{get_endo_data}: Endogenous model variables
 
 \item \code{get_exo_data}: Exogenous model variables
 }
 }
 
+\examples{
+mdl <- islm_mdl(period = "2017Q1/2017Q3")
+
+mdl$get_data(names = "c", pattern  = "y.", period = "2017Q1/2017Q2")
+}
 \seealso{
 \code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
 \code{\link{get_lagrange}}

@@ -80,6 +80,8 @@ variables by applying a function}
 \item{\code{\link{change_exo_data}}}{Changes the values of exogenous model 
 variables by applying a function}
 
+\item{\code{\link{get_data}}}{Returns the model data}
+
 \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 
 \item{\code{\link{get_exo_data}}}{Returns the exogenous model data}

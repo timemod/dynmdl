@@ -175,4 +175,18 @@ test_that("get_jacob", {
   expect_known_value(jac,  "expected_output/islm_var1_jac.rds")
 })
 
+test_that("get_data also works with aux vars", {
+  
+  endo_data <- mdl_new$get_endo_data()
+  exo_data <- mdl_new$get_exo_data()
+  expect_identical(colnames(exo_data), c("g", "ms"))
+  data <- cbind(endo_data, exo_data)
+  data <- data[ , order(colnames(data))]
+  
+  expect_equal(data, mdl_new$get_data())
+  
+  expect_equal(select_columns(data, regex = ".."),
+               mdl_new$get_data(pattern = ".."))
+})
+
 

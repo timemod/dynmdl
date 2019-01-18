@@ -43,7 +43,7 @@ mdl$set_param_values(0, names = c("i4", "c5"))
 mdl$set_param_values(0, pattern = "^i")
 
 # set all parameters to zero
-mdl$set_param_values(0
+mdl$set_param_values(0)
 }
 \seealso{
 \code{\link{set_param}} and \code{\link{get_param}}

@@ -4,7 +4,7 @@ library(testthat)
 
 context("set_values-methods for the ISLM model")
 
-capture_output(mdl <- read_mdl("islm_model.rds"))
+dum <- capture_output(mdl <- read_mdl("islm_model.rds"))
 
 test_that("set_values works correctly (1)", {
   
@@ -52,8 +52,8 @@ test_that("set_values works correctly (2)", {
 
 test_that("set_values handles errors correctly", {
   mdl2 <- mdl$copy()
-  msg <- "xxx is not an endogenous model variable"
+  msg <- "\"xxx\" is not an endogenous model variable"
   expect_error(mdl2$set_endo_values(1, names = c("y", "xxx")), msg)
-  msg <- "The variables p xxx are no exogenous model variables"
+  msg <- "\"p\", \"xxx\" are no exogenous model variables"
   expect_error(mdl2$set_exo_values(1, names = c("p", "xxx")), msg)
 })

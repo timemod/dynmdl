@@ -91,6 +91,8 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{change_exo_data}}}{Changes the values of exogenous model 
 #' variables by applying a function}
+#' 
+#' \item{\code{\link{get_data}}}{Returns the model data}
 #'
 #' \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 #'
@@ -363,11 +365,43 @@ DynMdl <- R6Class("DynMdl",
                         type = "endo", upd_mode = upd_mode, fun)
       return(invisible(self))
     },
+    get_data = function(pattern = NULL, names = NULL, 
+                        period = private$data_period) {
+      
+      period <- private$convert_period_arg(period)
+      if (missing(pattern) && missing(names) && 
+          private$mdldef$aux_vars$aux_count == 0) {
+        endo_data <- private$endo_data[period, ]
+        exo_data <- private$exo_data[period, ]
+      } else {
+        names <- private$get_names_("all", names, pattern)
+        if (length(names) == 0) {
+          return(NULL)
+        }
+        endo_data <- private$endo_data[ , intersect(names, private$endo_names),
+                                       drop = FALSE]
+        exo_data <- private$exo_data[ , intersect(names, private$exo_names),
+                                     drop = FALSE]
+      }
+      
+      nendo <- ncol(endo_data)
+      nexo <- ncol(exo_data)
+      if (nendo > 0 && nexo > 0) {
+        ret <- cbind(endo_data, exo_data)
+        ret <- ret[ , order(colnames(ret))]
+      } else if (nendo == 0) {
+        ret <- exo_data
+      } else if (nexo == 0) {
+        ret <- endo_data
+      }
+      
+      return(update_ts_labels(ret, private$mdldef$labels))
+    },
     get_endo_data = function(pattern = NULL, names = NULL, 
                              period = private$data_period) {
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
-          !private$mdldef$aux_vars$aux_count > 0) {
+          private$mdldef$aux_vars$aux_count == 0) {
         ret <- private$endo_data[period, ]
       } else {
         names <- private$get_names_("endo", names, pattern)
@@ -833,28 +867,41 @@ DynMdl <- R6Class("DynMdl",
     jac_steady = NULL,
     res = numeric(),
     solve_status = NA_character_,
+    
     get_names_ = function(type, names, pattern) {
-      if (type == "endo") {
-        vnames <- private$endo_names
+      
+      # This function selects model variable names from names and pattern.
+      # Tt gives an error if names contain any invalid name for the 
+      # specified type of model variable.
+      
+      if (type %in% c("all", "endo")) {
+        endo_names <- private$endo_names
         if (private$mdldef$aux_vars$aux_count > 0) {
-          vnames <- vnames[-private$mdldef$aux_vars$endos]
+          endo_names <- endo_names[-private$mdldef$aux_vars$endos]
         }
+      }
+      
+      # return model variable names
+      if (type == "all") {
+        vnames <- union(endo_names, private$exo_names)
+      } else if (type == "endo") {
+        vnames <- endo_names
       } else {
         vnames <- private$exo_names
       }
       if (!is.null(names)) {
         error_vars <- setdiff(names, vnames)
         if (length(error_vars) > 0) {
-          if (type == "endo") {
-            type_txt <- "endogenous "
-          } else {
-            type_txt <- "exogenous "
-          }
+          error_vars <- paste0("\"", error_vars, "\"")
+          type_texts <- c(all = "", endo = "endogenous ", exo = "exogenous ")
+          type_text <- type_texts[[type]]
           if (length(error_vars) == 1) {
-            stop(paste0(error_vars, " is not an ", type_txt, "model variable"))
+            a_word <- if (type == "all") "a " else "an "
+            stop(paste0(error_vars, " is not ", a_word, type_text, 
+                        "model variable"))
           } else {
-            stop(paste0("The variables ", paste(error_vars, collapse = " "),
-                        " are no ", type_txt, "model variables"))
+            stop(paste0(paste(error_vars, collapse = ", "),
+                        " are no ", type_text, "model variables"))
           }
         }
       }
@@ -871,6 +918,7 @@ DynMdl <- R6Class("DynMdl",
       }
       return(names)
     },
+    
     set_data_ = function(data, names, names_missing, type, upd_mode = "upd", 
                         fun) {
       # generic function to set or update the endogenous or exogenous
@@ -1360,6 +1408,7 @@ DynMdl <- R6Class("DynMdl",
       # check if names are parameter names
       no_params <- setdiff(names, private$param_names)
       if (length(no_params) > 0) {
+        no_params <- paste0("\"", no_params, "\"")
         stop(paste(paste(no_params, collapse = ", "), 
                   "is/are no model parameter(s)"))
       }
