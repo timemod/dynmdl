@@ -62,4 +62,16 @@ test_that("get_static_jacob and get_jacob", {
   expect_known_value(jac,  "expected_output/islm_jac.rds")
 })
 
+test_that("steady state and eigenvalues", {
+  
+  expect_equal(mdl$get_static_endos(), dynare_result$steady)
+  check_report <- capture_output(mdl$check())
+  
+  eigvals <- mdl$get_eigval()
+  expect_equal(eigvals[1:3], dynare_result$eigval[1:3, 1])
+  expect_equal(is.finite(eigvals[4]), FALSE)
+  
+})
+
+
 

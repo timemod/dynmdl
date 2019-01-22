@@ -55,4 +55,19 @@ test_that("solve_perturb linear model", {
   expect_equal(mdl2$get_endo_data(), mdl3$get_endo_data())
 })
 
+test_that("steady state and eigenvalues", {
+  
+  expect_equal(mdl$get_static_endos(), dynare_result$steady)
+  check_report <- capture_output(mdl$check())
+  
+  eigvals <- mdl$get_eigval()
+  expect_equal(eigvals[1:3], dynare_result$eigval[1:3, 1])
+  expect_equal(is.finite(eigvals[4]), FALSE)
+  
+  tmpfile <- tempfile()
+  write(check_report, tmpfile)
+  eigval_data <- read.table(tmpfile, skip = 1, nrow = 4, header = TRUE)
+  expect_equal(eigval_data$Real, Re(eigvals), tolerance = 1e-6)
+  expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
+})
 

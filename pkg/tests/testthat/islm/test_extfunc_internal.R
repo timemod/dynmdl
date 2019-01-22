@@ -24,3 +24,14 @@ test_that("solve", {
   mdl2 <- simul_islm(mdl)
   expect_equal(dynare_result$endo, mdl2$get_endo_data(period = model_period))
 })
+
+test_that("steady state and eigenvalues", {
+  
+  expect_equal(mdl$get_static_endos(), dynare_result$steady)
+  check_report <- capture_output(mdl$check())
+  
+  eigvals <- mdl$get_eigval()
+  expect_equal(eigvals[1:3], dynare_result$eigval[1:3, 1])
+  expect_equal(is.finite(eigvals[4]), FALSE)
+  
+})

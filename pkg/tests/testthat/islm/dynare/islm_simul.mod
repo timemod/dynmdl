@@ -2,6 +2,8 @@
 
 steady;
 
+check;
+
 initval;
 y = 1200;
 end;
