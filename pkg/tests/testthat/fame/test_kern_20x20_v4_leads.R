@@ -13,9 +13,13 @@ period <- "2010Q2/2011Q1"
 check_calc_R <- FALSE
 
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
+fit_mod_file <- file.path("fmod", paste0(model_name, ".mod"))
 
 dum <- capture_output({
-  toy_dll <- dyn_mdl(mod_file, period = period, calc  = "dll") 
+  toy_no_fit <- dyn_mdl(mod_file, period = period, calc  = "internal",
+                        fit = FALSE) 
+  toy_dll <- dyn_mdl(mod_file, period = period, calc  = "dll",
+                     fit_mod_file = fit_mod_file) 
   toy_internal <- dyn_mdl(mod_file, period = period, calc  = "internal")               
   if (check_calc_R) {
     toy_R <- dyn_mdl(mod_file, period = period, calc  = "R")               
@@ -25,7 +29,6 @@ dum <- capture_output({
 test_that("steady state", {
   
   expect_true(is.na(toy_internal$get_solve_status()))
-  
   
   expected_warning <- paste0("Solving the steady state not succesful.\n",
                              "The maximum number of iterations \\(1\\) has been reached")
@@ -69,10 +72,20 @@ test_that("steady state", {
     toy_R$solve_steady(control = list(maxiter = 6, silent = TRUE))
     expect_equal(toy_internal$get_static_endos(), toy_R$get_static_endos())
   }
+  
+  # compare steady state values with toy_no_fit
+  rep <- capture_output(toy_no_fit$solve_steady())
+  expect_equal(toy_no_fit$get_solve_status(), "OK")
+  x1 <- toy_internal$get_static_endos()
+  x2 <- toy_no_fit$get_static_endos()
+  expect_equal(x1, x2)
 })
 
-
-# TODO: also check function check
+# test_that("check", {
+#   report <- capture_output(toy_internal$check())
+#   eig1 <- toy_no_fit$get_eigval()
+#   eig2 <- toy_internal$get_eigval()
+# })
 
 test_that("dynamic model", {
   
