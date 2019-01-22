@@ -14,7 +14,7 @@ dynare_result <- read_dynare_result(model_name, mdl)
 
 mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
 
-endo_names <- c("y", "yd", "c", "i", "md", "r", "t") 
+endo_names <- c("y", "yd", "t", "c", "i", "md", "r") 
 inames <- c("ut", "uc", "umd", "ui")
 
 mdl_old <- mdl$copy()

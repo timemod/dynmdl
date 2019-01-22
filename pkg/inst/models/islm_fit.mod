@@ -3,11 +3,11 @@
 % endogenous variables
 var y $Y$ (long_name = 'Income')
     yd $Y_d$ (long_name = 'Disposable income')
+    t $T$ (long_name = 'Tax')
     c $C$ (long_name = 'Consumption')
     i $I$ (long_name = 'Investment')
     md $M_d$ (long_name = 'Monet demand')
-    r $r$ (long_name = 'Interest rate')
-    t $T$ (long_name = 'Tax');
+    r $r$ (long_name = 'Interest rate');
 
 % exogenous variables
 varexo g $G$ (long_name = 'Government spending')
@@ -31,9 +31,9 @@ m0 = 75; m1 = 0.23; m2 = -35; m3 = -1.5;
 t0 = -15; t1 = 0.22;
 
 model;
-t = t0 + t1 * y + ut;
 y = c + i + g;
 yd = y - t;
+t = t0 + t1 * y + ut;
 c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * r^2 + uc;
 i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + i5 * r^2 + ui;
 md = m0 + m1 * y + m2 * r + m3 * r^2 + umd;
