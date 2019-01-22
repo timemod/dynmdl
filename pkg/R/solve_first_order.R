@@ -66,6 +66,10 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
     qz_result <- geigen::gqz(E, D, sort = 'S')
     ss$eigval <- geigen::gevalues(qz_result)
   }
+  
+  # order eigenvalues with increasing Modulus
+  ss$eigval <- ss$eigval[order(Mod(ss$eigval))]
+  
   if (debug) {
     printobj(D)
     printobj(E)
@@ -76,8 +80,6 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
   nba <- ss$nd - sdim
   
   if (check_only) {
-    i <- order(abs(ss$eigval))
-    
     cat("EIGENVALUES:\n")
     cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
     for (eigv in ss$eigval) {

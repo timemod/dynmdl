@@ -725,10 +725,9 @@ DynMdl <- R6Class("DynMdl",
     },
     get_eigval = function() {
       if (!is.null(private$ss) && !is.null(private$ss$eigval)) {
-        i <- order(abs(private$ss$eigval))
-        return(private$ss$eigval[i])
+        return(private$ss$eigval)
       } else {
-        stop(paste("Eigen values not available. Calculate the eigenvalues",
+        stop(paste("Eigenvalues not available. Calculate the eigenvalues",
                    "with method check()."))
       }
     },

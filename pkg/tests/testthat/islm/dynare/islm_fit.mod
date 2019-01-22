@@ -2,6 +2,8 @@
 
 steady;
 
+check;
+
 % Observation in for yearly timeseries
 shocks;
 var fit_y;

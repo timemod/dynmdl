@@ -58,3 +58,10 @@ test_that("dynare result equal to islm result", {
   p <- mdl$get_period()
   expect_equal(dynare_result$endo, mdl$get_endo_data(period = p))
 })
+
+test_that("steady state and eigenvalues", {
+  expect_equal(mdl$get_static_endos(), dynare_result$steady)
+  report <- capture_output(mdl$check())
+  expect_equal(mdl$get_eigval()[1:6], dynare_result$eigval[1:6, 1])
+  expect_equal(is.finite(mdl$get_eigval()[7:8]), c(FALSE, FALSE))
+})

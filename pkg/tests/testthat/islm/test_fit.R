@@ -9,6 +9,9 @@ rds_file <- "islm_model_fit.rds"
 model_name <- "islm_fit"
 
 report <- capture_output(mdl <- read_mdl(rds_file))
+
+dynare_result <- read_dynare_result(model_name, mdl)
+
 mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
 
 endo_names <- c("y", "yd", "c", "i", "md", "r", "t") 
@@ -31,7 +34,7 @@ test_that("all.equal works correctly for fit models", {
 
 mdl$solve(control = list(silent = TRUE))
 
-dynare_result <- read_dynare_result(model_name, mdl)
+
 dynare_endo <- update_ts_labels(dynare_result$endo, mdl$get_labels())
 
 test_that("dynare result equal to islm result", {
@@ -98,4 +101,25 @@ test_that("start solution with correct lagrange multipliers", {
   )
   mdl2$set_data(cbind(endo_data, l, inst))
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
+})
+
+
+test_that("steady state and eigenvalues", {
+  
+  expect_equal(mdl$get_static_endos(), dynare_result$steady)
+  expect_error(mdl$get_eigval(), 
+               paste("Eigenvalues not available.",
+                     "Calculate the eigenvalues with method check\\(\\)."))
+  
+  check_report <- capture_output(mdl$check())
+  
+  eigvals <- mdl$get_eigval()
+  expect_equal(eigvals[1:6], dynare_result$eigval[1:6, 1])
+  expect_equal(is.finite(eigvals[7:8]), c(FALSE, FALSE))
+  
+  tmpfile <- tempfile()
+  write(check_report, tmpfile)
+  eigval_data <- read.table(tmpfile, skip = 1, nrow = 8, header = TRUE)
+  expect_equal(eigval_data$Real, Re(eigvals), tolerance = 1e-6)
+  expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
 })
