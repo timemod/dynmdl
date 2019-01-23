@@ -36,7 +36,7 @@ ifelse_d3 <<- function(x, y, z) {
 }
 
 nperiods <- 18
-model_name <- "islm_fit_if"
+model_name <- "islm_if_fit"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 p1 <- period("2016Q1")
 model_period <- period_range(p1, p1 + nperiods - 1)

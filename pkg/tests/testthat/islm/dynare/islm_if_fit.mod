@@ -1,4 +1,4 @@
-@#include "mod/islm_fit_if.mod"
+@#include "mod/islm_if_fit.mod"
 
 steady;
 
