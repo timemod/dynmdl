@@ -6,6 +6,8 @@ model_name <- "kern_20x20_v4_leads_fit"
 
 context(paste("model", model_name))
 
+source("../tools/read_dynare_result.R")
+
 period <- "2010Q2/2011Q1"
 
 # also check result with R version. We do this occasianlly because
@@ -25,6 +27,8 @@ dum <- capture_output({
     toy_R <- dyn_mdl(mod_file, period = period, calc  = "R")               
   }
 })
+
+dynare_result <- read_dynare_result(model_name, toy_internal)
 
 test_that("steady state", {
   
@@ -81,11 +85,23 @@ test_that("steady state", {
   expect_equal(x1, x2)
 })
 
-# test_that("check", {
-#   report <- capture_output(toy_internal$check())
-#   eig1 <- toy_no_fit$get_eigval()
-#   eig2 <- toy_internal$get_eigval()
-# })
+test_that("check and eigenvalues", {
+  
+  check_report <- capture_output(toy_internal$check())
+
+  eigvals <- toy_internal$get_eigval()
+  expect_equal(Re(eigvals[1:54]), dynare_result$eigval[1:54, 1], 
+               tolerance = 1e-7)
+  expect_equal(abs(Im(eigvals[1:54])), abs(dynare_result$eigval[1:54, 2]), 
+               tolerance = 1e-7)
+  expect_true(Mod(eigvals[55]) > 1e10)
+  expect_equal(is.finite(eigvals[56:85]), rep(FALSE, 30))
+  
+  eigval_data <- read.table(text = check_report, skip = 1, nrow = 87, 
+                            header = TRUE)
+  expect_equal(eigval_data$Real, Re(eigvals), tolerance = 1e-5)
+  expect_equal(abs(eigval_data$Imaginary), abs(Im(eigvals)), tolerance = 1e-5)
+})
 
 test_that("dynamic model", {
   

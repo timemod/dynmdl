@@ -463,27 +463,3 @@ initval;
  bd_pxe__ = bd_px___;
 
 end;
-
-write_latex_dynamic_model ;
-//close all;
-steady;
-check;
-// write_latex_dynamic_model ;
-varobs ybban___ c__an_hu i__an_mz k__az_mz w__wz_hu ;
-
-estimated_params;
-// p_r, uniform_pdf,,,0.02,.05;
-// p_d, uniform_pdf,,,0.05,.08;
-// p_c_l, uniform_pdf,,,0.8,.95;
-// p_c_w, uniform_pdf,,,0.05,0.08;
-p_pl_u, uniform_pdf,,,.1,.5;
-p_b_pb, uniform_pdf,,,1,4; 
-//p_c_ecm,uniform_pdf,,,0.01,0.4;
-p_i_ecm,uniform_pdf,,,0.01,0.15;
-p_b_ecm,uniform_pdf,,,0.01,0.4;
-p_pl_gapu,uniform_pdf,,,0.01,1;
-p_pc_gap,uniform_pdf,,,0.01,1;
-end;
-dynare_sensitivity(nsam=1000,pvalue_corr=1); % ,morris=1 ); % ,identification=1);
-
-

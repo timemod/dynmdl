@@ -64,9 +64,8 @@ test_that("steady state and eigenvalues", {
   expect_equal(eigvals[1:3], dynare_result$eigval[1:3, 1])
   expect_equal(is.finite(eigvals[4]), FALSE)
   
-  tmpfile <- tempfile()
-  write(check_report, tmpfile)
-  eigval_data <- read.table(tmpfile, skip = 1, nrow = 4, header = TRUE)
+  eigval_data <- read.table(text = check_report, skip = 1, nrow = 4, 
+                            header = TRUE)
   expect_equal(eigval_data$Real, Re(eigvals), tolerance = 1e-6)
   expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
 })

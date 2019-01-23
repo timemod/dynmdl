@@ -10,25 +10,30 @@ read_dynare_result <- function(model_name, mdl) {
   
   endo_names_dynare  <- read.csv(endo_name_file, stringsAsFactors = FALSE,
                                  header = FALSE, sep = "")[[1]]
-  endo_data <- t(as.matrix(read.csv(endo_data_file, header = FALSE)))
-  data_period <- mdl$get_data_period()
-  endo_names <- mdl$get_endo_names()
+  if (file.exists(endo_data_file)) {
+    endo_data <- t(as.matrix(read.csv(endo_data_file, header = FALSE)))
+  
+    data_period <- mdl$get_data_period()
+    endo_names <- mdl$get_endo_names()
  
-  #
-  # endogenous variables: return dynare result for the model period
-  #
-  model_period <- mdl$get_period()
-  max_lead_dynare <- min(mdl$get_max_lead(), 1)
-  max_lag_dynare  <- min(mdl$get_max_lag(), 1)
-  nper <- nperiod(model_period) + max_lag_dynare + max_lead_dynare
-  if (nper != nrow(endo_data)) {
-    stop("Error: length endo_data is not equal to the number of periods")
-  }
-  dyn_period <- period_range(start_period(model_period) - max_lag_dynare,
+    #
+    # endogenous variables: return dynare result for the model period
+    #
+    model_period <- mdl$get_period()
+    max_lead_dynare <- min(mdl$get_max_lead(), 1)
+    max_lag_dynare  <- min(mdl$get_max_lag(), 1)
+    nper <- nperiod(model_period) + max_lag_dynare + max_lead_dynare
+    if (nper != nrow(endo_data)) {
+      stop("Error: length endo_data is not equal to the number of periods")
+    }
+    dyn_period <- period_range(start_period(model_period) - max_lag_dynare,
                              end_period(model_period) + max_lead_dynare)
-  endo <- regts(endo_data, period = dyn_period, names = endo_names_dynare,
-                labels = endo_names_dynare)
-  endo <- endo[model_period, endo_names]
+    endo <- regts(endo_data, period = dyn_period, names = endo_names_dynare,
+                  labels = endo_names_dynare)
+    endo <- endo[model_period, endo_names]
+  } else {
+    endo <- NULL
+  }
   
   if (file.exists(stoch_endo_data_file)) {
     data_period <- mdl$get_data_period()
