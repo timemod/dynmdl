@@ -4,9 +4,6 @@ function clean_dynare(name_mod_file, name_directory_results, varargin)
 % Input argument 2: name of sub-directory for results and backup
 % Input argument 3: logical indicating whether to delete results
 
-% crearte temporary directory (only needed by octave)
-mkdir temp
-
 % Temporarily rename two main files (main mod file and steady-state m file)
 copyfile([name_mod_file,'.mod'],['temp ',name_mod_file,'.mod'])
 try copyfile([name_mod_file,'_steadystate.m'],...
