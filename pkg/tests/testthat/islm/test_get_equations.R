@@ -20,7 +20,7 @@ test_that("get_equations works correctly", {
   } else {
     eqs_fit_tmp <- eqs_fit
   }
-  expect_known_output(eqs_fit, "expected_output/eqs_fit.txt", print = TRUE)
+  expect_known_output(eqs_fit_tmp, "expected_output/eqs_fit.txt", print = TRUE)
   
   expect_equal(eqs[3], mdl$get_equations(3))
   expect_equal(eqs_fit[c(3,16)], mdl_fit$get_equations(i = c(3,16)))
