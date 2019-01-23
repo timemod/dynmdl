@@ -12,7 +12,7 @@ read_dynare_result <- function(model_name, mdl) {
   
   endo_names_dynare  <- read.csv(endo_name_file, stringsAsFactors = FALSE,
                                  header = FALSE, sep = "")[[1]]
-  if (file.exists(endo_name_file)) {
+  if (file.exists(exo_name_file)) {
     exo_names_dynare  <- read.csv(exo_name_file, stringsAsFactors = FALSE,
                                    header = FALSE, sep = "")[[1]]
   }
