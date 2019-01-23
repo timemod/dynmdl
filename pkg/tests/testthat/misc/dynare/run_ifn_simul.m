@@ -1,9 +1,5 @@
 extend_path
 
-%
-% This job does not run with Matlab on Windows / Dynare 4.5.6.
-% Use a special version of Dynare.
-%
 dynare ifn_simul noclearall
 
 clean_dynare('ifn_simul', 'temp', false)
