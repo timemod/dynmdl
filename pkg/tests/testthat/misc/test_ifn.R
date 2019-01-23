@@ -30,6 +30,19 @@ lag_per <- mdl$get_lag_period()
 input <- regts(input_df, period = mdl$get_data_period(),
                names = tolower(colnames(input_df)))
 
+
+if (FALSE) {
+  #
+  # prepare data for Dynare. Dynare does not like NA values for endogeous 
+  # variables in the lag or lead period, even if the corresponding variable
+  # has no lags/leads. Therefore use update_ts to update the data.
+  #
+  input_for_dynare <- mdl$get_endo_data()
+  input_for_dynare <- update_ts(input_for_dynare, input, method = "updval")
+  write_ts_xlsx(input_for_dynare, "dynare/ifn_input.xlsx", rowwise = FALSE, 
+              labels = "no")
+}
+
 test_that("solve", {
   mdl2 <- mdl$clone()
   mdl2$set_data(input)
