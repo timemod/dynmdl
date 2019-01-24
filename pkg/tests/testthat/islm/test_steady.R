@@ -87,3 +87,10 @@ test_that("non-finite values", {
                                      "Solving the steady state not succesful"),
                       file = "expected_output/steady_non_finite_1.txt")
 })
+
+test_that("errors", {
+  expect_error(mdl$set_static_endos(c(c = 12, xxx = 3)),
+               "\"xxx\" is not an endogenous model variable")
+  expect_error(mdl$set_static_exos(c(c = 12, xxx = 3, g = 12)),
+               "\"c\", \"xxx\" are no exogenous model variables")
+})

@@ -23,6 +23,34 @@ test_that("all.equal works correctly for fit models", {
   expect_true(isTRUE(all.equal(mdl, mdl_old)))
 })
 
+test_that("steady state and eigenvalues original model", {
+  
+  expect_equal(mdl$get_static_endos(), dynare_result$steady)
+  expect_error(mdl$get_eigval(), 
+               paste("Eigenvalues not available.",
+                     "Calculate the eigenvalues with method check\\(\\)."))
+  
+  check_report <- capture_output(mdl$check())
+  
+  eigvals <- mdl$get_eigval()
+  expect_equal(eigvals[1:6], dynare_result$eigval[1:6, 1])
+  expect_equal(is.finite(eigvals[7:8]), c(FALSE, FALSE))
+  
+  tmpfile <- tempfile()
+  write(check_report, tmpfile)
+  eigval_data <- read.table(tmpfile, skip = 1, nrow = 8, header = TRUE)
+  expect_equal(eigval_data$Real, Re(eigvals), tolerance = 1e-6)
+  expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
+})
+
+
+
+test_that("check steady state is compatible with dynamic model", {
+  expect_output(mdl$solve(), "Convergence after 0 iterations")   
+})
+
+
+
 mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
 mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")
 
@@ -51,38 +79,38 @@ test_that("get_data", {
   all_data <- cbind(endo_data, exo_data)
   all_data <- all_data[, order(colnames(all_data))]
 
-  expect_equal(mdl$get_data(), all_data)  
-  expect_equal(mdl$get_data(names = "g", period = p), 
-              all_data[p, "g", drop = FALSE])  
-  
+  expect_equal(mdl$get_data(), all_data)
+  expect_equal(mdl$get_data(names = "g", period = p),
+              all_data[p, "g", drop = FALSE])
+
   expect_equal(mdl$get_data(names = "ms", pattern = "^y",
-                             period = p), 
-                all_data[p, c("ms", "y", "yd")])  
-  
-  # errors 
-  expect_error(mdl$get_data(names = "ui"), "\"ui\" is not a model variable") 
-  expect_error(mdl$get_exo_data(names = c("ui", "aap")), 
-              "\"ui\", \"aap\" are no exogenous model variables")         
-  
+                             period = p),
+                all_data[p, c("ms", "y", "yd")])
+
+  # errors
+  expect_error(mdl$get_data(names = "ui"), "\"ui\" is not a model variable")
+  expect_error(mdl$get_exo_data(names = c("ui", "aap")),
+              "\"ui\", \"aap\" are no exogenous model variables")
+
   expect_null(mdl$get_data(pattern = "^u"))
 })
 
 
 test_that("get_names", {
- 
+
   expect_equal(mdl$get_endo_names(), endo_names)
-  
+
   expect_equal(mdl$get_endo_names(type = "lag"), c("y", "yd"))
   expect_equal(mdl$get_endo_names(type = "lead"), c("y", "yd"))
-  
+
   expect_equal(mdl$get_exo_names(), c("g", "ms"))
-  
+
   par_names <- c(paste0("sigma_u", c("t", "c", "i", "md")),
                  paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
                  paste0("t", 0:1))
   expect_equal(mdl$get_par_names(), par_names)
-  
-  
+
+
   expect_equal(mdl$get_sigma_names(), paste0("sigma_", inames))
 })
 
@@ -90,7 +118,7 @@ test_that("start solution with correct lagrange multipliers", {
   l <- mdl$get_lagrange()
   inst <- mdl$get_fit_instruments()
   endo_data <- mdl$get_endo_data(period = mdl$get_period())
-  
+
   mdl2 <- mdl_old$copy()
   mdl2$set_fit(fit_targets)
   expect_warning(
@@ -103,23 +131,27 @@ test_that("start solution with correct lagrange multipliers", {
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
 })
 
-
-test_that("steady state and eigenvalues", {
+test_that("miscellaneous set functions", {
   
-  expect_equal(mdl$get_static_endos(), dynare_result$steady)
-  expect_error(mdl$get_eigval(), 
-               paste("Eigenvalues not available.",
-                     "Calculate the eigenvalues with method check\\(\\)."))
+  mdl$set_endo_values(2, names = "l_2")
+  expect_identical(mdl$get_lagrange(names = "l_2")[, 1],
+                   regts(2, period = mdl$get_period()))
   
-  check_report <- capture_output(mdl$check())
+  # errors
+  expect_error(mdl$set_static_endos(c(l_2 = 2)),
+               "\"l_2\" is not an endogenous model variable")
   
-  eigvals <- mdl$get_eigval()
-  expect_equal(eigvals[1:6], dynare_result$eigval[1:6, 1])
-  expect_equal(is.finite(eigvals[7:8]), c(FALSE, FALSE))
+  expect_error(mdl$set_fit_values(2, names = c("g", "l_2")),
+               "\"g\", \"l_2\" are no endogenous model variables")
   
-  tmpfile <- tempfile()
-  write(check_report, tmpfile)
-  eigval_data <- read.table(tmpfile, skip = 1, nrow = 8, header = TRUE)
-  expect_equal(eigval_data$Real, Re(eigvals), tolerance = 1e-6)
-  expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
+  
+  x <- regts(matrix(1, nrow = 2, ncol = 3), names = c("g", "l_2", "y"),
+             period = "2016Q1")
+  expect_error(mdl$set_fit(x), "\"g\", \"l_2\" are no endogenous model variables")
 })
+
+
+
+
+
+

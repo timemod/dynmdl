@@ -96,8 +96,7 @@ FitMdl <- R6Class("FitMdl",
     get_sigma_names = function() {
       return(private$fit_info$sigmas)
     },
-    set_fit = function(data, names = colnames(data), 
-                       upd_mode = c("upd", "updval")) {
+    set_fit = function(data, names, upd_mode = c("upd", "updval")) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       if (!inherits(data, "ts")) {
@@ -109,27 +108,35 @@ FitMdl <- R6Class("FitMdl",
       upd_mode <- match.arg(upd_mode)
       period <- range_intersect(get_period_range(data), private$data_period)
       if (upd_mode == "updval") {
-        stop("upd_mode updval is not yet implemented")
+        stop("upd_mode updval has not yet implemented")
       }
-      names <- intersect(names, private$fit_info$orig_endos)
+      if (missing(names)) {
+        if (!is.null(colnames(data))) {
+          names <- colnames(data)
+        } else {
+          stop(paste("Argument data has no colnames.",
+                     "In that case, argument names should be specified"))
+        }
+      }
+      names <- private$get_names_fitmdl_("endo", names)
       if (!is.matrix(data)) {
         dim(data) <- c(length(data), 1)
         colnames(data) <- names
       } 
       data <- data[period, names, drop = FALSE]
       
-      cols <- match(names, private$fit_info$orig_endos)
+      names_idx <- match(names, private$fit_info$orig_endos)
       
-      # set exogenous variables
-      super$set_data_(data, private$fit_info$exo_vars[cols], FALSE,
-                      type = "exo", upd_mode = "updval")
+      # set exo_vars
+      super$set_data_(data, private$fit_info$exo_vars[names_idx], type = "exo", 
+                      upd_mode = "updval")
       
-      # create fit vars
+      # set fit_vars
       data[] <- ifelse(is.na(data), 0, 1)
-      super$set_data_(data, private$fit_info$fit_vars[cols], FALSE, 
-                      type = "exo", upd_mode = "update")
+      super$set_data_(data, private$fit_info$fit_vars[names_idx], type = "exo", 
+                      upd_mode = "update")
     },
-    set_fit_values = function(value, names = NULL, pattern = NULL, 
+    set_fit_values = function(value, names, pattern, 
                               period = private$data_period) {
       value <- as.numeric(value)
       period <- private$convert_period_arg(period)
@@ -151,18 +158,15 @@ FitMdl <- R6Class("FitMdl",
       }
       return(invisible(NULL))
     },
-    get_data = function(pattern = NULL, names = NULL, 
-                        period = private$data_period) {
+    get_data = function(pattern, names, period = private$data_period) {
       names <- private$get_names_fitmdl_("all", names, pattern)
       return(super$get_data(period = period, names = names))
     },
-    get_endo_data = function(pattern = NULL, names = NULL, 
-                             period = private$data_period) {
+    get_endo_data = function(pattern, names, period = private$data_period) {
       names <- private$get_names_fitmdl_("endo", names, pattern)
       return(super$get_endo_data(period = period, names = names))
     },
-    get_exo_data = function(pattern = NULL, names = NULL, 
-                            period = private$data_period) {
+    get_exo_data = function(pattern, names, period = private$data_period) {
       names <- private$get_names_fitmdl_("exo", names, pattern)
       return(super$get_exo_data(period = period, names = names))
     },
@@ -213,8 +217,21 @@ FitMdl <- R6Class("FitMdl",
       ret <- self$get_param(names = private$fit_info$sigmas)
       return(ret[ret >= 0])
     },
+    set_static_endos = function(endos) {
+      endo_names <- private$get_names_fitmdl_("endo", names = names(endos))
+      private$mdldef$endos[endo_names] <- endos[endo_names]
+      return(invisible(self))
+    },
     get_static_endos = function() {
       return(super$get_static_endos()[private$fit_info$orig_endos])
+    },
+    set_static_exos = function(exos) {
+      exo_names <- private$get_names_fitmdl_("exo", names = names(exos))
+      private$mdldef$exos[exo_names] <- exos[exo_names]
+      return(invisible(self))
+    },
+    get_static_exos = function() {
+      return(super$get_static_exos()[private$fit_info$orig_exos])
     },
     serialize = function() {
       ser <- as.list(super$serialize())
@@ -259,7 +276,7 @@ FitMdl <- R6Class("FitMdl",
     get_names_fitmdl_ = function(type, names, pattern) {
       
       if (private$mdldef$aux_vars$aux_count > 0) {
-        stop("FitMdl cannot handle auxiliarry variable yet")
+        stop("FitMdl cannot handle auxiliary variables yet")
       }
       
       endo_names <- private$fit_info$orig_endos
@@ -273,7 +290,7 @@ FitMdl <- R6Class("FitMdl",
         vnames <- exo_names
       }
       
-      if (!is.null(names)) {
+      if (!missing(names)) {
         error_vars <- setdiff(names, vnames)
         if (length(error_vars) > 0) {
           error_vars <- paste0("\"", error_vars, "\"")
@@ -290,12 +307,12 @@ FitMdl <- R6Class("FitMdl",
         }
       }
       
-      if (is.null(pattern) && is.null(names)) {
+      if (missing(pattern) && missing(names)) {
         names <- vnames
-      } else if (!is.null(pattern)) {
+      } else if (!missing(pattern)) {
         sel <- grep(pattern, vnames)
         pattern_names <- vnames[sel]
-        if (!is.null(names)) {
+        if (!missing(names)) {
           names <- union(pattern_names, names)
         } else {
           names <- pattern_names

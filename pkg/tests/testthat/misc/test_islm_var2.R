@@ -57,8 +57,8 @@ report <- capture_output(mdl_new <- dyn_mdl(mod_file, period = "2015/2032",
 
 test_that("solve_steady with max_laglead_1", {
   mdl_new$solve_steady(control = list(trace = FALSE, silent = TRUE))
-  mdl_new$set_static_endos(c(y = 6000))
-  expect_equal(mdl_new$get_static_endos(), dynare_result$steady)
+  expect_error(mdl_new$set_static_endos(c(y = 6000)),
+                          "FitMdl cannot handle auxiliary variables yet")
 })
 
 test_that("solve with max_laglead_1", {

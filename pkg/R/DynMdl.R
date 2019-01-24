@@ -225,7 +225,7 @@ DynMdl <- R6Class("DynMdl",
       return(private$mdldef$params[names])
     },
     set_static_exos = function(exos) {
-      exo_names <- intersect(private$exo_names, names(exos))
+      exo_names <- private$get_names_("exo", names = names(exos))
       private$mdldef$exos[exo_names] <- exos[exo_names]
       return(invisible(self))
     },
@@ -233,7 +233,7 @@ DynMdl <- R6Class("DynMdl",
       return(private$mdldef$exos)
     },
     set_static_endos = function(endos) {
-      endo_names <- intersect(private$endo_names, names(endos))
+      endo_names <- private$get_names_("endo", names = names(endos))
       private$mdldef$endos[endo_names] <- endos[endo_names]
       return(invisible(self))
     },
@@ -329,8 +329,7 @@ DynMdl <- R6Class("DynMdl",
         return(NULL)
       }
     },
-    get_exo_data = function(pattern = NULL, names = NULL, 
-                            period = private$data_period) {
+    get_exo_data = function(pattern, names, period = private$data_period) {
       period <- private$convert_period_arg(period)
       if (private$mdldef$exo_count == 0) {
         return(private$exo_data[period, ])
@@ -346,27 +345,23 @@ DynMdl <- R6Class("DynMdl",
       }
       return(update_ts_labels(ret, private$mdldef$labels))
     },
-    set_endo_values = function(value, names = NULL, pattern = NULL,
+    set_endo_values = function(value, names, pattern,
                                period = private$data_period) {
       private$set_values_(value, names, pattern, period, type = "endo")
       return(invisible(self))
     },
-    set_exo_values = function(value, names = NULL, pattern = NULL,
+    set_exo_values = function(value, names, pattern,
                               period = private$data_period) {
       private$set_values_(value, names, pattern, period, type = "exo")
       return(invisible(self))
     },
-    set_data = function(data, names = colnames(data), 
-                        upd_mode = c("upd", "updval"), fun) {
+    set_data = function(data, names, upd_mode = c("upd", "updval"), fun) {
       upd_mode <- match.arg(upd_mode)
-      private$set_data_(data, names, names_missing = missing(names),
-                        type = "exo", upd_mode = upd_mode, fun)
-      private$set_data_(data, names, names_missing = missing(names),
-                        type = "endo", upd_mode = upd_mode, fun)
+      private$set_data_(data, names, type = "exo", upd_mode = upd_mode, fun)
+      private$set_data_(data, names, type = "endo", upd_mode = upd_mode, fun)
       return(invisible(self))
     },
-    get_data = function(pattern = NULL, names = NULL, 
-                        period = private$data_period) {
+    get_data = function(pattern, names, period = private$data_period) {
       
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
@@ -399,8 +394,7 @@ DynMdl <- R6Class("DynMdl",
       
       return(update_ts_labels(ret, private$mdldef$labels))
     },
-    get_endo_data = function(pattern = NULL, names = NULL, 
-                             period = private$data_period) {
+    get_endo_data = function(pattern, names, period = private$data_period) {
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
           private$mdldef$aux_vars$aux_count == 0) {
@@ -414,11 +408,11 @@ DynMdl <- R6Class("DynMdl",
       }
       return(update_ts_labels(ret, private$mdldef$labels))
     },
-    change_endo_data = function(fun, names= NULL, pattern = NULL, 
-                                period = private$data_period , ...) {
+    change_endo_data = function(fun, names, pattern, 
+                                period = private$data_period, ...) {
       return(private$change_data_(fun, names, pattern, period, "endo", ...))
     },
-    change_exo_data = function(fun, names= NULL, pattern = NULL, 
+    change_exo_data = function(fun, names, pattern, 
                                period = private$data_period , ...) {
       return(private$change_data_(fun, names, pattern, period, "exo", ...))
     },
@@ -890,7 +884,7 @@ DynMdl <- R6Class("DynMdl",
       } else {
         vnames <- private$exo_names
       }
-      if (!is.null(names)) {
+      if (!missing(names)) {
         error_vars <- setdiff(names, vnames)
         if (length(error_vars) > 0) {
           error_vars <- paste0("\"", error_vars, "\"")
@@ -906,12 +900,12 @@ DynMdl <- R6Class("DynMdl",
           }
         }
       }
-      if (is.null(pattern) && is.null(names)) {
+      if (missing(pattern) && missing(names)) {
         names <- vnames
-      } else if (!is.null(pattern)) {
+      } else if (!missing(pattern)) {
         sel <- grep(pattern, vnames)
         pattern_names <- vnames[sel]
-        if (!is.null(names)) {
+        if (!missing(names)) {
           names <- union(pattern_names, names)
         } else {
           names <- pattern_names
@@ -920,8 +914,7 @@ DynMdl <- R6Class("DynMdl",
       return(names)
     },
     
-    set_data_ = function(data, names, names_missing, type, upd_mode = "upd", 
-                        fun) {
+    set_data_ = function(data, names, type, upd_mode = "upd", fun) {
       # generic function to set or update the endogenous or exogenous
       # variables
       
@@ -942,16 +935,22 @@ DynMdl <- R6Class("DynMdl",
       if (NCOL(data) == 0) {
         return(invisible(NULL))
       }
-      if (is.null(names)) {
-        if (names_missing) {
+      
+      names_missing <- missing(names)
+      if (names_missing) {
+        if (is.null(colnames(data))) {
           stop(paste("Argument data has no colnames.",
                      "In that case, argument names should be specified"))
         } else {
-          stop("names is null")
+          names <- colnames(data)
         }
-      }  else {
-        if (length(names) < NCOL(data)) {
-          stop("The length of arument names is less than the number of columns of data")
+      } else {
+        # check if specified argument names is o.k.
+        if (is.null(names)) {
+          stop("names is null")
+        } else if (length(names) < NCOL(data)) {
+          stop(paste("The length of arument names is less than the number of",
+                     "columns of data"))
         }
       }
       
@@ -1009,6 +1008,7 @@ DynMdl <- R6Class("DynMdl",
       }
       return (invisible(self))
     },
+    
     set_values_ = function(value, names, pattern, period, type) {
       value <- as.numeric(value)
       period <- private$convert_period_arg(period)
@@ -1048,8 +1048,7 @@ DynMdl <- R6Class("DynMdl",
       for (c in seq_len(ncol(data))) {
         data[, c] <- fun(data[, c], ...)
       }
-      private$set_data_(data, names = names, names_missing = FALSE, 
-                        type = type)
+      private$set_data_(data, names = names, type = type)
     },
     get_endo_lags = function() {
       if (private$mdldef$max_endo_lag > 0) {
