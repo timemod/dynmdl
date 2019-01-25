@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2016 Dynare Team
+ * Copyright (C) 2003-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -58,13 +58,41 @@ private:
   expr_t expr_node; //! Auxiliary variable definition
 public:
   AuxVarInfo(int symb_id_arg, aux_var_t type_arg, int orig_symb_id, int orig_lead_lag, int equation_number_for_multiplier_arg, int information_set_arg, expr_t expr_node_arg);
-  int get_symb_id() const { return symb_id; };
-  aux_var_t get_type() const { return type; };
-  int get_orig_symb_id() const { return orig_symb_id; };
-  int get_orig_lead_lag() const { return orig_lead_lag; };
-  int get_equation_number_for_multiplier() const { return equation_number_for_multiplier; };
-  int get_information_set() const { return information_set; };
-  expr_t get_expr_node() const { return expr_node; } ;
+  int
+  get_symb_id() const
+  {
+    return symb_id;
+  };
+  aux_var_t
+  get_type() const
+  {
+    return type;
+  };
+  int
+  get_orig_symb_id() const
+  {
+    return orig_symb_id;
+  };
+  int
+  get_orig_lead_lag() const
+  {
+    return orig_lead_lag;
+  };
+  int
+  get_equation_number_for_multiplier() const
+  {
+    return equation_number_for_multiplier;
+  };
+  int
+  get_information_set() const
+  {
+    return information_set;
+  };
+  expr_t
+  get_expr_node() const
+  {
+    return expr_node;
+  };
 };
 
 //! Stores the symbol table
@@ -112,8 +140,6 @@ private:
   vector<int> exo_det_ids;
   //! Maps type specific IDs of parameters to symbol IDs
   vector<int> param_ids;
-  //! Maps type specific IDs of external functions to symbol IDs
-  vector<int> extfun_ids;
   //! Information about auxiliary variables
   vector<AuxVarInfo> aux_vars;
 
@@ -193,7 +219,7 @@ private:
   //! Factorized code for adding aux lag variables
   int addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
   //! Factorized code for adding aux lead variables
-  int addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
+  int addLeadAuxiliaryVarInternal(bool endo, int index, expr_t arg) throw (FrozenException);
 
 public:
   //! Add a symbol
@@ -206,7 +232,7 @@ public:
   /*!
     \param[in] index Used to construct the variable name
     \return the symbol ID of the new symbol */
-  int addEndoLeadAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
+  int addEndoLeadAuxiliaryVar(int index, expr_t arg) throw (FrozenException);
   //! Adds an auxiliary variable for endogenous with lag >= 2
   /*!
     \param[in] orig_symb_id symbol ID of the endogenous declared by the user that this new variable will represent
@@ -224,8 +250,6 @@ public:
     \param[in] orig_lead_lag lag value such that this new variable will be equivalent to orig_symb_id(orig_lead_lag)
     \return the symbol ID of the new symbol */
   int addExoLagAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
-
-
   //! Adds an auxiliary variable for the expectation operator
   /*!
     \param[in] information_set information set (possibly negative) of the expectation operator
@@ -253,23 +277,21 @@ public:
   */
   int searchAuxiliaryVars(int orig_symb_id, int orig_lead_lag) const throw (SearchFailedException);
   //! Returns the number of auxiliary variables
-  int AuxVarsSize() const { return aux_vars.size(); };
+  int
+  AuxVarsSize() const
+  {
+    return aux_vars.size();
+  };
   //! Retruns expr_node for an auxiliary variable
   expr_t getAuxiliaryVarsExprNode(int symb_id) const throw (SearchFailedException);
   //! Tests if symbol already exists
   inline bool exists(const string &name) const;
   //! Get symbol name (by ID)
   inline string getName(int id) const throw (UnknownSymbolIDException);
-  //! Get symbol name (by type specific ID)
-  string getName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
   //! Get TeX name
   inline string getTeXName(int id) const throw (UnknownSymbolIDException);
-  //! Get TEX name (by type specific ID)
-  string getTeXName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
   //! Get long name
   inline string getLongName(int id) const throw (UnknownSymbolIDException);
-  //! Get long name (by type specific ID)
-  string getLongName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
   //! Returns true if the partition name is the first encountered for the type of variable represented by id
   bool isFirstOfPartitionForType(int id) const throw (UnknownSymbolIDException);
   //! Returns a list of partitions and symbols that belong to that partition
@@ -335,10 +357,6 @@ public:
   bool isAuxiliaryVariableButNotMultiplier(int symb_id) const;
   //! Get list of endogenous variables without aux vars
   set <int> getOrigEndogenous() const;
-  int get_aux_endo(int i) const;
-  int get_aux_orig_endo(int i) const;
-  int get_aux_orig_lead_lag(int i) const;
-  int get_aux_count() const throw (NotYetFrozenException);
 };
 
 inline bool
@@ -464,13 +482,6 @@ inline int
 SymbolTable::orig_endo_nbr() const throw (NotYetFrozenException)
 {
   return (endo_nbr() - aux_vars.size());
-}
-
-inline int SymbolTable::get_aux_count() const throw (NotYetFrozenException) {
-  if (!frozen) {
-    throw NotYetFrozenException();
-  }
-  return aux_vars.size();
 }
 
 #endif

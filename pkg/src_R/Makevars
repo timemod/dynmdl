@@ -1,0 +1,54 @@
+PKG_CXXFLAGS = -DPACKAGE_NAME=\"dynare\" -DPACKAGE_TARNAME=\"dynare\" -DPACKAGE_VERSION=\"R-0.1-unstable\" -DPACKAGE_STRING=\"dynare\ R\ 0.1-unstable\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_BOOST_GRAPH_ADJACENCY_LIST_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_TRIM_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_SPLIT_HPP=1 -DHAVE_BOOST_LEXICAL_CAST_HPP=1 -DBOOST_NO_HASH=/\*\*/ -DUSE_R -I. `"$(R_HOME)/bin/Rscript" -e "Rcpp:::CxxFlags()"` -std=c++11
+
+# the -I. is for FlexLexer.h
+
+SUBDIR = macro
+SUBLIB = lib$(SUBDIR).a
+PKG_LIBS = $(SUBDIR)/$(SUBLIB)
+YACC = bison
+LEX = lex
+LEXINC = /usr/bin/../include
+LEX_YACC_DIR = lex_yacc
+
+## For the final version of the package, we have to clean the sublib here, 
+## to clean up between architectures:
+## INSTALL only cleans src/*.o src/*$(SHLIB_EXT) for each arch
+#all : subclean sublib $(SHLIB) DynareFlex.o DynareBison.o
+
+# While developping on the same architecture is not not necessary
+# to clean sublib
+all : FlexLexer.h sublib $(SHLIB) DynareFlex.o DynareBison.o
+
+$(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
+
+subclean:
+	@(cd $(SUBDIR) && $(MAKE) $(SUBLIB) clean)
+
+$(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
+
+sublib:
+	 @(cd $(SUBDIR)&& $(MAKE) \
+	  CXX="$(CXX)" \
+          CXXFLAGS="$(CXXFLAGS) $(R_XTRA_CPPFLAGS) $(PKG_CXXFLAGS) $(CPICFLAGS) $(CLINK_CPPFLAGS)" \
+	  AR="$(AR)" RANLIB="$(RANLIB)")
+
+DEPS_DIR = deps
+DEP_FILE = $(DEPS_DIR)/makedeps
+
+# dependencies C files
+include $(DEP_FILE)
+
+DynareFlex.o : DynareFlex.cc FlexLexer.h
+DynareBison.o : DynareBison.cc
+
+DynareFlex.cc FlexLexer.h : $(LEX_YACC_DIR)/DynareFlex.ll
+	$(LEX) -o DynareFlex.cc $<
+        # Copy FlexLexer.h from $LEXINC. Otherwise the code cannot
+        # be compiled on systems where lex is not available, or where
+        # the version of lex is incompatible with the version used
+        # to generate DynareFlex.cc
+	cp $(LEXINC)/FlexLexer.h .
+	touch FlexLexer.h
+
+DynareBison.cc DynareBison.hh location.hh stack.hh position.hh: $(LEX_YACC_DIR)/DynareBison.yy
+	$(YACC) -o DynareBison.cc $<

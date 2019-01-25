@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright (C) 2010-2015 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -62,7 +62,6 @@ public:
 private:
   //! Map containing options provided to external_functions()
   external_function_table_type externalFunctionTable;
-  vector<int> external_function_symb_ids;
 public:
   ExternalFunctionsTable();
   //! Adds an external function to the table as well as its derivative functions
@@ -77,8 +76,6 @@ public:
   inline int getSecondDerivSymbID(int symb_id) const throw (UnknownExternalFunctionSymbolIDException);
   //! Returns the total number of unique external functions declared or used in the .mod file
   inline int get_total_number_of_unique_model_block_external_functions() const;
-  int get_external_function_count() const;
-  int get_external_function_symb_id(int index) const;
 };
 
 inline bool
@@ -126,4 +123,5 @@ ExternalFunctionsTable::get_total_number_of_unique_model_block_external_function
 
   return number_of_unique_model_block_external_functions;
 }
+
 #endif

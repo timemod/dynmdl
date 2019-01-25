@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2016 Dynare Team
+ * Copyright (C) 2010-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -21,7 +21,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <string>
 
 #include "ConfigFile.hh"
 #include <boost/algorithm/string/trim.hpp>
@@ -29,15 +28,14 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
-#include "dyn_error.hh"
-
 using namespace std;
 
 Hook::Hook(string &global_init_file_arg)
 {
   if (global_init_file_arg.empty())
     {
-      dyn_error("ERROR: The Hook must have a Global Initialization File argument.\n");
+      cerr << "ERROR: The Hook must have a Global Initialization File argument." << endl;
+      exit(EXIT_FAILURE);
     }
   hooks["global_init_file"] = global_init_file_arg;
 }
@@ -46,28 +44,32 @@ Path::Path(vector<string> &includepath_arg)
 {
   if (includepath_arg.empty())
     {
-      dyn_error("ERROR: The Path must have an Include argument.\n");
+      cerr << "ERROR: The Path must have an Include argument." << endl;
+      exit(EXIT_FAILURE);
     }
   paths["include"] = includepath_arg;
 }
 
 SlaveNode::SlaveNode(string &computerName_arg, string port_arg, int minCpuNbr_arg, int maxCpuNbr_arg, string &userName_arg,
                      string &password_arg, string &remoteDrive_arg, string &remoteDirectory_arg,
-                     string &dynarePath_arg, string &matlabOctavePath_arg, bool singleCompThread_arg,
+                     string &dynarePath_arg, string &matlabOctavePath_arg, bool singleCompThread_arg, int numberOfThreadsPerJob_arg,
                      string &operatingSystem_arg) :
   computerName(computerName_arg), port(port_arg), minCpuNbr(minCpuNbr_arg), maxCpuNbr(maxCpuNbr_arg), userName(userName_arg),
   password(password_arg), remoteDrive(remoteDrive_arg), remoteDirectory(remoteDirectory_arg), dynarePath(dynarePath_arg),
-  matlabOctavePath(matlabOctavePath_arg), singleCompThread(singleCompThread_arg), operatingSystem(operatingSystem_arg)
+  matlabOctavePath(matlabOctavePath_arg), singleCompThread(singleCompThread_arg), numberOfThreadsPerJob(numberOfThreadsPerJob_arg),
+  operatingSystem(operatingSystem_arg)
 {
   if (computerName.empty())
     {
-      dyn_error("ERROR: The node must have a ComputerName.\n");
+      cerr << "ERROR: The node must have a ComputerName." << endl;
+      exit(EXIT_FAILURE);
     }
 
   if (!operatingSystem.empty())
     if (operatingSystem.compare("windows") != 0 && operatingSystem.compare("unix") != 0)
       {
-        dyn_error("ERROR: The OperatingSystem must be either 'unix' or 'windows' (Case Sensitive).\n");
+        cerr << "ERROR: The OperatingSystem must be either 'unix' or 'windows' (Case Sensitive)." << endl;
+        exit(EXIT_FAILURE);
       }
 }
 
@@ -76,7 +78,8 @@ Cluster::Cluster(member_nodes_t  member_nodes_arg) :
 {
   if (member_nodes.empty())
     {
-      dyn_error("ERROR: The cluster must have at least one member node.\n");
+      cerr << "ERROR: The cluster must have at least one member node." << endl;
+      exit(EXIT_FAILURE);
     }
 }
 
@@ -99,23 +102,19 @@ ConfigFile::getConfigFileInfo(const string &config_file)
 
   if (config_file.empty())
     {
-      string defaultConfigFile ("");
+      string defaultConfigFile("");
       // Test OS and try to open default file
 #if defined(_WIN32) || defined(__CYGWIN32__)
       if (getenv("APPDATA") == NULL)
         {
-          std::string msg;
           if (parallel || parallel_test)
-            msg = "ERROR: ";
+            cerr << "ERROR: ";
           else
-            msg = "WARNING: ";
-          msg = msg +  "APPDATA environment variable not found.\n";
+            cerr << "WARNING: ";
+          cerr << "APPDATA environment variable not found." << endl;
 
           if (parallel || parallel_test)
-              dyn_error(msg.c_str());
-          else {
-              dyn_warning(msg.c_str());
-           }
+            exit(EXIT_FAILURE);
         }
       else
         {
@@ -123,54 +122,49 @@ ConfigFile::getConfigFileInfo(const string &config_file)
           defaultConfigFile += "\\dynare.ini";
         }
 #else
-        if (getenv("HOME") == NULL)
+      if (getenv("HOME") == NULL)
+        {
+          if (parallel || parallel_test)
+            cerr << "ERROR: ";
+          else
+            cerr << "WARNING: ";
+          cerr << "HOME environment variable not found." << endl;
+          if (parallel || parallel_test)
+            exit(EXIT_FAILURE);
+        }
+      else
+        {
+          defaultConfigFile += getenv("HOME");
+          defaultConfigFile += "/.dynare";
+        }
+#endif
+      configFile = new ifstream(defaultConfigFile.c_str(), fstream::in);
+      if (!configFile->is_open())
+        if (parallel || parallel_test)
           {
-            std::string msg;
-            if (parallel || parallel_test)
-              msg = "ERROR: ";
-            else
-              msg = "WARNING: ";
-            msg = msg +  "HOME environment variable not found.\n";
-            if (parallel || parallel_test) {
-                dyn_error(msg.c_str());
-            } else {
-                dyn_warning(msg.c_str());
-            }
+            cerr << "ERROR: Could not open the default config file (" << defaultConfigFile << ")" << endl;
+            exit(EXIT_FAILURE);
           }
         else
-          {
-            defaultConfigFile += getenv("HOME");
-            defaultConfigFile += "/.dynare";
-          }
-#endif
-        configFile = new ifstream(defaultConfigFile.c_str(), fstream::in);
-        if (!configFile->is_open()) {
-          if (parallel || parallel_test)
-            {
-                std::string msg = "ERROR: Could not open the default config file (" + defaultConfigFile + ")\n";
-                dyn_error(msg);
-            }
-          else
-            return;
+          return;
+    }
+  else
+    {
+      configFile = new ifstream(config_file.c_str(), fstream::in);
+      if (!configFile->is_open())
+        {
+          cerr << "ERROR: Couldn't open file " << config_file << endl;;
+          exit(EXIT_FAILURE);
         }
-      }
-    else
-      {
-        configFile = new ifstream(config_file.c_str(), fstream::in);
-        if (!configFile->is_open())
-          {
-            std::string msg = "ERROR: Couldn't open file " + config_file + "\n";
-            dyn_error(msg);
-          }
-      }
-
+    }
 
   string name, computerName, port, userName, password, remoteDrive,
     remoteDirectory, dynarePath, matlabOctavePath, operatingSystem,
     global_init_file;
   vector<string> includepath;
   int minCpuNbr = 0, maxCpuNbr = 0;
-  bool singleCompThread = true;
+  int numberOfThreadsPerJob = 1;
+  bool singleCompThread = false;
   member_nodes_t member_nodes;
 
   bool inHooks = false;
@@ -201,7 +195,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
             addParallelConfFileElement(inNode, inCluster, member_nodes, name,
                                        computerName, port, minCpuNbr, maxCpuNbr, userName,
                                        password, remoteDrive, remoteDirectory,
-                                       dynarePath, matlabOctavePath, singleCompThread,
+                                       dynarePath, matlabOctavePath, singleCompThread, numberOfThreadsPerJob,
                                        operatingSystem);
 
           //! Reset communication vars / option defaults
@@ -239,7 +233,8 @@ ConfigFile::getConfigFileInfo(const string &config_file)
             = operatingSystem = global_init_file = "";
           includepath.clear();
           minCpuNbr = maxCpuNbr = 0;
-          singleCompThread = true;
+          numberOfThreadsPerJob = 1;
+          singleCompThread = false;
           member_nodes.clear();
         }
       else
@@ -248,7 +243,8 @@ ConfigFile::getConfigFileInfo(const string &config_file)
           split(tokenizedLine, line, is_any_of("="));
           if (tokenizedLine.size() != 2)
             {
-              dyn_error("ERROR (in config file): Options should be formatted as 'option = value'.\n");
+              cerr << "ERROR (in config file): Options should be formatted as 'option = value'." << endl;
+              exit(EXIT_FAILURE);
             }
           trim(tokenizedLine.front());
           trim(tokenizedLine.back());
@@ -259,12 +255,13 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                 global_init_file = tokenizedLine.back();
               else
                 {
-                  dyn_error("ERROR: May not have more than one GlobalInitFile option in [hooks] block.)\n");
+                  cerr << "ERROR: May not have more than one GlobalInitFile option in [hooks] block." << endl;
+                  exit(EXIT_FAILURE);
                 }
             else
               {
-                std::string msg = "ERROR: Unrecognized option " + tokenizedLine.front() + " in [hooks] block.\n";
-                dyn_error(msg);
+                cerr << "ERROR: Unrecognized option " << tokenizedLine.front() << " in [hooks] block." << endl;
+                exit(EXIT_FAILURE);
               }
           else if (inPaths)
             if (!tokenizedLine.front().compare("Include"))
@@ -273,7 +270,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                   vector<string> tokenizedPath;
                   split(tokenizedPath, tokenizedLine.back(), is_any_of(":"), token_compress_on);
                   for (vector<string>::iterator it = tokenizedPath.begin();
-                       it != tokenizedPath.end(); it++ )
+                       it != tokenizedPath.end(); it++)
                     if (!it->empty())
                       {
                         trim(*it);
@@ -282,13 +279,13 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                 }
               else
                 {
-                  dyn_error("ERROR: May not have more than one Include option in [paths] block.\n");
+                  cerr << "ERROR: May not have more than one Include option in [paths] block." << endl;
+                  exit(EXIT_FAILURE);
                 }
             else
               {
-                std::ostringstream msg;
-                msg << "ERROR: Unrecognized option " << tokenizedLine.front() << " in [paths] block." << endl;
-                dyn_error(msg);
+                cerr << "ERROR: Unrecognized option " << tokenizedLine.front() << " in [paths] block." << endl;
+                exit(EXIT_FAILURE);
               }
           else
             if (!tokenizedLine.front().compare("Name"))
@@ -316,15 +313,17 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                   }
                 catch (const bad_lexical_cast &)
                   {
-                    dyn_error("ERROR: Could not convert value to integer for CPUnbr.\n");
+                    cerr << "ERROR: Could not convert value to integer for CPUnbr." << endl;
+                    exit(EXIT_FAILURE);
                   }
 
                 if (minCpuNbr <= 0 || maxCpuNbr <= 0)
                   {
-                      dyn_error("ERROR: Syntax for the CPUnbr option is as follows:\n"
-                         "       1) CPUnbr = <int>\n"
-                         "    or 2) CPUnbr = [<int>:<int>]\n"
-                         "       where <int> is an Integer > 0.\n");
+                    cerr << "ERROR: Syntax for the CPUnbr option is as follows:" << endl
+                         << "       1) CPUnbr = <int>" << endl
+                         << "    or 2) CPUnbr = [<int>:<int>]" << endl
+                         << "       where <int> is an Integer > 0." << endl;
+                    exit(EXIT_FAILURE);
                   }
 
                 minCpuNbr--;
@@ -352,6 +351,8 @@ ConfigFile::getConfigFileInfo(const string &config_file)
               dynarePath = tokenizedLine.back();
             else if (!tokenizedLine.front().compare("MatlabOctavePath"))
               matlabOctavePath = tokenizedLine.back();
+            else if (!tokenizedLine.front().compare("NumberOfThreadsPerJob"))
+              numberOfThreadsPerJob = atoi(tokenizedLine.back().c_str());
             else if (!tokenizedLine.front().compare("SingleCompThread"))
               if (tokenizedLine.back().compare("true") == 0)
                 singleCompThread = true;
@@ -359,7 +360,8 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                 singleCompThread = false;
               else
                 {
-                  dyn_error("ERROR (in config file): The value passed to SingleCompThread may only be 'true' or 'false'.\n");
+                  cerr << "ERROR (in config file): The value passed to SingleCompThread may only be 'true' or 'false'." << endl;
+                  exit(EXIT_FAILURE);
                 }
             else if (!tokenizedLine.front().compare("OperatingSystem"))
               operatingSystem = tokenizedLine.back();
@@ -372,7 +374,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                 for (tokenizer<char_separator<char> >::iterator it = tokens.begin();
                      it != tokens.end(); it++)
                   {
-                    string token (*it);
+                    string token(*it);
                     if (token.compare("(") == 0)
                       {
                         begin_weight = true;
@@ -387,14 +389,14 @@ ConfigFile::getConfigFileInfo(const string &config_file)
 
                     if (!begin_weight)
                       {
-                        if (!node_name.empty()) {
+                        if (!node_name.empty())
                           if (member_nodes.find(node_name) != member_nodes.end())
                             {
-                              dyn_error("ERROR (in config file): Node entered twice in specification of cluster.\n");
+                              cerr << "ERROR (in config file): Node entered twice in specification of cluster." << endl;
+                              exit(EXIT_FAILURE);
                             }
                           else
                             member_nodes[node_name] = 1.0;
-                        }
                         node_name = token;
                       }
                     else
@@ -403,29 +405,30 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                           double weight = lexical_cast<double>(token.c_str());
                           if (weight <= 0)
                             {
-                              dyn_error("ERROR (in config file): Misspecification of weights passed to Members option.\n");
+                              cerr << "ERROR (in config file): Misspecification of weights passed to Members option." << endl;
+                              exit(EXIT_FAILURE);
                             }
                           member_nodes[node_name] = weight;
                         }
                       catch (bad_lexical_cast &)
                         {
-                          dyn_error("ERROR (in config file): Misspecification of weights passed to Members option.\n");
+                          cerr << "ERROR (in config file): Misspecification of weights passed to Members option." << endl;
+                          exit(EXIT_FAILURE);
                         }
                   }
-                if (!node_name.empty()) {
+                if (!node_name.empty())
                   if (member_nodes.find(node_name) == member_nodes.end())
                     member_nodes[node_name] = 1.0;
                   else
                     {
-                      dyn_error("ERROR (in config file): Node entered twice in specification of cluster.\n");
+                      cerr << "ERROR (in config file): Node entered twice in specification of cluster." << endl;
+                      exit(EXIT_FAILURE);
                     }
-                }
               }
             else
               {
-                std::ostringstream msg;
-                msg << "ERROR (in config file): Option " << tokenizedLine.front() << " is invalid." << endl;
-                dyn_error(msg);
+                cerr << "ERROR (in config file): Option " << tokenizedLine.front() << " is invalid." << endl;
+                exit(EXIT_FAILURE);
               }
         }
     }
@@ -438,7 +441,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
     addParallelConfFileElement(inNode, inCluster, member_nodes, name,
                                computerName, port, minCpuNbr, maxCpuNbr, userName,
                                password, remoteDrive, remoteDirectory,
-                               dynarePath, matlabOctavePath, singleCompThread,
+                               dynarePath, matlabOctavePath, singleCompThread, numberOfThreadsPerJob,
                                operatingSystem);
 
   configFile->close();
@@ -450,7 +453,8 @@ ConfigFile::addHooksConfFileElement(string &global_init_file)
 {
   if (global_init_file.empty())
     {
-      dyn_error("ERROR: The global initialization file must be passed to the GlobalInitFile option.\n");
+      cerr << "ERROR: The global initialization file must be passed to the GlobalInitFile option." << endl;
+      exit(EXIT_FAILURE);
     }
   else
     hooks.push_back(new Hook(global_init_file));
@@ -461,7 +465,8 @@ ConfigFile::addPathsConfFileElement(vector<string> &includepath)
 {
   if (includepath.empty())
     {
-      dyn_error("ERROR: The path to be included must be passed to the Include option.\n");
+      cerr << "ERROR: The path to be included must be passed to the Include option." << endl;
+      exit(EXIT_FAILURE);
     }
   else
     paths.push_back(new Path(includepath));
@@ -471,37 +476,41 @@ void
 ConfigFile::addParallelConfFileElement(bool inNode, bool inCluster, member_nodes_t member_nodes,
                                        string &name, string &computerName, string port, int minCpuNbr, int maxCpuNbr, string &userName,
                                        string &password, string &remoteDrive, string &remoteDirectory,
-                                       string &dynarePath, string &matlabOctavePath, bool singleCompThread,
+                                       string &dynarePath, string &matlabOctavePath, bool singleCompThread, int numberOfThreadsPerJob,
                                        string &operatingSystem)
 {
   //! ADD NODE
   if (inNode)
     if (!member_nodes.empty())
       {
-        dyn_error("Invalid option passed to [node].\n");
+        cerr << "Invalid option passed to [node]." << endl;
+        exit(EXIT_FAILURE);
       }
     else
       if (name.empty() || slave_nodes.find(name) != slave_nodes.end())
         {
-          dyn_error("ERROR: Every node must be assigned a unique name.\n");
+          cerr << "ERROR: Every node must be assigned a unique name." << endl;
+          exit(EXIT_FAILURE);
         }
-      else  {
+      else
         slave_nodes[name] = new SlaveNode(computerName, port, minCpuNbr, maxCpuNbr, userName,
                                           password, remoteDrive, remoteDirectory, dynarePath,
-                                          matlabOctavePath, singleCompThread, operatingSystem);
-       }
+                                          matlabOctavePath, singleCompThread, numberOfThreadsPerJob,
+                                          operatingSystem);
   //! ADD CLUSTER
-  else if (inCluster) {
+  else if (inCluster)
     if (minCpuNbr > 0 || maxCpuNbr > 0 || !userName.empty()
         || !password.empty() || !remoteDrive.empty() || !remoteDirectory.empty()
         || !dynarePath.empty() || !matlabOctavePath.empty() || !operatingSystem.empty())
       {
-        dyn_error("Invalid option passed to [cluster].\n");
+        cerr << "Invalid option passed to [cluster]." << endl;
+        exit(EXIT_FAILURE);
       }
     else
       if (name.empty() || clusters.find(name) != clusters.end())
         {
-          dyn_error("ERROR: The cluster must be assigned a unique name.\n");
+          cerr << "ERROR: The cluster must be assigned a unique name." << endl;
+          exit(EXIT_FAILURE);
         }
       else
         {
@@ -509,25 +518,24 @@ ConfigFile::addParallelConfFileElement(bool inNode, bool inCluster, member_nodes
             firstClusterName = name;
           clusters[name] = new Cluster(member_nodes);
         }
-    }
 }
 
 void
 ConfigFile::checkPass(WarningConsolidation &warnings) const
 {
   bool global_init_file_declared = false;
-  for (vector<Hook *>::const_iterator it = hooks.begin() ; it != hooks.end(); it++)
+  for (vector<Hook *>::const_iterator it = hooks.begin(); it != hooks.end(); it++)
     {
       const map <string, string> hookmap = (*it)->get_hooks();
-      for (map <string, string>::const_iterator mapit = hookmap.begin() ; mapit != hookmap.end(); mapit++)
-        if (mapit->first.compare("global_init_file") == 0) {
+      for (map <string, string>::const_iterator mapit = hookmap.begin(); mapit != hookmap.end(); mapit++)
+        if (mapit->first.compare("global_init_file") == 0)
           if (global_init_file_declared == true)
             {
-              dyn_error("ERROR: Only one global initialization file may be provided.\n");
+              cerr << "ERROR: Only one global initialization file may be provided." << endl;
+              exit(EXIT_FAILURE);
             }
           else
             global_init_file_declared = true;
-        }
     }
 
   if (!parallel && !parallel_test)
@@ -536,7 +544,8 @@ ConfigFile::checkPass(WarningConsolidation &warnings) const
   //! Check Slave Nodes
   if (slave_nodes.empty())
     {
-      dyn_error("ERROR: At least one node must be defined in the config file.\n"); 
+      cerr << "ERROR: At least one node must be defined in the config file." << endl;
+      exit(EXIT_FAILURE);
     }
 
   for (map<string, SlaveNode *>::const_iterator it = slave_nodes.begin();
@@ -556,46 +565,40 @@ ConfigFile::checkPass(WarningConsolidation &warnings) const
           }
         catch (const boost::bad_lexical_cast &)
           {
-            std::ostringstream msg;
-            msg << "ERROR (node " << it->first << "): the port must be an integer." << endl;
-            dyn_error(msg);
+            cerr << "ERROR (node " << it->first << "): the port must be an integer." << endl;
+            exit(EXIT_FAILURE);
           }
       if (!it->second->computerName.compare("localhost")) // We are working locally
         {
           if (!it->second->remoteDrive.empty())
             {
-              std::ostringstream msg;
-              msg << "ERROR (node " << it->first << "): the RemoteDrive option may not be passed for a local node." << endl;
-              dyn_error(msg);
+              cerr << "ERROR (node " << it->first << "): the RemoteDrive option may not be passed for a local node." << endl;
+              exit(EXIT_FAILURE);
             }
           if (!it->second->remoteDirectory.empty())
             {
-              std::ostringstream msg;
-              msg << "ERROR (node " << it->first << "): the RemoteDirectory option may not be passed for a local node." << endl;
-              dyn_error(msg);
+              cerr << "ERROR (node " << it->first << "): the RemoteDirectory option may not be passed for a local node." << endl;
+              exit(EXIT_FAILURE);
             }
         }
       else
         {
           if (it->second->userName.empty())
             {
-              std::ostringstream msg;
-              msg << "ERROR (node " << it->first << "): the UserName option must be passed for every remote node." << endl;
-              dyn_error(msg);
+              cerr << "ERROR (node " << it->first << "): the UserName option must be passed for every remote node." << endl;
+              exit(EXIT_FAILURE);
             }
           if (it->second->operatingSystem.compare("windows") == 0)
             {
               if (it->second->password.empty())
                 {
-                  std::ostringstream msg;
-                  msg << "ERROR (node " << it->first << "): the Password option must be passed under Windows for every remote node." << endl;
-                  dyn_error(msg);
+                  cerr << "ERROR (node " << it->first << "): the Password option must be passed under Windows for every remote node." << endl;
+                  exit(EXIT_FAILURE);
                 }
               if (it->second->remoteDrive.empty())
                 {
-                  std::ostringstream msg;
-                  msg << "ERROR (node " << it->first << "): the RemoteDrive option must be passed under Windows for every remote node." << endl;
-                  dyn_error(msg);
+                  cerr << "ERROR (node " << it->first << "): the RemoteDrive option must be passed under Windows for every remote node." << endl;
+                  exit(EXIT_FAILURE);
                 }
             }
 #if defined(_WIN32) || defined(__CYGWIN32__)
@@ -603,23 +606,20 @@ ConfigFile::checkPass(WarningConsolidation &warnings) const
             {
               if (it->second->password.empty())
                 {
-                  std::ostringstream msg;
-                  msg << "ERROR (node " << it->first << "): the Password option must be passed under Windows for every remote node." << endl;
-                  dyn_error(msg);
+                  cerr << "ERROR (node " << it->first << "): the Password option must be passed under Windows for every remote node." << endl;
+                  exit(EXIT_FAILURE);
                 }
               if (it->second->remoteDrive.empty())
-                {  
-                  std::ostringstream msg;
-                  msg << "ERROR (node " << it->first << "): the RemoteDrive option must be passed under Windows for every remote node." << endl;
-                  dyn_error(msg);
+                {
+                  cerr << "ERROR (node " << it->first << "): the RemoteDrive option must be passed under Windows for every remote node." << endl;
+                  exit(EXIT_FAILURE);
                 }
             }
 #endif
           if (it->second->remoteDirectory.empty())
             {
-              std::ostringstream msg;
-              msg << "ERROR (node " << it->first << "): the RemoteDirectory must be specified for every remote node." << endl;
-              dyn_error(msg);
+              cerr << "ERROR (node " << it->first << "): the RemoteDirectory must be specified for every remote node." << endl;
+              exit(EXIT_FAILURE);
             }
         }
     }
@@ -627,14 +627,14 @@ ConfigFile::checkPass(WarningConsolidation &warnings) const
   //! Check Clusters
   if (clusters.empty())
     {
-      dyn_error("ERROR: At least one cluster must be defined in the config file.\n");
+      cerr << "ERROR: At least one cluster must be defined in the config file." << endl;
+      exit(EXIT_FAILURE);
     }
 
   if (!cluster_name.empty() && clusters.find(cluster_name) == clusters.end())
     {
-      std::ostringstream msg;
-      msg << "ERROR: Cluster Name " << cluster_name << " was not found in the config file." << endl;
-      dyn_error(msg);
+      cerr << "ERROR: Cluster Name " << cluster_name << " was not found in the config file." << endl;
+      exit(EXIT_FAILURE);
     }
 
   for (map<string, Cluster *>::const_iterator it = clusters.begin();
@@ -643,9 +643,8 @@ ConfigFile::checkPass(WarningConsolidation &warnings) const
          itmn != it->second->member_nodes.end(); itmn++)
       if (slave_nodes.find(itmn->first) == slave_nodes.end())
         {
-          std::ostringstream msg;
-          msg << "Error: node " << itmn->first << " specified in cluster " << it->first << " was not found" << endl;
-          dyn_error(msg);
+          cerr << "Error: node " << itmn->first << " specified in cluster " << it->first << " was not found" << endl;
+          exit(EXIT_FAILURE);
         }
 }
 
@@ -686,10 +685,10 @@ vector<string>
 ConfigFile::getIncludePaths() const
 {
   vector<string> include_paths;
-  for (vector<Path *>::const_iterator it = paths.begin() ; it != paths.end(); it++)
+  for (vector<Path *>::const_iterator it = paths.begin(); it != paths.end(); it++)
     {
       map <string, vector<string> > pathmap = (*it)->get_paths();
-      for (map <string, vector<string> >::const_iterator mapit = pathmap.begin() ; mapit != pathmap.end(); mapit++)
+      for (map <string, vector<string> >::const_iterator mapit = pathmap.begin(); mapit != pathmap.end(); mapit++)
         for (vector<string>::const_iterator vecit = mapit->second.begin(); vecit != mapit->second.end(); vecit++)
           include_paths.push_back(*vecit);
     }
@@ -699,10 +698,10 @@ ConfigFile::getIncludePaths() const
 void
 ConfigFile::writeHooks(ostream &output) const
 {
-  for (vector<Hook *>::const_iterator it = hooks.begin() ; it != hooks.end(); it++)
+  for (vector<Hook *>::const_iterator it = hooks.begin(); it != hooks.end(); it++)
     {
       map <string, string> hookmap = (*it)->get_hooks();
-      for (map <string, string>::const_iterator mapit = hookmap.begin() ; mapit != hookmap.end(); mapit++)
+      for (map <string, string>::const_iterator mapit = hookmap.begin(); mapit != hookmap.end(); mapit++)
         output << "options_." << mapit->first << " = '" << mapit->second << "';" << endl;
     }
 }
@@ -752,7 +751,8 @@ ConfigFile::writeCluster(ostream &output) const
              << "'DynarePath', '" << it->second->dynarePath << "', "
              << "'MatlabOctavePath', '" << it->second->matlabOctavePath << "', "
              << "'OperatingSystem', '" << it->second->operatingSystem << "', "
-             << "'NodeWeight', '" << (cluster_it->second->member_nodes.find(it->first))->second << "', ";
+             << "'NodeWeight', '" << (cluster_it->second->member_nodes.find(it->first))->second << "', "
+             << "'NumberOfThreadsPerJob', " << it->second->numberOfThreadsPerJob << ", ";
 
       if (it->second->singleCompThread)
         output << "'SingleCompThread', 'true');" << endl;

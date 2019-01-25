@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright (C) 2010-2015 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -25,7 +25,6 @@
 
 #include "ExternalFunctionsTable.hh"
 #include "SymbolTable.hh"
-#include "dyn_error.hh"
 
 ExternalFunctionsTable::ExternalFunctionsTable()
 {
@@ -52,34 +51,39 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
   if (external_function_options_chng.secondDerivSymbID == symb_id
       && external_function_options_chng.firstDerivSymbID  != symb_id)
     {
-      dyn_error("ERROR: If the second derivative is provided by the top-level function "
-                "the first derivative must also be provided by the same function.");
+      cerr << "ERROR: If the second derivative is provided by the top-level function "
+           << "the first derivative must also be provided by the same function." << endl;
+      exit(EXIT_FAILURE);
     }
 
   if ((external_function_options_chng.secondDerivSymbID != symb_id
        && external_function_options_chng.firstDerivSymbID  == symb_id)
       && external_function_options_chng.secondDerivSymbID != eExtFunNotSet)
     {
-      dyn_error("ERROR: If the first derivative is provided by the top-level function, the "
-                "second derivative cannot be provided by any other external function.");
+      cerr << "ERROR: If the first derivative is provided by the top-level function, the "
+           << "second derivative cannot be provided by any other external function." << endl;
+      exit(EXIT_FAILURE);
     }
 
   if (external_function_options_chng.secondDerivSymbID != eExtFunNotSet
       && external_function_options_chng.firstDerivSymbID == eExtFunNotSet)
     {
-      dyn_error("ERROR: If the second derivative is provided, the first derivative must also be provided.");
+      cerr << "ERROR: If the second derivative is provided, the first derivative must also be provided." << endl;
+      exit(EXIT_FAILURE);
     }
 
   if (external_function_options_chng.secondDerivSymbID == external_function_options_chng.firstDerivSymbID
       && external_function_options_chng.firstDerivSymbID != symb_id
       && external_function_options_chng.firstDerivSymbID != eExtFunNotSet)
     {
-      dyn_error("ERROR: If the Jacobian and Hessian are provided by the same function, that "
-                "function must be the top-level function.");
+      cerr << "ERROR: If the Jacobian and Hessian are provided by the same function, that "
+           << "function must be the top-level function." << endl;
+      exit(EXIT_FAILURE);
     }
 
   // Ensure that if we're overwriting something, we mean to do it
-  if (exists(symb_id)) {
+  if (exists(symb_id))
+    {
       bool ok_to_overwrite = false;
       if (getNargs(symb_id) == eExtFunNotSet) // implies that the information stored about this function is not important
         ok_to_overwrite = true;
@@ -88,34 +92,26 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
         {                   // e.g. e_f(name=a,nargs=1,fd,sd) and e_f(name=a,nargs=2,fd=b,sd=c) should cause an error
           if (external_function_options_chng.nargs != getNargs(symb_id))
             {
-              dyn_error("ERROR: The number of arguments passed to the external_function() statement do not "
-                        "match the number of arguments passed to a previous call or declaration of the top-level function.");
+              cerr << "ERROR: The number of arguments passed to the external_function() statement do not "
+                   << "match the number of arguments passed to a previous call or declaration of the top-level function."<< endl;
+              exit(EXIT_FAILURE);
             }
 
           if (external_function_options_chng.firstDerivSymbID != getFirstDerivSymbID(symb_id))
             {
-              dyn_error("ERROR: The first derivative function passed to the external_function() statement does not "
-                        "match the first derivative function passed to a previous call or declaration of the top-level function.");
+              cerr << "ERROR: The first derivative function passed to the external_function() statement does not "
+                   << "match the first derivative function passed to a previous call or declaration of the top-level function."<< endl;
+              exit(EXIT_FAILURE);
             }
 
           if (external_function_options_chng.secondDerivSymbID != getSecondDerivSymbID(symb_id))
             {
-              dyn_error("ERROR: The second derivative function passed to the external_function() statement does not "
-                        "match the second derivative function passed to a previous call or declaration of the top-level function.");
+              cerr << "ERROR: The second derivative function passed to the external_function() statement does not "
+                   << "match the second derivative function passed to a previous call or declaration of the top-level function."<< endl;
+              exit(EXIT_FAILURE);
             }
         }
-  } else {  
-      // symbol does not yet exist.
-      external_function_symb_ids.push_back(symb_id);
-  }
+    }
 
   externalFunctionTable[symb_id] = external_function_options_chng;
-}
-
-int ExternalFunctionsTable::get_external_function_count() const {
-    return external_function_symb_ids.size();
-}
-
-int ExternalFunctionsTable::get_external_function_symb_id(int index) const {
-    return external_function_symb_ids[index];
 }

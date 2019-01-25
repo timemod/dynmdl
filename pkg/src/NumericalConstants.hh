@@ -43,7 +43,6 @@ public:
   string get(int ID) const;
   //! Get a constant in double form
   double getDouble(int ID) const;
-  const vector<double>& get_double_vals() const;
 };
 
 #endif

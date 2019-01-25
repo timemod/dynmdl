@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2016 Dynare Team
+ * Copyright (C) 2003-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -23,20 +23,13 @@
 using namespace std;
 
 #include <fstream>
-#ifdef USE_R
-#include <Rcpp.h>
-#endif
+
 #include "ModelTree.hh"
-#include "PolishModel.hh"
-#include "ExternalFunctionCalc.hh"
 
 //! Stores a static model, as derived from the "model" block when leads and lags have been removed
 class StaticModel : public ModelTree
 {
 private:
-  //! Temporary terms for the file containing parameters dervicatives
-  temporary_terms_t params_derivs_temporary_terms;
-
   //! global temporary terms for block decomposed models
   vector<vector<temporary_terms_t> > v_temporary_terms;
 
@@ -51,12 +44,14 @@ private:
   //! Writes static model file (standard Matlab version)
   void writeStaticMFile(const string &static_basename) const;
 
+  //! Writes static model file (C version)
+  void writeStaticCFile(const string &func_name) const;
 
   //! Writes static model file (Julia version)
   void writeStaticJuliaFile(const string &basename) const;
 
   //! Writes the static model equations and its derivatives
-  void writeStaticModel(ostream &DynamicOutput, ExprNodeOutputType output_type = oMatlabStaticModel) const;
+  void writeStaticModel(ostream &StaticOutput, bool use_dll, bool julia) const;
 
   //! Writes the static function calling the block to solve (Matlab version)
   void writeStaticBlockMFSFile(const string &basename) const;
@@ -154,10 +149,6 @@ protected:
   vector<pair<int, int> > endo_max_leadlag_block, other_endo_max_leadlag_block, exo_max_leadlag_block, exo_det_max_leadlag_block, max_leadlag_block;
 
 public:
-
-  //! Writes static model file (C version)
-  void writeStaticCFile(const string &func_name) const;
-
   StaticModel(SymbolTable &symbol_table_arg, NumericalConstants &num_constants, ExternalFunctionsTable &external_functions_table_arg);
 
   //! Writes information on block decomposition when relevant
@@ -192,6 +183,10 @@ public:
   void writeSetAuxiliaryVariables(const string &basename, const bool julia) const;
   void writeAuxVarRecursiveDefinitions(ostream &output, ExprNodeOutputType output_type) const;
 
+  //! To ensure that no exogenous is present in the planner objective
+  //! See #1264
+  bool exoPresentInEqs() const;
+
   virtual int getDerivID(int symb_id, int lag) const throw (UnknownDerivIDException);
   virtual void addAllParamDerivId(set<int> &deriv_id_set);
 
@@ -220,12 +215,14 @@ public:
     return (block_type_firstequation_size_mfs[block_number].second.first);
   };
   //! Return the number of exogenous variable in the block block_number
-  virtual unsigned int getBlockExoSize(int block_number) const
+  virtual unsigned int
+  getBlockExoSize(int block_number) const
   {
     return 0;
   };
   //! Return the number of colums in the jacobian matrix for exogenous variable in the block block_number
-  virtual unsigned int getBlockExoColSize(int block_number) const
+  virtual unsigned int
+  getBlockExoColSize(int block_number) const
   {
     return 0;
   }
@@ -319,10 +316,6 @@ public:
   {
     return -1;
   };
-#ifdef USE_R
-  Rcpp::List getStaticModelR(bool internal_calc) const;
-  PolishModel* makePolishModel(ExternalFunctionCalc *ext_calc) const;
-#endif
 };
 
 #endif

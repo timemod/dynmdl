@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2016 Dynare Team
+ * Copyright (C) 2007-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -29,8 +29,6 @@
 #include "ExprNode.hh"
 #include "DataTree.hh"
 #include "ModFile.hh"
-#include "dyn_error.hh"
-#include "dynout.hh"
 
 ExprNode::ExprNode(DataTree &datatree_arg) : datatree(datatree_arg), preparedForDerivation(false)
 {
@@ -102,7 +100,7 @@ ExprNode::collectVariables(SymbolType type, set<int> &result) const
   set<pair<int, int> > symbs_lags;
   collectDynamicVariables(type, symbs_lags);
   transform(symbs_lags.begin(), symbs_lags.end(), inserter(result, result.begin()),
-            boost::bind(&pair<int,int>::first,_1));
+            boost::bind(&pair<int, int>::first, _1));
 }
 
 void
@@ -217,7 +215,7 @@ ExprNode::createEndoLeadAuxiliaryVarForMyself(subst_table_t &subst_table, vector
       it = subst_table.find(orig_expr);
       if (it == subst_table.end())
         {
-          int symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(orig_expr->idx, 0, substexpr);
+          int symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(orig_expr->idx, substexpr);
           neweqs.push_back(dynamic_cast<BinaryOpNode *>(datatree.AddEqual(datatree.AddVariable(symb_id, 0), substexpr)));
           substexpr = datatree.AddVariable(symb_id, +1);
           assert(dynamic_cast<VariableNode *>(substexpr) != NULL);
@@ -317,15 +315,11 @@ NumConstNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<NumConstNode *>(this));
   if (it != temporary_terms.end())
     if (output_type == oMatlabDynamicModelSparse)
-      output << "t" << idx << "(it_)";
+      output << "T" << idx << "(it_)";
     else
-      output << "t" << idx;
+      output << "T" << idx;
   else
     output << datatree.num_constants.get(id);
-}
-
-void NumConstNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    mdl.add_constant(id);
 }
 
 bool
@@ -484,6 +478,12 @@ NumConstNode::containsEndogenous(void) const
   return false;
 }
 
+bool
+NumConstNode::containsExogenous() const
+{
+  return false;
+}
+
 expr_t
 NumConstNode::replaceTrendVar() const
 {
@@ -513,9 +513,6 @@ NumConstNode::substituteStaticAuxiliaryVariable() const
 {
   return const_cast<NumConstNode *>(this);
 }
-
-
-
 
 VariableNode::VariableNode(DataTree &datatree_arg, int symb_id_arg, int lag_arg) :
   ExprNode(datatree_arg),
@@ -562,7 +559,8 @@ VariableNode::prepareForDerivation()
       // Such a variable is never derived
       break;
     case eExternalFunction:
-      dyn_error("VariableNode::prepareForDerivation: impossible case");
+      cerr << "VariableNode::prepareForDerivation: impossible case" << endl;
+      exit(EXIT_FAILURE);
     }
 }
 
@@ -584,16 +582,20 @@ VariableNode::computeDerivative(int deriv_id)
     case eModelLocalVariable:
       return datatree.local_variables_table[symb_id]->getDerivative(deriv_id);
     case eModFileLocalVariable:
-      dyn_error("ModFileLocalVariable is not derivable");
+      cerr << "ModFileLocalVariable is not derivable" << endl;
+      exit(EXIT_FAILURE);
     case eStatementDeclaredVariable:
-      dyn_error("eStatementDeclaredVariable is not derivable");
+      cerr << "eStatementDeclaredVariable is not derivable" << endl;
+      exit(EXIT_FAILURE);
     case eUnusedEndogenous:
-      dyn_error("eUnusedEndogenous is not derivable");
+      cerr << "eUnusedEndogenous is not derivable" << endl;
+      exit(EXIT_FAILURE);
     case eExternalFunction:
-      dyn_error("Impossible case!");
+      cerr << "Impossible case!" << endl;
+      exit(EXIT_FAILURE);
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 void
@@ -622,9 +624,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "t" << idx << "(it_)";
+        output << "T" << idx << "(it_)";
       else
-        output << "t" << idx;
+        output << "T" << idx;
       return;
     }
 
@@ -654,13 +656,10 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   switch (type)
     {
     case eParameter:
-      if (output_type == oMatlabOutsideModel) {
-          output << "M_.params" << "(" << tsid + 1 << ")";
-      } else if (output_type == oRDerivatives) {
-          output <<  datatree.symbol_table.getName(symb_id);
-      } else {
-          output << "params" << LEFT_ARRAY_SUBSCRIPT(output_type) << tsid + ARRAY_SUBSCRIPT_OFFSET(output_type) << RIGHT_ARRAY_SUBSCRIPT(output_type);
-      }
+      if (output_type == oMatlabOutsideModel)
+        output << "M_.params" << "(" << tsid + 1 << ")";
+      else
+        output << "params" << LEFT_ARRAY_SUBSCRIPT(output_type) << tsid + ARRAY_SUBSCRIPT_OFFSET(output_type) << RIGHT_ARRAY_SUBSCRIPT(output_type);
       break;
 
     case eModelLocalVariable:
@@ -672,9 +671,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           datatree.local_variables_table[symb_id]->writeOutput(output, output_type, temporary_terms, tef_terms);
           output << ")";
         }
-      else if (output_type == oRDerivatives) {
-        output << datatree.symbol_table.getName(symb_id);
-      } else
+      else
         /* We append underscores to avoid name clashes with "g1" or "oo_" (see
            also ModelTree::writeModelLocalVariables) */
         output << datatree.symbol_table.getName(symb_id) << "__";
@@ -690,12 +687,8 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaDynamicModel:
         case oMatlabDynamicModel:
         case oCDynamicModel:
-        case oRDynamicModel:
           i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag)) + ARRAY_SUBSCRIPT_OFFSET(output_type);
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
-          break;
-        case oRDerivatives:
-          output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
         case oCDynamic2Model:
           i = tsid + (lag+1)*datatree.symbol_table.endo_nbr() + ARRAY_SUBSCRIPT_OFFSET(output_type);
@@ -705,7 +698,6 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaStaticModel:
         case oMatlabStaticModel:
         case oMatlabStaticModelSparse:
-        case oRStaticModel:
           i = tsid + ARRAY_SUBSCRIPT_OFFSET(output_type);
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
@@ -737,7 +729,8 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "ys_[" << tsid << "]";
           break;
         default:
-          dyn_error("VariableNode::writeOutput: should not reach this point");
+          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
+          exit(EXIT_FAILURE);
         }
       break;
 
@@ -748,7 +741,6 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaDynamicModel:
         case oMatlabDynamicModel:
         case oMatlabDynamicModelSparse:
-        case oRDynamicModel:
           if (lag > 0)
             output <<  "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << "it_+" << lag << ", " << i
                    << RIGHT_ARRAY_SUBSCRIPT(output_type);
@@ -758,9 +750,6 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           else
             output <<  "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << "it_, " << i
                    << RIGHT_ARRAY_SUBSCRIPT(output_type);
-          break;
-        case oRDerivatives:
-          output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
         case oCDynamicModel:
         case oCDynamic2Model:
@@ -775,7 +764,6 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaStaticModel:
         case oMatlabStaticModel:
         case oMatlabStaticModelSparse:
-        case oRStaticModel:
           output << "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
         case oMatlabOutsideModel:
@@ -793,7 +781,8 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "exo_[" << i - 1 << "]";
           break;
         default:
-          dyn_error("VariableNode::writeOutput: should not reach this point");
+          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
+          exit(EXIT_FAILURE);
         }
       break;
 
@@ -825,7 +814,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           break;
         case oCStaticModel:
         case oJuliaStaticModel:
-        case oMatlabStaticModel :
+        case oMatlabStaticModel:
         case oMatlabStaticModelSparse:
           output << "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
@@ -844,7 +833,8 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "exo_[" << i - 1 << "]";
           break;
         default:
-          dyn_error("VariableNode::writeOutput: should not reach this point");
+          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
+          exit(EXIT_FAILURE);
         }
       break;
 
@@ -853,36 +843,8 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case eLogTrend:
     case eStatementDeclaredVariable:
     case eUnusedEndogenous:
-      dyn_error("Impossible case");
-    }
-}
-
-void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    int i;
-    switch (type) {
-    case eParameter:
-        i = datatree.symbol_table.getTypeSpecificID(symb_id);
-        mdl.add_param(i);
-        break;
-    case eEndogenous:
-        if (dynamic) {
-            i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag));
-        } else {
-            i = datatree.symbol_table.getTypeSpecificID(symb_id);
-        }
-        mdl.add_endo(i);
-        break;
-    case eExogenous:
-        i = datatree.symbol_table.getTypeSpecificID(symb_id);
-        if (dynamic) {
-            mdl.add_exo(i, lag);
-        } else {
-            mdl.add_exo(i, 0);
-        }
-        break;
-    default:
-        dyn_error("Internal error: internal evalution not yet supported"
-                  " for this type of variable");
+      cerr << "Impossible case" << endl;
+      exit(EXIT_FAILURE);
     }
 }
 
@@ -901,7 +863,7 @@ VariableNode::substituteStaticAuxiliaryVariable() const
     }
   return const_cast<VariableNode *>(this);
 }
-  
+
 double
 VariableNode::eval(const eval_context_t &eval_context) const throw (EvalException, EvalExternalFunctionException)
 {
@@ -960,7 +922,8 @@ VariableNode::compile(ostream &CompileCode, unsigned int &instruction_number,
             {
               if (steady_dynamic)  // steady state values in a dynamic model
                 {
-                  dyn_error("Impossible case: steady_state in rhs of equation");
+                  cerr << "Impossible case: steady_state in rhs of equation" << endl;
+                  exit(EXIT_FAILURE);
                 }
               else
                 {
@@ -1009,17 +972,17 @@ VariableNode::collectDynamicVariables(SymbolType type_arg, set<pair<int, int> > 
 pair<int, expr_t>
 VariableNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_t> > > &List_of_Op_RHS) const
 {
-  /* The equation has to be normalized with respect to the current endogenous variable ascribed to it. 
-     The two input arguments are : 
-        - The ID of the endogenous variable associated to the equation.
-        - The list of operators and operands needed to normalize the equation*
-        
-     The pair returned by NormalizeEquation is composed of 
-      - a flag indicating if the expression returned contains (flag = 1) or not (flag = 0) 
-        the endogenous variable related to the equation.
-        If the expression contains more than one occurence of the associated endogenous variable, 
-        the flag is equal to 2. 
-      - an expression equal to the RHS if flag = 0 and equal to NULL elsewhere
+  /* The equation has to be normalized with respect to the current endogenous variable ascribed to it.
+     The two input arguments are :
+     - The ID of the endogenous variable associated to the equation.
+     - The list of operators and operands needed to normalize the equation*
+
+     The pair returned by NormalizeEquation is composed of
+     - a flag indicating if the expression returned contains (flag = 1) or not (flag = 0)
+     the endogenous variable related to the equation.
+     If the expression contains more than one occurence of the associated endogenous variable,
+     the flag is equal to 2.
+     - an expression equal to the RHS if flag = 0 and equal to NULL elsewhere
   */
   if (type == eEndogenous)
     {
@@ -1077,16 +1040,20 @@ VariableNode::getChainRuleDerivative(int deriv_id, const map<int, expr_t> &recur
     case eModelLocalVariable:
       return datatree.local_variables_table[symb_id]->getChainRuleDerivative(deriv_id, recursive_variables);
     case eModFileLocalVariable:
-      dyn_error("ModFileLocalVariable is not derivable");
+      cerr << "ModFileLocalVariable is not derivable" << endl;
+      exit(EXIT_FAILURE);
     case eStatementDeclaredVariable:
-      dyn_error("eStatementDeclaredVariable is not derivable");
+      cerr << "eStatementDeclaredVariable is not derivable" << endl;
+      exit(EXIT_FAILURE);
     case eUnusedEndogenous:
-      dyn_error("eUnusedEndogenous is not derivable");
+      cerr << "eUnusedEndogenous is not derivable" << endl;
+      exit(EXIT_FAILURE);
     case eExternalFunction:
-      dyn_error("Impossible case!");
+      cerr << "Impossible case!" << endl;
+      exit(EXIT_FAILURE);
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -1101,16 +1068,16 @@ VariableNode::computeXrefs(EquationInfo &ei) const
   switch (type)
     {
     case eEndogenous:
-      ei.endo.insert(symb_id);
+      ei.endo.insert(make_pair(symb_id, lag));
       break;
     case eExogenous:
-      ei.exo.insert(symb_id);
+      ei.exo.insert(make_pair(symb_id, lag));
       break;
     case eExogenousDet:
-      ei.exo_det.insert(symb_id);
+      ei.exo_det.insert(make_pair(symb_id, lag));
       break;
     case eParameter:
-      ei.param.insert(symb_id);
+      ei.param.insert(make_pair(symb_id, 0));
       break;
     case eTrend:
     case eLogTrend:
@@ -1228,46 +1195,17 @@ VariableNode::decreaseLeadsLagsPredeterminedVariables() const
     return const_cast<VariableNode *>(this);
 }
 
-expr_t VariableNode::substituteEndoLeadGreaterThanTwo(subst_table_t &subst_table,
-        vector<BinaryOpNode *> &neweqs, bool deterministic_model) const {
-
-  VariableNode *substexpr;
+expr_t
+VariableNode::substituteEndoLeadGreaterThanTwo(subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs, bool deterministic_model) const
+{
   expr_t value;
-  subst_table_t::const_iterator it;
-  int cur_lead;
-
-  switch (type) {
+  switch (type)
+    {
     case eEndogenous:
       if (lag <= 1)
         return const_cast<VariableNode *>(this);
-    
-      it = subst_table.find(this);
-      if (it != subst_table.end())
-        return const_cast<VariableNode *>(it->second);
-
-      substexpr = datatree.AddVariable(symb_id, 1);
-
-      cur_lead = 2;
-      // Each iteration tries to create an auxvar such that auxvar(1)=curvar(cur_lead)
-      // At the beginning (resp. end) of each iteration, substexpr is an expression 
-      // (possibly an auxvar) equivalent to curvar(cur_lead-1) (resp. curvar(cur_lead))
-      while (cur_lead <= lag) {
-          VariableNode *orig_expr = datatree.AddVariable(symb_id, cur_lead);
-          it = subst_table.find(orig_expr);
-          if (it == subst_table.end()) {
-              int aux_symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(
-                       symb_id, cur_lead - 1, substexpr);
-              neweqs.push_back(dynamic_cast<BinaryOpNode *>(datatree.AddEqual(
-                              datatree.AddVariable(aux_symb_id, 0), substexpr)));
-              substexpr = datatree.AddVariable(aux_symb_id, 1);
-              subst_table[orig_expr] = substexpr;
-          } else {
-            substexpr = const_cast<VariableNode *>(it->second);
-          }
-          cur_lead++;
-      }
-      return substexpr;
-
+      else
+        return createEndoLeadAuxiliaryVarForMyself(subst_table, neweqs);
     case eModelLocalVariable:
       value = datatree.local_variables_table[symb_id];
       if (value->maxEndoLead() <= 1)
@@ -1278,7 +1216,6 @@ expr_t VariableNode::substituteEndoLeadGreaterThanTwo(subst_table_t &subst_table
       return const_cast<VariableNode *>(this);
     }
 }
-
 
 expr_t
 VariableNode::substituteEndoLagGreaterThanTwo(subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const
@@ -1474,6 +1411,12 @@ VariableNode::containsEndogenous(void) const
     return false;
 }
 
+bool
+VariableNode::containsExogenous() const
+{
+  return (type == eExogenous || type == eExogenousDet);
+}
+
 expr_t
 VariableNode::replaceTrendVar() const
 {
@@ -1517,7 +1460,7 @@ VariableNode::removeTrendLeadLag(map<int, expr_t> trend_symbols_map) const
   expr_t noTrendLeadLagNode = new VariableNode(datatree, it->first, 0);
   bool log_trend = get_type() == eLogTrend;
   expr_t trend = it->second;
-  
+
   if (get_lag() > 0)
     {
       expr_t growthFactorSequence = trend->decreaseLeadsLags(-1);
@@ -1665,8 +1608,9 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
               VariableNode *varg = dynamic_cast<VariableNode *>(arg);
               if (varg == NULL)
                 {
-                  dyn_error("UnaryOpNode::composeDerivatives: STEADY_STATE() should only be used on "
-                            "standalone variables (like STEADY_STATE(y)) to be derivable w.r.t. parameters");
+                  cerr << "UnaryOpNode::composeDerivatives: STEADY_STATE() should only be used on "
+                       << "standalone variables (like STEADY_STATE(y)) to be derivable w.r.t. parameters" << endl;
+                  exit(EXIT_FAILURE);
                 }
               if (datatree.symbol_table.getType(varg->symb_id) == eEndogenous)
                 return datatree.AddSteadyStateParamDeriv(arg, datatree.getSymbIDByDerivID(deriv_id));
@@ -1693,12 +1637,14 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
       assert(datatree.isDynamic());
       if (datatree.getTypeByDerivID(deriv_id) == eParameter)
         {
-          dyn_error("3rd derivative of STEADY_STATE node w.r.t. three parameters not implemented");
+          cerr << "3rd derivative of STEADY_STATE node w.r.t. three parameters not implemented" << endl;
+          exit(EXIT_FAILURE);
         }
       else
         return datatree.Zero;
     case oExpectation:
-      dyn_error("UnaryOpNode::composeDerivatives: not implemented on oExpectation");
+      cerr << "UnaryOpNode::composeDerivatives: not implemented on oExpectation" << endl;
+      exit(EXIT_FAILURE);
     case oErf:
       // x^2
       t11 = datatree.AddPower(arg, datatree.Two);
@@ -1714,7 +1660,7 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
       return datatree.AddTimes(t14, darg);
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -1836,7 +1782,7 @@ UnaryOpNode::cost(int cost, bool is_matlab) const
       case oExpectation:
         return cost;
       }
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 void
@@ -1913,9 +1859,9 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "t" << idx << "(it_)";
+        output << "T" << idx << "(it_)";
       else
-        output << "t" << idx;
+        output << "T" << idx;
       return;
     }
 
@@ -2045,7 +1991,8 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case oExpectation:
       if (!IS_LATEX(output_type))
         {
-          dyn_error("UnaryOpNode::writeOutput: not implemented on oExpectation");
+          cerr << "UnaryOpNode::writeOutput: not implemented on oExpectation" << endl;
+          exit(EXIT_FAILURE);
         }
       output << "\\mathbb{E}_{t";
       if (expectation_information_set != 0)
@@ -2086,26 +2033,6 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   // Close parenthesis for uminus
   if (op_code == oUminus)
     output << RIGHT_PAR(output_type);
-}
-
-void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    arg->genPolishCode(mdl, dynamic);
-    switch (op_code) {
-    case oUminus:
-      mdl.add_unary_minus();
-      break;
-    case oExp:
-      mdl.add_op(EXP);
-      break;
-    case oLog:
-      mdl.add_op(LOG);
-      break;
-    case oSqrt:
-      mdl.add_op(SQRT);
-      break;
-    default:
-      dyn_error("genPolishCode not implemented for unary operator");
-    }
 }
 
 void
@@ -2179,7 +2106,7 @@ UnaryOpNode::eval_opcode(UnaryOpcode op_code, double v) throw (EvalException, Ev
       return (erf(v));
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 double
@@ -2238,9 +2165,9 @@ UnaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_
 
   if (is_endogenous_present == 2) /* The equation could not be normalized and the process is given-up*/
     return (make_pair(2, (expr_t) NULL));
-  else if (is_endogenous_present) /* The argument of the function contains the current values of 
-                                     the endogenous variable associated to the equation. 
-                                     In order to normalized, we have to apply the invert function to the RHS.*/ 
+  else if (is_endogenous_present) /* The argument of the function contains the current values of
+                                     the endogenous variable associated to the equation.
+                                     In order to normalized, we have to apply the invert function to the RHS.*/
     {
       switch (op_code)
         {
@@ -2304,12 +2231,12 @@ UnaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_
         case oErf:
           return (make_pair(2, (expr_t) NULL));
         default:
-          DynErr << "Unary operator not handled during the normalization process" << endl;
+          cerr << "Unary operator not handled during the normalization process" << endl;
           return (make_pair(2, (expr_t) NULL)); // Could not be normalized
         }
     }
   else
-    { /* If the argument of the function do not contain the current values of the endogenous variable 
+    { /* If the argument of the function do not contain the current values of the endogenous variable
          related to the equation, the function with its argument is stored in the RHS*/
       switch (op_code)
         {
@@ -2356,11 +2283,12 @@ UnaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_
         case oErf:
           return (make_pair(0, datatree.AddErf(New_expr_t)));
         default:
-          DynErr << "Unary operator not handled during the normalization process" << endl;
+          cerr << "Unary operator not handled during the normalization process" << endl;
           return (make_pair(2, (expr_t) NULL)); // Could not be normalized
         }
     }
-  dyn_error("UnaryOpNode::normalizeEquation: impossible case");
+  cerr << "UnaryOpNode::normalizeEquation: impossible case" << endl;
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -2416,16 +2344,18 @@ UnaryOpNode::buildSimilarUnaryOpNode(expr_t alt_arg, DataTree &alt_datatree) con
     case oSteadyState:
       return alt_datatree.AddSteadyState(alt_arg);
     case oSteadyStateParamDeriv:
-      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParamDeriv can't be translated");
+      cerr << "UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParamDeriv can't be translated" << endl;
+      exit(EXIT_FAILURE);
     case oSteadyStateParam2ndDeriv:
-      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParam2ndDeriv can't be translated");
+      cerr << "UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParam2ndDeriv can't be translated" << endl;
+      exit(EXIT_FAILURE);
     case oExpectation:
       return alt_datatree.AddExpectation(expectation_information_set, alt_arg);
     case oErf:
       return alt_datatree.AddErf(alt_arg);
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -2543,7 +2473,7 @@ UnaryOpNode::substituteExoLag(subst_table_t &subst_table, vector<BinaryOpNode *>
 expr_t
 UnaryOpNode::substituteExpectation(subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs, bool partial_information_model) const
 {
-  if (op_code==oExpectation)
+  if (op_code == oExpectation)
     {
       subst_table_t::iterator it = subst_table.find(const_cast<UnaryOpNode *>(this));
       if (it != subst_table.end())
@@ -2558,8 +2488,9 @@ UnaryOpNode::substituteExpectation(subst_table_t &subst_table, vector<BinaryOpNo
       if (partial_information_model && expectation_information_set == 0)
         if (dynamic_cast<VariableNode *>(arg) == NULL)
           {
-            dyn_error("ERROR: In Partial Information models, EXPECTATION(0)(X) "
-                      "can only be used when X is a single variable.");
+            cerr << "ERROR: In Partial Information models, EXPECTATION(0)(X) "
+                 << "can only be used when X is a single variable." << endl;
+            exit(EXIT_FAILURE);
           }
 
       //take care of any nested expectation operators by calling arg->substituteExpectation(.), then decreaseLeadsLags for this oExpectation operator
@@ -2603,6 +2534,12 @@ bool
 UnaryOpNode::containsEndogenous(void) const
 {
   return arg->containsEndogenous();
+}
+
+bool
+UnaryOpNode::containsExogenous() const
+{
+  return arg->containsExogenous();
 }
 
 expr_t
@@ -2803,7 +2740,7 @@ BinaryOpNode::composeDerivatives(expr_t darg1, expr_t darg2)
       return datatree.AddMinus(darg1, darg2);
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -2869,7 +2806,7 @@ BinaryOpNode::precedence(ExprNodeOutputType output_type, const temporary_terms_t
       return 100;
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 int
@@ -2955,7 +2892,7 @@ BinaryOpNode::cost(int cost, bool is_matlab) const
         return cost;
       }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 void
@@ -3067,7 +3004,7 @@ BinaryOpNode::eval_opcode(double v1, BinaryOpcode op_code, double v2, int derivO
       throw EvalException();
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 double
@@ -3144,9 +3081,9 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "t" << idx << "(it_)";
+        output << "T" << idx << "(it_)";
       else
-        output << "t" << idx;
+        output << "T" << idx;
       return;
     }
 
@@ -3155,12 +3092,9 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     {
       if (IS_LATEX(output_type))
         unpackPowerDeriv()->writeOutput(output, output_type, temporary_terms, tef_terms);
-      else if (output_type == oRDerivatives) {
-        unpackPowerDeriv()->writeOutput(output, output_type, temporary_terms, tef_terms);
-      } else
+      else
         {
-          if (output_type == oJuliaStaticModel || output_type == oJuliaDynamicModel ||
-              output_type == oRStaticModel     || output_type == oRDynamicModel)
+          if (output_type == oJuliaStaticModel || output_type == oJuliaDynamicModel)
             output << "get_power_deriv(";
           else
             output << "getPowerDeriv(";
@@ -3243,7 +3177,7 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         output << "/";
       break;
     case oPower:
-      output << "**";
+      output << "^";
       break;
     case oLess:
       output << "<";
@@ -3267,14 +3201,18 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       output << "==";
       break;
     case oDifferent:
-      if (IS_LATEX(output_type)) {
-          output << "\\neq ";
-      } else {
-          output << " != ";
-      }
+      if (IS_MATLAB(output_type))
+        output << "~=";
+      else
+        {
+          if (IS_C(output_type) || IS_JULIA(output_type))
+            output << "!=";
+          else
+            output << "\\neq ";
+        }
       break;
     case oEqual:
-      output << "==";
+      output << "=";
       break;
     default:
       ;
@@ -3311,61 +3249,6 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
 
   if (close_parenthesis)
     output << RIGHT_PAR(output_type);
-}
-
-void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    arg1->genPolishCode(mdl, dynamic);
-    arg2->genPolishCode(mdl, dynamic);
-    switch (op_code) {
-    case oPlus:
-        mdl.add_binop('+');
-        break;
-    case oMinus:
-        mdl.add_binop('-');
-        break;
-    case oTimes:
-        mdl.add_binop('*');
-        break;
-    case oDivide:
-        mdl.add_binop('/');
-        break;
-    case oPower:
-        mdl.add_binop('^');
-        break;
-    case oPowerDeriv:
-        if (powerDerivOrder != 1) {
-            dyn_error("genPolishCode not implemented for power deriv order != 1");
-        }
-        mdl.add_op(POW_DERIV);
-        break;
-    case oEqual:
-    case oEqualEqual:
-        mdl.add_op(EQ);
-        break;
-    case oLess:
-        mdl.add_op(LT);
-        break;
-    case oGreater:
-        mdl.add_op(GT);
-        break;
-    case oLessEqual:
-        mdl.add_op(LE);
-        break;
-    case oGreaterEqual:
-        mdl.add_op(GE);
-        break;
-    case oDifferent:
-        mdl.add_op(NEQ);
-        break;
-    case oMax:
-        mdl.add_op(MAX);
-        break;
-    case oMin:
-        mdl.add_op(MIN);
-        break;
-    default:
-      dyn_error("genPolishCode not implemented for this binary operator");
-    }
 }
 
 void
@@ -3418,7 +3301,8 @@ BinaryOpNode::Compute_RHS(expr_t arg1, expr_t arg2, int op, int op_type) const
           return (datatree.AddLog10(arg1));
           break;
         default:
-          dyn_error("BinaryOpNode::Compute_RHS: case not handled");
+          cerr << "BinaryOpNode::Compute_RHS: case not handled";
+          exit(EXIT_FAILURE);
         }
       break;
     case 1: /*Binary Operator*/
@@ -3440,7 +3324,8 @@ BinaryOpNode::Compute_RHS(expr_t arg1, expr_t arg2, int op, int op_type) const
           return (datatree.AddPower(arg1, arg2));
           break;
         default:
-          dyn_error("BinaryOpNode::Compute_RHS: case not handled");
+          cerr << "BinaryOpNode::Compute_RHS: case not handled";
+          exit(EXIT_FAILURE);
         }
       break;
     }
@@ -3450,7 +3335,7 @@ BinaryOpNode::Compute_RHS(expr_t arg1, expr_t arg2, int op, int op_type) const
 pair<int, expr_t>
 BinaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_t> > > &List_of_Op_RHS) const
 {
-  /* Checks if the current value of the endogenous variable related to the equation 
+  /* Checks if the current value of the endogenous variable related to the equation
      is present in the arguments of the binary operator. */
   vector<pair<int, pair<expr_t, expr_t> > > List_of_Op_RHS1, List_of_Op_RHS2;
   int is_endogenous_present_1, is_endogenous_present_2;
@@ -3463,17 +3348,17 @@ BinaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr
   res = arg2->normalizeEquation(var_endo, List_of_Op_RHS2);
   is_endogenous_present_2 = res.first;
   expr_t_2 = res.second;
-  
+
   /* If the two expressions contains the current value of the endogenous variable associated to the equation
      the equation could not be normalized and the process is given-up.*/
   if (is_endogenous_present_1 == 2 || is_endogenous_present_2 == 2)
     return (make_pair(2, (expr_t) NULL));
   else if (is_endogenous_present_1 && is_endogenous_present_2)
     return (make_pair(2, (expr_t) NULL));
-  else if (is_endogenous_present_1) /*If the current values of the endogenous variable associated to the equation 
+  else if (is_endogenous_present_1) /*If the current values of the endogenous variable associated to the equation
                                       is present only in the first operand of the expression, we try to normalize the equation*/
     {
-      if (op_code == oEqual)       /* The end of the normalization process : 
+      if (op_code == oEqual)       /* The end of the normalization process :
                                       All the operations needed to normalize the equation are applied. */
         {
           pair<int, pair<expr_t, expr_t> > it;
@@ -3488,7 +3373,7 @@ BinaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr
                 expr_t_2 = Compute_RHS(it.second.second, expr_t_2, it.first, 1);
               else if (it.second.second && it.second.first) /*Binary operator*/
                 expr_t_2 = Compute_RHS(it.second.first, it.second.second, it.first, 1);
-              else                                                             /*Unary operator*/
+              else                                                                                 /*Unary operator*/
                 expr_t_2 = Compute_RHS((UnaryOpNode *) expr_t_2, (UnaryOpNode *) it.second.first, it.first, 0);
             }
         }
@@ -3684,11 +3569,12 @@ BinaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr
         return (make_pair(1, (expr_t) NULL));
       break;
     default:
-      DynErr << "Binary operator not handled during the normalization process" << endl;
+      cerr << "Binary operator not handled during the normalization process" << endl;
       return (make_pair(2, (expr_t) NULL)); // Could not be normalized
     }
   // Suppress GCC warning
-  dyn_error("BinaryOpNode::normalizeEquation: impossible case");
+  cerr << "BinaryOpNode::normalizeEquation: impossible case" << endl;
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -3736,7 +3622,7 @@ BinaryOpNode::buildSimilarBinaryOpNode(expr_t alt_arg1, expr_t alt_arg2, DataTre
       return alt_datatree.AddPowerDeriv(alt_arg1, alt_arg2, powerDerivOrder);
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -3920,7 +3806,6 @@ BinaryOpNode::substituteExpectation(subst_table_t &subst_table, vector<BinaryOpN
   return buildSimilarBinaryOpNode(arg1subst, arg2subst, datatree);
 }
 
-
 expr_t
 BinaryOpNode::differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const
 {
@@ -3953,6 +3838,12 @@ bool
 BinaryOpNode::containsEndogenous(void) const
 {
   return (arg1->containsEndogenous() || arg2->containsEndogenous());
+}
+
+bool
+BinaryOpNode::containsExogenous() const
+{
+  return (arg1->containsExogenous() || arg2->containsExogenous());
 }
 
 expr_t
@@ -4103,7 +3994,7 @@ TrinaryOpNode::composeDerivatives(expr_t darg1, expr_t darg2, expr_t darg3)
       return datatree.AddTimes(t11, t12);
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -4130,7 +4021,7 @@ TrinaryOpNode::precedence(ExprNodeOutputType output_type, const temporary_terms_
       return 100;
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 int
@@ -4183,7 +4074,7 @@ TrinaryOpNode::cost(int cost, bool is_matlab) const
         return cost+1000;
       }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 void
@@ -4252,7 +4143,7 @@ TrinaryOpNode::eval_opcode(double v1, TrinaryOpcode op_code, double v2, double v
       return (1/(v3*sqrt(2*M_PI)*exp(pow((v1-v2)/v3, 2)/2)));
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 double
@@ -4327,7 +4218,10 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<TrinaryOpNode *>(this));
   if (it != temporary_terms.end())
     {
-      output << "t" << idx;
+      if (output_type == oMatlabDynamicModelSparse)
+        output << "T" << idx << "(it_)";
+      else
+        output << "T" << idx;
       return;
     }
 
@@ -4382,10 +4276,6 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         }
       break;
     }
-}
-
-void TrinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    dyn_error("genPolishCode not implemented for this type");
 }
 
 void
@@ -4458,7 +4348,7 @@ TrinaryOpNode::buildSimilarTrinaryOpNode(expr_t alt_arg1, expr_t alt_arg2, expr_
       return alt_datatree.AddNormpdf(alt_arg1, alt_arg2, alt_arg3);
     }
   // Suppress GCC warning
-  dyn_error("Internal error");
+  exit(EXIT_FAILURE);
 }
 
 expr_t
@@ -4594,7 +4484,6 @@ TrinaryOpNode::substituteExpectation(subst_table_t &subst_table, vector<BinaryOp
   return buildSimilarTrinaryOpNode(arg1subst, arg2subst, arg3subst, datatree);
 }
 
-
 expr_t
 TrinaryOpNode::differentiateForwardVars(const vector<string> &subset, subst_table_t &subst_table, vector<BinaryOpNode *> &neweqs) const
 {
@@ -4620,6 +4509,12 @@ bool
 TrinaryOpNode::containsEndogenous(void) const
 {
   return (arg1->containsEndogenous() || arg2->containsEndogenous() || arg3->containsEndogenous());
+}
+
+bool
+TrinaryOpNode::containsExogenous() const
+{
+  return (arg1->containsExogenous() || arg2->containsExogenous() || arg3->containsExogenous());
 }
 
 expr_t
@@ -4916,6 +4811,16 @@ AbstractExternalFunctionNode::containsEndogenous(void) const
   return result;
 }
 
+bool
+AbstractExternalFunctionNode::containsExogenous() const
+{
+  for (vector<expr_t>::const_iterator it = arguments.begin();
+       it != arguments.end(); it++)
+    if ((*it)->containsExogenous())
+      return true;
+  return false;
+}
+
 expr_t
 AbstractExternalFunctionNode::replaceTrendVar() const
 {
@@ -4974,23 +4879,15 @@ AbstractExternalFunctionNode::normalizeEquation(int var_endo, vector<pair<int, p
 void
 AbstractExternalFunctionNode::writeExternalFunctionArguments(ostream &output, ExprNodeOutputType output_type,
                                                              const temporary_terms_t &temporary_terms,
-                                                             deriv_node_temp_terms_t &tef_terms) const {
+                                                             deriv_node_temp_terms_t &tef_terms) const
+{
   for (vector<expr_t>::const_iterator it = arguments.begin();
-       it != arguments.end(); it++) {
-
-      if (it != arguments.begin()) {
+       it != arguments.end(); it++)
+    {
+      if (it != arguments.begin())
         output << ",";
-      }
-
-      if (IS_C(output_type)) {
-          output << "(double) (";
-      }
 
       (*it)->writeOutput(output, output_type, temporary_terms, tef_terms);
-
-      if (IS_C(output_type)) {
-          output << ")";
-      }
     }
 }
 
@@ -5160,45 +5057,33 @@ ExternalFunctionNode::compileExternalFunctionOutput(ostream &CompileCode, unsign
 void
 ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
                                   const temporary_terms_t &temporary_terms,
-                                  deriv_node_temp_terms_t &tef_terms) const {
-
+                                  deriv_node_temp_terms_t &tef_terms) const
+{
   if (output_type == oMatlabOutsideModel || output_type == oSteadyStateFile
-     || output_type == oCSteadyStateFile || output_type == oJuliaSteadyStateFile
-     || output_type == oRDerivatives     || IS_LATEX(output_type)) {
-      string name = IS_LATEX(output_type) ? 
-          datatree.symbol_table.getTeXName(symb_id) : 
-          datatree.symbol_table.getName(symb_id);
+      || output_type == oCSteadyStateFile || output_type == oJuliaSteadyStateFile
+      || IS_LATEX(output_type))
+    {
+      string name = IS_LATEX(output_type) ? datatree.symbol_table.getTeXName(symb_id)
+        : datatree.symbol_table.getName(symb_id);
       output << name << "(";
-      writeExternalFunctionArguments(output, output_type, temporary_terms, 
-                                     tef_terms);
+      writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
       output << ")";
       return;
-   }
+    }
 
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<ExternalFunctionNode *>(this));
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "t" << idx << "(it_)";
+        output << "T" << idx << "(it_)";
       else
-        output << "t" << idx;
+        output << "T" << idx;
       return;
     }
 
-  output << "tef_" << getIndxInTefTerms(symb_id, tef_terms);
-}
-
-void ExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-
-    // arguments
-    for (vector<expr_t>::const_iterator it = arguments.begin(); 
-         it != arguments.end(); it++) {
-        (*it)->genPolishCode(mdl, dynamic);
-    }
-
-    // function call
-    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
-    mdl.add_external_function_call(id);
+  if (IS_C(output_type))
+    output << "*";
+  output << "TEF_" << getIndxInTefTerms(symb_id, tef_terms);
 }
 
 void
@@ -5220,62 +5105,60 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
       int second_deriv_symb_id = datatree.external_functions_table.getSecondDerivSymbID(symb_id);
       assert(second_deriv_symb_id != eExtFunSetButNoNameProvided);
 
-      if (IS_C(output_type)) {
+      if (IS_C(output_type))
+        {
           stringstream ending;
           ending << "_tef_" << getIndxInTefTerms(symb_id, tef_terms);
           if (symb_id == first_deriv_symb_id
-              && symb_id == second_deriv_symb_id) {
-            dyn_error("second derivatives for external function with C"
-                      "code not yet possible");
-          } else if (symb_id == first_deriv_symb_id) {
-            output << "double tef_" << indx << ", "
-                   << "tefd_" << indx << "[" << arguments.size() << "];" << endl;
-          } else {
-            output << "double tef_" << indx << ";" << endl;
-          }
+              && symb_id == second_deriv_symb_id)
+            output << "int nlhs" << ending.str() << " = 3;" << endl
+                   << "double *TEF_" << indx << ", "
+                   << "*TEFD_" << indx << ", "
+                   << "*TEFDD_" << indx << ";" << endl;
+          else if (symb_id == first_deriv_symb_id)
+            output << "int nlhs" << ending.str() << " = 2;" << endl
+                   << "double *TEF_" << indx << ", "
+                   << "*TEFD_" << indx << "; " << endl;
+          else
+            output << "int nlhs" << ending.str() << " = 1;" << endl
+                   << "double *TEF_" << indx << ";" << endl;
 
-          output << "call_R_function(\"" 
-                 << datatree.symbol_table.getName(symb_id) << "\","
-                 << arguments.size() << ", &tef_" << indx  << ", ";
-          if (symb_id == first_deriv_symb_id) {
-              output << "tefd_" << indx << ", ";
-          } else {
-              // argument jac is not used, use tef_ as dummy argument
-              output << "&tef_" << indx << ", ";
-          }
-          writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
-          output << ");" << endl;
-    } else {
+          output << "mxArray *plhs" << ending.str()<< "[nlhs"<< ending.str() << "];" << endl;
+          output << "int nrhs" << ending.str()<< " = " << arguments.size() << ";" << endl;
+          writePrhs(output, output_type, temporary_terms, tef_terms, ending.str());
+
+          output << "mexCallMATLAB("
+                 << "nlhs" << ending.str() << ", "
+                 << "plhs" << ending.str() << ", "
+                 << "nrhs" << ending.str() << ", "
+                 << "prhs" << ending.str() << ", \""
+                 << datatree.symbol_table.getName(symb_id) << "\");" << endl;
+
           if (symb_id == first_deriv_symb_id
               && symb_id == second_deriv_symb_id)
-            output << "[tef_" << indx << " tefd_"<< indx << " tefdd_"<< indx
-                   << "]" << ASSIGNMENT_OPERATOR(output_type);
+            output << "TEF_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl
+                   << "TEFD_" << indx << " = mxGetPr(plhs" << ending.str() << "[1]);" << endl
+                   << "TEFDD_" << indx << " = mxGetPr(plhs" << ending.str() << "[2]);" << endl
+                   << "int TEFDD_" << indx << "_nrows = (int)mxGetM(plhs" << ending.str()<< "[2]);" << endl;
           else if (symb_id == first_deriv_symb_id)
-            if (IS_R(output_type)) {
-                output << "func_res" << ASSIGNMENT_OPERATOR(output_type);
-            } else {
-                output << "[tef_" << indx << " tefd_"<< indx << "]" 
-                       <<  ASSIGNMENT_OPERATOR(output_type);
-            }
+            output << "TEF_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl
+                   << "TEFD_" << indx << " = mxGetPr(plhs" << ending.str() << "[1]);" << endl;
           else
-            output << "tef_" << indx << ASSIGNMENT_OPERATOR(output_type);
+            output << "TEF_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
+        }
+      else
+        {
+          if (symb_id == first_deriv_symb_id
+              && symb_id == second_deriv_symb_id)
+            output << "[TEF_" << indx << ", TEFD_"<< indx << ", TEFDD_"<< indx << "] = ";
+          else if (symb_id == first_deriv_symb_id)
+            output << "[TEF_" << indx << ", TEFD_"<< indx << "] = ";
+          else
+            output << "TEF_" << indx << " = ";
 
           output << datatree.symbol_table.getName(symb_id) << "(";
           writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
-          output << ")";
-          if (!IS_R(output_type)) {
-              output << ";";
-          }
-          output << endl;
-          if (IS_R(output_type)) {
-              if (symb_id == first_deriv_symb_id && symb_id == second_deriv_symb_id) {
-                 output << "tef_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[1]]" << endl;
-                 output << "tefdd_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[2]]" << endl;
-              } else if (symb_id == first_deriv_symb_id) {
-                 output << "tef_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[1]]" << endl;
-                 output << "tefd_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[2]]" << endl;
-              }
-          }
+          output << ");" << endl;
         }
     }
 }
@@ -5364,31 +5247,27 @@ FirstDerivExternalFunctionNode::composeDerivatives(const vector<expr_t> &dargs)
 void
 FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
                                             const temporary_terms_t &temporary_terms,
-                                            deriv_node_temp_terms_t &tef_terms) const {
-
+                                            deriv_node_temp_terms_t &tef_terms) const
+{
   assert(output_type != oMatlabOutsideModel);
 
-  if (output_type == oRDerivatives || IS_LATEX(output_type)) {
-      if (IS_LATEX(output_type)) {
-          output << "\\frac{\\partial " << datatree.symbol_table.getTeXName(symb_id)
-                 << "}{\\partial " << inputIndex << "}";
-      } else {
-          output <<  datatree.symbol_table.getName(symb_id) << "_d" << inputIndex;
-      }
-      output << "(";
+  if (IS_LATEX(output_type))
+    {
+      output << "\\frac{\\partial " << datatree.symbol_table.getTeXName(symb_id)
+             << "}{\\partial " << inputIndex << "}(";
       writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
       output << ")";
       return;
-  }
+    }
 
   // If current node is a temporary term
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<FirstDerivExternalFunctionNode *>(this));
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "t" << idx << "(it_)";
+        output << "T" << idx << "(it_)";
       else
-        output << "t" << idx;
+        output << "T" << idx;
       return;
     }
 
@@ -5397,38 +5276,18 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
 
   const int tmpIndx = inputIndex - 1 + ARRAY_SUBSCRIPT_OFFSET(output_type);
 
-  if (first_deriv_symb_id == symb_id) {
-    output << "tefd_" << getIndxInTefTerms(symb_id, tef_terms)
+  if (first_deriv_symb_id == symb_id)
+    output << "TEFD_" << getIndxInTefTerms(symb_id, tef_terms)
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
-  } else if (first_deriv_symb_id == eExtFunNotSet) {
-      output << "tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
-  } else {
-    output << "tefd_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
-           << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
-  }
-}
-
-void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-
-    // arguments
-    for (vector<expr_t>::const_iterator it = arguments.begin(); 
-         it != arguments.end(); it++) {
-        (*it)->genPolishCode(mdl, dynamic);
+  else if (first_deriv_symb_id == eExtFunNotSet)
+    {
+      if (IS_C(output_type))
+        output << "*";
+      output << "TEFD_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
     }
-
-    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
-
-    const int first_deriv_symb_id = datatree.external_functions_table.getFirstDerivSymbID(symb_id);
-    if (first_deriv_symb_id < 0) {
-        mdl.add_external_function_numderiv(id, inputIndex);
-    } else {
-        if (first_deriv_symb_id != symb_id) {
-            dyn_warning("For the internal calculation mode the specified"
-                  " name of the first derivative function is ignored");
-        }
-        mdl.add_external_function_deriv(id, inputIndex);
-    } 
-
+  else
+    output << "TEFD_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
+           << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
 
 void
@@ -5492,64 +5351,83 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
     return;
 
   if (IS_C(output_type))
-    if (first_deriv_symb_id == eExtFunNotSet) {
-        // compute Jacobian by numerical differentiation
-        output << "double tefd_fdd_" <<  getIndxInTefTerms(symb_id, tef_terms) 
-               << "_" << inputIndex << ";" << endl;
-        output << "call_jacob_element(\""
-               << datatree.symbol_table.getName(symb_id) << "\", "
-               << arguments.size() << ", "
-               << inputIndex << ", &tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) 
-               << "_" << inputIndex << ", ";
-        writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
-        output << ");" << endl;
-   } else {
+    if (first_deriv_symb_id == eExtFunNotSet)
+      {
+        stringstream ending;
+        ending << "_tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
+        output << "int nlhs" << ending.str() << " = 1;" << endl
+               << "double *TEFD_fdd_" <<  getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex << ";" << endl
+               << "mxArray *plhs" << ending.str() << "[nlhs"<< ending.str() << "];" << endl
+               << "int nrhs" << ending.str() << " = 3;" << endl
+               << "mxArray *prhs" << ending.str() << "[nrhs"<< ending.str() << "];" << endl
+               << "mwSize dims" << ending.str() << "[2];" << endl;
+
+        output << "dims" << ending.str() << "[0] = 1;" << endl
+               << "dims" << ending.str() << "[1] = " << arguments.size() << ";" << endl;
+
+        output << "prhs" << ending.str() << "[0] = mxCreateString(\"" << datatree.symbol_table.getName(symb_id) << "\");" << endl
+               << "prhs" << ending.str() << "[1] = mxCreateDoubleScalar(" << inputIndex << ");"<< endl
+               << "prhs" << ending.str() << "[2] = mxCreateCellArray(2, dims" << ending.str() << ");"<< endl;
+
+        int i = 0;
+        for (vector<expr_t>::const_iterator it = arguments.begin();
+             it != arguments.end(); it++)
+          {
+            output << "mxSetCell(prhs" << ending.str() << "[2], "
+                   << i++ << ", "
+                   << "mxCreateDoubleScalar("; // All external_function arguments are scalars
+            (*it)->writeOutput(output, output_type, temporary_terms, tef_terms);
+            output << "));" << endl;
+          }
+
+        output << "mexCallMATLAB("
+               << "nlhs" << ending.str() << ", "
+               << "plhs" << ending.str() << ", "
+               << "nrhs" << ending.str() << ", "
+               << "prhs" << ending.str() << ", \""
+               << "jacob_element\");" << endl;
+
+        output << "TEFD_fdd_" <<  getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex
+               << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
+      }
+    else
+      {
         tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
         int indx = getIndxInTefTerms(first_deriv_symb_id, tef_terms);
-        output << "double tefd_def_" << indx << "[" << arguments.size() << "];" << endl;
-        output << "call_R_function_jac(\"" 
-                 << datatree.symbol_table.getName(first_deriv_symb_id) << "\", "
-                 << arguments.size() << ", tefd_def_" << indx  << ", ";
-        writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
-        output << ");" << endl;
-    } else {
-      if (first_deriv_symb_id == eExtFunNotSet) {
-        output << "tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" 
-               << inputIndex << ASSIGNMENT_OPERATOR(output_type) << "jacob_element(";
-        if (!IS_R(output_type)) {
-            output << "\"";
-        }
-        output << datatree.symbol_table.getName(symb_id);
-        if (!IS_R(output_type)) {
-            output << "\"";
-        }
-        output << ", " << inputIndex << ", ";
-        if (IS_R(output_type)) {
-            output << " c(";
-        } else  {
-            output << " {";
-        }
-      } else {
-          tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
-          output << "tefd_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
-                 <<  ASSIGNMENT_OPERATOR(output_type) 
-                 << datatree.symbol_table.getName(first_deriv_symb_id) << "(";
+        stringstream ending;
+        ending << "_tefd_def_" << indx;
+        output << "int nlhs" << ending.str() << " = 1;" << endl
+               << "double *TEFD_def_" << indx << ";" << endl
+               << "mxArray *plhs" << ending.str() << "[nlhs"<< ending.str() << "];" << endl
+               << "int nrhs" << ending.str() << " = " << arguments.size() << ";" << endl;
+        writePrhs(output, output_type, temporary_terms, tef_terms, ending.str());
+
+        output << "mexCallMATLAB("
+               << "nlhs" << ending.str() << ", "
+               << "plhs" << ending.str() << ", "
+               << "nrhs" << ending.str() << ", "
+               << "prhs" << ending.str() << ", \""
+               << datatree.symbol_table.getName(first_deriv_symb_id) << "\");" << endl;
+
+        output << "TEFD_def_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
       }
+  else
+    {
+      if (first_deriv_symb_id == eExtFunNotSet)
+        output << "TEFD_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex << " = jacob_element('"
+               << datatree.symbol_table.getName(symb_id) << "'," << inputIndex << ",{";
+      else
+        {
+          tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
+          output << "TEFD_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
+                 << " = " << datatree.symbol_table.getName(first_deriv_symb_id) << "(";
+        }
 
       writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
 
-      if (first_deriv_symb_id == eExtFunNotSet) {
-        if (IS_R(output_type)) {
-            output << ")";
-        } else  {
-            output << "}";
-        }
-      }
-      output << ")";
-      if (!IS_R(output_type)) {
-          output << ";";
-      }
-      output << endl;
+      if (first_deriv_symb_id == eExtFunNotSet)
+        output << "}";
+      output << ");" << endl;
     }
 }
 
@@ -5674,8 +5552,8 @@ expr_t
 SecondDerivExternalFunctionNode::composeDerivatives(const vector<expr_t> &dargs)
 
 {
-  dyn_error("ERROR: third order derivatives of external functions are not implemented");
-  return NULL;
+  cerr << "ERROR: third order derivatives of external functions are not implemented" << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
@@ -5699,9 +5577,9 @@ SecondDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType
   if (it != temporary_terms.end())
     {
       if (output_type == oMatlabDynamicModelSparse)
-        output << "t" << idx << "(it_)";
+        output << "T" << idx << "(it_)";
       else
-        output << "t" << idx;
+        output << "T" << idx;
       return;
     }
 
@@ -5734,10 +5612,6 @@ SecondDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType
     else
       output << "TEFDD_def_" << getIndxInTefTerms(second_deriv_symb_id, tef_terms)
              << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndex1 << "," << tmpIndex2 << RIGHT_ARRAY_SUBSCRIPT(output_type);
-}
-
-void SecondDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    dyn_error("genPolishCode not implemented for this type");
 }
 
 void
@@ -5813,7 +5687,7 @@ SecondDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Ex
         output << "int nlhs" << ending.str() << " = 1;" << endl
                << "double *TEFDD_def_" << indx << ";" << endl
                << "mxArray *plhs" << ending.str() << "[nlhs"<< ending.str() << "];" << endl
-               << "int nrhs" << ending.str() << ASSIGNMENT_OPERATOR(output_type) << arguments.size() << ";" << endl;
+               << "int nrhs" << ending.str() << " = " << arguments.size() << ";" << endl;
         writePrhs(output, output_type, temporary_terms, tef_terms, ending.str());
 
         output << "mexCallMATLAB("
@@ -5835,7 +5709,7 @@ SecondDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Ex
         {
           tef_terms[make_pair(second_deriv_symb_id, arguments)] = (int) tef_terms.size();
           output << "TEFDD_def_" << getIndxInTefTerms(second_deriv_symb_id, tef_terms)
-                 << ASSIGNMENT_OPERATOR(output_type) << datatree.symbol_table.getName(second_deriv_symb_id) << "(";
+                 << " = " << datatree.symbol_table.getName(second_deriv_symb_id) << "(";
         }
 
       writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
@@ -5889,7 +5763,8 @@ SecondDerivExternalFunctionNode::compile(ostream &CompileCode, unsigned int &ins
                                          const map_idx_t &map_idx, bool dynamic, bool steady_dynamic,
                                          deriv_node_temp_terms_t &tef_terms) const
 {
-  dyn_error("SecondDerivExternalFunctionNode::compile: not implemented.");
+  cerr << "SecondDerivExternalFunctionNode::compile: not implemented." << endl;
+  exit(EXIT_FAILURE);
 }
 
 void
@@ -5898,5 +5773,6 @@ SecondDerivExternalFunctionNode::compileExternalFunctionOutput(ostream &CompileC
                                                                const map_idx_t &map_idx, bool dynamic, bool steady_dynamic,
                                                                deriv_node_temp_terms_t &tef_terms) const
 {
-  dyn_error("SecondDerivExternalFunctionNode::compileExternalFunctionOutput: not implemented.");
+  cerr << "SecondDerivExternalFunctionNode::compileExternalFunctionOutput: not implemented." << endl;
+  exit(EXIT_FAILURE);
 }

@@ -79,6 +79,6 @@ namespace MFS
   //! Reorder the recursive variables
   /*! They appear first in a quasi triangular form and they are followed by the feedback variables */
   void Reorder_the_recursive_variables(const AdjacencyList_t &G1, set<int> &feedback_vertices, vector< int> &Reordered_Vertices);
-}
+};
 
 #endif // _MINIMUMFEEDBACKSET_HH

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2016 Dynare Team
+ * Copyright (C) 2003-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -23,7 +23,6 @@
 #include <cassert>
 
 #include "SymbolTable.hh"
-#include "dyn_error.hh"
 
 AuxVarInfo::AuxVarInfo(int symb_id_arg, aux_var_t type_arg, int orig_symb_id_arg, int orig_lead_lag_arg,
                        int equation_number_for_multiplier_arg, int information_set_arg,
@@ -43,7 +42,7 @@ SymbolTable::SymbolTable() : frozen(false), size(0)
 }
 
 int
-SymbolTable::addSymbol(const string &name, SymbolType type, const string &tex_name, const vector<pair<string * , string *> *> *partition_value) throw (AlreadyDeclaredException, FrozenException)
+SymbolTable::addSymbol(const string &name, SymbolType type, const string &tex_name, const vector<pair<string *, string *> *> *partition_value) throw (AlreadyDeclaredException, FrozenException)
 {
   if (frozen)
     throw FrozenException();
@@ -89,7 +88,7 @@ SymbolTable::addSymbol(const string &name, SymbolType type, const string &tex_na
     {
       map<string, string> pmv;
       for (vector<pair<string *, string *> *>::const_iterator it = partition_value->begin();
-       it != partition_value->end(); it++)
+           it != partition_value->end(); it++)
         pmv[*((*it)->first)] = *((*it)->second);
       partition_value_map[id] = pmv;
     }
@@ -110,7 +109,8 @@ SymbolTable::freeze() throw (FrozenException)
 
   frozen = true;
 
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++)
+    {
       int tsi;
       switch (getType(i))
         {
@@ -129,10 +129,6 @@ SymbolTable::freeze() throw (FrozenException)
         case eParameter:
           tsi = param_ids.size();
           param_ids.push_back(i);
-          break;
-        case eExternalFunction:
-          tsi = extfun_ids.size();
-          extfun_ids.push_back(i);
           break;
         default:
           tsi = -1;
@@ -187,109 +183,6 @@ SymbolTable::getID(SymbolType type, int tsid) const throw (UnknownTypeSpecificID
     }
 }
 
-string
-SymbolTable::getName(SymbolType type, int tsid) const throw (UnknownTypeSpecificIDException)
-{
-  int id;
-  switch (type) {
-    case eEndogenous:
-      if (tsid < 0 || tsid >= (int) endo_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = endo_ids[tsid];
-      break;
-    case eExogenous:
-      if (tsid < 0 || tsid >= (int) exo_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else 
-        id = exo_ids[tsid];
-      break;
-    case eExogenousDet:
-      if (tsid < 0 || tsid >= (int) exo_det_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = exo_det_ids[tsid];
-      break;
-    case eParameter:
-      if (tsid < 0 || tsid >= (int) param_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = param_ids[tsid];
-      break;
-    default:
-      throw UnknownTypeSpecificIDException(tsid, type);
-    }
-    return name_table[id];
-}
-
-string SymbolTable::getTeXName(SymbolType type, int tsid) const 
-              throw (UnknownTypeSpecificIDException) {
-  int id;
-  switch (type) {
-    case eEndogenous:
-      if (tsid < 0 || tsid >= (int) endo_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = endo_ids[tsid];
-      break;
-    case eExogenous:
-      if (tsid < 0 || tsid >= (int) exo_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else 
-        id = exo_ids[tsid];
-      break;
-    case eExogenousDet:
-      if (tsid < 0 || tsid >= (int) exo_det_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = exo_det_ids[tsid];
-      break;
-    case eParameter:
-      if (tsid < 0 || tsid >= (int) param_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = param_ids[tsid];
-      break;
-    default:
-      throw UnknownTypeSpecificIDException(tsid, type);
-    }
-    return tex_name_table[id];
-}
-
-string SymbolTable::getLongName(SymbolType type, int tsid) const 
-             throw (UnknownTypeSpecificIDException) {
-  int id;
-  switch (type) {
-    case eEndogenous:
-      if (tsid < 0 || tsid >= (int) endo_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = endo_ids[tsid];
-      break;
-    case eExogenous:
-      if (tsid < 0 || tsid >= (int) exo_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else 
-        id = exo_ids[tsid];
-      break;
-    case eExogenousDet:
-      if (tsid < 0 || tsid >= (int) exo_det_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = exo_det_ids[tsid];
-      break;
-    case eParameter:
-      if (tsid < 0 || tsid >= (int) param_ids.size())
-        throw UnknownTypeSpecificIDException(tsid, type);
-      else
-        id = param_ids[tsid];
-      break;
-    default:
-      throw UnknownTypeSpecificIDException(tsid, type);
-    }
-    return long_name_table[id];
-}
-
 map<string, map<int, string> >
 SymbolTable::getPartitionsForType(enum SymbolType st) const throw (UnknownSymbolIDException)
 {
@@ -322,7 +215,6 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
         output << "M_.exo_names = char(M_.exo_names, '" << getName(exo_ids[id]) << "');" << endl
                << "M_.exo_names_tex = char(M_.exo_names_tex, '" << getTeXName(exo_ids[id]) << "');" << endl
                << "M_.exo_names_long = char(M_.exo_names_long, '" << getLongName(exo_ids[id]) << "');" << endl;
-
 
       map<string, map<int, string> > partitions = getPartitionsForType(eExogenous);
       for (map<string, map<int, string> >::const_iterator it = partitions.begin();
@@ -399,7 +291,7 @@ SymbolTable::writeOutput(ostream &output) const throw (NotYetFrozenException)
                   output << it1->second;
                 output << "' ";
               }
-          output << "};" << endl;
+            output << "};" << endl;
           }
     }
 
@@ -515,7 +407,7 @@ SymbolTable::writeCOutput(ostream &output) const throw (NotYetFrozenException)
     {
       output << "char *exo_names[" << exo_nbr() << "];" << endl;
       for (int id = 0; id < exo_nbr(); id++)
-	output << "exo_names[" << id << "] = \"" << getName(exo_ids[id]) << "\";" << endl;
+        output << "exo_names[" << id << "] = \"" << getName(exo_ids[id]) << "\";" << endl;
     }
 
   output << endl
@@ -524,7 +416,7 @@ SymbolTable::writeCOutput(ostream &output) const throw (NotYetFrozenException)
     {
       output << "char *exo_det_names[" << exo_det_nbr() << "];" << endl;
       for (int id = 0; id < exo_det_nbr(); id++)
-	output << "exo_det_names[" << id << "] = \"" << getName(exo_det_ids[id]) << "\";" << endl;
+        output << "exo_det_names[" << id << "] = \"" << getName(exo_det_ids[id]) << "\";" << endl;
     }
 
   output << endl
@@ -533,7 +425,7 @@ SymbolTable::writeCOutput(ostream &output) const throw (NotYetFrozenException)
     {
       output << "char *endo_names[" << endo_nbr() << "];" << endl;
       for (int id = 0; id < endo_nbr(); id++)
-	output << "endo_names[" << id << "] = \"" << getName(endo_ids[id]) << "\";" << endl;
+        output << "endo_names[" << id << "] = \"" << getName(endo_ids[id]) << "\";" << endl;
     }
 
   output << endl
@@ -542,7 +434,7 @@ SymbolTable::writeCOutput(ostream &output) const throw (NotYetFrozenException)
     {
       output << "char *param_names[" << param_nbr() << "];" << endl;
       for (int id = 0; id < param_nbr(); id++)
-	output << "param_names[" << id << "] = \"" << getName(param_ids[id]) << "\";" << endl;
+        output << "param_names[" << id << "] = \"" << getName(param_ids[id]) << "\";" << endl;
     }
 
   // Write the auxiliary variable table
@@ -551,37 +443,37 @@ SymbolTable::writeCOutput(ostream &output) const throw (NotYetFrozenException)
     {
       output << "struct aux_vars_t *av[" << aux_vars.size() << "];" << endl;
       for (int i = 0; i < (int) aux_vars.size(); i++)
-	{
-	  output << "av[" << i << "].endo_index = " << getTypeSpecificID(aux_vars[i].get_symb_id()) << ";" << endl
-		 << "av[" << i << "].type = " << aux_vars[i].get_type() << ";" << endl;
-	  switch (aux_vars[i].get_type())
-	    {
-	    case avEndoLead:
-	    case avExoLead:
-	    case avExpectation:
-	    case avMultiplier:
-	    case avDiffForward:
-	      break;
-	    case avEndoLag:
-	    case avExoLag:
-	      output << "av[" << i << "].orig_index = " << getTypeSpecificID(aux_vars[i].get_orig_symb_id()) << ";" << endl
-		     << "av[" << i << "].orig_lead_lag = " << aux_vars[i].get_orig_lead_lag() << ";" << endl;
-	      break;
-	    }
-	}
+        {
+          output << "av[" << i << "].endo_index = " << getTypeSpecificID(aux_vars[i].get_symb_id()) << ";" << endl
+                 << "av[" << i << "].type = " << aux_vars[i].get_type() << ";" << endl;
+          switch (aux_vars[i].get_type())
+            {
+            case avEndoLead:
+            case avExoLead:
+            case avExpectation:
+            case avMultiplier:
+            case avDiffForward:
+              break;
+            case avEndoLag:
+            case avExoLag:
+              output << "av[" << i << "].orig_index = " << getTypeSpecificID(aux_vars[i].get_orig_symb_id()) << ";" << endl
+                     << "av[" << i << "].orig_lead_lag = " << aux_vars[i].get_orig_lead_lag() << ";" << endl;
+              break;
+            }
+        }
     }
 
   output << "int predeterminedNbr = " << predeterminedNbr() << ";" << endl;
   if (predeterminedNbr() > 0)
     {
-      output << "int predetermined_variables[" << predeterminedNbr() << "] = {"; 
+      output << "int predetermined_variables[" << predeterminedNbr() << "] = {";
       for (set<int>::const_iterator it = predetermined_variables.begin();
-	   it != predetermined_variables.end(); it++)
-	{
-	  if ( it != predetermined_variables.begin() )
-	    output << ",";
-	  output << getTypeSpecificID(*it);
-	}
+           it != predetermined_variables.end(); it++)
+        {
+          if (it != predetermined_variables.begin())
+            output << ",";
+          output << getTypeSpecificID(*it);
+        }
       output << "};" << endl;
     }
 
@@ -590,13 +482,13 @@ SymbolTable::writeCOutput(ostream &output) const throw (NotYetFrozenException)
     {
       output << "int varobs[" << observedVariablesNbr() << "] = {";
       for (vector<int>::const_iterator it = varobs.begin();
-	   it != varobs.end(); it++)
-	{
-	  if ( it != varobs.begin() )
-	    output << ",";
-	  output << getTypeSpecificID(*it);
-	}
-      output  << "};" << endl;
+           it != varobs.end(); it++)
+        {
+          if (it != varobs.begin())
+            output << ",";
+          output << getTypeSpecificID(*it);
+        }
+      output << "};" << endl;
     }
 }
 
@@ -658,46 +550,61 @@ SymbolTable::writeCCOutput(ostream &output) const throw (NotYetFrozenException)
     output << "varobs.push_back(" << getTypeSpecificID(*it) << ");" << endl;
 }
 
-int SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, 
-                 int orig_lead_lag, expr_t expr_arg) throw (FrozenException) {
+int
+SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int index, expr_t expr_arg) throw (FrozenException)
+{
   ostringstream varname;
-  varname << name_table[orig_symb_id] << "_lead_" << orig_lead_lag;
+  if (endo)
+    varname << "AUX_ENDO_LEAD_";
+  else
+    varname << "AUX_EXO_LEAD_";
+  varname << index;
   int symb_id;
-  try {
+  try
+    {
       symb_id = addSymbol(varname.str(), eEndogenous);
-  } catch (AlreadyDeclaredException &e) {
-      dyn_error("ERROR: you should rename your variable called " + 
-              varname.str() + ", this name is internally used by Dynare");
-  }
+    }
+  catch (AlreadyDeclaredException &e)
+    {
+      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
+      exit(EXIT_FAILURE);
+    }
 
-  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLead : avExoLead), 
-              orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
+  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLead : avExoLead), 0, 0, 0, 0, expr_arg));
 
   return symb_id;
 }
 
-int SymbolTable::addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, 
-        int orig_lead_lag, expr_t expr_arg) throw (FrozenException) {
+int
+SymbolTable::addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t expr_arg) throw (FrozenException)
+{
   ostringstream varname;
-
-  varname << name_table[orig_symb_id] << "_lag_" << -orig_lead_lag;
+  if (endo)
+    varname << "AUX_ENDO_LAG_";
+  else
+    varname << "AUX_EXO_LAG_";
+  varname << orig_symb_id << "_" << -orig_lead_lag;
 
   int symb_id;
-  try {
+  try
+    {
       symb_id = addSymbol(varname.str(), eEndogenous);
-  } catch (AlreadyDeclaredException &e) {
-      dyn_error("ERROR: you should rename your variable called " + varname.str() + 
-              ", this name is internally used by Dynare");
-  }
+    }
+  catch (AlreadyDeclaredException &e)
+    {
+      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
+      exit(EXIT_FAILURE);
+    }
 
   aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLag : avExoLag), orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
 
   return symb_id;
 }
 
-int SymbolTable::addEndoLeadAuxiliaryVar(int orig_symb_id, int orig_lead_lag, 
-                  expr_t expr_arg) throw (FrozenException) {
-  return addLeadAuxiliaryVarInternal(true, orig_symb_id, orig_lead_lag, expr_arg);
+int
+SymbolTable::addEndoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenException)
+{
+  return addLeadAuxiliaryVarInternal(true, index, expr_arg);
 }
 
 int
@@ -709,7 +616,7 @@ SymbolTable::addEndoLagAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t 
 int
 SymbolTable::addExoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenException)
 {
-  return addLeadAuxiliaryVarInternal(false, index, 0, expr_arg);
+  return addLeadAuxiliaryVarInternal(false, index, expr_arg);
 }
 
 int
@@ -733,7 +640,8 @@ SymbolTable::addExpectationAuxiliaryVar(int information_set, int index, expr_t e
     }
   catch (AlreadyDeclaredException &e)
     {
-      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
+      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
+      exit(EXIT_FAILURE);
     }
 
   aux_vars.push_back(AuxVarInfo(symb_id, avExpectation, 0, 0, 0, information_set, expr_arg));
@@ -754,7 +662,8 @@ SymbolTable::addMultiplierAuxiliaryVar(int index) throw (FrozenException)
     }
   catch (AlreadyDeclaredException &e)
     {
-      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
+      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
+      exit(EXIT_FAILURE);
     }
 
   aux_vars.push_back(AuxVarInfo(symb_id, avMultiplier, 0, 0, index, 0, NULL));
@@ -774,7 +683,8 @@ SymbolTable::addDiffForwardAuxiliaryVar(int orig_symb_id, expr_t expr_arg) throw
     }
   catch (AlreadyDeclaredException &e)
     {
-      dyn_error("ERROR: you should rename your variable called " + varname.str() + ", this name is internally used by Dynare");
+      cerr << "ERROR: you should rename your variable called " << varname.str() << ", this name is internally used by Dynare" << endl;
+      exit(EXIT_FAILURE);
     }
 
   aux_vars.push_back(AuxVarInfo(symb_id, avDiffForward, orig_symb_id, 0, 0, 0, expr_arg));
@@ -1017,37 +927,25 @@ SymbolTable::writeJuliaOutput(ostream &output) const throw (NotYetFrozenExceptio
       output << "]" << endl;
     }
 
-    if (predeterminedNbr() > 0)
-      {
-        output << "# Predetermined Variables" << endl
-               << "model_.pred_vars = [ " << endl;
-        for (set<int>::const_iterator it = predetermined_variables.begin();
-             it != predetermined_variables.end(); it++)
-          output << "                   DynareModel.PredVars("
-                 << getTypeSpecificID(*it)+1 << ")" << endl;
-        output << "                  ]" << endl;
-      }
+  if (predeterminedNbr() > 0)
+    {
+      output << "# Predetermined Variables" << endl
+             << "model_.pred_vars = [ " << endl;
+      for (set<int>::const_iterator it = predetermined_variables.begin();
+           it != predetermined_variables.end(); it++)
+        output << "                   DynareModel.PredVars("
+               << getTypeSpecificID(*it)+1 << ")" << endl;
+      output << "                  ]" << endl;
+    }
 
-    if (observedVariablesNbr() > 0)
-      {
-        output << "# Observed Variables" << endl
-               << "options_.obs_vars = [" << endl;
-        for (vector<int>::const_iterator it = varobs.begin();
-             it != varobs.end(); it++)
-          output << "                    DynareModel.ObsVars("
-                 << getTypeSpecificID(*it)+1 << ")" << endl;
-        output << "                   ]" << endl;
-      }
-}
-
-int SymbolTable::get_aux_endo(int i) const {
-    return getTypeSpecificID(aux_vars[i].get_symb_id()) + 1;
-}
-
-int SymbolTable::get_aux_orig_endo(int i) const {
-    return getTypeSpecificID(aux_vars[i].get_orig_symb_id()) + 1;
-}
-
-int SymbolTable::get_aux_orig_lead_lag(int i) const {
-    return aux_vars[i].get_orig_lead_lag();
+  if (observedVariablesNbr() > 0)
+    {
+      output << "# Observed Variables" << endl
+             << "options_.obs_vars = [" << endl;
+      for (vector<int>::const_iterator it = varobs.begin();
+           it != varobs.end(); it++)
+        output << "                    DynareModel.ObsVars("
+               << getTypeSpecificID(*it)+1 << ")" << endl;
+      output << "                   ]" << endl;
+    }
 }
