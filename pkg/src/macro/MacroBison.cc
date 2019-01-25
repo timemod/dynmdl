@@ -759,78 +759,83 @@ namespace Macro {
 
   case 23:
 #line 153 "MacroBison.yy" // lalr1.cc:859
-    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) / *(yystack_[0].value.mv), yylhs.location); }
-#line 764 "MacroBison.cc" // lalr1.cc:859
+    {
+         if (dynamic_cast<const IntMV *>((yystack_[0].value.mv)) != NULL
+             && ((IntMV *)(yystack_[0].value.mv))->get_int_value() == 0)
+           driver.error(yylhs.location, "Division by zero");
+         TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) / *(yystack_[0].value.mv), yylhs.location);
+       }
+#line 769 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 24:
-#line 155 "MacroBison.yy" // lalr1.cc:859
+#line 160 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) < *(yystack_[0].value.mv), yylhs.location); }
-#line 770 "MacroBison.cc" // lalr1.cc:859
+#line 775 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 25:
-#line 157 "MacroBison.yy" // lalr1.cc:859
+#line 162 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) > *(yystack_[0].value.mv), yylhs.location); }
-#line 776 "MacroBison.cc" // lalr1.cc:859
+#line 781 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 26:
-#line 159 "MacroBison.yy" // lalr1.cc:859
+#line 164 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) <= *(yystack_[0].value.mv), yylhs.location); }
-#line 782 "MacroBison.cc" // lalr1.cc:859
+#line 787 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 27:
-#line 161 "MacroBison.yy" // lalr1.cc:859
+#line 166 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) >= *(yystack_[0].value.mv), yylhs.location); }
-#line 788 "MacroBison.cc" // lalr1.cc:859
+#line 793 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 28:
-#line 163 "MacroBison.yy" // lalr1.cc:859
+#line 168 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) == *(yystack_[0].value.mv), yylhs.location); }
-#line 794 "MacroBison.cc" // lalr1.cc:859
+#line 799 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 29:
-#line 165 "MacroBison.yy" // lalr1.cc:859
+#line 170 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) != *(yystack_[0].value.mv), yylhs.location); }
-#line 800 "MacroBison.cc" // lalr1.cc:859
+#line 805 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 30:
-#line 167 "MacroBison.yy" // lalr1.cc:859
+#line 172 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) || *(yystack_[0].value.mv), yylhs.location); }
-#line 806 "MacroBison.cc" // lalr1.cc:859
+#line 811 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 31:
-#line 169 "MacroBison.yy" // lalr1.cc:859
+#line 174 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) && *(yystack_[0].value.mv), yylhs.location); }
-#line 812 "MacroBison.cc" // lalr1.cc:859
+#line 817 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 32:
-#line 171 "MacroBison.yy" // lalr1.cc:859
+#line 176 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = -*(yystack_[0].value.mv), yylhs.location); }
-#line 818 "MacroBison.cc" // lalr1.cc:859
+#line 823 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 33:
-#line 173 "MacroBison.yy" // lalr1.cc:859
+#line 178 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = +(*(yystack_[0].value.mv)), yylhs.location); }
-#line 824 "MacroBison.cc" // lalr1.cc:859
+#line 829 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 34:
-#line 175 "MacroBison.yy" // lalr1.cc:859
+#line 180 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = !*(yystack_[0].value.mv), yylhs.location); }
-#line 830 "MacroBison.cc" // lalr1.cc:859
+#line 835 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 35:
-#line 177 "MacroBison.yy" // lalr1.cc:859
+#line 182 "MacroBison.yy" // lalr1.cc:859
     {
          TYPERR_CATCH((yylhs.value.mv) = (*(yystack_[3].value.mv))[*(yystack_[1].value.mv)], yylhs.location)
          catch(MacroValue::OutOfBoundsError)
@@ -838,41 +843,41 @@ namespace Macro {
              error(yylhs.location, "Index out of bounds");
            }
        }
-#line 842 "MacroBison.cc" // lalr1.cc:859
+#line 847 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 36:
-#line 185 "MacroBison.yy" // lalr1.cc:859
+#line 190 "MacroBison.yy" // lalr1.cc:859
     { (yylhs.value.mv) = (yystack_[1].value.mv); }
-#line 848 "MacroBison.cc" // lalr1.cc:859
+#line 853 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 37:
-#line 187 "MacroBison.yy" // lalr1.cc:859
+#line 192 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = IntMV::new_range(driver, (yystack_[2].value.mv), (yystack_[0].value.mv)), yylhs.location); }
-#line 854 "MacroBison.cc" // lalr1.cc:859
+#line 859 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 38:
-#line 189 "MacroBison.yy" // lalr1.cc:859
+#line 194 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = (yystack_[2].value.mv)->in((yystack_[0].value.mv)), yylhs.location); }
-#line 860 "MacroBison.cc" // lalr1.cc:859
+#line 865 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 39:
-#line 193 "MacroBison.yy" // lalr1.cc:859
+#line 198 "MacroBison.yy" // lalr1.cc:859
     { (yylhs.value.mv) = (yystack_[0].value.mv)->toArray(); }
-#line 866 "MacroBison.cc" // lalr1.cc:859
+#line 871 "MacroBison.cc" // lalr1.cc:859
     break;
 
   case 40:
-#line 195 "MacroBison.yy" // lalr1.cc:859
+#line 200 "MacroBison.yy" // lalr1.cc:859
     { TYPERR_CATCH((yylhs.value.mv) = (yystack_[0].value.mv)->append((yystack_[2].value.mv)), yylhs.location); }
-#line 872 "MacroBison.cc" // lalr1.cc:859
+#line 877 "MacroBison.cc" // lalr1.cc:859
     break;
 
 
-#line 876 "MacroBison.cc" // lalr1.cc:859
+#line 881 "MacroBison.cc" // lalr1.cc:859
             default:
               break;
             }
@@ -1127,22 +1132,22 @@ namespace Macro {
   }
 
 
-  const signed char parser::yypact_ninf_ = -21;
+  const signed char parser::yypact_ninf_ = -15;
 
   const signed char parser::yytable_ninf_ = -1;
 
   const short int
   parser::yypact_[] =
   {
-      58,   -20,    18,    36,   166,   166,   166,    45,    51,   166,
-     166,    61,   -21,   -21,   -21,   166,   166,   166,    76,    58,
-      63,    78,    59,    62,    79,    78,    78,    78,   -21,   -21,
-      -5,    78,   -10,   166,    70,    70,    70,   -21,    68,   -21,
-     166,   166,   166,   166,   166,   166,   166,   166,   166,   166,
-     166,   166,   166,   166,   166,   166,   -21,   166,   -21,   -21,
-     166,   -12,   -21,     2,    42,   110,   142,    84,    84,    84,
-      84,    84,    84,   116,    -3,    -3,    70,    70,    78,    78,
-      78,   -21,   -21
+      54,   -14,    -5,    -3,   227,   227,   227,     3,     4,   227,
+     227,     1,   -15,   -15,   -15,   227,   227,   227,    30,    54,
+      33,   139,    36,    34,    56,   139,   139,   139,   -15,   -15,
+      75,   139,    -8,   227,    44,    44,    44,   -15,    50,   -15,
+     227,   227,   227,   227,   227,   227,   227,   227,   227,   227,
+     227,   227,   227,   227,   227,   227,   -15,   227,   -15,   -15,
+     227,   107,   -15,    -2,    -7,   171,   203,    81,    81,    81,
+      81,    81,    81,   -13,    -9,    -9,    44,    44,   139,   139,
+     139,   -15,   -15
   };
 
   const unsigned char
@@ -1162,65 +1167,77 @@ namespace Macro {
   const signed char
   parser::yypgoto_[] =
   {
-     -21,   -21,   -21,    69,     0,    23
+     -15,   -15,   -15,    52,    -4,    22
   };
 
   const signed char
   parser::yydefgoto_[] =
   {
-      -1,    18,    19,    20,    31,    32
+      -1,    18,    19,    20,    21,    32
   };
 
   const signed char
   parser::yytable_[] =
   {
-      21,    40,    22,    81,    25,    26,    27,    59,    -1,    30,
-      58,    41,    60,    41,    60,    34,    35,    36,    41,    21,
+      25,    26,    27,    41,    -1,    30,    31,    41,    22,    59,
+      82,    34,    35,    36,    41,    33,    60,    60,    23,    24,
+      -1,    51,    52,    53,    54,    28,    29,    53,    54,    61,
+      37,    50,    51,    52,    53,    54,    63,    31,    65,    66,
+      67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+      77,    78,    39,    79,    55,    56,    80,     1,     2,     3,
+      41,     4,    57,    64,     5,     6,     7,     8,     9,    62,
+      10,    38,     0,     0,    11,    12,    13,    14,     0,     0,
+       0,    40,     0,     0,     0,     0,     0,    40,    15,    16,
+      58,    41,     0,     0,    17,     0,     0,    41,     0,     0,
       42,    43,    44,    45,    46,    47,    48,    49,    50,    51,
-      52,    53,    54,    53,    54,    50,    51,    52,    53,    54,
-      63,    23,    65,    66,    67,    68,    69,    70,    71,    72,
-      73,    74,    75,    76,    77,    78,    61,    79,    24,    82,
-      80,     1,     2,     3,    64,     4,    60,    28,     5,     6,
-       7,     8,     9,    29,    10,    33,    37,    55,    11,    12,
-      13,    14,    39,    56,    40,    57,    41,    62,    38,     0,
-      40,     0,    15,    16,    41,     0,     0,     0,    17,     0,
-      41,     0,     0,    42,    43,    44,    45,    46,    47,    48,
-      49,    50,    51,    52,    53,    54,    40,    50,    51,    52,
-      53,    54,     0,     0,     0,     0,    41,     0,     0,     0,
-       0,     0,    41,     0,     0,     0,    43,    44,    45,    46,
-      47,    48,    49,    50,    51,    52,    53,    54,    40,    -1,
-      51,    52,    53,    54,     0,     0,     0,     0,    41,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    44,
-      45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
-       9,     0,    10,     0,     0,     0,    11,    12,    13,    14,
+      52,    53,    54,    40,    50,    51,    52,    53,    54,     0,
+       0,     0,    81,    41,     0,     0,     0,     0,     0,     0,
+       0,     0,    42,    43,    44,    45,    46,    47,    48,    49,
+      50,    51,    52,    53,    54,    40,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,    41,     0,     0,     0,     0,
+       0,     0,     0,     0,    42,    43,    44,    45,    46,    47,
+      48,    49,    50,    51,    52,    53,    54,    40,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    41,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    43,    44,    45,
+      46,    47,    48,    49,    50,    51,    52,    53,    54,    40,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    41,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      15,    16,     0,     0,     0,     0,    17
+      44,    45,    46,    47,    48,    49,    50,    51,    52,    53,
+      54,     9,     0,    10,     0,     0,     0,    11,    12,    13,
+      14,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,    15,    16,     0,     0,     0,     0,    17
   };
 
   const signed char
   parser::yycheck_[] =
   {
-       0,     6,    22,    15,     4,     5,     6,    17,     6,     9,
-      15,    16,    24,    16,    24,    15,    16,    17,    16,    19,
+       4,     5,     6,    16,     6,     9,    10,    16,    22,    17,
+      17,    15,    16,    17,    16,    14,    24,    24,    23,    22,
+      33,    34,    35,    36,    37,    22,    22,    36,    37,    33,
+       0,    33,    34,    35,    36,    37,    40,    41,    42,    43,
+      44,    45,    46,    47,    48,    49,    50,    51,    52,    53,
+      54,    55,    19,    57,    18,    21,    60,     3,     4,     5,
+      16,     7,     6,    41,    10,    11,    12,    13,    14,    19,
+      16,    19,    -1,    -1,    20,    21,    22,    23,    -1,    -1,
+      -1,     6,    -1,    -1,    -1,    -1,    -1,     6,    34,    35,
+      15,    16,    -1,    -1,    40,    -1,    -1,    16,    -1,    -1,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    36,    37,    33,    34,    35,    36,    37,
-      40,    23,    42,    43,    44,    45,    46,    47,    48,    49,
-      50,    51,    52,    53,    54,    55,    33,    57,    22,    17,
-      60,     3,     4,     5,    41,     7,    24,    22,    10,    11,
-      12,    13,    14,    22,    16,    14,     0,    18,    20,    21,
-      22,    23,    19,    21,     6,     6,    16,    19,    19,    -1,
-       6,    -1,    34,    35,    16,    -1,    -1,    -1,    40,    -1,
-      16,    -1,    -1,    25,    26,    27,    28,    29,    30,    31,
-      32,    33,    34,    35,    36,    37,     6,    33,    34,    35,
-      36,    37,    -1,    -1,    -1,    -1,    16,    -1,    -1,    -1,
-      -1,    -1,    16,    -1,    -1,    -1,    26,    27,    28,    29,
-      30,    31,    32,    33,    34,    35,    36,    37,     6,    33,
-      34,    35,    36,    37,    -1,    -1,    -1,    -1,    16,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    27,
-      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
-      14,    -1,    16,    -1,    -1,    -1,    20,    21,    22,    23,
+      35,    36,    37,     6,    33,    34,    35,    36,    37,    -1,
+      -1,    -1,    15,    16,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    25,    26,    27,    28,    29,    30,    31,    32,
+      33,    34,    35,    36,    37,     6,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    16,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    25,    26,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    37,     6,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    16,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    26,    27,    28,
+      29,    30,    31,    32,    33,    34,    35,    36,    37,     6,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    16,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      34,    35,    -1,    -1,    -1,    -1,    40
+      27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+      37,    14,    -1,    16,    -1,    -1,    -1,    20,    21,    22,
+      23,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    34,    35,    -1,    -1,    -1,    -1,    40
   };
 
   const unsigned char
@@ -1232,7 +1249,7 @@ namespace Macro {
       45,    45,    46,    14,    45,    45,    45,     0,    44,    19,
        6,    16,    25,    26,    27,    28,    29,    30,    31,    32,
       33,    34,    35,    36,    37,    18,    21,     6,    15,    17,
-      24,    46,    19,    45,    46,    45,    45,    45,    45,    45,
+      24,    45,    19,    45,    46,    45,    45,    45,    45,    45,
       45,    45,    45,    45,    45,    45,    45,    45,    45,    45,
       45,    15,    17
   };
@@ -1280,9 +1297,9 @@ namespace Macro {
   {
        0,    98,    98,    99,   102,   103,   106,   108,   110,   112,
      114,   116,   118,   120,   122,   126,   128,   130,   142,   144,
-     146,   148,   150,   152,   154,   156,   158,   160,   162,   164,
-     166,   168,   170,   172,   174,   176,   184,   186,   188,   192,
-     194
+     146,   148,   150,   152,   159,   161,   163,   165,   167,   169,
+     171,   173,   175,   177,   179,   181,   189,   191,   193,   197,
+     199
   };
 
   // Print the state stack on the debug stream.
@@ -1367,8 +1384,8 @@ namespace Macro {
 
 
 } // Macro
-#line 1371 "MacroBison.cc" // lalr1.cc:1167
-#line 198 "MacroBison.yy" // lalr1.cc:1168
+#line 1388 "MacroBison.cc" // lalr1.cc:1167
+#line 203 "MacroBison.yy" // lalr1.cc:1168
 
 
 void

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2013 Dynare Team
+ * Copyright (C) 2008-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -49,7 +49,8 @@ public:
   {
   };
   MacroValue(MacroDriver &driver_arg);
-  virtual ~MacroValue();
+  virtual
+  ~MacroValue();
   //! Applies + operator
   virtual const MacroValue *operator+(const MacroValue &mv) const throw (TypeError) = 0;
   //! Applies unary + operator
@@ -118,7 +119,8 @@ private:
   const int value;
 public:
   IntMV(MacroDriver &driver, int value_arg);
-  virtual ~IntMV();
+  virtual
+  ~IntMV();
   //! Computes arithmetic addition
   virtual const MacroValue *operator+(const MacroValue &mv) const throw (TypeError);
   //! Unary plus
@@ -158,6 +160,11 @@ public:
     If mv2 < mv1, returns an empty range (for consistency with MATLAB).
   */
   static const MacroValue *new_range(MacroDriver &driver, const MacroValue *mv1, const MacroValue *mv2) throw (TypeError);
+  inline int
+  get_int_value() const
+  {
+    return value;
+  };
 };
 
 //! Represents a string value in macro language
@@ -169,7 +176,8 @@ private:
   const string value;
 public:
   StringMV(MacroDriver &driver, const string &value_arg);
-  virtual ~StringMV();
+  virtual
+  ~StringMV();
   //! Computes string concatenation
   virtual const MacroValue *operator+(const MacroValue &mv) const throw (TypeError);
   virtual const MacroValue *operator==(const MacroValue &mv) const throw (TypeError);
@@ -186,6 +194,7 @@ public:
   /*! The first argument must be a string array. Returns a string array. */
   virtual const MacroValue *append(const MacroValue *array) const throw (TypeError);
   virtual const MacroValue *in(const MacroValue *array) const throw (TypeError);
+  virtual const MacroValue *length() const throw (TypeError);
 };
 
 //! Represents an array in macro language
@@ -201,7 +210,8 @@ private:
   const vector<T> values;
 public:
   ArrayMV(MacroDriver &driver, const vector<T> &values_arg);
-  virtual ~ArrayMV();
+  virtual
+  ~ArrayMV();
   //! Computes array concatenation
   /*! Both array must be of same type */
   virtual const MacroValue *operator+(const MacroValue &mv) const throw (TypeError);

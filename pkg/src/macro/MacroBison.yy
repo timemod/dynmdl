@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 Dynare Team
+ * Copyright (C) 2008-2016 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -139,7 +139,7 @@ expr : INTEGER
            }
          delete $1;
        }
-     | LENGTH LPAREN array_expr RPAREN
+     | LENGTH LPAREN expr RPAREN
        { TYPERR_CATCH($$ = $3->length(), @$); }
      | LPAREN expr RPAREN
        { $$ = $2; }
@@ -150,7 +150,12 @@ expr : INTEGER
      | expr TIMES expr
        { TYPERR_CATCH($$ = *$1 * *$3, @$); }
      | expr DIVIDE expr
-       { TYPERR_CATCH($$ = *$1 / *$3, @$); }
+       {
+         if (dynamic_cast<const IntMV *>($3) != NULL
+             && ((IntMV *)$3)->get_int_value() == 0)
+           driver.error(@$, "Division by zero");
+         TYPERR_CATCH($$ = *$1 / *$3, @$);
+       }
      | expr LESS expr
        { TYPERR_CATCH($$ = *$1 < *$3, @$); }
      | expr GREATER expr

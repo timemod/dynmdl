@@ -501,7 +501,7 @@ namespace Macro {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 206,     ///< Last index in yytable_.
+      yylast_ = 267,     ///< Last index in yytable_.
       yynnts_ = 6,  ///< Number of nonterminal symbols.
       yyfinal_ = 37, ///< Termination state number.
       yyterror_ = 1,

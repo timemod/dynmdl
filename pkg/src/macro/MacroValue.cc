@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2013 Dynare Team
+ * Copyright (C) 2008-2014 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -435,4 +435,10 @@ StringMV::in(const MacroValue *array) const throw (TypeError)
       }
 
   return new IntMV(driver, result);
+}
+
+const MacroValue *
+StringMV::length() const throw (TypeError)
+{
+  return new IntMV(driver, value.length());
 }
