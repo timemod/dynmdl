@@ -25,6 +25,8 @@
 #include <cerrno>
 #include <algorithm>
 #include "StaticModel.hh"
+#include "dyn_error.hh"
+#include "dynout.hh"
 
 // For mkdir() and chdir()
 #ifdef _WIN32
@@ -341,8 +343,9 @@ StaticModel::writeModelEquationsOrdered_M(const string &static_basename) const
                 }
               else
                 {
-                  cerr << "Type mismatch for equation " << equation_ID+1  << "\n";
-                  exit(EXIT_FAILURE);
+                  std::ostringstream msg;
+                  msg << "Type mismatch for equation " << equation_ID+1  << "\n";
+                  dyn_error(msg);
                 }
               output << ";\n";
               break;
@@ -412,8 +415,7 @@ StaticModel::writeModelEquationsCode(const string file_name, const string bin_ba
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
   if (!code_file.is_open())
     {
-      cerr << "Error : Can't open file \"" << main_name << "\" for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
     }
   int count_u;
   int u_count_int = 0;
@@ -596,8 +598,7 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
   if (!code_file.is_open())
     {
-      cerr << "Error : Can't open file \"" << main_name << "\" for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
     }
   //Temporary variables declaration
 
@@ -990,8 +991,8 @@ StaticModel::Write_Inf_To_Bin_File_Block(const string &static_basename, const st
     SaveCode.open((bin_basename + "_static.bin").c_str(), ios::out | ios::binary);
   if (!SaveCode.is_open())
     {
-      cerr << "Error : Can't open file \"" << bin_basename << "_static.bin\" for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + bin_basename + 
+                "_static.bin\" for writing\n");
     }
   u_count_int = 0;
   unsigned int block_size = getBlockSize(num);
@@ -1077,7 +1078,7 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
     }
 
   // Launch computations
-  cout << "Computing static model derivatives:" << endl
+  DynOut << "Computing static model derivatives:" << endl
        << " - order 1" << endl;
   first_derivatives.clear();
 
@@ -1085,19 +1086,19 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
 
   if (hessian)
     {
-      cout << " - order 2" << endl;
+      DynOut << " - order 2" << endl;
       computeHessian(vars);
     }
 
   if (thirdDerivatives)
     {
-      cout << " - order 3" << endl;
+      DynOut << " - order 3" << endl;
       computeThirdDerivatives(vars);
     }
 
   if (paramsDerivsOrder > 0)
     {
-      cout << " - derivatives of Jacobian/Hessian w.r. to parameters" << endl;
+      DynOut << " - derivatives of Jacobian/Hessian w.r. to parameters" << endl;
       computeParamsDerivatives(paramsDerivsOrder);
 
       if (!no_tmp_terms)
@@ -1122,7 +1123,7 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
 
       equation_type_and_normalized_equation = equationTypeDetermination(first_order_endo_derivatives, variable_reordered, equation_reordered, mfs);
 
-      cout << "Finding the optimal block decomposition of the model ...\n";
+      DynOut << "Finding the optimal block decomposition of the model ...\n";
 
       lag_lead_vector_t equation_lag_lead, variable_lag_lead;
 
@@ -1163,8 +1164,7 @@ StaticModel::writeStaticMFile(const string &func_name) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file \"" + filename + "\n for writing\n");
     }
 
   output << "function [residual, g1, g2, g3] = " << func_name + "_static(y, x, params)" << endl
@@ -1595,8 +1595,7 @@ StaticModel::writeStaticCFile(const string &func_name) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
     }
 
   output << "/*" << endl
@@ -1614,7 +1613,11 @@ StaticModel::writeStaticCFile(const string &func_name) const
 
   if (external_functions_table.get_total_number_of_unique_model_block_external_functions())
     // External Matlab function, implies Static function will call mex
+#ifdef USE_R
+   output << "#include \"call_R_function.h\"" << endl;
+#else
     output << "#include \"mex.h\"" << endl;
+#endif
   else
     output << "#include <stdlib.h>" << endl;
 
@@ -1633,11 +1636,12 @@ StaticModel::writeStaticCFile(const string &func_name) const
   writeNormcdf(output);
   output.close();
 
+#ifndef USE_R
   output.open(filename_mex.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename_mex << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file \"" + filename_mex + 
+                "\" for writing\n");
     }
 
   // Writing the gateway routine
@@ -1699,6 +1703,7 @@ StaticModel::writeStaticCFile(const string &func_name) const
          << "  Static(y, x, nb_row_x, params, residual, g1, v2);" << endl
          << "}" << endl << endl;
   output.close();
+#endif
 }
 
 void
@@ -1709,8 +1714,7 @@ StaticModel::writeStaticJuliaFile(const string &basename) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
     }
 
   output << "module " << basename << "Static" << endl
@@ -1738,8 +1742,7 @@ StaticModel::writeStaticFile(const string &basename, bool block, bool bytecode, 
 #endif
   if (r < 0 && errno != EEXIST)
     {
-      perror("ERROR");
-      exit(EXIT_FAILURE);
+        dyn_error("ERROR: " + string(std::strerror(errno)) + "\n");
     }
   if (block && bytecode)
     writeModelEquationsCode_Block(basename + "_static", basename, map_idx, map_idx2);
@@ -1779,8 +1782,7 @@ StaticModel::writeStaticBlockMFSFile(const string &basename) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
     }
 
   string func_name = basename + "_static";
@@ -2139,8 +2141,7 @@ StaticModel::writeSetAuxiliaryVariables(const string &basename, const bool julia
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
     }
 
   output << "function y = " << func_name + "(y, x, params)" << endl
@@ -2315,8 +2316,7 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
   paramsDerivsFile.open(filename.c_str(), ios::out | ios::binary);
   if (!paramsDerivsFile.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
     }
 
   if (!julia)
@@ -2412,3 +2412,44 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
 
   paramsDerivsFile.close();
 }
+
+#ifdef USE_R
+Rcpp::List StaticModel::getStaticModelR(bool internal_calc) const {
+
+    // function body
+    Rcpp::String static_functions;
+    if (!internal_calc) {
+        std::ostringstream statout;
+        writeStaticModel(statout, oRStaticModel);
+        static_functions = Rcpp::String(statout.str());
+    }
+
+    return Rcpp::List::create(
+             Rcpp::Named("jac_size") = (int) first_derivatives.size(),
+             Rcpp::Named("static_functions")  = static_functions);
+}
+
+PolishModel* StaticModel::makePolishModel(ExternalFunctionCalc *ext_calc) const {
+
+    PolishModel* mdl = new PolishModel(symbol_table.endo_nbr(), 
+                                       first_derivatives.size(),
+                                       num_constants.get_double_vals(),
+                                       ext_calc);
+    
+    // model equations
+    genPolishEquations(*mdl, false);
+
+    // first derivatives
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        int eq = it->first.first;
+        int col = it->first.second;
+        mdl->new_jac_equation(eq, col);
+        expr_t d1 = it->second;
+        d1->genPolishCode(*mdl, false);
+    }
+
+    return mdl;
+}
+
+#endif

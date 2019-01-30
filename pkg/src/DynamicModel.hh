@@ -27,6 +27,10 @@ using namespace std;
 #include <boost/crc.hpp>
 
 #include "StaticModel.hh"
+#ifdef USE_R
+#include <Rcpp.h>
+#endif
+
 
 //! Stores a dynamic model
 class DynamicModel : public ModelTree
@@ -515,6 +519,12 @@ public:
   void writeThirdDerivativesC_csr(const string &basename, bool cuda) const;
 
   bool isChecksumMatching(const string &basename) const;
+
+#ifdef USE_R
+   Rcpp::List getDynamicModelR(bool internal_calc) const;
+   Rcpp::List getDerivativeInfoR() const;
+#endif
+
 };
 
 inline bool

@@ -26,6 +26,9 @@
 #include <algorithm>
 #include <iterator>
 #include "DynamicModel.hh"
+#include "dyn_error.hh"
+#include "dynout.hh"
+#include "PolishModel.hh"
 
 // For mkdir() and chdir()
 #ifdef _WIN32
@@ -510,8 +513,9 @@ DynamicModel::writeModelEquationsOrdered_M(const string &dynamic_basename) const
                 }
               else
                 {
-                  cerr << "Type mismatch for equation " << equation_ID+1  << "\n";
-                  exit(EXIT_FAILURE);
+                  std::ostringstream msg;
+                  msg << "Type missmatch for equation " << equation_ID+1  << "\n";
+                  dyn_error(msg);
                 }
               output << ";\n";
               break;
@@ -800,8 +804,7 @@ DynamicModel::writeModelEquationsCode(string &file_name, const string &bin_basen
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
   if (!code_file.is_open())
     {
-      cerr << "Error : Can't open file \"" << main_name << "\" for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
     }
 
   int count_u;
@@ -1076,8 +1079,7 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
   if (!code_file.is_open())
     {
-      cerr << "Error : Can't open file \"" << main_name << "\" for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
     }
   //Temporary variables declaration
 
@@ -1210,7 +1212,7 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
                   // Insert current node into tt2
                   tt2.insert(*it);
 #ifdef DEBUGC
-                  cout << "FSTPT " << v << "\n";
+                  DynOut << "FSTPT " << v << "\n";
                   instruction_number++;
                   code_file.write(&FOK, sizeof(FOK));
                   code_file.write(reinterpret_cast<char *>(&k), sizeof(k));
@@ -1224,7 +1226,7 @@ DynamicModel::writeModelEquationsCode_Block(string &file_name, const string &bin
                it != v_temporary_terms[block][i].end(); it++)
             {
               map_idx_t::const_iterator ii = map_idx.find((*it)->idx);
-              cout << "map_idx[" << (*it)->idx <<"]=" << ii->second << "\n";
+              DynOut << "map_idx[" << (*it)->idx <<"]=" << ii->second << "\n";
             }
 #endif
 
@@ -1524,8 +1526,7 @@ DynamicModel::writeDynamicMFile(const string &dynamic_basename) const
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDynamicModelFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename + "\" for writing\n");
     }
   mDynamicModelFile << "function [residual, g1, g2, g3] = " << dynamic_basename << "(y, x, params, steady_state, it_)" << endl
                     << "%" << endl
@@ -1572,8 +1573,7 @@ DynamicModel::writeDynamicJuliaFile(const string &basename) const
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename + "\" for writing\n");
     }
 
   output << "module " << basename << "Dynamic" << endl
@@ -1598,8 +1598,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDynamicModelFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename + "\" for writing\n");
     }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes dynamic model for Dynare" << endl
@@ -1616,7 +1615,12 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
 
   if (external_functions_table.get_total_number_of_unique_model_block_external_functions())
     // External Matlab function, implies Dynamic function will call mex
-    mDynamicModelFile << "#include \"mex.h\"" << endl;
+#ifdef USE_R
+      mDynamicModelFile << "#include \"call_R_function.h\"" << endl;
+#else 
+      mDynamicModelFile << "#include \"mex.h\"" << endl;
+#endif
+
   else
     mDynamicModelFile << "#include <stdlib.h>" << endl;
 
@@ -1634,11 +1638,11 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   writeNormcdf(mDynamicModelFile);
   mDynamicModelFile.close();
 
+#ifndef USE_R
   mDynamicMexFile.open(filename_mex.c_str(), ios::out | ios::binary);
   if (!mDynamicMexFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename_mex << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename_mex + "\" for writing\n");
     }
 
   // Writing the gateway routine
@@ -1718,6 +1722,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
                   << "  Dynamic(y, x, nb_row_x, params, steady_state, it_, residual, g1, v2, v3);" << endl
                   << "}" << endl;
   mDynamicMexFile.close();
+#endif
 }
 
 string
@@ -1768,8 +1773,7 @@ DynamicModel::Write_Inf_To_Bin_File_Block(const string &dynamic_basename, const 
     SaveCode.open((bin_basename + "_dynamic.bin").c_str(), ios::out | ios::binary);
   if (!SaveCode.is_open())
     {
-      cerr << "Error : Can't open file \"" << bin_basename << "_dynamic.bin\" for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + bin_filename + "\" for writing\n");
     }
   u_count_int = 0;
   unsigned int block_size = getBlockSize(num);
@@ -1822,8 +1826,7 @@ DynamicModel::writeSparseDynamicMFile(const string &dynamic_basename, const stri
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDynamicModelFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename + "\" for writing\n");
     }
   mDynamicModelFile << "%\n";
   mDynamicModelFile << "% " << filename << " : Computes dynamic model for Dynare\n";
@@ -2192,9 +2195,12 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia
       expr_t d1 = it->second;
 
       jacobianHelper(jacobian_output, eq, getDynJacobianCol(var), output_type);
-      jacobian_output << "=";
+      jacobian_output << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
-      jacobian_output << ";" << endl;
+      if (IS_R(output_type) || output_type == oCDynamicModel) {
+          jacobian_output << ";";
+      }
+      jacobian_output << endl;
     }
 
   // Writing Hessian
@@ -2405,9 +2411,59 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia
       DynamicOutput << "end" << endl
                     << "end" << endl
                     << "end" << endl;
-    }
-  else if (output_type == oCDynamicModel)
+
+   } else if  (output_type == oRDynamicModel) {
+
+
+      int nnz = first_derivatives.size();
+
+      DynamicOutput << "f_dynamic <- function(y, x, params, it_) {" << endl
+                    << model_local_vars_output.str()
+                    << "residual <- numeric(" <<  nrows << ")" <<  endl
+                    << model_output.str()
+                    << "return(residual)" << endl
+                    << "}" << endl << endl
+                    << "jac_dynamic <- function(y, x, params, it_) {" << endl
+                    << model_local_vars_output.str()
+                    << "rows   <- integer(" << nnz << ")" << endl
+                    << "cols   <- integer(" << nnz << ")" << endl
+                    << "values <- integer(" << nnz << ")" << endl << endl
+                    << jacobian_output.str()
+                    << endl
+                    << "return(list(rows = rows, cols = cols, values = values))"  << endl
+                    << "}" << endl;
+
+    } else if (output_type == oCDynamicModel)
     {
+#if USE_R
+      DynamicOutput << "void f_dynamic(double *y, double *x, int nb_row_x, double *params, int it_, double *residual)" << endl
+                    << "{" << endl << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << "init_call_R();" << endl << endl;
+      }
+      DynamicOutput  << "double lhs, rhs;" << endl
+                    << endl
+                    << "  /* Residual equations */" << endl
+                    << model_local_vars_output.str()
+                    << model_output.str();
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << endl << endl << "close_call_R();" << endl;
+      }
+      DynamicOutput << endl << "return;" << endl << "}" << endl << endl
+                    << "  /* Jacobian  */" << endl
+                    << "void jac_dynamic(double *y, double *x, int nb_row_x, double *params, int it_," << endl
+                    << "                 int *rows, int *cols, double *values) {" << endl
+                    << "  /* Jacobian  */" << endl << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << "init_call_R();" << endl << endl;
+      }
+      DynamicOutput << model_local_vars_output.str()
+                    << jacobian_output.str() << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          DynamicOutput << endl << "close_call_R();" << endl;
+      }
+      DynamicOutput  << endl << "return;" << endl << "}" << endl;
+#else 
       DynamicOutput << "void Dynamic(double *y, double *x, int nb_row_x, double *params, double *steady_state, int it_, double *residual, double *g1, double *v2, double *v3)" << endl
                     << "{" << endl
                     << "  double lhs, rhs;" << endl
@@ -2439,6 +2495,7 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia
                       << endl;
 
       DynamicOutput << "}" << endl << endl;
+#endif
     }
   else
     {
@@ -2779,7 +2836,7 @@ DynamicModel::writeOutput(ostream &output, const string &basename, bool block_de
             {
               for (vector<int>::const_iterator it = state_var.begin(); it != state_var.end(); it++)
                 {
-                  //cout << "block = " << block+1 << " state_var = " << *it << " it_other_endogenous=" << *it_other_endogenous + 1 << "\n";
+                  //DynOut << "block = " << block+1 << " state_var = " << *it << " it_other_endogenous=" << *it_other_endogenous + 1 << "\n";
                   if (*it == *it_other_endogenous + 1)
                     {
                       output << "block_structure.block(" << block+1 << ").tm1("
@@ -2788,7 +2845,7 @@ DynamicModel::writeOutput(ostream &output, const string &basename, bool block_de
                       /*output << "block_structure.block(" << block+1 << ").tm1("
                         << it - state_var.begin()+1 << ", "
                         << count_other_endogenous << ") = 1;\n";*/
-                      //cout << "=>\n";
+                      //DynOut << "=>\n";
                     }
                 }
               count_other_endogenous++;
@@ -2995,7 +3052,7 @@ DynamicModel::writeOutput(ostream &output, const string &basename, bool block_de
                     vector<int>::const_iterator it_state_equ = find(state_equ.begin(), state_equ.end(), getBlockEquationID(block, i)+1);
                     if (it_state_equ != state_equ.end())
                     {
-                    cout << "row_state_var_incidence[make_pair([" << *it_state_equ << "] " << it_state_equ - state_equ.begin() << ", [" << *it_state_var << "] " << it_state_var - state_var.begin() << ")] =  1;\n";
+                    DynOut << "row_state_var_incidence[make_pair([" << *it_state_equ << "] " << it_state_equ - state_equ.begin() << ", [" << *it_state_var << "] " << it_state_var - state_var.begin() << ")] =  1;\n";
                     row_state_var_incidence.insert(make_pair(it_state_equ - state_equ.begin(), it_state_var - state_var.begin()));
                     }
                     }*/
@@ -3190,19 +3247,19 @@ DynamicModel::computingPass(bool jacobianExo, bool hessian, bool thirdDerivative
     }
 
   // Launch computations
-  cout << "Computing dynamic model derivatives:" << endl
+  DynOut << "Computing dynamic model derivatives:" << endl
        << " - order 1" << endl;
   computeJacobian(vars);
 
   if (hessian)
     {
-      cout << " - order 2" << endl;
+      DynOut << " - order 2" << endl;
       computeHessian(vars);
     }
 
   if (paramsDerivsOrder > 0)
     {
-      cout << " - derivatives of Jacobian/Hessian w.r. to parameters" << endl;
+      DynOut << " - derivatives of Jacobian/Hessian w.r. to parameters" << endl;
       computeParamsDerivatives(paramsDerivsOrder);
 
       if (!no_tmp_terms)
@@ -3211,7 +3268,7 @@ DynamicModel::computingPass(bool jacobianExo, bool hessian, bool thirdDerivative
 
   if (thirdDerivatives)
     {
-      cout << " - order 3" << endl;
+      DynOut << " - order 3" << endl;
       computeThirdDerivatives(vars);
     }
 
@@ -3233,7 +3290,7 @@ DynamicModel::computingPass(bool jacobianExo, bool hessian, bool thirdDerivative
 
       equation_type_and_normalized_equation = equationTypeDetermination(first_order_endo_derivatives, variable_reordered, equation_reordered, mfs);
 
-      cout << "Finding the optimal block decomposition of the model ...\n";
+      DynOut << "Finding the optimal block decomposition of the model ...\n";
 
       lag_lead_vector_t equation_lag_lead, variable_lag_lead;
 
@@ -3695,8 +3752,7 @@ DynamicModel::writeDynamicFile(const string &basename, bool block, bool bytecode
 #endif
       if (r < 0 && errno != EEXIST)
         {
-          perror("ERROR");
-          exit(EXIT_FAILURE);
+           dyn_error("ERROR: " + string(std::strerror(errno)));
         }
       writeSparseDynamicMFile(t_basename, basename);
     }
@@ -3757,7 +3813,7 @@ DynamicModel::computeRamseyPolicyFOCs(const StaticModel &static_model)
       equations[i] = substeq;
     }
 
-  cout << "Ramsey Problem: added " << i << " Multipliers." << endl;
+  DynOut << "Ramsey Problem: added " << i << " Multipliers." << endl;
 
   // Add Planner Objective to equations to include in computeDerivIDs
   assert(static_model.equations.size() == 1);
@@ -3862,8 +3918,10 @@ DynamicModel::toStatic(StaticModel &static_model) const
         }
       catch (DataTree::DivisionByZeroException)
         {
-          cerr << "...division by zero error encountred when converting equation " << i << " to static" << endl;
-          exit(EXIT_FAILURE);
+          std::ostringstream msg;
+          msg << "...division by zero error encountred when converting equation " << i << " to static" << endl;
+          dyn_error(msg);
+
         }
     }
 
@@ -4052,8 +4110,7 @@ DynamicModel::computeDynJacobianCols(bool jacobianExo)
           break;
         default:
           // Shut up GCC
-          cerr << "DynamicModel::computeDynJacobianCols: impossible case" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("DynamicModel::computeDynJacobianCols: impossible case\n");
         }
     }
 
@@ -4102,10 +4159,12 @@ DynamicModel::testTrendDerivativesEqualToZero(const eval_context_t &eval_context
                     double nearZero = testeq->getDerivative(endogit->second)->eval(eval_context); // eval d F / d Trend d Endog
                     if (fabs(nearZero) > ZERO_BAND)
                       {
-                        cerr << "WARNING: trends not compatible with balanced growth path; the second-order cross partial of equation " << eq + 1 << " (line "
+                        std::ostringstream msg;
+                        msg << "WARNING: trends not compatible with balanced growth path; the second-order cross partial of equation " << eq + 1 << " (line "
                              << equations_lineno[eq] << ") w.r.t. trend variable "
                              << symbol_table.getName(it->first.first) << " and endogenous variable "
                              << symbol_table.getName(endogit->first.first) << " is not null. " << endl;
+                        dyn_warning(msg);
                         // Changed to warning. See discussion in #1389
                       }
                   }
@@ -4255,8 +4314,7 @@ DynamicModel::writeParamsDerivativesFile(const string &basename, bool julia) con
   paramsDerivsFile.open(filename.c_str(), ios::out | ios::binary);
   if (!paramsDerivsFile.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename + "\" for writing\n");
     }
 
   if (!julia)
@@ -4445,8 +4503,7 @@ DynamicModel::substituteLeadLagInternal(aux_var_t type, bool deterministic_model
           subst = value->differentiateForwardVars(subset, subst_table, neweqs);
           break;
         default:
-          cerr << "DynamicModel::substituteLeadLagInternal: impossible case" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("DynamicModel::substituteLeadLagInternal: impossible case\n");
         }
       local_variables_table[*it] = subst;
     }
@@ -4473,8 +4530,7 @@ DynamicModel::substituteLeadLagInternal(aux_var_t type, bool deterministic_model
           subst = equations[i]->differentiateForwardVars(subset, subst_table, neweqs);
           break;
         default:
-          cerr << "DynamicModel::substituteLeadLagInternal: impossible case" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("DynamicModel::substituteLeadLagInternal: impossible case\n");
         }
       BinaryOpNode *substeq = dynamic_cast<BinaryOpNode *>(subst);
       assert(substeq != NULL);
@@ -4506,8 +4562,7 @@ DynamicModel::substituteLeadLagInternal(aux_var_t type, bool deterministic_model
           subst = aux_equations[i]->differentiateForwardVars(subset, subst_table, neweqs);
           break;
         default:
-          cerr << "DynamicModel::substituteLeadLagInternal: impossible case" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("DynamicModel::substituteLeadLagInternal: impossible case\n");
         }
       BinaryOpNode *substeq = dynamic_cast<BinaryOpNode *>(subst);
       assert(substeq != NULL);
@@ -4526,32 +4581,31 @@ DynamicModel::substituteLeadLagInternal(aux_var_t type, bool deterministic_model
 
   if (neweqs.size() > 0)
     {
-      cout << "Substitution of ";
+      DynOut << "Substitution of ";
       switch (type)
         {
         case avEndoLead:
-          cout << "endo leads >= 2";
+          DynOut << "endo leads >= 2";
           break;
         case avEndoLag:
-          cout << "endo lags >= 2";
+          DynOut << "endo lags >= 2";
           break;
         case avExoLead:
-          cout << "exo leads";
+          DynOut << "exo leads";
           break;
         case avExoLag:
-          cout << "exo lags";
+          DynOut << "exo lags";
           break;
         case avExpectation:
-          cout << "expectation";
+          DynOut << "expectation";
           break;
         case avDiffForward:
-          cout << "forward vars";
+          DynOut << "forward vars";
           break;
         case avMultiplier:
-          cerr << "avMultiplier encountered: impossible case" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("avMultiplier encountered: impossible case\n");
         }
-      cout << ": added " << neweqs.size() << " auxiliary variables and equations." << endl;
+      DynOut << ": added " << neweqs.size() << " auxiliary variables and equations." << endl;
     }
 }
 
@@ -4584,9 +4638,9 @@ DynamicModel::substituteExpectation(bool partial_information_model)
   if (subst_table.size() > 0)
     {
       if (partial_information_model)
-        cout << "Substitution of Expectation operator: added " << subst_table.size() << " auxiliary variables and " << neweqs.size() << " auxiliary equations." << endl;
+        DynOut << "Substitution of Expectation operator: added " << subst_table.size() << " auxiliary variables and " << neweqs.size() << " auxiliary equations." << endl;
       else
-        cout << "Substitution of Expectation operator: added " << neweqs.size() << " auxiliary variables and equations." << endl;
+        DynOut << "Substitution of Expectation operator: added " << neweqs.size() << " auxiliary variables and equations." << endl;
     }
 }
 
@@ -4802,8 +4856,7 @@ DynamicModel::isChecksumMatching(const string &basename) const
   if (r < 0)
     if (errno != EEXIST)
       {
-        perror("ERROR");
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: " + string(std::strerror(errno)) + "\n");
       }
     else
       basename_dir_exists = true;
@@ -4829,8 +4882,7 @@ DynamicModel::isChecksumMatching(const string &basename) const
       checksum_file.open(filename.c_str(), ios::out | ios::binary);
       if (!checksum_file.is_open())
         {
-          cerr << "ERROR: Can't open file " << filename << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: Can't open file \"" + filename + "\"\n");
         }
       checksum_file << result.checksum();
       checksum_file.close();
@@ -4927,8 +4979,7 @@ DynamicModel::writeCOutput(ostream &output, const string &basename, bool block_d
       output << NNZDerivatives[0] << "," << NNZDerivatives[1] << "," << NNZDerivatives[2] << "};" << endl;
       break;
     default:
-      cerr << "Order larger than 3 not implemented" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Order larger than 3 not implemented\n");
     }
 }
 
@@ -4941,8 +4992,7 @@ DynamicModel::writeResidualsC(const string &basename, bool cuda) const
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDynamicModelFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename + "\" for writing\n");
     }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes residuals of the model for Dynare" << endl
@@ -4997,8 +5047,7 @@ DynamicModel::writeFirstDerivativesC(const string &basename, bool cuda) const
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDynamicModelFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename + "\" for writing\n");
     }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes first order derivatives of the model for Dynare" << endl
@@ -5060,8 +5109,7 @@ DynamicModel::writeFirstDerivativesC_csr(const string &basename, bool cuda) cons
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDynamicModelFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + filename + "\" for writing\n");
     }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes first order derivatives of the model for Dynare" << endl
@@ -5116,8 +5164,7 @@ DynamicModel::writeFirstDerivativesC_csr(const string &basename, bool cuda) cons
           col_id = tsid+3*symbol_table.endo_nbr()+symbol_table.exo_nbr();
           break;
         default:
-          std::cerr << "This case shouldn't happen" << std::endl;
-          exit(EXIT_FAILURE);
+          dyn_error("This case shouldn't happen\n");
         }
       derivative deriv(col_id + eq *cols_nbr, col_id, eq, it->second);
       D.push_back(deriv);
@@ -5166,8 +5213,7 @@ DynamicModel::writeSecondDerivativesC_csr(const string &basename, bool cuda) con
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDynamicModelFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error: Can't open file \"" + filename + "\" for writing\n");
     }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes second order derivatives of the model for Dynare" << endl
@@ -5265,8 +5311,7 @@ DynamicModel::writeThirdDerivativesC_csr(const string &basename, bool cuda) cons
   mDynamicModelFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDynamicModelFile.is_open())
     {
-      cerr << "Error: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error: Can't open file \"" + filename + "\" for writing\n");
     }
   mDynamicModelFile << "/*" << endl
                     << " * " << filename << " : Computes third order derivatives of the model for Dynare" << endl
@@ -5441,3 +5486,127 @@ DynamicModel::writeCCOutput(ostream &output, const string &basename, bool block_
     output << "NNZDerivatives.push_back(-1);" << endl
            << "NNZDerivatives.push_back(-1);" << endl;
 }
+
+#ifdef USE_R
+
+Rcpp::List DynamicModel::getDynamicModelR(bool internal_calc) const {
+
+    // create lead_lag_indicence matrix 
+    Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);
+    for (int endoID = 0; endoID < symbol_table.endo_nbr(); endoID++) {
+        Rcpp::IntegerMatrix::Row endo_row = lead_lag_incidence(endoID, Rcpp::_);
+        // Loop on periods
+        for (int lag = -max_endo_lag; lag <= max_endo_lead; lag++) {
+            // Print variableID if exists with current period, otherwise print 0
+            try {
+                int varID = getDerivID(symbol_table.getID(eEndogenous, endoID), lag);
+                endo_row[lag + max_endo_lag] = getDynJacobianCol(varID) + 1;
+            } catch (UnknownDerivIDException &e) {
+            }
+        }
+    }
+
+    // function body
+    Rcpp::String dynamic_functions;
+    if (!internal_calc) {
+        std::ostringstream dynout;
+        writeDynamicModel(dynout, oRDynamicModel);
+        dynamic_functions = Rcpp::String(dynout.str());
+    }
+
+    return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
+                              Rcpp::Named("jac_size")           = 
+                                         (int) first_derivatives.size(),
+                              Rcpp::Named("dynamic_functions")  = dynamic_functions,
+                              Rcpp::Named("max_endo_lag")       = max_endo_lag,
+                              Rcpp::Named("max_endo_lead")      = max_endo_lead,
+                              Rcpp::Named("max_exo_lag")        = max_exo_lag,
+                              Rcpp::Named("max_exo_lead")       = max_exo_lead
+                             );
+}
+
+
+PolishModel* DynamicModel::makePolishModel(ExternalFunctionCalc *ext_calc) const {
+
+    PolishModel* mdl = new PolishModel(symbol_table.endo_nbr(), 
+                                       first_derivatives.size(),
+                                       num_constants.get_double_vals(),
+                                       ext_calc);
+    
+    // model equations
+    genPolishEquations(*mdl, true);
+
+    // first derivatives
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        int eq = it->first.first;
+        int col = getDynJacobianCol(it->first.second);
+        mdl->new_jac_equation(eq, col);
+        expr_t d1 = it->second;
+        d1->genPolishCode(*mdl, true);
+    }
+
+    return mdl;
+}
+
+Rcpp::List DynamicModel::getDerivativeInfoR() const {
+    // return the first derivative equations, used to construct the
+    // first order condition for the fit procedure.
+
+    // create lead_lag_indicence matrix 
+    Rcpp::IntegerMatrix lead_lag_incidence(symbol_table.endo_nbr(), max_endo_lead + max_endo_lag + 1);
+    for (int endoID = 0; endoID < symbol_table.endo_nbr(); endoID++) {
+        Rcpp::IntegerMatrix::Row endo_row = lead_lag_incidence(endoID, Rcpp::_);
+        // Loop on periods
+        for (int lag = -max_endo_lag; lag <= max_endo_lead; lag++) {
+            try {
+                int varID = getDerivID(symbol_table.getID(eEndogenous, endoID), lag);
+                endo_row[lag + max_endo_lag] = getDynJacobianCol(varID) + 1;
+            } catch (UnknownDerivIDException &e) {
+            }
+        }
+    }
+
+    // create a logical vector with elements true if the corresponding
+    // exogenous variable occurs with a lag or lead
+    Rcpp::LogicalVector exo_has_lag(symbol_table.exo_nbr());
+    for (int exoID = 0; exoID < symbol_table.exo_nbr(); exoID++) {
+        bool has_lag = false;
+        // Loop on periods
+        for (int lag = -max_exo_lag; lag <= max_exo_lead; lag++) {
+            try {
+                int varID = getDerivID(symbol_table.getID(eExogenous, exoID), lag);
+                has_lag = lag != 0;
+                if (has_lag) break;
+            } catch (UnknownDerivIDException &e) {
+            }
+        }
+        exo_has_lag[exoID] = has_lag;
+    }
+
+    // derivative matrix
+    temporary_terms_t temp_term_union = temporary_terms_res;
+    deriv_node_temp_terms_t tef_terms;
+
+    Rcpp::CharacterMatrix derivatives(equations.size(), dynJacobianColsNbr);
+    std::fill(derivatives.begin(), derivatives.end(), Rcpp::CharacterVector::get_na());
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        int eq = it->first.first;
+        int col = getDynJacobianCol(it->first.second);
+        expr_t d1 = it->second;
+        ostringstream txt;
+        d1->writeOutput(txt, oRDerivatives, temp_term_union, tef_terms);
+        derivatives(eq, col) = Rcpp::String(txt.str());
+    }
+    return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
+                              Rcpp::Named("exo_has_lag") = exo_has_lag,
+                              Rcpp::Named("derivatives")   = derivatives,
+                              Rcpp::Named("max_endo_lag")  = max_endo_lag,
+                              Rcpp::Named("max_endo_lead") = max_endo_lead,
+                              Rcpp::Named("max_exo_lag")   = max_exo_lag,
+                              Rcpp::Named("max_exo_lead")  = max_exo_lead
+                             );
+}
+
+#endif

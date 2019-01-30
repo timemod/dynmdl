@@ -23,8 +23,12 @@
 using namespace std;
 
 #include <fstream>
-
 #include "ModelTree.hh"
+#ifdef USE_R
+#include <Rcpp.h>
+#include "PolishModel.hh"
+#endif
+
 
 //! Stores a static model, as derived from the "model" block when leads and lags have been removed
 class StaticModel : public ModelTree

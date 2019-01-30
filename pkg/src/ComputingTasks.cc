@@ -32,6 +32,9 @@ using namespace std;
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
+#include "dyn_error.hh"
+#include "dynout.hh"
+
 SteadyStatement::SteadyStatement(const OptionsList &options_list_arg) :
   options_list(options_list_arg)
 {
@@ -148,9 +151,7 @@ PriorPosteriorFunctionStatement::checkPass(ModFileStructure &mod_file_struct, Wa
   OptionsList::string_options_t::const_iterator it2 = options_list.string_options.find("function");
   if (it2 == options_list.string_options.end() || it2->second.empty())
     {
-      cerr << "ERROR: both the prior_function and posterior_function commands require the 'function' argument"
-           << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: both the prior_function and posterior_function commands require the 'function' argument\n");
     }
 }
 
@@ -203,9 +204,7 @@ StochSimulStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
       || (it != options_list.num_options.end() && it2 != options_list.num_options.end())
       || (it1 != options_list.num_options.end() && it2 != options_list.num_options.end()))
     {
-      cerr << "ERROR: stoch_simul: can only use one of hp, one-sided hp, and bandpass filters"
-           << endl;
-      exit(EXIT_FAILURE);
+       dyn_error("ERROR: stoch_simul: can only use one of hp, one-sided hp, and bandpass filters\n")
     }
 }
 
@@ -260,8 +259,7 @@ RamseyModelStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsol
       int order = atoi(it->second.c_str());
       if (order > 2)
         {
-          cerr << "ERROR: ramsey_model: order > 2 is not  implemented" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: ramsey_model: order > 2 is not  implemented\n)";
         }
       mod_file_struct.order_option = max(mod_file_struct.order_option, order + 1);
     }
@@ -305,7 +303,7 @@ void
 RamseyConstraintsStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
 {
   if ((mod_file_struct.ramsey_model_present != true) || (mod_file_struct.ramsey_policy_present != true))
-    cerr << "ramsey_constraints: can only be used with ramsey_model or ramsey_policy" << endl;
+    dyn_error("ramsey_constraints: can only be used with ramsey_model or ramsey_policy\n");
 }
 
 void
@@ -332,8 +330,7 @@ RamseyConstraintsStatement::writeOutput(ostream &output, const string &basename,
           output << ">=";
           break;
         default:
-          cerr << "Ramsey constraints: this shouldn't happen." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("Ramsey constraints: this shouldn't happen.\n";
         }
       output << "', '";
       it->expression->writeOutput(output);
@@ -426,8 +423,7 @@ RamseyPolicyStatement::checkPass(ModFileStructure &mod_file_struct, WarningConso
       int order = atoi(it->second.c_str());
       if (order > 2)
         {
-          cerr << "ERROR: ramsey_policy: order > 2 is not  implemented" << endl;
-          exit(EXIT_FAILURE);
+          dyn_erorr("ERROR: ramsey_policy: order > 2 is not  implemented\n");
         }
       mod_file_struct.order_option = max(mod_file_struct.order_option, order + 1);
     }
@@ -452,13 +448,15 @@ RamseyPolicyStatement::checkRamseyPolicyList()
     {
       if (!symbol_table.exists(*it))
         {
-          cerr << "ERROR: ramsey_policy: " << *it << " was not declared." << endl;
-          exit(EXIT_FAILURE);
+          std::ostringstream msg;
+          msg << "ERROR: ramsey_policy: " << *it << " was not declared." << endl;
+          dyn_error(msg);
         }
       if (symbol_table.getType(*it) != eEndogenous)
         {
-          cerr << "ERROR: ramsey_policy: " << *it << " is not endogenous." << endl;
-          exit(EXIT_FAILURE);
+          std::ostringstream msg;
+          msg << "ERROR: ramsey_policy: " << *it << " is not endogenous." << endl;
+          dyn_error(msg);
         }
     }
 }
@@ -500,8 +498,7 @@ DiscretionaryPolicyStatement::checkPass(ModFileStructure &mod_file_struct, Warni
 
   if (options_list.symbol_list_options.find("instruments") == options_list.symbol_list_options.end())
     {
-      cerr << "ERROR: discretionary_policy: the instruments option is required." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: discretionary_policy: the instruments option is required.\n");
     }
 
   /* Fill in option_order of mod_file_struct
@@ -513,8 +510,7 @@ DiscretionaryPolicyStatement::checkPass(ModFileStructure &mod_file_struct, Warni
       int order = atoi(it->second.c_str());
       if (order > 1)
         {
-          cerr << "ERROR: discretionary_policy: order > 1 is not yet implemented" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: discretionary_policy: order > 1 is not yet implemented\n");
         }
       mod_file_struct.order_option = max(mod_file_struct.order_option, order + 1);
     }
@@ -566,8 +562,7 @@ EstimationStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
 
       if (order > 2)
         {
-          cerr << "ERROR: order > 2 is not supported in estimation" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: order > 2 is not supported in estimation\n");
         }
 
       mod_file_struct.order_option = max(mod_file_struct.order_option, order);
@@ -603,30 +598,25 @@ EstimationStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
     if (mod_file_struct.dsge_var_calibrated.empty()
         && !mod_file_struct.dsge_var_estimated)
       {
-        cerr << "ERROR: The estimation statement requires a dsge_var option to be passed "
-             << "if the dsge_varlag option is passed." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: The estimation statement requires a dsge_var option to be passed if the dsge_varlag option is passed.\n");
       }
 
   if (!mod_file_struct.dsge_var_calibrated.empty()
       && mod_file_struct.dsge_var_estimated)
     {
-      cerr << "ERROR: An estimation statement cannot take more than one dsge_var option." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: An estimation statement cannot take more than one dsge_var option.\n");
     }
 
   if (options_list.string_options.find("datafile") == options_list.string_options.end()
       && !mod_file_struct.estimation_data_statement_present)
     {
-      cerr << "ERROR: The estimation statement requires a data file to be supplied via the datafile option." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: The estimation statement requires a data file to be supplied via the datafile option.\n");
     }
 
   if (options_list.string_options.find("mode_file") != options_list.string_options.end()
       && mod_file_struct.estim_params_use_calib)
     {
-      cerr << "ERROR: The mode_file option of the estimation statement is incompatible with the use_calibration option of the estimated_params_init block." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: The mode_file option of the estimation statement is incompatible with the use_calibration option of the estimated_params_init block.\n");
     }
 }
 
@@ -760,8 +750,9 @@ EstimatedParamsStatement::checkPass(ModFileStructure &mod_file_struct, WarningCo
             if (it->mean->eval(eval_context_t()) == 0.5
                 && it->std->eval(eval_context_t()) == 0.5)
               {
-                cerr << "ERROR: The prior density is not defined for the beta distribution when the mean = standard deviation = 0.5." << endl;
-                exit(EXIT_FAILURE);
+                dyn_error("ERROR: The prior density is not defined for the "
+                          "beta distribution when the mean = standard deviation"
+                           " = 0.5.\n");
               }
           }
         catch (ExprNode::EvalException &e)
@@ -785,8 +776,10 @@ EstimatedParamsStatement::checkPass(ModFileStructure &mod_file_struct, WarningCo
             already_declared_corr.insert(x);
           else
             {
-              cerr << "ERROR: in `estimated_params' block, the correlation between " << it->name << " and " << it->name2 << " is declared twice." << endl;
-              exit(EXIT_FAILURE);
+              std::ostringstream msg;
+              msg  << "ERROR: in `estimated_params' block, the correlation between "
+                   << it->name << " and " << it->name2 << " is declared twice." << endl;
+              dyn_error(msg);
             }
         }
       else
@@ -795,8 +788,9 @@ EstimatedParamsStatement::checkPass(ModFileStructure &mod_file_struct, WarningCo
             already_declared.insert(it->name);
           else
             {
-              cerr << "ERROR: in `estimated_params' block, the symbol " << it->name << " is declared twice." << endl;
-              exit(EXIT_FAILURE);
+              std::ostringstream msg;
+              msg << "ERROR: in `estimated_params' block, the symbol " << it->name << " is declared twice." << endl;
+              dyn_error(msg);
             }
         }
     }
@@ -1044,8 +1038,11 @@ ObservationTrendsStatement::writeOutput(ostream &output, const string &basename,
           it->second->writeOutput(output);
           output << "';" << endl;
         }
-      else
-        cerr << "Warning : Non-variable symbol used in observation_trends: " << it->first << endl;
+      else {
+        std::ostringstream msg;
+        msg << "Warning : Non-variable symbol used in observation_trends: " << it->first << endl;
+        dyn_warning(msg);
+     }
     }
 }
 
@@ -1059,7 +1056,7 @@ void
 OsrParamsStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings)
 {
   if (mod_file_struct.osr_params_present)
-    cerr << "WARNING: You have more than one osr_params statement in the .mod file." << endl;
+    dyn_warning("WARNING: You have more than one osr_params statement in the .mod file.\n");
   mod_file_struct.osr_params_present = true;
 }
 
@@ -1092,8 +1089,7 @@ OsrParamsBoundsStatement::checkPass(ModFileStructure &mod_file_struct, WarningCo
 {
   if (!mod_file_struct.osr_params_present)
     {
-      cerr << "ERROR: you must have an osr_params statement before the osr_params_bounds block." << endl;
-      exit(EXIT_FAILURE);
+      dyn_warning("ERROR: you must have an osr_params statement before the osr_params_bounds block.\n");
     }
 }
 
@@ -1272,10 +1268,11 @@ PlannerObjectiveStatement::checkPass(ModFileStructure &mod_file_struct, WarningC
   assert(model_tree->equation_number() == 1);
   if (model_tree->exoPresentInEqs())
     {
-      cerr << "ERROR: You cannot include exogenous variables in the planner objective. Please "
+      std::ostringstream msg;
+      msg <<  "ERROR: You cannot include exogenous variables in the planner objective. Please "
            << "define an auxiliary endogenous variable like eps_aux=epsilon and use it instead "
            << "of the varexo." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error(msg);
     }
   mod_file_struct.planner_objective_present = true;
 }
@@ -1368,9 +1365,8 @@ MSSBVAREstimationStatement::checkPass(ModFileStructure &mod_file_struct, Warning
     if (options_list.string_options.find("datafile") == options_list.string_options.end()
         || options_list.num_options.find("ms.initial_year") == options_list.num_options.end())
       {
-        cerr << "ERROR: If you do not pass no_create_init to ms_estimation, "
-             << "you must pass the datafile and initial_year options." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: If you do not pass no_create_init to ms_estimation, "
+                  "must pass the datafile and initial_year options.\n");
       }
 }
 
@@ -1443,9 +1439,7 @@ MSSBVARComputeProbabilitiesStatement::checkPass(ModFileStructure &mod_file_struc
   if (options_list.num_options.find("ms.real_time_smoothed_probabilities") != options_list.num_options.end())
     if (options_list.num_options.find("ms.filtered_probabilities") != options_list.num_options.end())
       {
-        cerr << "ERROR: You may only pass one of real_time_smoothed "
-             << "and filtered_probabilities to ms_compute_probabilities." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: You may only pass one of real_time_smoothed filtered_probabilities to ms_compute_probabilities.\n");
       }
 }
 
@@ -1489,9 +1483,7 @@ MSSBVARIrfStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
       || (filtered_probabilities_present && regimes_present)
       || (regimes_present && regime_present))
     {
-      cerr << "ERROR: You may only pass one of regime, regimes and "
-           << "filtered_probabilities to ms_irf" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You may only pass one of regime, regimes and filtered_probabilities to ms_irf\n");
     }
 }
 
@@ -1517,8 +1509,7 @@ MSSBVARForecastStatement::checkPass(ModFileStructure &mod_file_struct, WarningCo
   if (options_list.num_options.find("ms.regimes") != options_list.num_options.end())
     if (options_list.num_options.find("ms.regime") != options_list.num_options.end())
       {
-        cerr << "ERROR: You may only pass one of regime and regimes to ms_forecast" << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: You may only pass one of regime and regimes to ms_forecast\n");
       }
 }
 
@@ -1560,9 +1551,7 @@ MSSBVARVarianceDecompositionStatement::checkPass(ModFileStructure &mod_file_stru
       || (filtered_probabilities_present && regimes_present)
       || (regimes_present && regime_present))
     {
-      cerr << "ERROR: You may only pass one of regime, regimes and "
-           << "filtered_probabilities to ms_variance_decomposition" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You may only pass one of regime, regimes and filtered_probabilities to ms_variance_decomposition\n");
     }
 }
 
@@ -1580,8 +1569,7 @@ IdentificationStatement::IdentificationStatement(const OptionsList &options_list
   if (options_list.num_options.find("max_dim_cova_group") != options_list.num_options.end())
     if (atoi(options_list.num_options["max_dim_cova_group"].c_str()) == 0)
       {
-        cerr << "ERROR: The max_dim_cova_group option to identification only accepts integers > 0." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: The max_dim_cova_group option to identification only accepts integers > 0.\n");
       }
 }
 
@@ -1770,15 +1758,15 @@ SvarIdentificationStatement::checkPass(ModFileStructure &mod_file_struct, Warnin
     mod_file_struct.svar_identification_present = true;
   else
     {
-      cerr << "ERROR: You may only have one svar_identification block in your .mod file." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You may only have one svar_identification block in your .mod file.\n");
     }
 
   if (upper_cholesky_present && lower_cholesky_present)
     {
-      cerr << "ERROR: Within the svar_identification statement, you may only have one of "
-           << "upper_cholesky and lower_cholesky." << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: Within the svar_identification statement, you may only have one of "
+          << "upper_cholesky and lower_cholesky." << endl;
+      dyn_error(msg);
     }
 }
 
@@ -1808,18 +1796,20 @@ SvarIdentificationStatement::writeOutput(ostream &output, const string &basename
 
       if (k < 1)
         {
-          cerr << "ERROR: lag = " << r
+          std::ostringstream msg;
+          msg << "ERROR: lag = " << r
                << ", number of endogenous variables = " << n
                << ", number of exogenous variables = " << m
                << ". If this is not a logical error in the specification"
                << " of the .mod file, please report it to the Dynare Team." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error(msg);
         }
       if (n < 1)
         {
-          cerr << "ERROR: Number of endogenous variables = " << n << "< 1. If this is not a logical "
+          std::ostringstream msg;
+          msg  << "ERROR: Number of endogenous variables = " << n << "< 1. If this is not a logical "
                << "error in the specification of the .mod file, please report it to the Dynare Team." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error(msg);
         }
       output << "options_.ms.Qi = cell(" << n << ",1);" << endl;
       output << "options_.ms.Ri = cell(" << n << ",1);" << endl;
@@ -1834,9 +1824,10 @@ SvarIdentificationStatement::writeOutput(ostream &output, const string &basename
               int col = (it->lag-1)*n+it->variable+1;
               if (col > k)
                 {
-                  cerr << "ERROR: lag =" << it->lag << ", num endog vars = " << n << "current endog var index = " << it->variable << ". Index "
+                  std::ostringstream msg;
+                  msg << "ERROR: lag =" << it->lag << ", num endog vars = " << n << "current endog var index = " << it->variable << ". Index "
                        << "out of bounds. If the above does not represent a logical error, please report this to the Dyanre Team." << endl;
-                  exit(EXIT_FAILURE);
+                  dyn_error(msg);
                 }
               output << "options_.ms.Ri{" << it->equation << "}(" << it->restriction_nbr << ", " << col << ") = ";
             }
@@ -1876,9 +1867,8 @@ MarkovSwitchingStatement::MarkovSwitchingStatement(const OptionsList &options_li
 
             if (restriction.size() != 3)
               {
-                cerr << "ERROR: restrictions in the subsample statement must be specified in the form "
-                     << "[current_period_regime, next_period_regime, transition_probability]" << endl;
-                exit(EXIT_FAILURE);
+                dyn_error("ERROR: restrictions in the subsample statement must be specified in the form "
+                          "[current_period_regime, next_period_regime, transition_probability]\n");
               }
 
             try
@@ -1887,34 +1877,36 @@ MarkovSwitchingStatement::MarkovSwitchingStatement(const OptionsList &options_li
                 int to_regime = lexical_cast< int >(restriction[1]);
                 if (from_regime > num_regimes || to_regime > num_regimes)
                   {
-                    cerr << "ERROR: the regimes specified in the restrictions option must be "
-                         << "<= the number of regimes specified in the number_of_regimes option" << endl;
-                    exit(EXIT_FAILURE);
+                    dyn_error("ERROR: the regimes specified in the restrictions option must be "
+                              "<= the number of regimes specified in the number_of_regimes option\n");
                   }
 
                 if (restriction_map.find(make_pair(from_regime, to_regime)) !=
                     restriction_map.end())
                   {
-                    cerr << "ERROR: two restrictions were given for: " << from_regime << ", "
+                    std::ostringstream msg;
+                    msg <<  "ERROR: two restrictions were given for: " << from_regime << ", "
                          << to_regime << endl;
-                    exit(EXIT_FAILURE);
+                    dyn_error(msg);
                   }
 
                 double transition_probability = lexical_cast< double >(restriction[2]);
                 if (transition_probability > 1.0)
                   {
-                    cerr << "ERROR: the transition probability, " << transition_probability
-                         << " must be less than 1" << endl;
-                    exit(EXIT_FAILURE);
+                    std::ostringstream msg;
+                    msg << "ERROR: the transition probability, " << transition_probability
+                        << " must be less than 1" << endl;
+                    dyn_error(msg);
                   }
                 restriction_map[make_pair(from_regime, to_regime)] = transition_probability;
               }
             catch (const bad_lexical_cast &)
               {
-                cerr << "ERROR: The first two arguments for a restriction must be integers "
-                     << "specifying the regime and the last must be a double specifying the "
-                     << "transition probability. You wrote [" << *it << endl;
-                exit(EXIT_FAILURE);
+                  std::ostringstream msg;
+                  msg << "ERROR: The first two arguments for a restriction must be integers "
+                      << "specifying the regime and the last must be a double specifying the "
+                      << "transition probability. You wrote [" << *it << endl;
+                  dyn_error(msg);
               }
           }
     }
@@ -1928,9 +1920,8 @@ MarkovSwitchingStatement::checkPass(ModFileStructure &mod_file_struct, WarningCo
   int chainNumber = atoi(itChain->second.c_str());
   if (++mod_file_struct.last_markov_switching_chain != chainNumber)
     {
-      cerr << "ERROR: The markov_switching chain option takes consecutive integers "
-           << "beginning at 1." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: The markov_switching chain option takes consecutive integers "
+                "beginning at 1.\n");
     }
 
   OptionsList::num_options_t::const_iterator it_num = options_list.num_options.find("ms.restrictions");
@@ -1964,34 +1955,30 @@ MarkovSwitchingStatement::checkPass(ModFileStructure &mod_file_struct, WarningCo
             {
               if (row_trans_prob_sum[i] != 1.0)
                 {
-                  cerr << "ERROR: When all transitions probabilities are specified for a certain "
-                       << "regime, they must sum to 1" << endl;
-                  exit(EXIT_FAILURE);
+                  dyn_error("ERROR: When all transitions probabilities are specified for a certain "
+                            "regime, they must sum to 1\n");
                 }
             }
           else
             if (row_trans_prob_sum[i] >= 1.0)
               {
-                cerr << "ERROR: When transition probabilites are not specified for every regime, "
-                     << "their sum must be < 1" << endl;
-                exit(EXIT_FAILURE);
+                dyn_error("ERROR: When transition probabilites are not specified for every regime, "
+                          "their sum must be < 1\n");
               }
 
           if (all_restrictions_in_col[i])
             {
               if (col_trans_prob_sum[i] != 1.0)
                 {
-                  cerr << "ERROR: When all transitions probabilities are specified for a certain "
-                       << "regime, they must sum to 1" << endl;
-                  exit(EXIT_FAILURE);
+                  dyn_error("ERROR: When all transitions probabilities are specified for a certain "
+                            "regime, they must sum to 1\n");
                 }
             }
           else
             if (col_trans_prob_sum[i] >= 1.0)
               {
-                cerr << "ERROR: When transition probabilites are not specified for every regime, "
-                     << "their sum must be < 1" << endl;
-                exit(EXIT_FAILURE);
+                dyn_error("ERROR: When transition probabilites are not specified for every regime, "
+                          "their sum must be < 1\n");
               }
         }
     }
@@ -2185,22 +2172,19 @@ EstimationDataStatement::checkPass(ModFileStructure &mod_file_struct, WarningCon
   if (it != options_list.num_options.end())
     if (atoi(it->second.c_str()) <= 0)
       {
-        cerr << "ERROR: The nobs option of the data statement only accepts positive integers." << endl;
-        exit(EXIT_FAILURE);
+        dyn_error("ERROR: The nobs option of the data statement only accepts positive integers.\n");
       }
 
   if ((options_list.string_options.find("file") == options_list.string_options.end())
       && (options_list.string_options.find("series") == options_list.string_options.end()))
     {
-      cerr << "ERROR: The file or series option must be passed to the data statement." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: The file or series option must be passed to the data statement.\n");
     }
 
   if ((options_list.string_options.find("file") != options_list.string_options.end())
       && (options_list.string_options.find("series") != options_list.string_options.end()))
     {
-      cerr << "ERROR: The file and series options cannot be used simultaneously in the data statement." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: The file and series options cannot be used simultaneously in the data statement.\n");
     }
 }
 
@@ -2359,21 +2343,18 @@ JointPriorStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
 {
   if (joint_parameters.size() < 2)
     {
-      cerr << "ERROR: you must pass at least two parameters to the joint prior statement" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: you must pass at least two parameters to the joint prior statement\n");
     }
 
   if (prior_shape == eNoShape)
     {
-      cerr << "ERROR: You must pass the shape option to the prior statement." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You must pass the shape option to the prior statement.\n");
     }
 
   if (options_list.num_options.find("mean") == options_list.num_options.end()
       && options_list.num_options.find("mode") == options_list.num_options.end())
     {
-      cerr << "ERROR: You must pass at least one of mean and mode to the prior statement." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You must pass at least one of mean and mode to the prior statement.\n");
     }
 
   OptionsList::num_options_t::const_iterator it_num = options_list.num_options.find("domain");
@@ -2384,8 +2365,7 @@ JointPriorStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
       split(tokenizedDomain, it_num->second, is_any_of("[ ]"), token_compress_on);
       if (tokenizedDomain.size() != 4)
         {
-          cerr << "ERROR: You must pass exactly two values to the domain option." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: You must pass exactly two values to the domain option.\n");
         }
     }
 }
@@ -2473,23 +2453,20 @@ BasicPriorStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
 {
   if (prior_shape == eNoShape)
     {
-      cerr << "ERROR: You must pass the shape option to the prior statement." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You must pass the shape option to the prior statement.\n");
     }
 
   if (options_list.num_options.find("mean") == options_list.num_options.end()
       && options_list.num_options.find("mode") == options_list.num_options.end())
     {
-      cerr << "ERROR: You must pass at least one of mean and mode to the prior statement." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You must pass at least one of mean and mode to the prior statement.\n");
     }
 
   OptionsList::num_options_t::const_iterator it_stdev = options_list.num_options.find("stdev");
   if ((it_stdev == options_list.num_options.end() && variance == NULL)
       || (it_stdev != options_list.num_options.end() && variance != NULL))
     {
-      cerr << "ERROR: You must pass exactly one of stdev and variance to the prior statement." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: You must pass exactly one of stdev and variance to the prior statement.\n");
     }
 
   OptionsList::num_options_t::const_iterator it_num = options_list.num_options.find("domain");
@@ -2500,8 +2477,7 @@ BasicPriorStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
       split(tokenizedDomain, it_num->second, is_any_of("[ ]"), token_compress_on);
       if (tokenizedDomain.size() != 4)
         {
-          cerr << "ERROR: You must pass exactly two values to the domain option." << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("ERROR: You must pass exactly two values to the domain option.\n");
         }
     }
 }
@@ -2746,10 +2722,11 @@ CorrPriorStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolid
   BasicPriorStatement::checkPass(mod_file_struct, warnings);
   if (symbol_table.getType(name) != symbol_table.getType(name1))
     {
-      cerr << "ERROR: In the corr(A,B).prior statement, A and B must be of the same type. "
+      std::ostringstream msg;
+      msg  << "ERROR: In the corr(A,B).prior statement, A and B must be of the same type. "
            << "In your case, " << name << " and " << name1 << " are of different "
            << "types." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error(msg);
     }
 }
 
@@ -2827,8 +2804,7 @@ PriorEqualStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
   if ((to_declaration_type != "par" && to_declaration_type != "std" && to_declaration_type != "corr")
       || (from_declaration_type != "par" && from_declaration_type != "std" && from_declaration_type != "corr"))
     {
-      cerr << "Internal Dynare Error" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Internal Dynare Error\n");
     }
 }
 
@@ -3062,10 +3038,11 @@ CorrOptionsStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsol
 {
   if (symbol_table.getType(name) != symbol_table.getType(name1))
     {
-      cerr << "ERROR: In the corr(A,B).options statement, A and B must be of the same type. "
-           << "In your case, " << name << " and " << name1 << " are of different "
-           << "types." << endl;
-      exit(EXIT_FAILURE);
+      std::ostringstream msg;
+      msg << "ERROR: In the corr(A,B).options statement, A and B must be of the same type. "
+          << "In your case, " << name << " and " << name1 << " are of different "
+          << "types." << endl;
+      dyn_error(msg);
     }
 }
 
@@ -3138,8 +3115,7 @@ OptionsEqualStatement::checkPass(ModFileStructure &mod_file_struct, WarningConso
   if ((to_declaration_type != "par" && to_declaration_type != "std" && to_declaration_type != "corr")
       || (from_declaration_type != "par" && from_declaration_type != "std" && from_declaration_type != "corr"))
     {
-      cerr << "Internal Dynare Error" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Internal Dynare Error\n");
     }
 }
 
@@ -3247,8 +3223,7 @@ ExtendedPathStatement::checkPass(ModFileStructure &mod_file_struct, WarningConso
 
   if (options_list.num_options.find("periods") == options_list.num_options.end())
     {
-      cerr << "ERROR: the 'periods' option of 'extended_path' is mandatory" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: the 'periods' option of 'extended_path' is mandatory\n");
     }
 }
 
