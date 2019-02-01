@@ -29,6 +29,9 @@
 #include "ExprNode.hh"
 #include "DataTree.hh"
 #include "ModFile.hh"
+#include "dyn_error.hh"
+#include "dynout.hh"
+
 
 ExprNode::ExprNode(DataTree &datatree_arg) : datatree(datatree_arg), preparedForDerivation(false)
 {
@@ -322,6 +325,10 @@ NumConstNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << datatree.num_constants.get(id);
 }
 
+void NumConstNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    mdl.add_constant(id);
+}
+
 bool
 NumConstNode::containsExternalFunction() const
 {
@@ -559,8 +566,7 @@ VariableNode::prepareForDerivation()
       // Such a variable is never derived
       break;
     case eExternalFunction:
-      cerr << "VariableNode::prepareForDerivation: impossible case" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("VariableNode::prepareForDerivation: impossible case\n");
     }
 }
 
@@ -582,17 +588,13 @@ VariableNode::computeDerivative(int deriv_id)
     case eModelLocalVariable:
       return datatree.local_variables_table[symb_id]->getDerivative(deriv_id);
     case eModFileLocalVariable:
-      cerr << "ModFileLocalVariable is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ModFileLocalVariable is not derivable\n");
     case eStatementDeclaredVariable:
-      cerr << "eStatementDeclaredVariable is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("eStatementDeclaredVariable is not derivable\n");
     case eUnusedEndogenous:
-      cerr << "eUnusedEndogenous is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("eUnusedEndogenous is not derivable\n");
     case eExternalFunction:
-      cerr << "Impossible case!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Impossible case!\n");
     }
   // Suppress GCC warning
   exit(EXIT_FAILURE);
@@ -656,10 +658,13 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   switch (type)
     {
     case eParameter:
-      if (output_type == oMatlabOutsideModel)
+      if (output_type == oMatlabOutsideModel) {
         output << "M_.params" << "(" << tsid + 1 << ")";
-      else
+      } else if (output_type == oRDerivatives) {
+        output <<  datatree.symbol_table.getName(symb_id);
+      } else {
         output << "params" << LEFT_ARRAY_SUBSCRIPT(output_type) << tsid + ARRAY_SUBSCRIPT_OFFSET(output_type) << RIGHT_ARRAY_SUBSCRIPT(output_type);
+      }
       break;
 
     case eModelLocalVariable:
@@ -671,7 +676,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           datatree.local_variables_table[symb_id]->writeOutput(output, output_type, temporary_terms, tef_terms);
           output << ")";
         }
-      else
+      else if (output_type == oRDerivatives) {
+        output << datatree.symbol_table.getName(symb_id);
+      } else
         /* We append underscores to avoid name clashes with "g1" or "oo_" (see
            also ModelTree::writeModelLocalVariables) */
         output << datatree.symbol_table.getName(symb_id) << "__";
@@ -687,8 +694,12 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaDynamicModel:
         case oMatlabDynamicModel:
         case oCDynamicModel:
+        case oRDynamicModel:
           i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag)) + ARRAY_SUBSCRIPT_OFFSET(output_type);
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
+          break;
+        case oRDerivatives:
+          output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
         case oCDynamic2Model:
           i = tsid + (lag+1)*datatree.symbol_table.endo_nbr() + ARRAY_SUBSCRIPT_OFFSET(output_type);
@@ -698,6 +709,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaStaticModel:
         case oMatlabStaticModel:
         case oMatlabStaticModelSparse:
+        case oRStaticModel:
           i = tsid + ARRAY_SUBSCRIPT_OFFSET(output_type);
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
@@ -729,8 +741,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "ys_[" << tsid << "]";
           break;
         default:
-          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("VariableNode::writeOutput: should not reach this point\n");
         }
       break;
 
@@ -741,6 +752,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaDynamicModel:
         case oMatlabDynamicModel:
         case oMatlabDynamicModelSparse:
+        case oRDynamicModel:
           if (lag > 0)
             output <<  "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << "it_+" << lag << ", " << i
                    << RIGHT_ARRAY_SUBSCRIPT(output_type);
@@ -750,6 +762,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           else
             output <<  "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << "it_, " << i
                    << RIGHT_ARRAY_SUBSCRIPT(output_type);
+          break;
+        case oRDerivatives:
+          output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
         case oCDynamicModel:
         case oCDynamic2Model:
@@ -764,6 +779,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaStaticModel:
         case oMatlabStaticModel:
         case oMatlabStaticModelSparse:
+        case oRStaticModel:
           output << "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
         case oMatlabOutsideModel:
@@ -781,8 +797,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "exo_[" << i - 1 << "]";
           break;
         default:
-          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("VariableNode::writeOutput: should not reach this point\n");
         }
       break;
 
@@ -833,8 +848,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << "exo_[" << i - 1 << "]";
           break;
         default:
-          cerr << "VariableNode::writeOutput: should not reach this point" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("VariableNode::writeOutput: should not reach this point\n");
         }
       break;
 
@@ -843,10 +857,40 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case eLogTrend:
     case eStatementDeclaredVariable:
     case eUnusedEndogenous:
-      cerr << "Impossible case" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Impossible case\n");
     }
 }
+
+
+void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    int i;
+    switch (type) {
+    case eParameter:
+        i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        mdl.add_param(i);
+        break;
+    case eEndogenous:
+        if (dynamic) {
+            i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag));
+        } else {
+            i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        }
+        mdl.add_endo(i);
+        break;
+    case eExogenous:
+        i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        if (dynamic) {
+            mdl.add_exo(i, lag);
+        } else {
+            mdl.add_exo(i, 0);
+        }
+        break;
+    default:
+        dyn_error("Internal error: internal evalution not yet supported"
+                  " for this type of variable");
+    }
+}
+
 
 expr_t
 VariableNode::substituteStaticAuxiliaryVariable() const
@@ -922,8 +966,7 @@ VariableNode::compile(ostream &CompileCode, unsigned int &instruction_number,
             {
               if (steady_dynamic)  // steady state values in a dynamic model
                 {
-                  cerr << "Impossible case: steady_state in rhs of equation" << endl;
-                  exit(EXIT_FAILURE);
+                  dyn_error("Impossible case: steady_state in rhs of equation\n");
                 }
               else
                 {
@@ -1040,20 +1083,16 @@ VariableNode::getChainRuleDerivative(int deriv_id, const map<int, expr_t> &recur
     case eModelLocalVariable:
       return datatree.local_variables_table[symb_id]->getChainRuleDerivative(deriv_id, recursive_variables);
     case eModFileLocalVariable:
-      cerr << "ModFileLocalVariable is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ModFileLocalVariable is not derivable\n");
     case eStatementDeclaredVariable:
-      cerr << "eStatementDeclaredVariable is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("eStatementDeclaredVariable is not derivable\n")
     case eUnusedEndogenous:
-      cerr << "eUnusedEndogenous is not derivable" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("eUnusedEndogenous is not derivable\n")
     case eExternalFunction:
-      cerr << "Impossible case!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Impossible case!\n")
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error");
 }
 
 expr_t
@@ -1608,9 +1647,8 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
               VariableNode *varg = dynamic_cast<VariableNode *>(arg);
               if (varg == NULL)
                 {
-                  cerr << "UnaryOpNode::composeDerivatives: STEADY_STATE() should only be used on "
-                       << "standalone variables (like STEADY_STATE(y)) to be derivable w.r.t. parameters" << endl;
-                  exit(EXIT_FAILURE);
+                  dyn_erorr("UnaryOpNode::composeDerivatives: STEADY_STATE() should only be used on "
+                            "standalone variables (like STEADY_STATE(y)) to be derivable w.r.t. parameters\n");
                 }
               if (datatree.symbol_table.getType(varg->symb_id) == eEndogenous)
                 return datatree.AddSteadyStateParamDeriv(arg, datatree.getSymbIDByDerivID(deriv_id));
@@ -1637,14 +1675,12 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
       assert(datatree.isDynamic());
       if (datatree.getTypeByDerivID(deriv_id) == eParameter)
         {
-          cerr << "3rd derivative of STEADY_STATE node w.r.t. three parameters not implemented" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("3rd derivative of STEADY_STATE node w.r.t. three parameters not implemented\n");
         }
       else
         return datatree.Zero;
     case oExpectation:
-      cerr << "UnaryOpNode::composeDerivatives: not implemented on oExpectation" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("UnaryOpNode::composeDerivatives: not implemented on oExpectation\n");
     case oErf:
       // x^2
       t11 = datatree.AddPower(arg, datatree.Two);
@@ -1991,7 +2027,7 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case oExpectation:
       if (!IS_LATEX(output_type))
         {
-          cerr << "UnaryOpNode::writeOutput: not implemented on oExpectation" << endl;
+          dyn_error("UnaryOpNode::writeOutput: not implemented on oExpectation\n");
           exit(EXIT_FAILURE);
         }
       output << "\\mathbb{E}_{t";
@@ -2034,6 +2070,28 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   if (op_code == oUminus)
     output << RIGHT_PAR(output_type);
 }
+
+
+void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    arg->genPolishCode(mdl, dynamic);
+    switch (op_code) {
+    case oUminus:
+      mdl.add_unary_minus();
+      break;
+    case oExp:
+      mdl.add_op(EXP);
+      break;
+    case oLog:
+      mdl.add_op(LOG);
+      break;
+    case oSqrt:
+      mdl.add_op(SQRT);
+      break;
+    default:
+      dyn_error("genPolishCode not implemented for unary operator");
+    }
+}
+
 
 void
 UnaryOpNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
@@ -2231,7 +2289,7 @@ UnaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_
         case oErf:
           return (make_pair(2, (expr_t) NULL));
         default:
-          cerr << "Unary operator not handled during the normalization process" << endl;
+          DynErr << "Unary operator not handled during the normalization process" << endl;
           return (make_pair(2, (expr_t) NULL)); // Could not be normalized
         }
     }
@@ -2283,12 +2341,11 @@ UnaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_
         case oErf:
           return (make_pair(0, datatree.AddErf(New_expr_t)));
         default:
-          cerr << "Unary operator not handled during the normalization process" << endl;
+          DynErr << "Unary operator not handled during the normalization process" << endl;
           return (make_pair(2, (expr_t) NULL)); // Could not be normalized
         }
     }
-  cerr << "UnaryOpNode::normalizeEquation: impossible case" << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("UnaryOpNode::normalizeEquation: impossible case\n");
 }
 
 expr_t
@@ -2344,18 +2401,16 @@ UnaryOpNode::buildSimilarUnaryOpNode(expr_t alt_arg, DataTree &alt_datatree) con
     case oSteadyState:
       return alt_datatree.AddSteadyState(alt_arg);
     case oSteadyStateParamDeriv:
-      cerr << "UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParamDeriv can't be translated" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParamDeriv can't be translated\n")
     case oSteadyStateParam2ndDeriv:
-      cerr << "UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParam2ndDeriv can't be translated" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParam2ndDeriv can't be translated\n")
     case oExpectation:
       return alt_datatree.AddExpectation(expectation_information_set, alt_arg);
     case oErf:
       return alt_datatree.AddErf(alt_arg);
     }
   // Suppress GCC warning
-  exit(EXIT_FAILURE);
+  dyn_error("Internal error\n")
 }
 
 expr_t
@@ -2488,9 +2543,8 @@ UnaryOpNode::substituteExpectation(subst_table_t &subst_table, vector<BinaryOpNo
       if (partial_information_model && expectation_information_set == 0)
         if (dynamic_cast<VariableNode *>(arg) == NULL)
           {
-            cerr << "ERROR: In Partial Information models, EXPECTATION(0)(X) "
-                 << "can only be used when X is a single variable." << endl;
-            exit(EXIT_FAILURE);
+            dyn_error("ERROR: In Partial Information models, EXPECTATION(0)(X) "
+                      "can only be used when X is a single variable.\n");
           }
 
       //take care of any nested expectation operators by calling arg->substituteExpectation(.), then decreaseLeadsLags for this oExpectation operator
@@ -3090,11 +3144,12 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   // Treat derivative of Power
   if (op_code == oPowerDeriv)
     {
-      if (IS_LATEX(output_type))
+      if (IS_LATEX(output_type) || output_type == oRDerivatives) {
         unpackPowerDeriv()->writeOutput(output, output_type, temporary_terms, tef_terms);
-      else
+      } else
         {
-          if (output_type == oJuliaStaticModel || output_type == oJuliaDynamicModel)
+          if (output_type == oJuliaStaticModel || output_type == oJuliaDynamicModel ||
+              output_type == oRStaticModel     || output_type == oRDynamicModel)
             output << "get_power_deriv(";
           else
             output << "getPowerDeriv(";
@@ -3251,6 +3306,63 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << RIGHT_PAR(output_type);
 }
 
+
+void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    arg1->genPolishCode(mdl, dynamic);
+    arg2->genPolishCode(mdl, dynamic);
+    switch (op_code) {
+    case oPlus:
+        mdl.add_binop('+');
+        break;
+    case oMinus:
+        mdl.add_binop('-');
+        break;
+    case oTimes:
+        mdl.add_binop('*');
+        break;
+    case oDivide:
+        mdl.add_binop('/');
+        break;
+    case oPower:
+        mdl.add_binop('^');
+        break;
+    case oPowerDeriv:
+        if (powerDerivOrder != 1) {
+            dyn_error("genPolishCode not implemented for power deriv order != 1");
+        }
+        mdl.add_op(POW_DERIV);
+        break;
+    case oEqual:
+    case oEqualEqual:
+        mdl.add_op(EQ);
+        break;
+    case oLess:
+        mdl.add_op(LT);
+        break;
+    case oGreater:
+        mdl.add_op(GT);
+        break;
+    case oLessEqual:
+        mdl.add_op(LE);
+        break;
+    case oGreaterEqual:
+        mdl.add_op(GE);
+        break;
+    case oDifferent:
+        mdl.add_op(NEQ);
+        break;
+    case oMax:
+        mdl.add_op(MAX);
+        break;
+    case oMin:
+        mdl.add_op(MIN);
+        break;
+    default:
+      dyn_error("genPolishCode not implemented for this binary operator");
+    }
+}
+
+
 void
 BinaryOpNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                           const temporary_terms_t &temporary_terms,
@@ -3301,8 +3413,7 @@ BinaryOpNode::Compute_RHS(expr_t arg1, expr_t arg2, int op, int op_type) const
           return (datatree.AddLog10(arg1));
           break;
         default:
-          cerr << "BinaryOpNode::Compute_RHS: case not handled";
-          exit(EXIT_FAILURE);
+          dyn_error("BinaryOpNode::Compute_RHS: case not handled\n");
         }
       break;
     case 1: /*Binary Operator*/
@@ -3324,8 +3435,7 @@ BinaryOpNode::Compute_RHS(expr_t arg1, expr_t arg2, int op, int op_type) const
           return (datatree.AddPower(arg1, arg2));
           break;
         default:
-          cerr << "BinaryOpNode::Compute_RHS: case not handled";
-          exit(EXIT_FAILURE);
+          dyn_error("BinaryOpNode::Compute_RHS: case not handled\n");
         }
       break;
     }
@@ -3569,12 +3679,11 @@ BinaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr
         return (make_pair(1, (expr_t) NULL));
       break;
     default:
-      cerr << "Binary operator not handled during the normalization process" << endl;
+      DynErr << "Binary operator not handled during the normalization process" << endl;
       return (make_pair(2, (expr_t) NULL)); // Could not be normalized
     }
   // Suppress GCC warning
-  cerr << "BinaryOpNode::normalizeEquation: impossible case" << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("BinaryOpNode::normalizeEquation: impossible case"\n);
 }
 
 expr_t
@@ -4278,6 +4387,12 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     }
 }
 
+
+void TrinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    dyn_error("genPolishCode not implemented for this type");
+}
+
+
 void
 TrinaryOpNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
@@ -4876,6 +4991,21 @@ AbstractExternalFunctionNode::normalizeEquation(int var_endo, vector<pair<int, p
     return (make_pair(1, (expr_t) NULL));
 }
 
+
+void ExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+
+    // arguments
+    for (vector<expr_t>::const_iterator it = arguments.begin(); 
+         it != arguments.end(); it++) {
+        (*it)->genPolishCode(mdl, dynamic);
+    }
+
+    // function call
+    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
+    mdl.add_external_function_call(id);
+}
+
+
 void
 AbstractExternalFunctionNode::writeExternalFunctionArguments(ostream &output, ExprNodeOutputType output_type,
                                                              const temporary_terms_t &temporary_terms,
@@ -5061,8 +5191,7 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
 {
   if (output_type == oMatlabOutsideModel || output_type == oSteadyStateFile
       || output_type == oCSteadyStateFile || output_type == oJuliaSteadyStateFile
-      || IS_LATEX(output_type))
-    {
+      || output_type == oRDerivatives     || IS_LATEX(output_type)) {
       string name = IS_LATEX(output_type) ? datatree.symbol_table.getTeXName(symb_id)
         : datatree.symbol_table.getName(symb_id);
       output << name << "(";
@@ -5251,14 +5380,18 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
 {
   assert(output_type != oMatlabOutsideModel);
 
-  if (IS_LATEX(output_type))
-    {
-      output << "\\frac{\\partial " << datatree.symbol_table.getTeXName(symb_id)
-             << "}{\\partial " << inputIndex << "}(";
-      writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
-      output << ")";
-      return;
+  if (output_type == oRDerivatives || IS_LATEX(output_type)) {
+    if (IS_LATEX(output_type)) {
+        output << "\\frac{\\partial " << datatree.symbol_table.getTeXName(symb_id)
+                 << "}{\\partial " << inputIndex << "}";
+    } else {
+        output <<  datatree.symbol_table.getName(symb_id) << "_d" << inputIndex;
     }
+    output << "(";
+    writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+    output << ")";
+    return;
+  }
 
   // If current node is a temporary term
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<FirstDerivExternalFunctionNode *>(this));
@@ -5289,6 +5422,31 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
     output << "TEFD_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
+
+
+void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+
+    // arguments
+    for (vector<expr_t>::const_iterator it = arguments.begin(); 
+         it != arguments.end(); it++) {
+        (*it)->genPolishCode(mdl, dynamic);
+    }
+
+    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
+
+    const int first_deriv_symb_id = datatree.external_functions_table.getFirstDerivSymbID(symb_id);
+    if (first_deriv_symb_id < 0) {
+        mdl.add_external_function_numderiv(id, inputIndex);
+    } else {
+        if (first_deriv_symb_id != symb_id) {
+            dyn_warning("For the internal calculation mode the specified"
+                  " name of the first derivative function is ignored");
+        }
+        mdl.add_external_function_deriv(id, inputIndex);
+    } 
+
+}
+
 
 void
 FirstDerivExternalFunctionNode::compile(ostream &CompileCode, unsigned int &instruction_number,
@@ -5552,8 +5710,7 @@ expr_t
 SecondDerivExternalFunctionNode::composeDerivatives(const vector<expr_t> &dargs)
 
 {
-  cerr << "ERROR: third order derivatives of external functions are not implemented" << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("ERROR: third order derivatives of external functions are not implemented\n"); 
 }
 
 void
@@ -5613,6 +5770,13 @@ SecondDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType
       output << "TEFDD_def_" << getIndxInTefTerms(second_deriv_symb_id, tef_terms)
              << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndex1 << "," << tmpIndex2 << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
+
+
+void SecondDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    dyn_error("genPolishCode not implemented for this type");
+}
+
+
 
 void
 SecondDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
@@ -5763,8 +5927,7 @@ SecondDerivExternalFunctionNode::compile(ostream &CompileCode, unsigned int &ins
                                          const map_idx_t &map_idx, bool dynamic, bool steady_dynamic,
                                          deriv_node_temp_terms_t &tef_terms) const
 {
-  cerr << "SecondDerivExternalFunctionNode::compile: not implemented." << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("SecondDerivExternalFunctionNode::compile: not implemented.\n");
 }
 
 void
@@ -5773,6 +5936,5 @@ SecondDerivExternalFunctionNode::compileExternalFunctionOutput(ostream &CompileC
                                                                const map_idx_t &map_idx, bool dynamic, bool steady_dynamic,
                                                                deriv_node_temp_terms_t &tef_terms) const
 {
-  cerr << "SecondDerivExternalFunctionNode::compileExternalFunctionOutput: not implemented." << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("SecondDerivExternalFunctionNode::compileExternalFunctionOutput: not implemented.\n");
 }

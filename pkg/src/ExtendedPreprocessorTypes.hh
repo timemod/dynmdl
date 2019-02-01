@@ -26,7 +26,7 @@ enum FileOutputType
     dynamic,                          // outputs <fname>_dynamic.* and related files
     first,                            // outputs <fname>_first_derivatives.* and related files
     second,                           // outputs <fname>_first_derivatives.*, <fname>_second_derivatives.* and related files
-    third,                            // outputs <fname>_first_derivatives.*, <fname>_second_derivatives.*, <fname>_third_derivatives.*  and related files
+    third                             // outputs <fname>_first_derivatives.*, <fname>_second_derivatives.*, <fname>_third_derivatives.*  and related files
   };
 
 enum LanguageOutputType
@@ -36,6 +36,7 @@ enum LanguageOutputType
     cpp,                              // outputs files for C++
     cuda,                             // outputs files for CUDA (not yet implemented)
     julia,                            // outputs files for Julia
-    python,                           // outputs files for Python (not yet implemented) (not yet implemented)
+    r,                                // output files for R
+    python                            // outputs files for Python (not yet implemented) (not yet implemented)
   };
 #endif
