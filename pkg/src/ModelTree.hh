@@ -328,6 +328,10 @@ public:
   //! Helper for writing the Jacobian elements in MATLAB and C
   /*! Writes either (i+1,j+1) or [i+j*no_eq] */
   void jacobianHelper(ostream &output, int eq_nb, int col_nb, ExprNodeOutputType output_type) const;
+#ifdef USE_R
+   /* Jacobian helper for writing sparse matrix */
+  void jacobianHelper(ostream &output, int ideriv, int eq_nb, int col_nb, ExprNodeOutputType output_type) const;
+#endif
   //! Helper for writing the sparse Hessian or third derivatives in MATLAB and C
   /*! If order=2, writes either v2(i+1,j+1) or v2[i+j*NNZDerivatives[1]]
     If order=3, writes either v3(i+1,j+1) or v3[i+j*NNZDerivatives[2]] */

@@ -1233,7 +1233,26 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
       writeTemporaryTerms(temp_term_union, temp_term_empty, jacobian_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, jacobian_output, output_type, tef_terms);
+#ifdef USE_R
+  int ideriv = 0;
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+       it != first_derivatives.end(); it++)
+    {
+      int eq = it->first.first;
+      int symb_id = getSymbIDByDerivID(it->first.second);
+      int var = it->first.second;
+      expr_t d1 = it->second;
+      jacobianHelper(jacobian_output, ideriv, eq, var, output_type);
+      jacobian_output << ASSIGNMENT_OPERATOR(output_type);
+      d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
+      if (IS_R(output_type) || output_type == oCStaticModel) {
+          jacobian_output << ";";
+      }
+      jacobian_output << endl;
+      ideriv++;
+    }
+#else
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
        it != first_derivatives.end(); it++)
     {
       int eq = it->first.first;
@@ -1245,6 +1264,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
       jacobian_output << ";" << endl;
     }
+#endif
 
   int g2ncols = symbol_table.endo_nbr() * symbol_table.endo_nbr();
   // Write Hessian w.r. to endogenous only (only if 2nd order derivatives have been computed)
@@ -1453,6 +1473,29 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
                    << "end" << endl
                    << "end" << endl;
     }
+#ifdef USE_R
+     else if  (output_type == oRStaticModel) {
+
+      int nnz = first_derivatives.size();
+
+
+      StaticOutput << "f_static <- function(y, x, params) {" << endl
+                    << model_local_vars_output.str()
+                    <<  "residual <- numeric(" <<  equations.size() << ")" <<  endl
+                    << model_output.str()
+                    <<   "return(residual)" << endl
+                    << "}" << endl << endl
+                    << "jac_static <- function(y, x, params) {" << endl
+                    << model_local_vars_output.str()
+                    << "rows   <- integer(" << nnz << ")" << endl
+                    << "cols   <- integer(" << nnz << ")" << endl
+                    << "values <- integer(" << nnz << ")" << endl << endl
+                    << jacobian_output.str()
+                     << endl
+                    << "return(list(rows = rows, cols = cols, values = values))"
+                    << endl << "}" << endl;
+    }
+#endif
   else if (output_type == oCStaticModel)
     {
       StaticOutput << "void Static(double *y, double *x, int nb_row_x, double *params, double *residual, double *g1, double *v2)" << endl

@@ -2184,6 +2184,25 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, ExprNodeOutputType outpu
       writeTemporaryTerms(temp_term_union, temp_term_empty, jacobian_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, jacobian_output, output_type, tef_terms);
+
+#ifdef USE_R
+  int ideriv = 0;
+  for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+       it != first_derivatives.end(); it++) {
+      int eq = it->first.first;
+      int var = it->first.second;
+      expr_t d1 = it->second;
+      jacobianHelper(jacobian_output, ideriv, eq, getDynJacobianCol(var), 
+                     output_type);
+      jacobian_output << ASSIGNMENT_OPERATOR(output_type);
+      d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
+      if (IS_R(output_type) || output_type == oCDynamicModel) {
+          jacobian_output << ";";
+      }
+      jacobian_output << endl;
+      ideriv++;
+    }
+#else
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
        it != first_derivatives.end(); it++)
     {
@@ -2199,6 +2218,7 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, ExprNodeOutputType outpu
       }
       jacobian_output << endl;
     }
+#endif
 
   // Writing Hessian
   temp_term_union_m_1 = temp_term_union;

@@ -1877,3 +1877,39 @@ ModelTree::isNonstationary(int symb_id) const
   return (nonstationary_symbols_map.find(symb_id)
           != nonstationary_symbols_map.end());
 }
+
+#ifdef USE_R
+
+void ModelTree::jacobianHelper(ostream &output, int ideriv, int eq_nb, 
+                               int col_nb, ExprNodeOutputType output_type) const {
+
+  int shift = IS_R(output_type) ? 1 : 0;
+
+  // rows
+  output << "rows" << LEFT_ARRAY_SUBSCRIPT(output_type);
+  output << ideriv + shift;
+  output << RIGHT_ARRAY_SUBSCRIPT(output_type);
+  output << ASSIGNMENT_OPERATOR(output_type);
+  output << eq_nb + 1;
+  if (IS_C(output_type)) {
+      output << ";";
+  }
+  output << endl;
+    
+  // columns
+  output << "cols" << LEFT_ARRAY_SUBSCRIPT(output_type);
+  output << ideriv + shift;
+  output << RIGHT_ARRAY_SUBSCRIPT(output_type);
+  output << ASSIGNMENT_OPERATOR(output_type);
+  output << col_nb + 1;
+  if (IS_C(output_type)) {
+      output << ";";
+  }
+  output << endl;
+
+  // values
+  output << "values" << LEFT_ARRAY_SUBSCRIPT(output_type);
+  output << ideriv + shift << RIGHT_ARRAY_SUBSCRIPT(output_type);
+}
+
+#endif

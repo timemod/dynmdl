@@ -1274,6 +1274,11 @@ DynMdl <- R6Class("DynMdl",
     make_functions = function() {
       
       if (private$calc == "R" || private$calc == "bytecode") {
+  
+        cat("static_functions\n\n")
+        cat(private$mdldef$static_functions)
+        cat("dynamic_functions\n\n")
+        cat(private$mdldef$dynamic_functions)
         
         # no dll, functions implemented in R
         eval(parse(text = private$mdldef$static_functions))
