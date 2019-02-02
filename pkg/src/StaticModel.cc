@@ -1498,6 +1498,36 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 #endif
   else if (output_type == oCStaticModel)
     {
+#ifdef USE_R
+      StaticOutput << "void f_static(double *y, double *x, double *params, double *residual) {" << endl
+                   << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          StaticOutput << "init_call_R();" << endl << endl;
+      }
+      StaticOutput  << "double lhs, rhs;" << endl
+                   << endl
+                   << "  /* Residual equations */" << endl
+                   << model_local_vars_output.str()
+                   << model_output.str();
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          StaticOutput << endl << "close_call_R();" << endl << endl;
+      }
+      StaticOutput << endl << "return;" << endl << "}" << endl << endl;
+
+      StaticOutput << "void jac_static(double *y, double *x, double *params, "
+                      "int *rows, int *cols, double *values) {" << endl
+                   << "  /* Jacobian  */" << endl;
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          StaticOutput << "init_call_R();" << endl << endl;
+      }
+      StaticOutput  << model_local_vars_output.str()
+                   << jacobian_output.str();
+      if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
+          StaticOutput << endl << "close_call_R();" << endl << endl;
+      }
+      StaticOutput << "return;" << endl;
+
+#else
       StaticOutput << "void Static(double *y, double *x, int nb_row_x, double *params, double *residual, double *g1, double *v2)" << endl
                    << "{" << endl
                    << "  double lhs, rhs;" << endl
@@ -1511,7 +1541,6 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
                    << endl
                    << jacobian_output.str()
                    << endl;
-
       if (second_derivatives.size())
         StaticOutput << "  /* Hessian for endogenous and exogenous variables */" << endl
                      << "  if (v2 == NULL)" << endl
@@ -1526,6 +1555,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
                      << endl
                      << third_derivatives_output.str()
                      << endl;
+#endif
     }
   else
     {
@@ -1630,7 +1660,7 @@ void
 StaticModel::writeStaticCFile(const string &func_name) const
 {
   // Writing comments and function definition command
-  string filename = func_name + "_static.c";
+  string filename = func_name + "static.c";
   string filename_mex = func_name + "_static_mex.c";
 
   ofstream output;

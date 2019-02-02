@@ -2,7 +2,7 @@
 
 library(dynmdl)
 
-mdl <- dyn_mdl("mod/islm.mod", calc = "bytecode")
+mdl <- dyn_mdl("mod/islm.mod")
 #print(mdl, short = FALSE)
 
 mdl$solve_steady(control = list(trace = TRUE))
