@@ -1444,6 +1444,38 @@ ModelTree::writeModelEquations(ostream &output, ExprNodeOutputType output_type) 
     }
 }
 
+
+void ModelTree::genPolishEquations(PolishModel &mdl, bool dynamic) const {
+
+    for (int eq = 0; eq < (int) equations.size(); eq++) {
+
+        mdl.new_equation();
+
+        BinaryOpNode *eq_node = equations[eq];
+        expr_t lhs = eq_node->get_arg1();
+        expr_t rhs = eq_node->get_arg2();
+
+        // Test if the right hand side of the equation is empty.
+        double vrhs = 1.0;
+        try {
+            vrhs = rhs->eval(eval_context_t());
+        } catch (ExprNode::EvalException &e) {
+        }
+
+        if (vrhs != 0) { 
+            // The right hand side of the equation is not empty 
+            //   ==> residual=lhs-rhs;
+            lhs->genPolishCode(mdl, dynamic);
+            rhs->genPolishCode(mdl, dynamic);
+            mdl.add_binop('-');
+        } else  {
+            // The right hand side of the equation is empty ==> residual=lhs;
+            lhs->genPolishCode(mdl, dynamic);
+        }
+    }
+}
+
+
 void
 ModelTree::compileModelEquations(ostream &code_file, unsigned int &instruction_number, const temporary_terms_t &tt, const map_idx_t &map_idx, bool dynamic, bool steady_dynamic) const
 {

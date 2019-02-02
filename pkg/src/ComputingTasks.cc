@@ -204,7 +204,7 @@ StochSimulStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsoli
       || (it != options_list.num_options.end() && it2 != options_list.num_options.end())
       || (it1 != options_list.num_options.end() && it2 != options_list.num_options.end()))
     {
-       dyn_error("ERROR: stoch_simul: can only use one of hp, one-sided hp, and bandpass filters\n")
+       dyn_error("ERROR: stoch_simul: can only use one of hp, one-sided hp, and bandpass filters\n");
     }
 }
 
@@ -259,7 +259,7 @@ RamseyModelStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsol
       int order = atoi(it->second.c_str());
       if (order > 2)
         {
-          dyn_error("ERROR: ramsey_model: order > 2 is not  implemented\n)";
+          dyn_error("ERROR: ramsey_model: order > 2 is not  implemented\n");
         }
       mod_file_struct.order_option = max(mod_file_struct.order_option, order + 1);
     }
@@ -330,7 +330,7 @@ RamseyConstraintsStatement::writeOutput(ostream &output, const string &basename,
           output << ">=";
           break;
         default:
-          dyn_error("Ramsey constraints: this shouldn't happen.\n";
+          dyn_error("Ramsey constraints: this shouldn't happen.\n");
         }
       output << "', '";
       it->expression->writeOutput(output);
@@ -423,7 +423,7 @@ RamseyPolicyStatement::checkPass(ModFileStructure &mod_file_struct, WarningConso
       int order = atoi(it->second.c_str());
       if (order > 2)
         {
-          dyn_erorr("ERROR: ramsey_policy: order > 2 is not  implemented\n");
+          dyn_error("ERROR: ramsey_policy: order > 2 is not  implemented\n");
         }
       mod_file_struct.order_option = max(mod_file_struct.order_option, order + 1);
     }

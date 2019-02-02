@@ -1085,11 +1085,11 @@ VariableNode::getChainRuleDerivative(int deriv_id, const map<int, expr_t> &recur
     case eModFileLocalVariable:
       dyn_error("ModFileLocalVariable is not derivable\n");
     case eStatementDeclaredVariable:
-      dyn_error("eStatementDeclaredVariable is not derivable\n")
+      dyn_error("eStatementDeclaredVariable is not derivable\n");
     case eUnusedEndogenous:
-      dyn_error("eUnusedEndogenous is not derivable\n")
+      dyn_error("eUnusedEndogenous is not derivable\n");
     case eExternalFunction:
-      dyn_error("Impossible case!\n")
+      dyn_error("Impossible case!\n");
     }
   // Suppress GCC warning
   dyn_error("Internal error");
@@ -1647,7 +1647,7 @@ UnaryOpNode::composeDerivatives(expr_t darg, int deriv_id)
               VariableNode *varg = dynamic_cast<VariableNode *>(arg);
               if (varg == NULL)
                 {
-                  dyn_erorr("UnaryOpNode::composeDerivatives: STEADY_STATE() should only be used on "
+                  dyn_error("UnaryOpNode::composeDerivatives: STEADY_STATE() should only be used on "
                             "standalone variables (like STEADY_STATE(y)) to be derivable w.r.t. parameters\n");
                 }
               if (datatree.symbol_table.getType(varg->symb_id) == eEndogenous)
@@ -2401,16 +2401,16 @@ UnaryOpNode::buildSimilarUnaryOpNode(expr_t alt_arg, DataTree &alt_datatree) con
     case oSteadyState:
       return alt_datatree.AddSteadyState(alt_arg);
     case oSteadyStateParamDeriv:
-      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParamDeriv can't be translated\n")
+      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParamDeriv can't be translated\n");
     case oSteadyStateParam2ndDeriv:
-      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParam2ndDeriv can't be translated\n")
+      dyn_error("UnaryOpNode::buildSimilarUnaryOpNode: oSteadyStateParam2ndDeriv can't be translated\n");
     case oExpectation:
       return alt_datatree.AddExpectation(expectation_information_set, alt_arg);
     case oErf:
       return alt_datatree.AddErf(alt_arg);
     }
   // Suppress GCC warning
-  dyn_error("Internal error\n")
+  dyn_error("Internal error\n");
 }
 
 expr_t
@@ -3683,7 +3683,7 @@ BinaryOpNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr
       return (make_pair(2, (expr_t) NULL)); // Could not be normalized
     }
   // Suppress GCC warning
-  dyn_error("BinaryOpNode::normalizeEquation: impossible case"\n);
+  dyn_error("BinaryOpNode::normalizeEquation: impossible case\n");
 }
 
 expr_t

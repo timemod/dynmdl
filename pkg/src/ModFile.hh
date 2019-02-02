@@ -167,6 +167,14 @@ public:
   void writeModelCC(const string &basename) const;
 
   void computeChecksum();
+#ifdef USE_R
+  void writeCFilesForR(const string &basename) const;
+  Rcpp::List getModelListR(bool internal_calc);
+  Rcpp::List getDerivativeInfo() const;
+  int get_warning_count() const;
+  void createPolishModel(PolishModel &mdl) const;
+#endif
+
 };
 
 #endif // ! MOD_FILE_HH

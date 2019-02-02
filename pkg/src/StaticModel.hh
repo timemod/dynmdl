@@ -48,14 +48,17 @@ private:
   //! Writes static model file (standard Matlab version)
   void writeStaticMFile(const string &static_basename) const;
 
+#ifndef USE_R
   //! Writes static model file (C version)
   void writeStaticCFile(const string &func_name) const;
+#endif
 
   //! Writes static model file (Julia version)
   void writeStaticJuliaFile(const string &basename) const;
 
   //! Writes the static model equations and its derivatives
-  void writeStaticModel(ostream &StaticOutput, bool use_dll, bool julia) const;
+  void writeStaticModel(ostream &StaticOutput, 
+                        ExprNodeOutputType output_type = oMatlabStaticModel) const;
 
   //! Writes the static function calling the block to solve (Matlab version)
   void writeStaticBlockMFSFile(const string &basename) const;
@@ -153,6 +156,10 @@ protected:
   vector<pair<int, int> > endo_max_leadlag_block, other_endo_max_leadlag_block, exo_max_leadlag_block, exo_det_max_leadlag_block, max_leadlag_block;
 
 public:
+#ifdef USE_R
+  //! Writes static model file (C version)
+  void writeStaticCFile(const string &func_name) const;
+#endif
   StaticModel(SymbolTable &symbol_table_arg, NumericalConstants &num_constants, ExternalFunctionsTable &external_functions_table_arg);
 
   //! Writes information on block decomposition when relevant
@@ -320,6 +327,11 @@ public:
   {
     return -1;
   };
+#ifdef USE_R
+  Rcpp::List getStaticModelR(bool internal_calc) const;
+  PolishModel* makePolishModel(ExternalFunctionCalc *ext_calc) const;
+#endif
+
 };
 
 #endif

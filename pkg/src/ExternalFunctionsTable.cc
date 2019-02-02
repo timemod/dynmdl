@@ -111,7 +111,25 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
               exit(EXIT_FAILURE);
             }
         }
+    } 
+#ifdef USE_R
+    else {
+      // symbol does not yet exist.
+      external_function_symb_ids.push_back(symb_id);
     }
+#endif
 
   externalFunctionTable[symb_id] = external_function_options_chng;
 }
+
+#ifdef USE_R
+
+int ExternalFunctionsTable::get_external_function_count() const {
+    return external_function_symb_ids.size();
+}
+
+int ExternalFunctionsTable::get_external_function_symb_id(int index) const {
+    return external_function_symb_ids[index];
+}
+
+#endif

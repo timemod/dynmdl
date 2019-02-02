@@ -357,6 +357,20 @@ public:
   bool isAuxiliaryVariableButNotMultiplier(int symb_id) const;
   //! Get list of endogenous variables without aux vars
   set <int> getOrigEndogenous() const;
+
+#ifdef USE_R
+  //! Get symbol name (by type specific ID)
+  string getName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
+   //! Get TEX name (by type specific ID)
+  string getTeXName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
+  //! Get long name (by type specific ID)
+  string getLongName(SymbolType type, int id) const throw (UnknownTypeSpecificIDException);
+
+  int get_aux_endo(int i) const;
+  int get_aux_orig_endo(int i) const;
+  int get_aux_orig_lead_lag(int i) const;
+  inline int get_aux_count() const throw (NotYetFrozenException);
+#endif
 };
 
 inline bool
@@ -483,5 +497,14 @@ SymbolTable::orig_endo_nbr() const throw (NotYetFrozenException)
 {
   return (endo_nbr() - aux_vars.size());
 }
+
+#ifdef USE_R
+inline int SymbolTable::get_aux_count() const throw (NotYetFrozenException) {
+  if (!frozen) {
+    throw NotYetFrozenException();
+  }
+  return aux_vars.size();
+}
+#endif
 
 #endif

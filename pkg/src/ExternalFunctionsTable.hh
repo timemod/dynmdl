@@ -62,6 +62,9 @@ public:
 private:
   //! Map containing options provided to external_functions()
   external_function_table_type externalFunctionTable;
+#ifdef USE_R
+  vector<int> external_function_symb_ids;
+#endif
 public:
   ExternalFunctionsTable();
   //! Adds an external function to the table as well as its derivative functions
@@ -76,6 +79,11 @@ public:
   inline int getSecondDerivSymbID(int symb_id) const throw (UnknownExternalFunctionSymbolIDException);
   //! Returns the total number of unique external functions declared or used in the .mod file
   inline int get_total_number_of_unique_model_block_external_functions() const;
+
+#ifdef USE_R
+  int get_external_function_count() const;
+  int get_external_function_symb_id(int index) const;
+#endif
 };
 
 inline bool

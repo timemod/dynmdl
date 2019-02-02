@@ -126,10 +126,10 @@ ConfigFile::getConfigFileInfo(const string &config_file)
         {
           std::string msg;
           if (parallel || parallel_test)
-            msg << "ERROR: ";
+            msg = "ERROR: ";
           else
-            msg << "WARNING: ";
-          msg << "HOME environment variable not found." << endl;
+            msg = "WARNING: ";
+          msg = msg +  "HOME environment variable not found.\n";
           if (parallel || parallel_test) {
                dyn_error(msg.c_str());
           } else {
@@ -320,7 +320,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                     dyn_error("ERROR: Syntax for the CPUnbr option is as follows:\n"
                               "       1) CPUnbr = <int>\n"
                               "    or 2) CPUnbr = [<int>:<int>]\n"
-                              "       where <int> is an Integer > 0.\n";
+                              "       where <int> is an Integer > 0.\n");
                   }
 
                 minCpuNbr--;
@@ -357,7 +357,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                 singleCompThread = false;
               else
                 {
-                  dyn_erorr("ERROR (in config file): The value passed to SingleCompThread may only be 'true' or 'false'.\n");
+                  dyn_error("ERROR (in config file): The value passed to SingleCompThread may only be 'true' or 'false'.\n");
                 }
             else if (!tokenizedLine.front().compare("OperatingSystem"))
               operatingSystem = tokenizedLine.back();
@@ -388,7 +388,7 @@ ConfigFile::getConfigFileInfo(const string &config_file)
                         if (!node_name.empty())
                           if (member_nodes.find(node_name) != member_nodes.end())
                             {
-                              dyn_erorr("ERROR (in config file): Node entered twice in specification of cluster.\n");
+                              dyn_error("ERROR (in config file): Node entered twice in specification of cluster.\n");
                             }
                           else
                             member_nodes[node_name] = 1.0;

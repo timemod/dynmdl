@@ -949,3 +949,122 @@ SymbolTable::writeJuliaOutput(ostream &output) const throw (NotYetFrozenExceptio
       output << "                   ]" << endl;
     }
 }
+
+#ifdef USE_R
+
+string
+SymbolTable::getName(SymbolType type, int tsid) const throw (UnknownTypeSpecificIDException)
+{
+  int id;
+  switch (type) {
+    case eEndogenous:
+      if (tsid < 0 || tsid >= (int) endo_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = endo_ids[tsid];
+      break;
+    case eExogenous:
+      if (tsid < 0 || tsid >= (int) exo_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else 
+        id = exo_ids[tsid];
+      break;
+    case eExogenousDet:
+      if (tsid < 0 || tsid >= (int) exo_det_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = exo_det_ids[tsid];
+      break;
+    case eParameter:
+      if (tsid < 0 || tsid >= (int) param_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = param_ids[tsid];
+      break;
+    default:
+      throw UnknownTypeSpecificIDException(tsid, type);
+    }
+    return name_table[id];
+}
+
+string SymbolTable::getTeXName(SymbolType type, int tsid) const 
+              throw (UnknownTypeSpecificIDException) {
+  int id;
+  switch (type) {
+    case eEndogenous:
+      if (tsid < 0 || tsid >= (int) endo_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = endo_ids[tsid];
+      break;
+    case eExogenous:
+      if (tsid < 0 || tsid >= (int) exo_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else 
+        id = exo_ids[tsid];
+      break;
+    case eExogenousDet:
+      if (tsid < 0 || tsid >= (int) exo_det_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = exo_det_ids[tsid];
+      break;
+    case eParameter:
+      if (tsid < 0 || tsid >= (int) param_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = param_ids[tsid];
+      break;
+    default:
+      throw UnknownTypeSpecificIDException(tsid, type);
+    }
+    return tex_name_table[id];
+}
+
+string SymbolTable::getLongName(SymbolType type, int tsid) const 
+             throw (UnknownTypeSpecificIDException) {
+  int id;
+  switch (type) {
+    case eEndogenous:
+      if (tsid < 0 || tsid >= (int) endo_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = endo_ids[tsid];
+      break;
+    case eExogenous:
+      if (tsid < 0 || tsid >= (int) exo_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else 
+        id = exo_ids[tsid];
+      break;
+    case eExogenousDet:
+      if (tsid < 0 || tsid >= (int) exo_det_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = exo_det_ids[tsid];
+      break;
+    case eParameter:
+      if (tsid < 0 || tsid >= (int) param_ids.size())
+        throw UnknownTypeSpecificIDException(tsid, type);
+      else
+        id = param_ids[tsid];
+      break;
+    default:
+      throw UnknownTypeSpecificIDException(tsid, type);
+    }
+    return long_name_table[id];
+}
+
+int SymbolTable::get_aux_endo(int i) const {
+    return getTypeSpecificID(aux_vars[i].get_symb_id()) + 1;
+}
+
+int SymbolTable::get_aux_orig_endo(int i) const {
+    return getTypeSpecificID(aux_vars[i].get_orig_symb_id()) + 1;
+}
+
+int SymbolTable::get_aux_orig_lead_lag(int i) const {
+    return aux_vars[i].get_orig_lead_lag();
+}
+
+#endif

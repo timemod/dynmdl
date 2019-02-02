@@ -29,6 +29,13 @@
 #include "ModFile.hh"
 #include "ConfigFile.hh"
 #include "ComputingTasks.hh"
+#include "dyn_error.hh"
+#include "dynout.hh"
+#include "ExternalFunctionCalc.hh"
+#include "PolishModel.hh"
+#include "PolishModels.hh"
+#include "DataTree.hh"
+
 
 ModFile::ModFile(WarningConsolidation &warnings_arg)
   : expressions_tree(symbol_table, num_constants, external_functions_table),
@@ -1277,3 +1284,168 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
   jlOutputFile.close();
   cout << "done" << endl;
 }
+
+
+#ifdef USE_R
+
+void
+ModFile::writeCFilesForR(const string &basename) const {
+    int dum = 1;
+    dynamic_model.writeDynamicCFile(basename + "/f_dynamic", dum);
+    static_model.writeStaticCFile(basename + "/f_");
+}
+
+Rcpp::List ModFile::getModelListR(bool internal_calc) {
+
+    int exo_count = symbol_table.exo_nbr();
+    int endo_count =  symbol_table.endo_nbr();
+    int param_count = symbol_table.param_nbr();
+    
+    // names
+    Rcpp::CharacterVector exo_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_names[i] = symbol_table.getName(eExogenous, i).c_str();
+    }
+    Rcpp::CharacterVector endo_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_names[i] = symbol_table.getName(eEndogenous, i).c_str();
+    }
+    Rcpp::CharacterVector param_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_names[i] = symbol_table.getName(eParameter, i).c_str();
+    }
+
+    // tex names
+    Rcpp::CharacterVector exo_tex_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_tex_names[i] = symbol_table.getTeXName(eExogenous, i).c_str();
+    }
+    Rcpp::CharacterVector endo_tex_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_tex_names[i] = symbol_table.getTeXName(eEndogenous, i).c_str();
+    }
+    Rcpp::CharacterVector param_tex_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_tex_names[i] = symbol_table.getTeXName(eParameter, i).c_str();
+    }
+
+    // long names
+    Rcpp::CharacterVector exo_long_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_long_names[i] = symbol_table.getLongName(eExogenous, i).c_str();
+    }
+    Rcpp::CharacterVector endo_long_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_long_names[i] = symbol_table.getLongName(eEndogenous, i).c_str();
+    }
+    Rcpp::CharacterVector param_long_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_long_names[i] = symbol_table.getLongName(eParameter, i).c_str();
+    }
+    
+    // auxiliary variables (only used for check_mdl)
+    int aux_count = symbol_table.get_aux_count();
+    Rcpp::NumericVector aux_endos(aux_count);
+    Rcpp::NumericVector aux_orig_endos(aux_count);
+    Rcpp::NumericVector aux_orig_leads(aux_count);
+    for (int i = 0; i < aux_count; i++) {
+        aux_endos[i] = symbol_table.get_aux_endo(i);
+        aux_orig_endos[i] = symbol_table.get_aux_orig_endo(i);
+        aux_orig_leads[i] = symbol_table.get_aux_orig_lead_lag(i);
+    }
+    Rcpp::List aux_vars = Rcpp::List::create(
+            Rcpp::Named("aux_count") = aux_count,
+            Rcpp::Named("endos") = aux_endos,
+            Rcpp::Named("orig_endos") = aux_orig_endos,
+            Rcpp::Named("orig_leads") = aux_orig_leads);
+
+    Rcpp::List dynmdl = dynamic_model.getDynamicModelR(internal_calc);
+    Rcpp::List statmdl = static_model.getStaticModelR(internal_calc);
+
+    Rcpp::NumericVector exos(exo_count);
+    Rcpp::NumericVector endos(endo_count);
+    Rcpp::NumericVector params(param_count);
+
+    // Values of exogenous variables
+    for (int i = 0; i < symbol_table.exo_nbr(); i++) {
+        int id = symbol_table.getID(eExogenous, i);
+        exos[i] = global_eval_context[id];
+    }
+    // Values of endogenous variables
+    for (int i = 0; i < symbol_table.endo_nbr(); i++) {
+        int id = symbol_table.getID(eEndogenous, i);
+        endos[i] = global_eval_context[id];
+    }
+    // Parameter values
+    for (int i = 0; i < symbol_table.param_nbr(); i++) {
+        int id = symbol_table.getID(eParameter, i);
+        params[i] = global_eval_context[id];
+    }
+    exos.names() = exo_names;
+    endos.names() = endo_names;
+    params.names() = param_names;
+
+    int model_index;
+    if (internal_calc) {
+
+        ExternalFunctionCalc *ext_calc = new ExternalFunctionCalc();
+        for (int i = 0; i < external_functions_table.get_external_function_count(); 
+             i++) {
+            int symb_id = external_functions_table.get_external_function_symb_id(i);
+            int narg  = external_functions_table.getNargs(symb_id);
+            ext_calc->add_function(symbol_table.getName(symb_id), narg);
+        }
+
+        PolishModel *stat_mdl = static_model.makePolishModel(ext_calc);
+        PolishModel *dyn_mdl  = dynamic_model.makePolishModel(ext_calc);
+        model_index = PolishModels::add_model(stat_mdl, dyn_mdl, ext_calc);
+    } else {
+        model_index = 0;
+    }
+
+
+    return Rcpp::List::create(Rcpp::Named("exos") = exos,
+                              Rcpp::Named("endos") = endos,
+                              Rcpp::Named("params") = params,
+                              Rcpp::Named("model_index") = model_index,
+                              Rcpp::Named("exo_tex_names") = exo_tex_names,
+                              Rcpp::Named("endo_tex_names") = endo_tex_names,
+                              Rcpp::Named("param_tex_names") = param_tex_names,
+                              Rcpp::Named("exo_long_names") = exo_long_names,
+                              Rcpp::Named("endo_long_names") = endo_long_names,
+                              Rcpp::Named("param_long_names") = param_long_names,
+                              Rcpp::Named("aux_vars") = aux_vars,
+                              Rcpp::Named("dynamic_model") = dynmdl,
+                              Rcpp::Named("static_model") = statmdl);
+}
+
+Rcpp::List ModFile::getDerivativeInfo() const {
+    int exo_count = symbol_table.exo_nbr();
+    int endo_count =  symbol_table.endo_nbr();
+    int param_count = symbol_table.param_nbr();
+
+    Rcpp::CharacterVector exo_names(exo_count);
+    for (int i = 0; i < exo_count; i++) {
+        exo_names[i] = symbol_table.getName(eExogenous, i).c_str();
+    }
+    Rcpp::CharacterVector endo_names(endo_count);
+    for (int i = 0; i < endo_count; i++) {
+        endo_names[i] = symbol_table.getName(eEndogenous, i).c_str();
+    }
+    Rcpp::CharacterVector param_names(param_count);
+    for (int i = 0; i < param_count; i++) {
+        param_names[i] = symbol_table.getName(eParameter, i).c_str();
+    }
+
+    Rcpp::List dynmdl = dynamic_model.getDerivativeInfoR();
+    
+    return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,
+                              Rcpp::Named("endo_names") = endo_names,
+                              Rcpp::Named("param_names") = param_names,
+                              Rcpp::Named("dynamic_model") = dynmdl);
+}
+
+int ModFile::get_warning_count() const {
+    return(warnings.countWarnings());
+}
+#endif

@@ -1559,7 +1559,7 @@ DynamicModel::writeDynamicMFile(const string &dynamic_basename) const
                     << "% Warning : this file is generated automatically by Dynare" << endl
                     << "%           from model file (.mod)" << endl << endl;
 
-  writeDynamicModel(mDynamicModelFile, false, false);
+  writeDynamicModel(mDynamicModelFile);
   mDynamicModelFile << "end" << endl; // Close *_dynamic function
   mDynamicModelFile.close();
 }
@@ -1583,7 +1583,7 @@ DynamicModel::writeDynamicJuliaFile(const string &basename) const
          << "#" << endl
          << "using Utils" << endl << endl
          << "export dynamic!" << endl << endl;
-  writeDynamicModel(output, false, true);
+  writeDynamicModel(output, oJuliaDynamicModel);
   output << "end" << endl;
   output.close();
 }
@@ -1632,7 +1632,7 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   writeNormcdfCHeader(mDynamicModelFile);
 
   // Writing the function body
-  writeDynamicModel(mDynamicModelFile, true, false);
+  writeDynamicModel(mDynamicModelFile, oCDynamicModel);
 
   writePowerDeriv(mDynamicModelFile);
   writeNormcdf(mDynamicModelFile);
@@ -1773,7 +1773,7 @@ DynamicModel::Write_Inf_To_Bin_File_Block(const string &dynamic_basename, const 
     SaveCode.open((bin_basename + "_dynamic.bin").c_str(), ios::out | ios::binary);
   if (!SaveCode.is_open())
     {
-      dyn_error("Error : Can't open file \"" + bin_filename + "\" for writing\n");
+      dyn_error("Error : Can't open file \"" + bin_basename + "\" for writing\n");
     }
   u_count_int = 0;
   unsigned int block_size = getBlockSize(num);
@@ -2154,16 +2154,13 @@ DynamicModel::writeSparseDynamicMFile(const string &dynamic_basename, const stri
 }
 
 void
-DynamicModel::writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia) const
+DynamicModel::writeDynamicModel(ostream &DynamicOutput, ExprNodeOutputType output_type) const
 {
   ostringstream model_local_vars_output;  // Used for storing model local vars
   ostringstream model_output;             // Used for storing model temp vars and equations
   ostringstream jacobian_output;          // Used for storing jacobian equations
   ostringstream hessian_output;           // Used for storing Hessian equations
   ostringstream third_derivatives_output; // Used for storing third order derivatives equations
-
-  ExprNodeOutputType output_type = (use_dll ? oCDynamicModel :
-                                    julia ? oJuliaDynamicModel : oMatlabDynamicModel);
 
   deriv_node_temp_terms_t tef_terms;
   temporary_terms_t temp_term_empty;

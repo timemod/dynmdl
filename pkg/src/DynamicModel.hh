@@ -89,14 +89,16 @@ private:
   void writeDynamicMFile(const string &dynamic_basename) const;
   //! Writes dynamic model file (Julia version)
   void writeDynamicJuliaFile(const string &dynamic_basename) const;
+#ifndef USE_R
   //! Writes dynamic model file (C version)
   /*! \todo add third derivatives handling */
   void writeDynamicCFile(const string &dynamic_basename, const int order) const;
+#endif
   //! Writes dynamic model file when SparseDLL option is on
   void writeSparseDynamicMFile(const string &dynamic_basename, const string &basename) const;
   //! Writes the dynamic model equations and its derivatives
   /*! \todo add third derivatives handling in C output */
-  void writeDynamicModel(ostream &DynamicOutput, bool use_dll, bool julia) const;
+  void writeDynamicModel(ostream &DynamicOutput, ExprNodeOutputType output_type = oMatlabDynamicModel) const;
   //! Writes the Block reordred structure of the model in M output
   void writeModelEquationsOrdered_M(const string &dynamic_basename) const;
   //! Writes the code of the Block reordred structure of the model in virtual machine bytecode
@@ -215,10 +217,16 @@ private:
   vector<pair<int, int> > endo_max_leadlag_block, other_endo_max_leadlag_block, exo_max_leadlag_block, exo_det_max_leadlag_block, max_leadlag_block;
 
 public:
+#ifdef USE_R
+  //! Writes dynamic model file (C version)
+  void writeDynamicCFile(const string &dynamic_basename, const int order) const;
+#endif
   DynamicModel(SymbolTable &symbol_table_arg, NumericalConstants &num_constants_arg, ExternalFunctionsTable &external_functions_table_argx);
   //! Adds a variable node
   /*! This implementation allows for non-zero lag */
   virtual VariableNode *AddVariable(int symb_id, int lag = 0);
+  PolishModel* makePolishModel(ExternalFunctionCalc *ext_calc) const;
+
 
   //! Compute cross references
   void computeXrefs();

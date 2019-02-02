@@ -1194,13 +1194,14 @@ StaticModel::writeStaticMFile(const string &func_name) const
          << "% Warning : this file is generated automatically by Dynare" << endl
          << "%           from model file (.mod)" << endl << endl;
 
-  writeStaticModel(output, false, false);
+  writeStaticModel(output);
   output << "end" << endl;
   output.close();
 }
 
 void
-StaticModel::writeStaticModel(ostream &StaticOutput, bool use_dll, bool julia) const
+StaticModel::writeStaticModel(ostream &StaticOutput, 
+                              ExprNodeOutputType output_type) const
 {
   ostringstream model_local_vars_output;   // Used for storing model local vars
   ostringstream model_output;              // Used for storing model
@@ -1208,8 +1209,6 @@ StaticModel::writeStaticModel(ostream &StaticOutput, bool use_dll, bool julia) c
   ostringstream hessian_output;            // Used for storing Hessian equations
   ostringstream third_derivatives_output;  // Used for storing third order derivatives equations
   ostringstream for_sym;
-  ExprNodeOutputType output_type = (use_dll ? oCStaticModel :
-                                    julia ? oJuliaStaticModel : oMatlabStaticModel);
 
   deriv_node_temp_terms_t tef_terms;
   temporary_terms_t temp_term_empty;
@@ -1629,7 +1628,7 @@ StaticModel::writeStaticCFile(const string &func_name) const
   writeNormcdfCHeader(output);
 
   // Writing the function body
-  writeStaticModel(output, true, false);
+  writeStaticModel(output, oCStaticModel);
   output << "}" << endl << endl;
 
   writePowerDeriv(output);
@@ -1724,7 +1723,7 @@ StaticModel::writeStaticJuliaFile(const string &basename) const
          << "#" << endl
          << "using Utils" << endl << endl
          << "export static!" << endl << endl;
-  writeStaticModel(output, false, true);
+  writeStaticModel(output, oJuliaStaticModel);
   output << "end" << endl;
 }
 
