@@ -680,7 +680,11 @@ void
 DataTree::writePowerDerivCHeader(ostream &output) const
 {
   if (isBinaryOpUsed(oPowerDeriv))
+#ifdef USE_R
+    output << "#include \"getPowerDeriv.h\"" << endl;
+#else
     output << "double getPowerDeriv(double, double, int);" << endl;
+#endif
 }
 
 void

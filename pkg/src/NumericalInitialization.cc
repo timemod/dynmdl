@@ -24,6 +24,9 @@
 
 #include "NumericalInitialization.hh"
 
+#include "dyn_error.hh"
+#include "dynout.hh"
+
 InitParamStatement::InitParamStatement(int symb_id_arg,
                                        const expr_t param_value_arg,
                                        const SymbolTable &symbol_table_arg) :
@@ -454,7 +457,7 @@ LoadParamsAndSteadyStateStatement::LoadParamsAndSteadyStateStatement(const strin
                                                                      WarningConsolidation &warnings) :
   symbol_table(symbol_table_arg)
 {
-  cout << "Reading " << filename << "." << endl;
+  DynOut << "Reading " << filename << "." << endl;
 
   ifstream f;
   f.open(filename.c_str(), ios::in);

@@ -5467,8 +5467,10 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
   else if (first_deriv_symb_id == eExtFunNotSet)
     {
+#ifndef USE_R
       if (IS_C(output_type))
         output << "*";
+#endif
       output << "TEFD_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
     }
   else

@@ -1634,7 +1634,9 @@ DynamicModel::writeDynamicCFile(const string &dynamic_basename, const int order)
   // Writing the function body
   writeDynamicModel(mDynamicModelFile, oCDynamicModel);
 
+#ifndef USE_R
   writePowerDeriv(mDynamicModelFile);
+#endif
   writeNormcdf(mDynamicModelFile);
   mDynamicModelFile.close();
 

@@ -30,6 +30,10 @@
 #include <boost/graph/strong_components.hpp>
 #include <boost/graph/topological_sort.hpp>
 
+#include "dyn_error.hh"
+#include "dynout.hh"
+
+
 using namespace boost;
 using namespace MFS;
 
@@ -91,7 +95,7 @@ ModelTree::computeNormalization(const jacob_map_t &contemporaneous_jacobian, boo
 
 #ifdef DEBUG
   for (int i = 0; i < n; i++)
-    cout << "Endogenous " << symbol_table.getName(symbol_table.getID(eEndogenous, i))
+    DynOut << "Endogenous " << symbol_table.getName(symbol_table.getID(eEndogenous, i))
          << " matched with equation " << (mate_map[i]-n+1) << endl;
 #endif
 
@@ -114,13 +118,13 @@ ModelTree::computeNormalization(const jacob_map_t &contemporaneous_jacobian, boo
 
       pair<multimap<int, int>::const_iterator, multimap<int, int>::const_iterator> x = natural_endo2eqs.equal_range(i);
       if (find_if(x.first, x.second, compose1(bind2nd(equal_to<int>(), endo2eq[i]), select2nd<multimap<int, int>::value_type>())) == x.second)
-        cout << "Natural normalization of variable " << symbol_table.getName(symbol_table.getID(eEndogenous, i))
+        DynOut << "Natural normalization of variable " << symbol_table.getName(symbol_table.getID(eEndogenous, i))
              << " not used." << endl;
       else
         n2++;
     }
 
-  cout << "Used " << n2 << " natural normalizations out of " << n1 << ", for a total of " << n << " equations." << endl;
+  DynOut << "Used " << n2 << " natural normalizations out of " << n1 << ", for a total of " << n << " equations." << endl;
 #endif
 
   // Check if all variables are normalized
@@ -141,7 +145,7 @@ ModelTree::computeNonSingularNormalization(jacob_map_t &contemporaneous_jacobian
 {
   bool check = false;
 
-  cout << "Normalizing the model..." << endl;
+  DynOut << "Normalizing the model..." << endl;
 
   int n = equations.size();
 
@@ -184,7 +188,7 @@ ModelTree::computeNonSingularNormalization(jacob_map_t &contemporaneous_jacobian
 
   if (!check)
     {
-      cout << "Normalization failed with cutoff, trying symbolic normalization..." << endl;
+      DynOut << "Normalization failed with cutoff, trying symbolic normalization..." << endl;
       //if no non-singular normalization can be found, try to find a normalization even with a potential singularity
       jacob_map_t tmp_normalized_contemporaneous_jacobian;
       set<pair<int, int> > endo;
@@ -248,7 +252,7 @@ ModelTree::computeNormalizedEquations(multimap<int, int> &endo2eqs) const
         continue;
 
       endo2eqs.insert(make_pair(symbol_table.getTypeSpecificID(symb_id), (int) i));
-      cout << "Endogenous " << symbol_table.getName(symb_id) << " normalized in equation " << (i+1) << endl;
+      DynOut << "Endogenous " << symbol_table.getName(symb_id) << " normalized in equation " << (i+1) << endl;
     }
 }
 
@@ -287,7 +291,7 @@ ModelTree::evaluateAndReduceJacobian(const eval_context_t &eval_context, jacob_m
           if (fabs(val) < cutoff)
             {
               if (verbose)
-                cout << "the coefficient related to variable " << var << " with lag " << lag << " in equation " << eq << " is equal to " << val << " and is set to 0 in the incidence matrix (size=" << symbol_table.endo_nbr() << ")" << endl;
+                DynOut << "the coefficient related to variable " << var << " with lag " << lag << " in equation " << eq << " is equal to " << val << " and is set to 0 in the incidence matrix (size=" << symbol_table.endo_nbr() << ")" << endl;
               jacobian_elements_to_delete.insert(make_pair(eq, deriv_id));
             }
           else
@@ -312,7 +316,7 @@ ModelTree::evaluateAndReduceJacobian(const eval_context_t &eval_context, jacob_m
 
   if (jacobian_elements_to_delete.size() > 0)
     {
-      cout << jacobian_elements_to_delete.size() << " elements among " << first_derivatives.size() << " in the incidence matrices are below the cutoff (" << cutoff << ") and are discarded" << endl
+      DynOut << jacobian_elements_to_delete.size() << " elements among " << first_derivatives.size() << " in the incidence matrices are below the cutoff (" << cutoff << ") and are discarded" << endl
            << "The contemporaneous incidence matrix has " << nb_elements_contemparenous_Jacobian << " elements" << endl;
     }
 }
@@ -786,7 +790,7 @@ ModelTree::printBlockDecomposition(const vector<pair<int, int> > &blocks) const
     }
 
   int Nb_RecursBlocks = Nb_TotalBlocks - Nb_SimulBlocks;
-  cout << Nb_TotalBlocks << " block(s) found:" << endl
+  DynOut << Nb_TotalBlocks << " block(s) found:" << endl
        << "  " << Nb_RecursBlocks << " recursive block(s) and " << Nb_SimulBlocks << " simultaneous block(s)." << endl
        << "  the largest simultaneous block has " << largest_block << " equation(s)" << endl
        << "                                 and " << Nb_feedback_variable << " feedback variable(s)." << endl;
@@ -1445,37 +1449,6 @@ ModelTree::writeModelEquations(ostream &output, ExprNodeOutputType output_type) 
 }
 
 
-void ModelTree::genPolishEquations(PolishModel &mdl, bool dynamic) const {
-
-    for (int eq = 0; eq < (int) equations.size(); eq++) {
-
-        mdl.new_equation();
-
-        BinaryOpNode *eq_node = equations[eq];
-        expr_t lhs = eq_node->get_arg1();
-        expr_t rhs = eq_node->get_arg2();
-
-        // Test if the right hand side of the equation is empty.
-        double vrhs = 1.0;
-        try {
-            vrhs = rhs->eval(eval_context_t());
-        } catch (ExprNode::EvalException &e) {
-        }
-
-        if (vrhs != 0) { 
-            // The right hand side of the equation is not empty 
-            //   ==> residual=lhs-rhs;
-            lhs->genPolishCode(mdl, dynamic);
-            rhs->genPolishCode(mdl, dynamic);
-            mdl.add_binop('-');
-        } else  {
-            // The right hand side of the equation is empty ==> residual=lhs;
-            lhs->genPolishCode(mdl, dynamic);
-        }
-    }
-}
-
-
 void
 ModelTree::compileModelEquations(ostream &code_file, unsigned int &instruction_number, const temporary_terms_t &tt, const map_idx_t &map_idx, bool dynamic, bool steady_dynamic) const
 {
@@ -1912,4 +1885,34 @@ void ModelTree::jacobianHelper(ostream &output, int ideriv, int eq_nb,
   output << ideriv + shift << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
 
+
+void ModelTree::genPolishEquations(PolishModel &mdl, bool dynamic) const {
+
+    for (int eq = 0; eq < (int) equations.size(); eq++) {
+
+        mdl.new_equation();
+
+        BinaryOpNode *eq_node = equations[eq];
+        expr_t lhs = eq_node->get_arg1();
+        expr_t rhs = eq_node->get_arg2();
+
+        // Test if the right hand side of the equation is empty.
+        double vrhs = 1.0;
+        try {
+            vrhs = rhs->eval(eval_context_t());
+        } catch (ExprNode::EvalException &e) {
+        }
+
+        if (vrhs != 0) { 
+            // The right hand side of the equation is not empty 
+            //   ==> residual=lhs-rhs;
+            lhs->genPolishCode(mdl, dynamic);
+            rhs->genPolishCode(mdl, dynamic);
+            mdl.add_binop('-');
+        } else  {
+            // The right hand side of the equation is empty ==> residual=lhs;
+            lhs->genPolishCode(mdl, dynamic);
+        }
+    }
+}
 #endif

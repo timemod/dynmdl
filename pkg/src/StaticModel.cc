@@ -1712,7 +1712,9 @@ StaticModel::writeStaticCFile(const string &func_name) const
   writeStaticModel(output, oCStaticModel);
   output << "}" << endl << endl;
 
+#ifndef USE_R
   writePowerDeriv(output);
+#endif
   writeNormcdf(output);
   output.close();
 

@@ -62,7 +62,7 @@ ModFile::~ModFile()
 void
 ModFile::evalAllExpressions(bool warn_uninit)
 {
-  cout << "Evaluating expressions...";
+  DynOut << "Evaluating expressions...";
 
   // Loop over all statements, and fill global eval context if relevant
   for (vector<Statement *>::const_iterator it = statements.begin(); it != statements.end(); it++)
@@ -83,7 +83,7 @@ ModFile::evalAllExpressions(bool warn_uninit)
   // Evaluate model local variables
   dynamic_model.fillEvalContext(global_eval_context);
 
-  cout << "done" << endl;
+  DynOut << "done" << endl;
 
   // Check if some symbols are not initialized, and give them a zero value then
   for (int id = 0; id <= symbol_table.maxID(); id++)
@@ -505,11 +505,11 @@ ModFile::transformPass(bool nostrict, bool compute_xrefs)
     }
 
   if (!mod_file_struct.ramsey_model_present)
-    cout << "Found " << dynamic_model.equation_number() << " equation(s)." << endl;
+    DynOut << "Found " << dynamic_model.equation_number() << " equation(s)." << endl;
   else
     {
-      cout << "Found " << mod_file_struct.orig_eq_nbr  << " equation(s)." << endl;
-      cout << "Found " << dynamic_model.equation_number() << " FOC equation(s) for Ramsey Problem." << endl;
+      DynOut << "Found " << mod_file_struct.orig_eq_nbr  << " equation(s)." << endl;
+      DynOut << "Found " << dynamic_model.equation_number() << " FOC equation(s) for Ramsey Problem." << endl;
     }
 
   if (symbol_table.exists("dsge_prior_weight"))
@@ -708,7 +708,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
   if (param_used_with_lead_lag)
     mOutputFile << "M_.parameter_used_with_lead_lag = true;" << endl;
 
-  cout << "Processing outputs ..." << endl;
+  DynOut << "Processing outputs ..." << endl;
 
   symbol_table.writeOutput(mOutputFile);
 
@@ -938,7 +938,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
       steady_state_model.writeSteadyStateFile(basename, mod_file_struct.ramsey_model_present, false);
     }
 
-  cout << "done" << endl;
+  DynOut << "done" << endl;
 }
 
 void
@@ -1248,7 +1248,7 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
     jlOutputFile << "model_.h = zeros(Float64, 1, 1)" << endl
                  << "model_.correlation_matrix_me = ones(Float64, 1, 1)" << endl;
 
-  cout << "Processing outputs ..." << endl;
+  DynOut << "Processing outputs ..." << endl;
   symbol_table.writeJuliaOutput(jlOutputFile);
 
   if (dynamic_model.equation_number() > 0)
@@ -1292,7 +1292,7 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
                << "end" << endl
                << "end" << endl;
   jlOutputFile.close();
-  cout << "done" << endl;
+  DynOut << "done" << endl;
 }
 
 

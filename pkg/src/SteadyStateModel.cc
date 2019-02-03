@@ -22,6 +22,10 @@
 
 #include "SteadyStateModel.hh"
 
+#include "dyn_error.hh"
+#include "dynout.hh"
+
+
 SteadyStateModel::SteadyStateModel(SymbolTable &symbol_table_arg, NumericalConstants &num_constants_arg, ExternalFunctionsTable &external_functions_table_arg, const StaticModel &static_model_arg) :
   DataTree(symbol_table_arg, num_constants_arg, external_functions_table_arg), static_model(static_model_arg)
 {
@@ -204,7 +208,7 @@ SteadyStateModel::writeSteadyStateFileC(const string &basename, bool ramsey_mode
       const vector<int> &symb_ids = def_table[i].first;
       output << "    ";
       if (symb_ids.size() > 1)
-        std::cout << "Error: in C, multiple returns are not permitted in steady_state_model" << std::endl;
+        DynOut << "Error: in C, multiple returns are not permitted in steady_state_model" << std::endl;
       variable_node_map_t::const_iterator it = variable_node_map.find(make_pair(symb_ids[0], 0));
       assert(it != variable_node_map.end());
       if (it->second->get_type() == eModFileLocalVariable)
