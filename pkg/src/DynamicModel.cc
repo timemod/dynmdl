@@ -2169,7 +2169,15 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, ExprNodeOutputType outpu
 
   writeModelLocalVariables(model_local_vars_output, output_type, tef_terms);
 
+ #ifdef USE_R
+  // create a copy of ref_terms. writeTemporaryTerms checks which tef-terms have
+  // already been written, and those terms will only be written once.
+  // JacobianOutput also needs these temporary terms.
+  deriv_node_temp_terms_t tef_terms_tmp = tef_terms;
+  writeTemporaryTerms(temporary_terms_res, temp_term_union_m_1, model_output, output_type, tef_terms_tmp);
+#else
   writeTemporaryTerms(temporary_terms_res, temp_term_union_m_1, model_output, output_type, tef_terms);
+#endif
 
   writeModelEquations(model_output, output_type);
 

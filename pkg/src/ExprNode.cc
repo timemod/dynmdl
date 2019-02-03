@@ -5210,8 +5210,10 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
       return;
     }
 
+#ifndef USE_R
   if (IS_C(output_type))
     output << "*";
+#endif
   output << "TEF_" << getIndxInTefTerms(symb_id, tef_terms);
 }
 
@@ -5236,6 +5238,30 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
 
       if (IS_C(output_type))
         {
+#ifdef USE_R
+          if (symb_id == first_deriv_symb_id
+              && symb_id == second_deriv_symb_id) {
+            dyn_error("second derivatives for external function with C"
+                      "code not yet possible\n");
+          } else if (symb_id == first_deriv_symb_id) {
+            output << "double TEF_" << indx << ", "
+                   << "TEFD_" << indx << "[" << arguments.size() << "];" << endl;
+          } else {
+            output << "double TEF_" << indx << ";" << endl;
+          }
+
+          output << "call_R_function(\"" 
+                 << datatree.symbol_table.getName(symb_id) << "\","
+                 << arguments.size() << ", &TEF_" << indx  << ", ";
+          if (symb_id == first_deriv_symb_id) {
+              output << "TEFD_" << indx << ", ";
+          } else {
+              // argument jac is not used, use tef_ as dummy argument
+              output << "&TEF_" << indx << ", ";
+          }
+          writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+          output << ");" << endl;
+#else
           stringstream ending;
           ending << "_tef_" << getIndxInTefTerms(symb_id, tef_terms);
           if (symb_id == first_deriv_symb_id
@@ -5275,8 +5301,34 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
           else
             output << "TEF_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
         }
+#endif
+       }
       else
+
         {
+#ifdef USE_R
+          // Routput
+          if (symb_id == first_deriv_symb_id
+              && symb_id == second_deriv_symb_id)
+            dyn_error("second derivatives for external function with R"
+                      "code not yet possible\n");
+          else if (symb_id == first_deriv_symb_id)
+            output << "func_res" << ASSIGNMENT_OPERATOR(output_type);
+          else
+            output << "TEF_" << indx << ASSIGNMENT_OPERATOR(output_type);
+
+          output << datatree.symbol_table.getName(symb_id) << "(";
+          writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+          output << ")";
+          output << endl;
+          if (symb_id == first_deriv_symb_id && symb_id == second_deriv_symb_id) {
+             output << "TEF_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[1]]" << endl;
+             output << "TEFDD_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[2]]" << endl;
+          } else if (symb_id == first_deriv_symb_id) {
+             output << "TEF_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[1]]" << endl;
+             output << "TEFD_" << indx <<  ASSIGNMENT_OPERATOR(output_type) << "func_res[[2]]" << endl;
+          }
+#else
           if (symb_id == first_deriv_symb_id
               && symb_id == second_deriv_symb_id)
             output << "[TEF_" << indx << ", TEFD_"<< indx << ", TEFDD_"<< indx << "] = ";
@@ -5288,6 +5340,7 @@ ExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutpu
           output << datatree.symbol_table.getName(symb_id) << "(";
           writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
           output << ");" << endl;
+#endif
         }
     }
 }
@@ -5509,8 +5562,32 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
     return;
 
   if (IS_C(output_type))
+#ifdef USE_R
+   if (first_deriv_symb_id == eExtFunNotSet) {
+        // compute Jacobian by numerical differentiation
+        output << "double TEFD_fdd_" <<  getIndxInTefTerms(symb_id, tef_terms) 
+               << "_" << inputIndex << ";" << endl;
+        output << "call_jacob_element(\""
+               << datatree.symbol_table.getName(symb_id) << "\", "
+               << arguments.size() << ", "
+               << inputIndex << ", &TEFD_fdd_" << getIndxInTefTerms(symb_id, tef_terms) 
+               << "_" << inputIndex << ", ";
+        writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+        output << ");" << endl;
+   } else {
+        tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
+        int indx = getIndxInTefTerms(first_deriv_symb_id, tef_terms);
+        output << "double TEFD_def_" << indx << "[" << arguments.size() << "];" << endl;
+        output << "call_R_function_jac(\"" 
+                 << datatree.symbol_table.getName(first_deriv_symb_id) << "\", "
+                 << arguments.size() << ", TEFD_def_" << indx  << ", ";
+        writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+        output << ");" << endl;
+    } 
+#else
     if (first_deriv_symb_id == eExtFunNotSet)
       {
+
         stringstream ending;
         ending << "_tefd_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex;
         output << "int nlhs" << ending.str() << " = 1;" << endl
@@ -5569,8 +5646,51 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
 
         output << "TEFD_def_" << indx << " = mxGetPr(plhs" << ending.str() << "[0]);" << endl;
       }
+#endif
+
   else
+
+      // R/Matlab
     {
+#ifdef USE_R
+       if (first_deriv_symb_id == eExtFunNotSet) {
+        output << "TEFD_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" 
+               << inputIndex << ASSIGNMENT_OPERATOR(output_type) << "jacob_element(";
+        if (!IS_R(output_type)) {
+            output << "\"";
+        }
+        output << datatree.symbol_table.getName(symb_id);
+        if (!IS_R(output_type)) {
+            output << "\"";
+        }
+        output << ", " << inputIndex << ", ";
+        if (IS_R(output_type)) {
+            output << " c(";
+        } else  {
+            output << " {";
+        }
+      } else {
+          tef_terms[make_pair(first_deriv_symb_id, arguments)] = (int) tef_terms.size();
+          output << "TEFD_def_" << getIndxInTefTerms(first_deriv_symb_id, tef_terms)
+                 <<  ASSIGNMENT_OPERATOR(output_type) 
+                 << datatree.symbol_table.getName(first_deriv_symb_id) << "(";
+      }
+
+      writeExternalFunctionArguments(output, output_type, temporary_terms, tef_terms);
+
+      if (first_deriv_symb_id == eExtFunNotSet) {
+        if (IS_R(output_type)) {
+            output << ")";
+        } else  {
+            output << "}";
+        }
+      }
+      output << ")";
+      if (!IS_R(output_type)) {
+          output << ";";
+      }
+      output << endl;
+#else
       if (first_deriv_symb_id == eExtFunNotSet)
         output << "TEFD_fdd_" << getIndxInTefTerms(symb_id, tef_terms) << "_" << inputIndex << " = jacob_element('"
                << datatree.symbol_table.getName(symb_id) << "'," << inputIndex << ",{";
@@ -5586,6 +5706,7 @@ FirstDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, Exp
       if (first_deriv_symb_id == eExtFunNotSet)
         output << "}";
       output << ");" << endl;
+#endif
     }
 }
 
