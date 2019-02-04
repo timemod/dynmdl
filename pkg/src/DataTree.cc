@@ -22,6 +22,8 @@
 #include <iostream>
 
 #include "DataTree.hh"
+#include "dyn_error.hh"
+#include "dynout.hh"
 
 DataTree::DataTree(SymbolTable &symbol_table_arg,
                    NumericalConstants &num_constants_arg,
@@ -186,7 +188,7 @@ DataTree::AddDivide(expr_t iArg1, expr_t iArg2) throw (DivisionByZeroException)
   // This test should be before the next two, otherwise 0/0 won't be rejected
   if (iArg2 == Zero)
     {
-      cerr << "ERROR: Division by zero!" << endl;
+      DynErr << "ERROR: Division by zero!" << endl;
       throw DivisionByZeroException();
     }
 
@@ -275,8 +277,7 @@ DataTree::AddLog(expr_t iArg1)
     return Zero;
   else
     {
-      cerr << "ERROR: log(0) not defined!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: log(0) not defined!\n");
     }
 }
 
@@ -289,8 +290,7 @@ DataTree::AddLog10(expr_t iArg1)
     return Zero;
   else
     {
-      cerr << "ERROR: log10(0) not defined!" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: log10(0) not defined!\n");
     }
 }
 

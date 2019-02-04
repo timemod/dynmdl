@@ -132,7 +132,7 @@ ModelTree::computeNormalization(const jacob_map_t &contemporaneous_jacobian, boo
   if (it != mate_map.begin() + n)
     {
       if (verbose)
-        cerr << "ERROR: Could not normalize the model. Variable "
+        DynErr << "ERROR: Could not normalize the model. Variable "
              << symbol_table.getName(symbol_table.getID(eEndogenous, it - mate_map.begin()))
              << " is not in the maximum cardinality matching." << endl;
       check = false;
@@ -218,9 +218,10 @@ ModelTree::computeNonSingularNormalization(jacob_map_t &contemporaneous_jacobian
                 }
               catch (DataTree::UnknownDerivIDException &e)
                 {
-                  cerr << "The variable " << symbol_table.getName(symbol_table.getID(eEndogenous, it->first.second))
+                  std::ostringstream msg;
+                  msg  << "The variable " << symbol_table.getName(symbol_table.getID(eEndogenous, it->first.second))
                        << " does not appear at the current period (i.e. with no lead and no lag); this case is not handled by the 'block' option of the 'model' block." << endl;
-                  exit(EXIT_FAILURE);
+                  dyn_error(msg);
                 }
             }
         }
@@ -228,8 +229,7 @@ ModelTree::computeNonSingularNormalization(jacob_map_t &contemporaneous_jacobian
 
   if (!check)
     {
-      cerr << "No normalization could be computed. Aborting." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("No normalization could be computed. Aborting.\n");
     }
 }
 
@@ -283,10 +283,11 @@ ModelTree::evaluateAndReduceJacobian(const eval_context_t &eval_context, jacob_m
             }
           catch (ExprNode::EvalException &e)
             {
-              cerr << "ERROR: evaluation of Jacobian failed for equation " << eq+1 << " (line " << equations_lineno[eq] << ") and variable " << symbol_table.getName(symb) << "(" << lag << ") [" << symb << "] !" << endl;
-              Id->writeOutput(cerr, oMatlabDynamicModelSparse, temporary_terms);
-              cerr << endl;
-              exit(EXIT_FAILURE);
+              std::ostringstream msg;
+              msg << "ERROR: evaluation of Jacobian failed for equation " << eq+1 << " (line " << equations_lineno[eq] << ") and variable " << symbol_table.getName(symb) << "(" << lag << ") [" << symb << "] !" << endl;
+              Id->writeOutput(msg, oMatlabDynamicModelSparse, temporary_terms);
+              msg << endl;
+              dyn_error(msg);
             }
           if (fabs(val) < cutoff)
             {
@@ -1232,7 +1233,7 @@ ModelTree::fixNestedParenthesis(ostringstream &output, map<string, string> &tmp_
         {
           if (!message_printed)
             {
-              cerr << "Warning: A .m file created by Dynare will have more than 32 nested parenthesis. Matlab cannot support this. " << endl
+              DynErr << "Warning: A .m file created by Dynare will have more than 32 nested parenthesis. Matlab cannot support this. " << endl
                    << "         We are going to modify, albeit inefficiently, this output to have fewer than 32 nested parenthesis. " << endl
                    << "         It would hence behoove you to use the use_dll option of the model block to circumnavigate this problem." << endl
                    << "         If you have not yet set up a compiler on your system, see the Matlab documentation for doing so." << endl
@@ -1502,8 +1503,7 @@ ModelTree::Write_Inf_To_Bin_File(const string &basename,
     SaveCode.open(bin_basename.c_str(), ios::out | ios::binary);
   if (!SaveCode.is_open())
     {
-      cerr << "Error : Can't open file \"" << bin_basename << "\" for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("Error : Can't open file \"" + bin_basename + "\" for writing\n");
     }
   u_count_int = 0;
   for (first_derivatives_t::const_iterator it = first_derivatives.begin(); it != first_derivatives.end(); it++)
@@ -1543,15 +1543,13 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
     }
 
   content_output.open(content_filename.c_str(), ios::out | ios::binary);
   if (!content_output.is_open())
     {
-      cerr << "ERROR: Can't open file " << content_filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file \"" + content_filename + "\" for writing\n");
     }
 
   output << "\\documentclass[10pt,a4paper]{article}" << endl

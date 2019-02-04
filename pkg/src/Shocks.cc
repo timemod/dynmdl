@@ -22,6 +22,7 @@
 #include <iostream>
 
 #include "Shocks.hh"
+#include "dyn_error.hh"
 
 AbstractShocksStatement::AbstractShocksStatement(bool mshocks_arg,
                                                  bool overwrite_arg,
@@ -231,9 +232,10 @@ ShocksStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidati
       if (symbol_table.getType(it->first) != eExogenous
           && !symbol_table.isObservedVariable(it->first))
         {
-          cerr << "shocks: setting a variance on '"
+          std::ostringstream msg;
+          msg << "shocks: setting a variance on '"
                << symbol_table.getName(it->first) << "' is not allowed, because it is neither an exogenous variable nor an observed endogenous variable" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error(msg);
         }
     }
 
@@ -243,9 +245,10 @@ ShocksStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidati
       if (symbol_table.getType(it->first) != eExogenous
           && !symbol_table.isObservedVariable(it->first))
         {
-          cerr << "shocks: setting a standard error on '"
+          std::ostringstream msg;
+          msg << "shocks: setting a standard error on '"
                << symbol_table.getName(it->first) << "' is not allowed, because it is neither an exogenous variable nor an observed endogenous variable" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error(msg);
         }
     }
 
@@ -260,10 +263,11 @@ ShocksStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidati
             || (symbol_table.isObservedVariable(symb_id1)
                 && symbol_table.isObservedVariable(symb_id2))))
         {
-          cerr << "shocks: setting a covariance between '"
+          std::ostringstream msg;
+          msg << "shocks: setting a covariance between '"
                << symbol_table.getName(symb_id1) << "' and '"
                << symbol_table.getName(symb_id2) << "'is not allowed; covariances can only be specified for exogenous or observed endogenous variables of same type" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error(msg);
         }
     }
 
@@ -278,10 +282,11 @@ ShocksStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidati
             || (symbol_table.isObservedVariable(symb_id1)
                 && symbol_table.isObservedVariable(symb_id2))))
         {
-          cerr << "shocks: setting a correlation between '"
+          std::ostringstream msg;
+          msg << "shocks: setting a correlation between '"
                << symbol_table.getName(symb_id1) << "' and '"
                << symbol_table.getName(symb_id2) << "'is not allowed; correlations can only be specified for exogenous or observed endogenous variables of same type" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error(msg);
         }
     }
 
@@ -375,8 +380,7 @@ ConditionalForecastPathsStatement::checkPass(ModFileStructure &mod_file_struct, 
         path_length = this_path_length;
       else if (path_length != this_path_length)
         {
-          cerr << "conditional_forecast_paths: all constrained paths must have the same length!" << endl;
-          exit(EXIT_FAILURE);
+          dyn_error("conditional_forecast_paths: all constrained paths must have the same length!\n");
         }
     }
 }
@@ -471,8 +475,10 @@ ShockGroupsStatement::writeOutput(ostream &output, const string &basename, bool 
         if (it->name == it1->name)
           {
             unique_label = false;
-            cerr << "Warning: shock group label '" << it->name << "' has been reused. "
-                 << "Only using the last definition." << endl;
+            std::ostringstream msg;
+            msg << "Warning: shock group label '" << it->name << "' has been reused. "
+                << "Only using the last definition." << endl;
+            dyn_warning(msg);
             break;
           }
 

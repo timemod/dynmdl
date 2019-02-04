@@ -89,9 +89,8 @@ SteadyStateModel::checkPass(bool ramsey_model, WarningConsolidation &warnings) c
             if (find(so_far_defined.begin(), so_far_defined.end(), *it)
                 == so_far_defined.end())
               {
-                cerr << "ERROR: in the 'steady_state_model' block, variable '" << symbol_table.getName(*it)
-                     << "' is undefined in the declaration of variable '" << symbol_table.getName(symb_ids[0]) << "'" << endl;
-                exit(EXIT_FAILURE);
+               dyn_error("ERROR: in the 'steady_state_model' block, variable '" + symbol_table.getName(*it)
+                         + "' is undefined in the declaration of variable '" + symbol_table.getName(symb_ids[0]) + "'\n");
               }
         }
 
@@ -119,8 +118,7 @@ SteadyStateModel::writeSteadyStateFile(const string &basename, bool ramsey_model
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
     }
 
   ExprNodeOutputType output_type = (julia ? oJuliaSteadyStateFile : oSteadyStateFile);
@@ -184,8 +182,7 @@ SteadyStateModel::writeSteadyStateFileC(const string &basename, bool ramsey_mode
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      cerr << "ERROR: Can't open file " << filename << " for writing" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
     }
 
   output << "#include <math.h>" << endl;

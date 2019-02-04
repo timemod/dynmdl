@@ -128,8 +128,7 @@ InitOrEndValStatement::getUninitializedVariables(SymbolType type)
     unused = symbol_table.getExogenous();
   else
     {
-      cerr << "ERROR: Shouldn't arrive here." << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Shouldn't arrive here.\n");
     }
 
   set<int>::iterator sit;
@@ -181,24 +180,26 @@ InitValStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidat
   set<int> exogs = getUninitializedVariables(eExogenous);
   set<int> endogs = getUninitializedVariables(eEndogenous);
 
+  std::ostringstream msg;
+
   if (endogs.size() > 0)
     {
-      cerr << "ERROR: You have not set the following endogenous variables in initval:";
+      msg << "ERROR: You have not set the following endogenous variables in initval:";
       for (set<int>::const_iterator it = endogs.begin(); it != endogs.end(); it++)
-        cerr << " " << symbol_table.getName(*it);
-      cerr << endl;
+        msg << " " << symbol_table.getName(*it);
+      msg << endl;
     }
 
   if (exogs.size() > 0)
     {
-      cerr << "ERROR: You have not set the following exogenous variables in initval:";
+      msg << "ERROR: You have not set the following exogenous variables in initval:";
       for (set<int>::const_iterator it = exogs.begin(); it != exogs.end(); it++)
-        cerr << " " << symbol_table.getName(*it);
-      cerr << endl;
+        msg << " " << symbol_table.getName(*it);
+      msg << endl;
     }
 
   if (endogs.size() > 0 || exogs.size() > 0)
-    exit(EXIT_FAILURE);
+      dyn_error(msg);
 }
 
 void
@@ -237,24 +238,26 @@ EndValStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidati
   set<int> exogs = getUninitializedVariables(eExogenous);
   set<int> endogs = getUninitializedVariables(eEndogenous);
 
+  std::ostringstream msg;
+
   if (endogs.size() > 0)
     {
-      cerr << "ERROR: You have not set the following endogenous variables in endval:";
+      msg << "ERROR: You have not set the following endogenous variables in endval:";
       for (set<int>::const_iterator it = endogs.begin(); it != endogs.end(); it++)
-        cerr << " " << symbol_table.getName(*it);
-      cerr << endl;
+        msg << " " << symbol_table.getName(*it);
+      msg << endl;
     }
 
   if (exogs.size() > 0)
     {
-      cerr << "ERROR: You have not set the following exogenous variables in endval:";
+      msg << "ERROR: You have not set the following exogenous variables in endval:";
       for (set<int>::const_iterator it = exogs.begin(); it != exogs.end(); it++)
-        cerr << " " << symbol_table.getName(*it);
-      cerr << endl;
+        msg << " " << symbol_table.getName(*it);
+      msg << endl;
     }
 
   if (endogs.size() > 0 || exogs.size() > 0)
-    exit(EXIT_FAILURE);
+    dyn_error(msg);
 }
 
 void
@@ -301,25 +304,27 @@ HistValStatement::checkPass(ModFileStructure &mod_file_struct, WarningConsolidat
           if (sit != unused_exo.end())
             unused_exo.erase(sit);
         }
+      
+      std::ostringstream msg;
 
       if (unused_endo.size() > 0)
         {
-          cerr << "ERROR: You have not set the following endogenous variables in histval:";
+          msg << "ERROR: You have not set the following endogenous variables in histval:";
           for (set<int>::const_iterator it = unused_endo.begin(); it != unused_endo.end(); it++)
-            cerr << " " << symbol_table.getName(*it);
-          cerr << endl;
+            msg << " " << symbol_table.getName(*it);
+          msg << endl;
         }
 
       if (unused_exo.size() > 0)
         {
-          cerr << "ERROR: You have not set the following exogenous variables in endval:";
+          msg << "ERROR: You have not set the following exogenous variables in endval:";
           for (set<int>::const_iterator it = unused_exo.begin(); it != unused_exo.end(); it++)
-            cerr << " " << symbol_table.getName(*it);
-          cerr << endl;
+            msg << " " << symbol_table.getName(*it);
+          msg << endl;
         }
 
       if (unused_endo.size() > 0 || unused_exo.size() > 0)
-        exit(EXIT_FAILURE);
+          dyn_error(msg);
     }
   mod_file_struct.hist_vals_wrong_lag = hist_vals_wrong_lag;
 }
@@ -357,8 +362,7 @@ HistValStatement::writeOutput(ostream &output, const string &basename, bool mini
             {
               if (type == eEndogenous)
                 {
-                  cerr << "HISTVAL: internal error of Dynare, please contact the developers";
-                  exit(EXIT_FAILURE);
+                  dyn_error("HISTVAL: internal error of Dynare, please contact the developers\n");
                 }
               // We don't fail for exogenous, because they are not replaced by
               // auxiliary variables in deterministic mode.
@@ -463,8 +467,7 @@ LoadParamsAndSteadyStateStatement::LoadParamsAndSteadyStateStatement(const strin
   f.open(filename.c_str(), ios::in);
   if (f.fail())
     {
-      cerr << "ERROR: Can't open " << filename << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("ERROR: Can't open " + filename);
     }
 
   while (true)
@@ -508,8 +511,9 @@ LoadParamsAndSteadyStateStatement::writeOutput(ostream &output, const string &ba
           output << "oo_.exo_det_steady_state";
           break;
         default:
-          cerr << "ERROR: Unsupported variable type for " << symbol_table.getName(it->first) << " in load_params_and_steady_state" << endl;
-          exit(EXIT_FAILURE);
+          std::ostringstream msg;
+          msg << "ERROR: Unsupported variable type for " << symbol_table.getName(it->first) << " in load_params_and_steady_state\n";
+          dyn_error(msg);
         }
 
       int tsid = symbol_table.getTypeSpecificID(it->first) + 1;

@@ -16,7 +16,8 @@ ConfigFile.o : ConfigFile.hh WarningConsolidation.hh dyn_error.hh \
 ConfigFile.o : WarningConsolidation.hh location.hh
 DataTree.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh \
             ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
-            NumericalConstants.hh PolishModel.hh SymbolTable.hh
+            NumericalConstants.hh PolishModel.hh SymbolTable.hh dyn_error.hh \
+            dynout.hh
 DataTree.o : CallRFunction.hh CodeInterpreter.hh ExprNode.hh \
             ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
             NumericalConstants.hh PolishModel.hh SymbolTable.hh
@@ -62,7 +63,7 @@ ExternalFunctionCalc.o : CallRFunction.hh ExternalFunctionCalc.hh
 ExternalFunctionCalc.o : CallRFunction.hh
 ExternalFunctionsTable.o : CallRFunction.hh CodeInterpreter.hh \
                           ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
-                          PolishModel.hh SymbolTable.hh
+                          PolishModel.hh SymbolTable.hh dyn_error.hh
 MinimumFeedbackSet.o : MinimumFeedbackSet.hh
 ModFile.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
            ConfigFile.hh DataTree.hh DynamicModel.hh ExprNode.hh \
@@ -93,6 +94,11 @@ NumericalInitialization.o : CallRFunction.hh CodeInterpreter.hh \
                            NumericalInitialization.hh PolishModel.hh Statement.hh SymbolList.hh \
                            SymbolTable.hh WarningConsolidation.hh dyn_error.hh dynout.hh \
                            location.hh
+NumericalInitialization.cc.o : CallRFunction.hh CodeInterpreter.hh \
+                              ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
+                              NumericalInitialization.hh PolishModel.hh Statement.hh SymbolList.hh \
+                              SymbolTable.hh WarningConsolidation.hh dyn_error.hh dynout.hh \
+                              location.hh
 NumericalInitialization.o : CallRFunction.hh CodeInterpreter.hh \
                            ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
                            PolishModel.hh Statement.hh SymbolList.hh SymbolTable.hh \
@@ -123,7 +129,7 @@ PolishModels.o : CallRFunction.hh ExternalFunctionCalc.hh \
 Shocks.o : CallRFunction.hh CodeInterpreter.hh ExprNode.hh \
           ExternalFunctionCalc.hh ExternalFunctionsTable.hh PolishModel.hh \
           Shocks.hh Statement.hh SymbolList.hh SymbolTable.hh \
-          WarningConsolidation.hh location.hh
+          WarningConsolidation.hh dyn_error.hh location.hh
 Shocks.o : CallRFunction.hh CodeInterpreter.hh ExprNode.hh \
           ExternalFunctionCalc.hh ExternalFunctionsTable.hh PolishModel.hh \
           Statement.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh \
@@ -160,11 +166,11 @@ SteadyStateModel.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh \
 SymbolList.o : SymbolList.hh
 SymbolTable.o : CallRFunction.hh CodeInterpreter.hh ExprNode.hh \
                ExternalFunctionCalc.hh ExternalFunctionsTable.hh PolishModel.hh \
-               SymbolTable.hh
+               SymbolTable.hh dyn_error.hh
 SymbolTable.o : CallRFunction.hh CodeInterpreter.hh ExprNode.hh \
                ExternalFunctionCalc.hh ExternalFunctionsTable.hh PolishModel.hh \
                SymbolTable.hh
-WarningConsolidation.o : WarningConsolidation.hh location.hh
+WarningConsolidation.o : WarningConsolidation.hh dynout.hh location.hh
 WarningConsolidation.o : location.hh
 calc_dynamic_internal.o : CallRFunction.hh ExternalFunctionCalc.hh \
                          PolishModel.hh PolishModels.hh
