@@ -24,6 +24,8 @@ using namespace std;
 #include <cstring>
 #include "ParsingDriver.hh"
 
+#include "dyn_error.hh"
+
 // Announce to Flex the prototype we want for lexing function
 #define YY_DECL                                                \
   Dynare::parser::token_type                                   \
@@ -902,8 +904,14 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
   else
     {
       /* Enter a native block */
+#ifdef USE_R
+      /* dynmdl does not accept a native block */
+      driver.error(*yylloc, "variable " + string(yytext) + 
+		            " is not a declared parameter or variable.");
+#else
       BEGIN NATIVE;
       yyless(0);
+#endif
     }
 }
 
@@ -943,7 +951,15 @@ DATE -?[0-9]+([YyAa]|[Mm]([1-9]|1[0-2])|[Qq][1-4]|[Ww]([1-9]{1}|[1-4][0-9]|5[0-2
 }
 
  /* Enter a native block */
-<INITIAL>. { BEGIN NATIVE; yyless(0); }
+ /* Enter a native block */
+<INITIAL>. {
+#ifdef USE_R
+  driver.error(*yylloc, string("Syntax error"));
+#else
+BEGIN NATIVE; yyless(0);
+#endif
+}
+
 
  /* Add the native statement */
 <NATIVE>{
@@ -1013,6 +1029,5 @@ DynareFlex::location_increment(Dynare::parser::location_type *yylloc, const char
 int
 DynareFlexLexer::yylex()
 {
-  cerr << "DynareFlexLexer::yylex() has been called, that should never happen!" << endl;
-  exit(EXIT_FAILURE);
+  dyn_error("DynareFlexLexer::yylex() has been called, that should never happen!\n");
 }

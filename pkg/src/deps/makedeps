@@ -47,7 +47,7 @@ DynareFlex.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
               NumericalConstants.hh NumericalInitialization.hh ParsingDriver.hh \
               PolishModel.hh Shocks.hh SigmaeInitialization.hh Statement.hh \
               StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
-              WarningConsolidation.hh location.hh
+              WarningConsolidation.hh dyn_error.hh location.hh
 ExprNode.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh \
             DataTree.hh DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
             ExternalFunctionCalc.hh ExternalFunctionsTable.hh ModFile.hh \
@@ -104,7 +104,7 @@ ParsingDriver.o : CallRFunction.hh CodeInterpreter.hh \
                  ModelTree.hh NumericalConstants.hh NumericalInitialization.hh \
                  ParsingDriver.hh PolishModel.hh Shocks.hh SigmaeInitialization.hh \
                  Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
-                 SymbolTable.hh WarningConsolidation.hh location.hh
+                 SymbolTable.hh WarningConsolidation.hh dyn_error.hh location.hh
 ParsingDriver.o : CallRFunction.hh CodeInterpreter.hh \
                  ComputingTasks.hh ConfigFile.hh DataTree.hh DynamicModel.hh \
                  DynareBison.hh ExprNode.hh ExtendedPreprocessorTypes.hh \

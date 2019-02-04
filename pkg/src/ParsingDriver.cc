@@ -29,6 +29,9 @@
 #include "ExprNode.hh"
 #include "WarningConsolidation.hh"
 
+#include "dyn_error.hh"
+
+
 bool
 ParsingDriver::symbol_exists_and_is_not_modfile_local_or_external_function(const char *s)
 {
@@ -113,8 +116,9 @@ ParsingDriver::parse(istream &in, bool debug)
 void
 ParsingDriver::error(const Dynare::parser::location_type &l, const string &m)
 {
-  create_error_string(l, m, cerr);
-  exit(EXIT_FAILURE);
+  std::ostringstream msg;
+  create_error_string(l, m, msg);
+  dyn_error(msg);
 }
 
 void
@@ -690,8 +694,7 @@ ParsingDriver::end_model()
 {
   if (model_error_encountered)
     {
-      cerr << model_errors.str();
-      exit(EXIT_FAILURE);
+      dyn_error(model_errors.str());
     }
   reset_data_tree();
 }
@@ -2314,8 +2317,7 @@ ParsingDriver::add_divide(expr_t arg1, expr_t arg2)
     }
   catch (DataTree::DivisionByZeroException)
     {
-      cerr << "...division by zero error encountred when reading model from .mod file" << endl;
-      exit(EXIT_FAILURE);
+      dyn_error("...division by zero error encountred when reading model from .mod file\n");
     }
 }
 
