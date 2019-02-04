@@ -140,6 +140,9 @@ private:
   vector<int> exo_det_ids;
   //! Maps type specific IDs of parameters to symbol IDs
   vector<int> param_ids;
+#ifdef USE_R
+  vector<int> extfun_ids;
+#endif
   //! Information about auxiliary variables
   vector<AuxVarInfo> aux_vars;
 

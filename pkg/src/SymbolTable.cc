@@ -130,6 +130,12 @@ SymbolTable::freeze() throw (FrozenException)
           tsi = param_ids.size();
           param_ids.push_back(i);
           break;
+#ifdef USE_R
+        case eExternalFunction:
+          tsi = extfun_ids.size();
+          extfun_ids.push_back(i);
+          break;
+#endif
         default:
           tsi = -1;
           break;

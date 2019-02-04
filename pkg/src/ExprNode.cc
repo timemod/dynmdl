@@ -5479,6 +5479,7 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
 }
 
 
+#ifdef USE_R
 void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
 
     // arguments
@@ -5501,6 +5502,7 @@ void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynami
     } 
 
 }
+#endif
 
 
 void
