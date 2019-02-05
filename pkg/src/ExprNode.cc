@@ -329,10 +329,6 @@ NumConstNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << datatree.num_constants.get(id);
 }
 
-void NumConstNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    mdl.add_constant(id);
-}
-
 bool
 NumConstNode::containsExternalFunction() const
 {
@@ -864,37 +860,6 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       dyn_error("Impossible case\n");
     }
 }
-
-
-void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    int i;
-    switch (type) {
-    case eParameter:
-        i = datatree.symbol_table.getTypeSpecificID(symb_id);
-        mdl.add_param(i);
-        break;
-    case eEndogenous:
-        if (dynamic) {
-            i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag));
-        } else {
-            i = datatree.symbol_table.getTypeSpecificID(symb_id);
-        }
-        mdl.add_endo(i);
-        break;
-    case eExogenous:
-        i = datatree.symbol_table.getTypeSpecificID(symb_id);
-        if (dynamic) {
-            mdl.add_exo(i, lag);
-        } else {
-            mdl.add_exo(i, 0);
-        }
-        break;
-    default:
-        dyn_error("Internal error: internal evalution not yet supported"
-                  " for this type of variable");
-    }
-}
-
 
 expr_t
 VariableNode::substituteStaticAuxiliaryVariable() const
@@ -2105,28 +2070,6 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   if (op_code == oUminus)
     output << RIGHT_PAR(output_type);
 }
-
-
-void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    arg->genPolishCode(mdl, dynamic);
-    switch (op_code) {
-    case oUminus:
-      mdl.add_unary_minus();
-      break;
-    case oExp:
-      mdl.add_op(EXP);
-      break;
-    case oLog:
-      mdl.add_op(LOG);
-      break;
-    case oSqrt:
-      mdl.add_op(SQRT);
-      break;
-    default:
-      dyn_error("genPolishCode not implemented for unary operator");
-    }
-}
-
 
 void
 UnaryOpNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
@@ -3343,63 +3286,6 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     output << RIGHT_PAR(output_type);
 }
 
-
-void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    arg1->genPolishCode(mdl, dynamic);
-    arg2->genPolishCode(mdl, dynamic);
-    switch (op_code) {
-    case oPlus:
-        mdl.add_binop('+');
-        break;
-    case oMinus:
-        mdl.add_binop('-');
-        break;
-    case oTimes:
-        mdl.add_binop('*');
-        break;
-    case oDivide:
-        mdl.add_binop('/');
-        break;
-    case oPower:
-        mdl.add_binop('^');
-        break;
-    case oPowerDeriv:
-        if (powerDerivOrder != 1) {
-            dyn_error("genPolishCode not implemented for power deriv order != 1");
-        }
-        mdl.add_op(POW_DERIV);
-        break;
-    case oEqual:
-    case oEqualEqual:
-        mdl.add_op(EQ);
-        break;
-    case oLess:
-        mdl.add_op(LT);
-        break;
-    case oGreater:
-        mdl.add_op(GT);
-        break;
-    case oLessEqual:
-        mdl.add_op(LE);
-        break;
-    case oGreaterEqual:
-        mdl.add_op(GE);
-        break;
-    case oDifferent:
-        mdl.add_op(NEQ);
-        break;
-    case oMax:
-        mdl.add_op(MAX);
-        break;
-    case oMin:
-        mdl.add_op(MIN);
-        break;
-    default:
-      dyn_error("genPolishCode not implemented for this binary operator");
-    }
-}
-
-
 void
 BinaryOpNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                           const temporary_terms_t &temporary_terms,
@@ -4424,12 +4310,6 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     }
 }
 
-
-void TrinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    dyn_error("genPolishCode not implemented for this type");
-}
-
-
 void
 TrinaryOpNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
@@ -5028,21 +4908,6 @@ AbstractExternalFunctionNode::normalizeEquation(int var_endo, vector<pair<int, p
     return (make_pair(1, (expr_t) NULL));
 }
 
-
-void ExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-
-    // arguments
-    for (vector<expr_t>::const_iterator it = arguments.begin(); 
-         it != arguments.end(); it++) {
-        (*it)->genPolishCode(mdl, dynamic);
-    }
-
-    // function call
-    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
-    mdl.add_external_function_call(id);
-}
-
-
 void
 AbstractExternalFunctionNode::writeExternalFunctionArguments(ostream &output, ExprNodeOutputType output_type,
                                                              const temporary_terms_t &temporary_terms,
@@ -5527,33 +5392,6 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
            << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndx << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
 
-
-#ifdef USE_R
-void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-
-    // arguments
-    for (vector<expr_t>::const_iterator it = arguments.begin(); 
-         it != arguments.end(); it++) {
-        (*it)->genPolishCode(mdl, dynamic);
-    }
-
-    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
-
-    const int first_deriv_symb_id = datatree.external_functions_table.getFirstDerivSymbID(symb_id);
-    if (first_deriv_symb_id < 0) {
-        mdl.add_external_function_numderiv(id, inputIndex);
-    } else {
-        if (first_deriv_symb_id != symb_id) {
-            dyn_warning("For the internal calculation mode the specified"
-                  " name of the first derivative function is ignored");
-        }
-        mdl.add_external_function_deriv(id, inputIndex);
-    } 
-
-}
-#endif
-
-
 void
 FirstDerivExternalFunctionNode::compile(ostream &CompileCode, unsigned int &instruction_number,
                                         bool lhs_rhs, const temporary_terms_t &temporary_terms,
@@ -5945,13 +5783,6 @@ SecondDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType
              << LEFT_ARRAY_SUBSCRIPT(output_type) << tmpIndex1 << "," << tmpIndex2 << RIGHT_ARRAY_SUBSCRIPT(output_type);
 }
 
-
-void SecondDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    dyn_error("genPolishCode not implemented for this type");
-}
-
-
-
 void
 SecondDerivExternalFunctionNode::writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                                              const temporary_terms_t &temporary_terms,
@@ -6112,3 +5943,167 @@ SecondDerivExternalFunctionNode::compileExternalFunctionOutput(ostream &CompileC
 {
   dyn_error("SecondDerivExternalFunctionNode::compileExternalFunctionOutput: not implemented.\n");
 }
+
+
+#ifdef USE_R
+
+void NumConstNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    mdl.add_constant(id);
+}
+
+
+void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    int i;
+    switch (type) {
+    case eParameter:
+        i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        mdl.add_param(i);
+        break;
+    case eEndogenous:
+        if (dynamic) {
+            i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag));
+        } else {
+            i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        }
+        mdl.add_endo(i);
+        break;
+    case eExogenous:
+        i = datatree.symbol_table.getTypeSpecificID(symb_id);
+        if (dynamic) {
+            mdl.add_exo(i, lag);
+        } else {
+            mdl.add_exo(i, 0);
+        }
+        break;
+    default:
+        dyn_error("Internal error: internal evalution not yet supported"
+                  " for this type of variable");
+    }
+}
+
+
+void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    arg->genPolishCode(mdl, dynamic);
+    switch (op_code) {
+    case oUminus:
+      mdl.add_unary_minus();
+      break;
+    case oExp:
+      mdl.add_op(EXP);
+      break;
+    case oLog:
+      mdl.add_op(LOG);
+      break;
+    case oSqrt:
+      mdl.add_op(SQRT);
+      break;
+    default:
+      dyn_error("genPolishCode not implemented for unary operator");
+    }
+}
+
+
+void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    arg1->genPolishCode(mdl, dynamic);
+    arg2->genPolishCode(mdl, dynamic);
+    switch (op_code) {
+    case oPlus:
+        mdl.add_binop('+');
+        break;
+    case oMinus:
+        mdl.add_binop('-');
+        break;
+    case oTimes:
+        mdl.add_binop('*');
+        break;
+    case oDivide:
+        mdl.add_binop('/');
+        break;
+    case oPower:
+        mdl.add_binop('^');
+        break;
+    case oPowerDeriv:
+        if (powerDerivOrder != 1) {
+            dyn_error("genPolishCode not implemented for power deriv order != 1");
+        }
+        mdl.add_op(POW_DERIV);
+        break;
+    case oEqual:
+    case oEqualEqual:
+        mdl.add_op(EQ);
+        break;
+    case oLess:
+        mdl.add_op(LT);
+        break;
+    case oGreater:
+        mdl.add_op(GT);
+        break;
+    case oLessEqual:
+        mdl.add_op(LE);
+        break;
+    case oGreaterEqual:
+        mdl.add_op(GE);
+        break;
+    case oDifferent:
+        mdl.add_op(NEQ);
+        break;
+    case oMax:
+        mdl.add_op(MAX);
+        break;
+    case oMin:
+        mdl.add_op(MIN);
+        break;
+    default:
+      dyn_error("genPolishCode not implemented for this binary operator");
+    }
+}
+
+
+void TrinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+    dyn_error("genPolishCode not implemented for this type");
+}
+
+
+void ExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+
+    // arguments
+    for (vector<expr_t>::const_iterator it = arguments.begin(); 
+         it != arguments.end(); it++) {
+        (*it)->genPolishCode(mdl, dynamic);
+    }
+
+    // function call
+    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
+    mdl.add_external_function_call(id);
+}
+
+
+void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
+
+    // arguments
+    for (vector<expr_t>::const_iterator it = arguments.begin(); 
+         it != arguments.end(); it++) {
+        (*it)->genPolishCode(mdl, dynamic);
+    }
+
+    int id = datatree.symbol_table.getTypeSpecificID(symb_id);
+
+    const int first_deriv_symb_id = datatree.external_functions_table.getFirstDerivSymbID(symb_id);
+    if (first_deriv_symb_id < 0) {
+        mdl.add_external_function_numderiv(id, inputIndex);
+    } else {
+        if (first_deriv_symb_id != symb_id) {
+            dyn_warning("For the internal calculation mode the specified"
+                  " name of the first derivative function is ignored");
+        }
+        mdl.add_external_function_deriv(id, inputIndex);
+    } 
+}
+
+
+void SecondDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, 
+                                             bool dynamic) const {
+    dyn_error("genPolishCode not implemented for this type");
+}
+
+#endif
