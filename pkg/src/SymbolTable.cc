@@ -557,6 +557,59 @@ SymbolTable::writeCCOutput(ostream &output) const throw (NotYetFrozenException)
     output << "varobs.push_back(" << getTypeSpecificID(*it) << ");" << endl;
 }
 
+
+#ifdef USE_R
+
+int SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, 
+                 int orig_lead_lag, expr_t expr_arg) throw (FrozenException) {
+  ostringstream varname;
+  varname << name_table[orig_symb_id] << "_lead_" << orig_lead_lag;
+  int symb_id;
+  try {
+      symb_id = addSymbol(varname.str(), eEndogenous);
+  } catch (AlreadyDeclaredException &e) {
+      dyn_error("ERROR: you should rename your variable called " + 
+              varname.str() + ", this name is internally used by Dynare");
+  }
+
+  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLead : avExoLead), 
+              orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
+
+  return symb_id;
+}
+
+int SymbolTable::addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, 
+        int orig_lead_lag, expr_t expr_arg) throw (FrozenException) {
+  ostringstream varname;
+
+  varname << name_table[orig_symb_id] << "_lag_" << -orig_lead_lag;
+
+  int symb_id;
+  try {
+      symb_id = addSymbol(varname.str(), eEndogenous);
+  } catch (AlreadyDeclaredException &e) {
+      dyn_error("ERROR: you should rename your variable called " + varname.str() + 
+              ", this name is internally used by Dynare");
+  }
+
+  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLag : avExoLag), orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
+
+  return symb_id;
+}
+
+int SymbolTable::addEndoLeadAuxiliaryVar(int orig_symb_id, int orig_lead_lag, 
+                  expr_t expr_arg) throw (FrozenException) {
+  return addLeadAuxiliaryVarInternal(true, orig_symb_id, orig_lead_lag, expr_arg);
+}
+
+int
+SymbolTable::addExoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenException)
+{
+  return addLeadAuxiliaryVarInternal(false, index, 0, expr_arg);
+}
+
+#else
+
 int
 SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int index, expr_t expr_arg) throw (FrozenException)
 {
@@ -615,15 +668,16 @@ SymbolTable::addEndoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenEx
 }
 
 int
-SymbolTable::addEndoLagAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t expr_arg) throw (FrozenException)
-{
-  return addLagAuxiliaryVarInternal(true, orig_symb_id, orig_lead_lag, expr_arg);
-}
-
-int
 SymbolTable::addExoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenException)
 {
   return addLeadAuxiliaryVarInternal(false, index, expr_arg);
+
+#endif
+
+int
+SymbolTable::addEndoLagAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t expr_arg) throw (FrozenException)
+{
+  return addLagAuxiliaryVarInternal(true, orig_symb_id, orig_lead_lag, expr_arg);
 }
 
 int

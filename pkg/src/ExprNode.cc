@@ -218,7 +218,11 @@ ExprNode::createEndoLeadAuxiliaryVarForMyself(subst_table_t &subst_table, vector
       it = subst_table.find(orig_expr);
       if (it == subst_table.end())
         {
+#ifdef USE_R
+          int symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(orig_expr->idx, 0, substexpr);
+#else
           int symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(orig_expr->idx, substexpr);
+#endif
           neweqs.push_back(dynamic_cast<BinaryOpNode *>(datatree.AddEqual(datatree.AddVariable(symb_id, 0), substexpr)));
           substexpr = datatree.AddVariable(symb_id, +1);
           assert(dynamic_cast<VariableNode *>(substexpr) != NULL);
@@ -1244,7 +1248,38 @@ VariableNode::substituteEndoLeadGreaterThanTwo(subst_table_t &subst_table, vecto
       if (lag <= 1)
         return const_cast<VariableNode *>(this);
       else
+#ifdef USE_R
+        {
+        subst_table_t::const_iterator it = subst_table.find(this);
+        if (it != subst_table.end())
+            return const_cast<VariableNode *>(it->second);
+
+         VariableNode *substexpr = datatree.AddVariable(symb_id, 1);
+
+         int cur_lead = 2;
+         // Each iteration tries to create an auxvar such that auxvar(1)=curvar(cur_lead)
+         // At the beginning (resp. end) of each iteration, substexpr is an expression 
+         // (possibly an auxvar) equivalent to curvar(cur_lead-1) (resp. curvar(cur_lead))
+         while (cur_lead <= lag) {
+             VariableNode *orig_expr = datatree.AddVariable(symb_id, cur_lead);
+             it = subst_table.find(orig_expr);
+             if (it == subst_table.end()) {
+                 int aux_symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(
+                               symb_id, cur_lead - 1, substexpr);
+                 neweqs.push_back(dynamic_cast<BinaryOpNode *>(datatree.AddEqual(
+                              datatree.AddVariable(aux_symb_id, 0), substexpr)));
+                 substexpr = datatree.AddVariable(aux_symb_id, 1);
+                 subst_table[orig_expr] = substexpr;
+             } else {
+                 substexpr = const_cast<VariableNode *>(it->second);
+             }
+             cur_lead++;
+         }
+         return substexpr;
+        }
+#else
         return createEndoLeadAuxiliaryVarForMyself(subst_table, neweqs);
+#endif
     case eModelLocalVariable:
       value = datatree.local_variables_table[symb_id];
       if (value->maxEndoLead() <= 1)
