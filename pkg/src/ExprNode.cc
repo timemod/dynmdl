@@ -3291,10 +3291,9 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       output << "==";
       break;
     case oDifferent:
-      if (IS_MATLAB(output_type))
+      if (IS_MATLAB(output_type)) {
         output << "~=";
-      else
-      if (IS_LATEX(output_type)) {
+      } else if (IS_LATEX(output_type)) {
           output << "\\neq ";
       } else {
           output << " != ";
@@ -5055,7 +5054,19 @@ AbstractExternalFunctionNode::writeExternalFunctionArguments(ostream &output, Ex
       if (it != arguments.begin())
         output << ",";
 
+#ifdef USE_R
+       if (IS_C(output_type)) {
+          output << "(double) (";
+       }
+#endif
       (*it)->writeOutput(output, output_type, temporary_terms, tef_terms);
+
+#ifdef USE_R
+       if (IS_C(output_type)) {
+          output << ")";
+      }
+#endif
+
     }
 }
 
