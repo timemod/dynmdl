@@ -1418,22 +1418,30 @@ ModelTree::writeModelEquations(ostream &output, ExprNodeOutputType output_type) 
         {
           if (IS_JULIA(output_type))
             output << "  @inbounds ";
-          output << "lhs =";
+          output << "lhs" << ASSIGNMENT_OPERATOR(output_type);
           lhs->writeOutput(output, output_type, temp_terms);
-          output << ";" << endl;
-
+          if (!IS_R(output_type)) {
+              output << ";";
+          }        
+          output << endl;
           if (IS_JULIA(output_type))
             output << "  @inbounds ";
-          output << "rhs =";
+          output << "rhs" << ASSIGNMENT_OPERATOR(output_type);
           rhs->writeOutput(output, output_type, temp_terms);
-          output << ";" << endl;
-
+          if (!IS_R(output_type)) {
+              output << ";";
+          }        
+          output << endl;
           if (IS_JULIA(output_type))
             output << "  @inbounds ";
           output << "residual" << LEFT_ARRAY_SUBSCRIPT(output_type)
                  << eq + ARRAY_SUBSCRIPT_OFFSET(output_type)
                  << RIGHT_ARRAY_SUBSCRIPT(output_type)
-                 << "= lhs-rhs;" << endl;
+                 << ASSIGNMENT_OPERATOR(output_type) << "lhs - rhs";
+          if (!IS_R(output_type)) {
+              output << ";";
+          }        
+          output << endl;
         }
       else // The right hand side of the equation is empty ==> residual=lhs;
         {
@@ -1442,9 +1450,13 @@ ModelTree::writeModelEquations(ostream &output, ExprNodeOutputType output_type) 
           output << "residual" << LEFT_ARRAY_SUBSCRIPT(output_type)
                  << eq + ARRAY_SUBSCRIPT_OFFSET(output_type)
                  << RIGHT_ARRAY_SUBSCRIPT(output_type)
-                 << " = ";
+                 << ASSIGNMENT_OPERATOR(output_type);
           lhs->writeOutput(output, output_type, temp_terms);
-          output << ";" << endl;
+          if (!IS_R(output_type)) {
+              output << ";";
+          }        
+          output << endl;
+
         }
     }
 }

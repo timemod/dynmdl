@@ -3294,15 +3294,18 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       if (IS_MATLAB(output_type))
         output << "~=";
       else
-        {
-          if (IS_C(output_type) || IS_JULIA(output_type))
-            output << "!=";
-          else
-            output << "\\neq ";
-        }
+      if (IS_LATEX(output_type)) {
+          output << "\\neq ";
+      } else {
+          output << " != ";
+      }
       break;
     case oEqual:
-      output << "=";
+      if (IS_R(output_type) || IS_C(output_type)) {
+          output << "==";
+      } else {
+          output << "=";
+      }
       break;
     default:
       ;
