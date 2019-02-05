@@ -1253,7 +1253,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
       jacobianHelper(jacobian_output, ideriv, eq, var, output_type);
       jacobian_output << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
-      if (IS_R(output_type) || output_type == oCStaticModel) {
+      if (!IS_R(output_type)) {
           jacobian_output << ";";
       }
       jacobian_output << endl;

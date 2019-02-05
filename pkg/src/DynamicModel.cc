@@ -1775,7 +1775,7 @@ DynamicModel::Write_Inf_To_Bin_File_Block(const string &dynamic_basename, const 
     SaveCode.open((bin_basename + "_dynamic.bin").c_str(), ios::out | ios::binary);
   if (!SaveCode.is_open())
     {
-      dyn_error("Error : Can't open file \"" + bin_basename + "\" for writing\n");
+      dyn_error("Error : Can't open file \"" + bin_basename + "_dynamic.bin\" for writing\n");
     }
   u_count_int = 0;
   unsigned int block_size = getBlockSize(num);
@@ -2206,7 +2206,7 @@ DynamicModel::writeDynamicModel(ostream &DynamicOutput, ExprNodeOutputType outpu
                      output_type);
       jacobian_output << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
-      if (IS_R(output_type) || output_type == oCDynamicModel) {
+      if (!IS_R(output_type)) {
           jacobian_output << ";";
       }
       jacobian_output << endl;
