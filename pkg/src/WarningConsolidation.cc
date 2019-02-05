@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dynare Team
+ * Copyright (C) 2012-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -21,8 +21,9 @@
 #include <ostream>
 #include "dynout.hh"
 
-WarningConsolidation&
-operator<< (WarningConsolidation& wcc, const string &warning)
+WarningConsolidation
+&
+operator<<(WarningConsolidation &wcc, const string &warning)
 {
   if (wcc.no_warn)
     return wcc;
@@ -30,10 +31,10 @@ operator<< (WarningConsolidation& wcc, const string &warning)
   DynErr << warning;
   wcc.addWarning(warning);
   return wcc;
-}
+};
 
-WarningConsolidation&
-operator<< (WarningConsolidation& wcc, const Dynare::location& loc)
+WarningConsolidation &
+operator<<(WarningConsolidation &wcc, const Dynare::location &loc)
 {
   if (wcc.no_warn)
     return wcc;
@@ -50,14 +51,13 @@ operator<< (WarningConsolidation& wcc, const Dynare::location& loc)
   else if (loc.begin.column != last.column)
     ostr << '-' << last.column;
 
-  //DynErr << ostr;
   DynErr << ostr.str();
   wcc.addWarning(ostr.str());
   return wcc;
-}
+};
 
-WarningConsolidation&
-operator<< (WarningConsolidation& wcc, ostream& (*pf) (ostream&))
+WarningConsolidation &
+operator<<(WarningConsolidation &wcc, ostream & (*pf)(ostream &))
 {
   if (wcc.no_warn)
     return wcc;

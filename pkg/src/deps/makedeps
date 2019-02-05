@@ -48,7 +48,7 @@ DynareFlex.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
               NumericalConstants.hh NumericalInitialization.hh ParsingDriver.hh \
               PolishModel.hh Shocks.hh SigmaeInitialization.hh Statement.hh \
               StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
-              WarningConsolidation.hh location.hh
+              WarningConsolidation.hh dyn_error.hh location.hh
 ExprNode.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh \
             DataTree.hh DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
             ExternalFunctionCalc.hh ExternalFunctionsTable.hh ModFile.hh \
@@ -64,7 +64,7 @@ ExternalFunctionCalc.o : CallRFunction.hh
 ExternalFunctionsTable.o : CallRFunction.hh CodeInterpreter.hh \
                           ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
                           PolishModel.hh SymbolTable.hh dyn_error.hh
-MinimumFeedbackSet.o : MinimumFeedbackSet.hh dynout.hh
+MinimumFeedbackSet.o : MinimumFeedbackSet.hh
 ModFile.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
            ConfigFile.hh DataTree.hh DynamicModel.hh ExprNode.hh \
            ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
@@ -94,6 +94,11 @@ NumericalInitialization.o : CallRFunction.hh CodeInterpreter.hh \
                            NumericalInitialization.hh PolishModel.hh Statement.hh SymbolList.hh \
                            SymbolTable.hh WarningConsolidation.hh dyn_error.hh dynout.hh \
                            location.hh
+NumericalInitialization.cc.o : CallRFunction.hh CodeInterpreter.hh \
+                              ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
+                              NumericalInitialization.hh PolishModel.hh Statement.hh SymbolList.hh \
+                              SymbolTable.hh WarningConsolidation.hh dyn_error.hh dynout.hh \
+                              location.hh
 NumericalInitialization.o : CallRFunction.hh CodeInterpreter.hh \
                            ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
                            PolishModel.hh Statement.hh SymbolList.hh SymbolTable.hh \

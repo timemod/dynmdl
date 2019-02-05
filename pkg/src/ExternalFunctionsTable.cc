@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2011 Dynare Team
+ * Copyright (C) 2010-2015 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -53,7 +53,7 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
       && external_function_options_chng.firstDerivSymbID  != symb_id)
     {
       dyn_error("ERROR: If the second derivative is provided by the top-level function "
-                "the first derivative must also be provided by the same function.");
+                "the first derivative must also be provided by the same function.\n");
     }
 
   if ((external_function_options_chng.secondDerivSymbID != symb_id
@@ -61,13 +61,13 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
       && external_function_options_chng.secondDerivSymbID != eExtFunNotSet)
     {
       dyn_error("ERROR: If the first derivative is provided by the top-level function, the "
-                "second derivative cannot be provided by any other external function.");
+                "second derivative cannot be provided by any other external function.\n");
     }
 
   if (external_function_options_chng.secondDerivSymbID != eExtFunNotSet
       && external_function_options_chng.firstDerivSymbID == eExtFunNotSet)
     {
-      dyn_error("ERROR: If the second derivative is provided, the first derivative must also be provided.");
+      dyn_error("ERROR: If the second derivative is provided, the first derivative must also be provided.\n");
     }
 
   if (external_function_options_chng.secondDerivSymbID == external_function_options_chng.firstDerivSymbID
@@ -75,11 +75,12 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
       && external_function_options_chng.firstDerivSymbID != eExtFunNotSet)
     {
       dyn_error("ERROR: If the Jacobian and Hessian are provided by the same function, that "
-                "function must be the top-level function.");
+               "function must be the top-level function.\n");
     }
 
   // Ensure that if we're overwriting something, we mean to do it
-  if (exists(symb_id)) {
+  if (exists(symb_id))
+    {
       bool ok_to_overwrite = false;
       if (getNargs(symb_id) == eExtFunNotSet) // implies that the information stored about this function is not important
         ok_to_overwrite = true;
@@ -89,28 +90,33 @@ ExternalFunctionsTable::addExternalFunction(int symb_id, const external_function
           if (external_function_options_chng.nargs != getNargs(symb_id))
             {
               dyn_error("ERROR: The number of arguments passed to the external_function() statement do not "
-                        "match the number of arguments passed to a previous call or declaration of the top-level function.");
+                        "match the number of arguments passed to a previous call or declaration of the top-level function.\n");
             }
 
           if (external_function_options_chng.firstDerivSymbID != getFirstDerivSymbID(symb_id))
             {
               dyn_error("ERROR: The first derivative function passed to the external_function() statement does not "
-                        "match the first derivative function passed to a previous call or declaration of the top-level function.");
+                        "match the first derivative function passed to a previous call or declaration of the top-level function.\n");
             }
 
           if (external_function_options_chng.secondDerivSymbID != getSecondDerivSymbID(symb_id))
             {
               dyn_error("ERROR: The second derivative function passed to the external_function() statement does not "
-                        "match the second derivative function passed to a previous call or declaration of the top-level function.");
+                        "match the second derivative function passed to a previous call or declaration of the top-level function.\n");
             }
         }
-  } else {  
+    } 
+#ifdef USE_R
+    else {
       // symbol does not yet exist.
       external_function_symb_ids.push_back(symb_id);
-  }
+    }
+#endif
 
   externalFunctionTable[symb_id] = external_function_options_chng;
 }
+
+#ifdef USE_R
 
 int ExternalFunctionsTable::get_external_function_count() const {
     return external_function_symb_ids.size();
@@ -119,3 +125,5 @@ int ExternalFunctionsTable::get_external_function_count() const {
 int ExternalFunctionsTable::get_external_function_symb_id(int index) const {
     return external_function_symb_ids[index];
 }
+
+#endif

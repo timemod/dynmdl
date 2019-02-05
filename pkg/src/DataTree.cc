@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2015 Dynare Team
+ * Copyright (C) 2003-2016 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -676,8 +676,83 @@ DataTree::minLagForSymbol(int symb_id) const
   return r;
 }
 
-void DataTree::writePowerDerivCHeader(ostream &output) const {
-  if (isBinaryOpUsed(oPowerDeriv)) {
+void
+DataTree::writePowerDerivCHeader(ostream &output) const
+{
+  if (isBinaryOpUsed(oPowerDeriv))
+#ifdef USE_R
     output << "#include \"getPowerDeriv.h\"" << endl;
-  }
+#else
+    output << "double getPowerDeriv(double, double, int);" << endl;
+#endif
+}
+
+void
+DataTree::writePowerDeriv(ostream &output) const
+{
+  if (isBinaryOpUsed(oPowerDeriv))
+    output << "/*" << endl
+           << " * The k-th derivative of x^p" << endl
+           << " */" << endl
+           << "double getPowerDeriv(double x, double p, int k)" << endl
+           << "{" << endl
+           << "#ifdef _MSC_VER" << endl
+           << "# define nearbyint(x) (fabs((x)-floor(x)) < fabs((x)-ceil(x)) ? floor(x) : ceil(x))" << endl
+           << "#endif" << endl
+           << "  if ( fabs(x) < " << NEAR_ZERO << " && p > 0 && k > p && fabs(p-nearbyint(p)) < " << NEAR_ZERO << " )" << endl
+           << "    return 0.0;" << endl
+           << "  else" << endl
+           << "    {" << endl
+           << "      int i = 0;" << endl
+           << "      double dxp = pow(x, p-k);" << endl
+           << "      for (; i<k; i++)" << endl
+           << "        dxp *= p--;" << endl
+           << "      return dxp;" << endl
+           << "    }" << endl
+           << "}" << endl;
+}
+
+void
+DataTree::writeNormcdfCHeader(ostream &output) const
+{
+#if defined(_WIN32) || defined(__CYGWIN32__) || defined(__MINGW32__)
+  if (isTrinaryOpUsed(oNormcdf))
+    output << "#ifdef _MSC_VER" << endl
+           << "double normcdf(double);" << endl
+           << "#endif" << endl;
+#endif
+}
+
+void
+DataTree::writeNormcdf(ostream &output) const
+{
+#if defined(_WIN32) || defined(__CYGWIN32__) || defined(__MINGW32__)
+  if (isTrinaryOpUsed(oNormcdf))
+    output << endl
+           << "#ifdef _MSC_VER" << endl
+           << "/*" << endl
+           << " * Define normcdf for MSVC compiler" << endl
+           << " */" << endl
+           << "double normcdf(double x)" << endl
+           << "{" << endl
+           << "#if _MSC_VER >= 1700" << endl
+           << "  return 0.5 * erfc(-x * M_SQRT1_2);" << endl
+           << "#else" << endl
+           << "  // From http://www.johndcook.com/blog/cpp_phi" << endl
+           << "  double a1 =  0.254829592;" << endl
+           << "  double a2 = -0.284496736;" << endl
+           << "  double a3 =  1.421413741;" << endl
+           << "  double a4 = -1.453152027;" << endl
+           << "  double a5 =  1.061405429;" << endl
+           << "  double p  =  0.3275911;" << endl
+           << "  int sign = (x < 0) ? -1 : 1;" << endl
+           << "  x = fabs(x)/sqrt(2.0);" << endl
+           << "  // From the Handbook of Mathematical Functions by Abramowitz and Stegun, formula 7.1.26" << endl
+           << "  double t = 1.0/(1.0 + p*x);" << endl
+           << "  double y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*exp(-x*x);" << endl
+           << "  return 0.5*(1.0 + sign*y);" << endl
+           << "#endif" << endl
+           << "}" << endl
+           << "#endif" << endl;
+#endif
 }

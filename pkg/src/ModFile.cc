@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2016 Dynare Team
+ * Copyright (C) 2006-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -25,7 +25,6 @@
 #ifndef _WIN32
 # include <unistd.h>
 #endif
-#include <boost/algorithm/string/trim.hpp>
 
 #include "ModFile.hh"
 #include "ConfigFile.hh"
@@ -37,8 +36,6 @@
 #include "PolishModels.hh"
 #include "DataTree.hh"
 
-#include <fstream>
-
 
 ModFile::ModFile(WarningConsolidation &warnings_arg)
   : expressions_tree(symbol_table, num_constants, external_functions_table),
@@ -46,9 +43,10 @@ ModFile::ModFile(WarningConsolidation &warnings_arg)
     dynamic_model(symbol_table, num_constants, external_functions_table),
     trend_dynamic_model(symbol_table, num_constants, external_functions_table),
     ramsey_FOC_equations_dynamic_model(symbol_table, num_constants, external_functions_table),
+    orig_ramsey_dynamic_model(symbol_table, num_constants, external_functions_table),
     static_model(symbol_table, num_constants, external_functions_table),
     steady_state_model(symbol_table, num_constants, external_functions_table, static_model),
-    linear(false), block(false), byte_code(false), use_dll(false), no_static(false), 
+    linear(false), block(false), byte_code(false), use_dll(false), no_static(false),
     differentiate_forward_vars(false), nonstationary_variables(false),
     param_used_with_lead_lag(false), warnings(warnings_arg)
 {
@@ -64,12 +62,11 @@ ModFile::~ModFile()
 void
 ModFile::evalAllExpressions(bool warn_uninit)
 {
-  DynOut << "Evaluating expressions..." << endl;
+  DynOut << "Evaluating expressions...";
 
   // Loop over all statements, and fill global eval context if relevant
-  for (vector<Statement *>::const_iterator it = statements.begin(); 
-       it != statements.end(); it++) {
-
+  for (vector<Statement *>::const_iterator it = statements.begin(); it != statements.end(); it++)
+    {
       InitParamStatement *ips = dynamic_cast<InitParamStatement *>(*it);
       if (ips)
         ips->fillEvalContext(global_eval_context);
@@ -81,15 +78,6 @@ ModFile::evalAllExpressions(bool warn_uninit)
       LoadParamsAndSteadyStateStatement *lpass = dynamic_cast<LoadParamsAndSteadyStateStatement *>(*it);
       if (lpass)
         lpass->fillEvalContext(global_eval_context);
-
-      NativeStatement *ns = dynamic_cast<NativeStatement *>(*it);
-      if (ns) {
-        // native statement: this is typically a statement such as pi = acos(-1)
-        // were pi is not a parameter
-        const std::string statement = ns->get_statement();
-        dyn_error("Found native statement\n"  + statement +
-                  "\n  dynmdl does not support native statements\n");
-      }
     }
 
   // Evaluate model local variables
@@ -98,17 +86,16 @@ ModFile::evalAllExpressions(bool warn_uninit)
   DynOut << "done" << endl;
 
   // Check if some symbols are not initialized, and give them a zero value then
-  for (int id = 0; id <= symbol_table.maxID(); id++) {
+  for (int id = 0; id <= symbol_table.maxID(); id++)
+    {
       SymbolType type = symbol_table.getType(id);
       if ((type == eEndogenous || type == eExogenous || type == eExogenousDet
            || type == eParameter || type == eModelLocalVariable)
-          && global_eval_context.find(id) == global_eval_context.end()) {
-          /* we always want to warn about uninitialized parameters in the
-           * mod file */
-          if (warn_uninit || type == eParameter || type == eModelLocalVariable) {
+          && global_eval_context.find(id) == global_eval_context.end())
+        {
+          if (warn_uninit)
             warnings << "WARNING: Can't find a numeric initial value for "
-                     << symbol_table.getName(id) << ", using zero\n";
-          }
+                     << symbol_table.getName(id) << ", using zero" << endl;
           global_eval_context[id] = 0;
         }
     }
@@ -127,7 +114,7 @@ ModFile::addStatementAtFront(Statement *st)
 }
 
 void
-ModFile::checkPass()
+ModFile::checkPass(bool nostrict)
 {
   for (vector<Statement *>::iterator it = statements.begin();
        it != statements.end(); it++)
@@ -157,68 +144,68 @@ ModFile::checkPass()
           || mod_file_struct.perfect_foresight_solver_present
           || stochastic_statement_present))
     {
-      dyn_error("ERROR: At least one model equation must be declared!");
+      dyn_error("ERROR: At least one model equation must be declared!\n");
     }
 
   if ((mod_file_struct.ramsey_model_present || mod_file_struct.ramsey_policy_present)
       && mod_file_struct.discretionary_policy_present)
     {
-      dyn_error("ERROR: You cannot use the discretionary_policy command when you use either rasmey_model or ramsey_policy and vice versa");
+      dyn_error("ERROR: You cannot use the discretionary_policy command when you use either ramsey_model or ramsey_policy and vice versa\n");
     }
 
-  if (((mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present) 
+  if (((mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present)
        && !mod_file_struct.planner_objective_present)
       || (!(mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present)
-	  && mod_file_struct.planner_objective_present))
+          && mod_file_struct.planner_objective_present))
     {
-      dyn_error("ERROR: A planner_objective statement must be used with a ramsey_model, a ramsey_policy or a discretionary_policy statement and vice versa.");
+      dyn_error("ERROR: A planner_objective statement must be used with a ramsey_model, a ramsey_policy or a discretionary_policy statement and vice versa.\n");
     }
 
   if ((mod_file_struct.osr_present && (!mod_file_struct.osr_params_present || !mod_file_struct.optim_weights_present))
       || ((!mod_file_struct.osr_present || !mod_file_struct.osr_params_present) && mod_file_struct.optim_weights_present)
       || ((!mod_file_struct.osr_present || !mod_file_struct.optim_weights_present) && mod_file_struct.osr_params_present))
     {
-      dyn_error("ERROR: The osr statement must be used with osr_params and optim_weights.");
+      dyn_error("ERROR: The osr statement must be used with osr_params and optim_weights.\n");
     }
 
   if (mod_file_struct.perfect_foresight_solver_present && stochastic_statement_present)
     {
-      dyn_error("ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul} and one of {stoch_simul, estimation, osr, ramsey_policy, discretionary_policy}. This is not possible: one cannot mix perfect foresight context with stochastic context in the same file.");
+      dyn_error("ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul} and one of {stoch_simul, estimation, osr, ramsey_policy, discretionary_policy}. This is not possible: one cannot mix perfect foresight context with stochastic context in the same file.\n");
     }
 
   if (mod_file_struct.k_order_solver && byte_code)
     {
-      dyn_error("ERROR: 'k_order_solver' (which is implicit if order >= 3), is not yet compatible with 'bytecode'.");
+      dyn_error("ERROR: 'k_order_solver' (which is implicit if order >= 3), is not yet compatible with 'bytecode'.\n");
     }
 
   if (use_dll && (block || byte_code))
     {
-      dyn_error("ERROR: In 'model' block, 'use_dll' option is not compatible with 'block' or 'bytecode'");
+      dyn_error("ERROR: In 'model' block, 'use_dll' option is not compatible with 'block' or 'bytecode'\n");
     }
 
   if (block || byte_code)
     if (dynamic_model.isModelLocalVariableUsed())
       {
-        dyn_error("ERROR: In 'model' block, 'block' or 'bytecode' options are not yet compatible with pound expressions");
+        dyn_error("ERROR: In 'model' block, 'block' or 'bytecode' options are not yet compatible with pound expressions\n");
       }
 
   if ((stochastic_statement_present || mod_file_struct.check_present || mod_file_struct.steady_present) && no_static)
     {
-      dyn_error("ERROR: no_static option is incompatible with stoch_simul, estimation, osr, ramsey_policy, discretionary_policy, steady and check commands");
+      dyn_error("ERROR: no_static option is incompatible with stoch_simul, estimation, osr, ramsey_policy, discretionary_policy, steady and check commands\n");
     }
 
   if (mod_file_struct.dsge_var_estimated)
     if (!mod_file_struct.dsge_prior_weight_in_estimated_params)
       {
         dyn_error("ERROR: When estimating a DSGE-VAR model and estimating the weight of the prior, dsge_prior_weight must "
-                  "be referenced in the estimated_params block.");
+                  "be referenced in the estimated_params block.\n");
       }
 
   if (symbol_table.exists("dsge_prior_weight"))
     {
       if (symbol_table.getType("dsge_prior_weight") != eParameter)
         {
-          dyn_error("ERROR: dsge_prior_weight may only be used as a parameter.");
+          dyn_error("ERROR: dsge_prior_weight may only be used as a parameter.\n");
         }
       else
         warnings << "WARNING: When estimating a DSGE-Var, declaring dsge_prior_weight as a "
@@ -228,57 +215,69 @@ ModFile::checkPass()
       if (mod_file_struct.dsge_var_estimated || !mod_file_struct.dsge_var_calibrated.empty())
         {
           dyn_error("ERROR: dsge_prior_weight can either be declared as a parameter (deprecated) or via the dsge_var option "
-                    "to the estimation statement (preferred), but not both.");
+                   "to the estimation statement (preferred), but not both.\n");
         }
 
       if (!mod_file_struct.dsge_prior_weight_initialized && !mod_file_struct.dsge_prior_weight_in_estimated_params)
         {
           dyn_error("ERROR: If dsge_prior_weight is declared as a parameter, it must either be initialized or placed in the "
-                    "estimated_params block.");
+                    "estimated_params block.\n");
         }
 
       if (mod_file_struct.dsge_prior_weight_initialized && mod_file_struct.dsge_prior_weight_in_estimated_params)
         {
-          dyn_error("ERROR: dsge_prior_weight cannot be both initalized and estimated.");
+          dyn_error("ERROR: dsge_prior_weight cannot be both initialized and estimated.\n");
         }
     }
 
-  if (mod_file_struct.dsge_prior_weight_in_estimated_params) {
+  if (mod_file_struct.dsge_prior_weight_in_estimated_params)
     if (!mod_file_struct.dsge_var_estimated && !mod_file_struct.dsge_var_calibrated.empty())
       {
         dyn_error("ERROR: If dsge_prior_weight is in the estimated_params block, the prior weight cannot be calibrated "
-                  "via the dsge_var option in the estimation statement.");
+                  "via the dsge_var option in the estimation statement.\n");
       }
     else if (!mod_file_struct.dsge_var_estimated && !symbol_table.exists("dsge_prior_weight"))
       {
         dyn_error("ERROR: If dsge_prior_weight is in the estimated_params block, it must either be declared as a parameter "
-                  "(deprecated) or the dsge_var option must be passed to the estimation statement (preferred).");
+                  "(deprecated) or the dsge_var option must be passed to the estimation statement (preferred).\n");
       }
-  }
 
   if (dynamic_model.staticOnlyEquationsNbr() != dynamic_model.dynamicOnlyEquationsNbr())
     {
-      dyn_error("ERROR: the number of equations marked [static] must be equal to the number of equations marked [dynamic]");
-    }
-  
-  if (dynamic_model.staticOnlyEquationsNbr() > 0 &&
-      (mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present))
-    {
-      dyn_error("ERROR: marking equations as [static] or [dynamic] is not possible with ramsey_model, ramsey_policy or discretionary_policy");
+      dyn_error("ERROR: the number of equations marked [static] must be equal to the number of equations marked [dynamic]\n");
     }
 
-  if (stochastic_statement_present &&
-      (dynamic_model.isUnaryOpUsed(oSign)
-       || dynamic_model.isUnaryOpUsed(oAbs)
-       || dynamic_model.isBinaryOpUsed(oMax)
-       || dynamic_model.isBinaryOpUsed(oMin)
-       || dynamic_model.isBinaryOpUsed(oGreater)
-       || dynamic_model.isBinaryOpUsed(oLess)
-       || dynamic_model.isBinaryOpUsed(oGreaterEqual)
-       || dynamic_model.isBinaryOpUsed(oLessEqual)
-       || dynamic_model.isBinaryOpUsed(oEqualEqual)
-       || dynamic_model.isBinaryOpUsed(oDifferent)))
+  if (dynamic_model.staticOnlyEquationsNbr() > 0
+      && (mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present))
+    {
+      dyn_error("ERROR: marking equations as [static] or [dynamic] is not possible with ramsey_model, ramsey_policy or discretionary_policy\n");
+    }
+
+  if (stochastic_statement_present
+      && (dynamic_model.isUnaryOpUsed(oSign)
+          || dynamic_model.isUnaryOpUsed(oAbs)
+          || dynamic_model.isBinaryOpUsed(oMax)
+          || dynamic_model.isBinaryOpUsed(oMin)
+          || dynamic_model.isBinaryOpUsed(oGreater)
+          || dynamic_model.isBinaryOpUsed(oLess)
+          || dynamic_model.isBinaryOpUsed(oGreaterEqual)
+          || dynamic_model.isBinaryOpUsed(oLessEqual)
+          || dynamic_model.isBinaryOpUsed(oEqualEqual)
+          || dynamic_model.isBinaryOpUsed(oDifferent)))
     warnings << "WARNING: you are using a function (max, min, abs, sign) or an operator (<, >, <=, >=, ==, !=) which is unsuitable for a stochastic context; see the reference manual, section about \"Expressions\", for more details." << endl;
+
+  if (linear
+      && (dynamic_model.isUnaryOpUsed(oSign)
+          || dynamic_model.isUnaryOpUsed(oAbs)
+          || dynamic_model.isBinaryOpUsed(oMax)
+          || dynamic_model.isBinaryOpUsed(oMin)
+          || dynamic_model.isBinaryOpUsed(oGreater)
+          || dynamic_model.isBinaryOpUsed(oLess)
+          || dynamic_model.isBinaryOpUsed(oGreaterEqual)
+          || dynamic_model.isBinaryOpUsed(oLessEqual)
+          || dynamic_model.isBinaryOpUsed(oEqualEqual)
+          || dynamic_model.isBinaryOpUsed(oDifferent)))
+    warnings << "WARNING: you have declared your model 'linear' but you are using a function (max, min, abs, sign) or an operator (<, >, <=, >=, ==, !=) which potentially makes it non-linear." << endl;
 
   // Test if some estimated parameters are used within the values of shocks
   // statements (see issue #469)
@@ -290,35 +289,44 @@ ModFile::checkPass()
                    inserter(parameters_intersect, parameters_intersect.begin()));
   if (parameters_intersect.size() > 0)
     {
-      DynErr << "ERROR: some estimated parameters (";
+      std::ostringstream msg;
+      msg << "ERROR: some estimated parameters (";
       for (set<int>::const_iterator it = parameters_intersect.begin();
-           it != parameters_intersect.end(); )
+           it != parameters_intersect.end();)
         {
-          DynErr << symbol_table.getName(*it);
+          msg << symbol_table.getName(*it);
           if (++it != parameters_intersect.end())
-        DynErr << ", ";
+            msg << ", ";
         }
-      dyn_error(") also appear in the expressions defining the variance/covariance matrix of shocks; this is not allowed.");
+      msg  << ") also appear in the expressions defining the variance/covariance matrix of shocks; this is not allowed.\n";
+      dyn_error(msg);
     }
 
-  // Check if some exogenous is not used in the model block
+  // Check if some exogenous is not used in the model block, Issue #841
   set<int> unusedExo = dynamic_model.findUnusedExogenous();
   if (unusedExo.size() > 0)
     {
-      warnings << "WARNING: some exogenous variables (";
-      for (set<int>::const_iterator it = unusedExo.begin();
-           it != unusedExo.end(); )
+      ostringstream unused_exos;
+      for (set<int>::iterator it = unusedExo.begin(); it != unusedExo.end(); it++)
+        unused_exos << symbol_table.getName(*it) << " ";
+
+      if (nostrict)
+        warnings << "WARNING: " << unused_exos.str()
+                 << "not used in model block, removed by nostrict command-line option" << endl;
+      else
         {
-          warnings << symbol_table.getName(*it);
-          if (++it != unusedExo.end())
-            warnings << ", ";
+          dyn_error("ERROR: " + unused_exos.str() + "not used in model block. To bypass this error, use the `nostrict` option. This may lead to crashes or unexpected behavior.\n");
         }
-      warnings << ") are declared but not used in the model. This may lead to crashes or unexpected behaviour.\n";
     }
 }
 
+#ifdef USE_R
 void
-ModFile::transformPass(bool nostrict, bool max_laglead_1)
+ModFile::transformPass(bool nostrict, bool compute_xrefs, bool max_laglead_1)
+#else
+void
+ModFile::transformPass(bool nostrict, bool compute_xrefs)
+#endif
 {
   // Save the original model (must be done before any model transformations by preprocessor)
   dynamic_model.cloneDynamic(original_model);
@@ -362,11 +370,30 @@ ModFile::transformPass(bool nostrict, bool max_laglead_1)
       /*
         clone the model then clone the new equations back to the original because
         we have to call computeDerivIDs (in computeRamseyPolicyFOCs and computingPass)
-       */
+      */
+      if (linear)
+        dynamic_model.cloneDynamic(orig_ramsey_dynamic_model);
       dynamic_model.cloneDynamic(ramsey_FOC_equations_dynamic_model);
       ramsey_FOC_equations_dynamic_model.computeRamseyPolicyFOCs(*planner_objective);
       ramsey_FOC_equations_dynamic_model.replaceMyEquations(dynamic_model);
       mod_file_struct.ramsey_eq_nbr = dynamic_model.equation_number() - mod_file_struct.orig_eq_nbr;
+    }
+
+  // Workaround for #1193
+  if (!mod_file_struct.hist_vals_wrong_lag.empty())
+    {
+      bool err = false;
+      for (map<int, int>::const_iterator it = mod_file_struct.hist_vals_wrong_lag.begin();
+           it != mod_file_struct.hist_vals_wrong_lag.end(); it++)
+          if (dynamic_model.minLagForSymbol(it->first) > it->second - 1)
+            {
+              DynErr << "ERROR: histval: variable " << symbol_table.getName(it->first)
+                     << " does not appear in the model with the lag " << it->second - 1
+                     << " (see the reference manual for the timing convention in 'histval')" << endl;
+              err = true;
+            }
+      if (err)
+        dyn_error("Histval values with wrong lag\n");
     }
 
   if (mod_file_struct.stoch_simul_present
@@ -382,15 +409,18 @@ ModFile::transformPass(bool nostrict, bool max_laglead_1)
       dynamic_model.substituteEndoLagGreaterThanTwo(false);
       dynamic_model.substituteExoLag(false);
     }
-  else if (max_laglead_1) {
+#ifdef USE_R
+  else if (max_laglead_1) 
+      // For package dynmdl, it is not required to substitute
+      // lags and leads > 2, except in function check_mdl. */
+#else
+  else
+#endif
+    {
       // In deterministic models, create auxiliary vars for leads and lags endogenous greater than 2, only on endos (useless on exos)
-      /* For package dynmdl, it is not required to substitute
-       * lags and leads > 2, except in function check_mdl. */
-
       dynamic_model.substituteEndoLeadGreaterThanTwo(true);
       dynamic_model.substituteEndoLagGreaterThanTwo(true);
-  }
-
+   }
   if (differentiate_forward_vars)
     dynamic_model.differentiateForwardVars(differentiate_forward_vars_subset);
 
@@ -406,11 +436,14 @@ ModFile::transformPass(bool nostrict, bool max_laglead_1)
     catch (SymbolTable::AlreadyDeclaredException &e)
       {
         dyn_error("ERROR: dsge_prior_weight should not be declared as a model variable / parameter "
-                  "when the dsge_var option is passed to the estimation statement.");
+                  "when the dsge_var option is passed to the estimation statement.\n");
       }
 
   // Freeze the symbol table
   symbol_table.freeze();
+
+  if (compute_xrefs)
+    dynamic_model.computeXrefs();
 
   /*
     Enforce the same number of equations and endogenous, except in three cases:
@@ -420,27 +453,34 @@ ModFile::transformPass(bool nostrict, bool max_laglead_1)
   */
   if (!(mod_file_struct.ramsey_model_present || mod_file_struct.discretionary_policy_present)
       && !(mod_file_struct.bvar_present && dynamic_model.equation_number() == 0)
-      && !(mod_file_struct.occbin_option)
       && (dynamic_model.equation_number() != symbol_table.endo_nbr()))
     {
       std::ostringstream msg;
-      msg << "ERROR: There are " << dynamic_model.equation_number() << " equations but " << symbol_table.endo_nbr() << " endogenous variables!";
+      msg << "ERROR: There are " << dynamic_model.equation_number() << " equations but " << symbol_table.endo_nbr() << " endogenous variables!\n";
       dyn_error(msg);
     }
 
   if (symbol_table.exo_det_nbr() > 0 && mod_file_struct.perfect_foresight_solver_present)
     {
-      dyn_error("ERROR: A .mod file cannot contain both one of {perfect_foresight_solver,simul}  and varexo_det declaration (all exogenous variables are deterministic in this case)");
+      dyn_error("ERROR: A .mod file cannot contain both one of {perfect_foresight_solver, simul} and varexo_det declaration (all exogenous variables are deterministic in this case)\n");
     }
 
   if (mod_file_struct.ramsey_policy_present && symbol_table.exo_det_nbr() > 0)
     {
-      dyn_error("ERROR: ramsey_policy is incompatible with deterministic exogenous variables");
+      dyn_error("ERROR: ramsey_policy is incompatible with deterministic exogenous variables\n");
     }
+
+  if (mod_file_struct.ramsey_policy_present)
+    for (vector<Statement *>::iterator it = statements.begin(); it != statements.end(); it++)
+      {
+        RamseyPolicyStatement *rps = dynamic_cast<RamseyPolicyStatement *>(*it);
+        if (rps != NULL)
+          rps->checkRamseyPolicyList();
+      }
 
   if (mod_file_struct.identification_present && symbol_table.exo_det_nbr() > 0)
     {
-      dyn_error("ERROR: identification is incompatible with deterministic exogenous variables");
+      dyn_error("ERROR: identification is incompatible with deterministic exogenous variables\n");
     }
 
   if (!mod_file_struct.ramsey_model_present)
@@ -451,26 +491,25 @@ ModFile::transformPass(bool nostrict, bool max_laglead_1)
       DynOut << "Found " << dynamic_model.equation_number() << " FOC equation(s) for Ramsey Problem." << endl;
     }
 
-  if (symbol_table.exists("dsge_prior_weight")) {
+  if (symbol_table.exists("dsge_prior_weight"))
     if (mod_file_struct.bayesian_irf_present)
       {
         if (symbol_table.exo_nbr() != symbol_table.observedVariablesNbr())
           {
-            dyn_error("When estimating a DSGE-Var and the bayesian_irf option is passed to the estimation "
-                      "statement, the number of shocks must equal the number of observed variables.");
+            dyn_error("ERROR: When estimating a DSGE-Var and the bayesian_irf option is passed to the estimation "
+                      "statement, the number of shocks must equal the number of observed variables.\n");
           }
       }
     else
       if (symbol_table.exo_nbr() < symbol_table.observedVariablesNbr())
         {
           dyn_error("ERROR: When estimating a DSGE-Var, the number of shocks must be "
-                    "greater than or equal to the number of observed variables.");
+                    "greater than or equal to the number of observed variables.\n");
         }
-  }
 }
 
 void
-ModFile::computingPass(bool no_tmp_terms, FileOutputType output, bool compute_xrefs, int params_derivs_order)
+ModFile::computingPass(bool no_tmp_terms, FileOutputType output, int params_derivs_order)
 {
   // Mod file may have no equation (for example in a standalone BVAR estimation)
   if (dynamic_model.equation_number() > 0)
@@ -481,66 +520,73 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output, bool compute_xr
       // Compute static model and its derivatives
       dynamic_model.toStatic(static_model);
       if (!no_static)
-	{
-	  if (mod_file_struct.stoch_simul_present
-	      || mod_file_struct.estimation_present || mod_file_struct.osr_present
-	      || mod_file_struct.ramsey_model_present || mod_file_struct.identification_present
-	      || mod_file_struct.calib_smoother_present)
-	    static_model.set_cutoff_to_zero();
+        {
+          if (mod_file_struct.stoch_simul_present
+              || mod_file_struct.estimation_present || mod_file_struct.osr_present
+              || mod_file_struct.ramsey_model_present || mod_file_struct.identification_present
+              || mod_file_struct.calib_smoother_present)
+            static_model.set_cutoff_to_zero();
 
-	  const bool static_hessian = mod_file_struct.identification_present
-	    || mod_file_struct.estimation_analytic_derivation;
+          const bool static_hessian = mod_file_struct.identification_present
+            || mod_file_struct.estimation_analytic_derivation;
           int paramsDerivsOrder = 0;
           if (mod_file_struct.identification_present || mod_file_struct.estimation_analytic_derivation)
             paramsDerivsOrder = params_derivs_order;
-	  static_model.computingPass(global_eval_context, no_tmp_terms, static_hessian,
-				     false, paramsDerivsOrder, block, byte_code);
-	}
+          static_model.computingPass(global_eval_context, no_tmp_terms, static_hessian,
+                                     false, paramsDerivsOrder, block, byte_code);
+        }
       // Set things to compute for dynamic model
       if (mod_file_struct.perfect_foresight_solver_present || mod_file_struct.check_present
-	  || mod_file_struct.stoch_simul_present
-	  || mod_file_struct.estimation_present || mod_file_struct.osr_present
-	  || mod_file_struct.ramsey_model_present || mod_file_struct.identification_present
-	  || mod_file_struct.calib_smoother_present)
-	{
-	  if (mod_file_struct.perfect_foresight_solver_present)
-	    dynamic_model.computingPass(true, false, false, none, global_eval_context, no_tmp_terms, block, use_dll, byte_code, compute_xrefs);
-	      else
-		{
-		  if (mod_file_struct.stoch_simul_present
-		      || mod_file_struct.estimation_present || mod_file_struct.osr_present
-		      || mod_file_struct.ramsey_model_present || mod_file_struct.identification_present
-		      || mod_file_struct.calib_smoother_present)
-		    dynamic_model.set_cutoff_to_zero();
-		  if (mod_file_struct.order_option < 1 || mod_file_struct.order_option > 3)
-		    {
-		      dyn_error("ERROR: Incorrect order option...");
-		    }
-		  bool hessian = mod_file_struct.order_option >= 2 
-		    || mod_file_struct.identification_present 
-		    || mod_file_struct.estimation_analytic_derivation
-                    || linear
-		    || output == second 
-		    || output == third;
-		  bool thirdDerivatives = mod_file_struct.order_option == 3 
-		    || mod_file_struct.estimation_analytic_derivation
-		    || output == third;
-                  int paramsDerivsOrder = 0;
-                  if (mod_file_struct.identification_present || mod_file_struct.estimation_analytic_derivation)
-                    paramsDerivsOrder = params_derivs_order;
-		  dynamic_model.computingPass(true, hessian, thirdDerivatives, paramsDerivsOrder, global_eval_context, no_tmp_terms, block, use_dll, byte_code, compute_xrefs);
-		}
-	    }
-	  else // No computing task requested, compute derivatives up to 2nd order by default
-	    dynamic_model.computingPass(true, true, false, none, global_eval_context, no_tmp_terms, block, use_dll, byte_code, compute_xrefs);
+          || mod_file_struct.stoch_simul_present
+          || mod_file_struct.estimation_present || mod_file_struct.osr_present
+          || mod_file_struct.ramsey_model_present || mod_file_struct.identification_present
+          || mod_file_struct.calib_smoother_present)
+        {
+          if (mod_file_struct.perfect_foresight_solver_present)
+            dynamic_model.computingPass(true, false, false, none, global_eval_context, no_tmp_terms, block, use_dll, byte_code);
+          else
+            {
+              if (mod_file_struct.stoch_simul_present
+                  || mod_file_struct.estimation_present || mod_file_struct.osr_present
+                  || mod_file_struct.ramsey_model_present || mod_file_struct.identification_present
+                  || mod_file_struct.calib_smoother_present)
+                dynamic_model.set_cutoff_to_zero();
+              if (mod_file_struct.order_option < 1 || mod_file_struct.order_option > 3)
+                {
+                  dyn_error("ERROR: Incorrect order option...\n");
+                }
+              bool hessian = mod_file_struct.order_option >= 2
+                || mod_file_struct.identification_present
+                || mod_file_struct.estimation_analytic_derivation
+                || linear
+                || output == second
+                || output == third;
+              bool thirdDerivatives = mod_file_struct.order_option == 3
+                || mod_file_struct.estimation_analytic_derivation
+                || output == third;
+              int paramsDerivsOrder = 0;
+              if (mod_file_struct.identification_present || mod_file_struct.estimation_analytic_derivation)
+                paramsDerivsOrder = params_derivs_order;
+              dynamic_model.computingPass(true, hessian, thirdDerivatives, paramsDerivsOrder, global_eval_context, no_tmp_terms, block, use_dll, byte_code);
+              if (linear && mod_file_struct.ramsey_model_present)
+                orig_ramsey_dynamic_model.computingPass(true, true, false, paramsDerivsOrder, global_eval_context, no_tmp_terms, block, use_dll, byte_code);
+            }
+        }
+      else // No computing task requested, compute derivatives up to 2nd order by default
+        dynamic_model.computingPass(true, true, false, none, global_eval_context, no_tmp_terms, block, use_dll, byte_code);
 
-      if (linear && !dynamic_model.checkHessianZero())
+      if ((linear && !mod_file_struct.ramsey_model_present && !dynamic_model.checkHessianZero())
+          || (linear && mod_file_struct.ramsey_model_present && !orig_ramsey_dynamic_model.checkHessianZero()))
         {
           map<int, string> eqs;
-          dynamic_model.getNonZeroHessianEquations(eqs);
+          if (mod_file_struct.ramsey_model_present)
+            orig_ramsey_dynamic_model.getNonZeroHessianEquations(eqs);
+          else
+            dynamic_model.getNonZeroHessianEquations(eqs);
+
           std::ostringstream msg;
-          msg  << "ERROR: If the model is declared linear the second derivatives must be equal to zero." << endl
-               << "       The following equations had non-zero second derivatives:" << endl;
+          msg << "ERROR: If the model is declared linear the second derivatives must be equal to zero.\n"
+                    "       The following equations had non-zero second derivatives:" << endl;
           for (map<int, string >::const_iterator it = eqs.begin(); it != eqs.end(); it++)
             {
               msg << "       * Eq # " << it->first+1;
@@ -562,7 +608,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
                           bool console, bool nograph, bool nointeractive, const ConfigFile &config_file,
                           bool check_model_changes, bool minimal_workspace, bool compute_xrefs
 #if defined(_WIN32) || defined(__CYGWIN32__)
-                          , bool cygwin, bool msvc
+                          , bool cygwin, bool msvc, bool mingw
 #endif
                           ) const
 {
@@ -575,12 +621,12 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
       mOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!mOutputFile.is_open())
         {
-          dyn_error("ERROR: Can't open file " + fname + " for writing");
+          dyn_error("ERROR: Can't open file " + fname + " for writing\n");
         }
     }
   else
     {
-      dyn_error("ERROR: Missing file name");
+      dyn_error("ERROR: Missing file name\n");
     }
 
   mOutputFile << "%" << endl
@@ -595,18 +641,18 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
   if (clear_all)
     mOutputFile << "if isoctave || matlab_ver_less_than('8.6')" << endl
                 << "    clear all" << endl
-		<< "else" << endl
-		<< "    clearvars -global" << endl
-		<< "    clear_persistent_variables(fileparts(which('dynare')), false)" << endl
-		<< "end" << endl;
+                << "else" << endl
+                << "    clearvars -global" << endl
+                << "    clear_persistent_variables(fileparts(which('dynare')), false)" << endl
+                << "end" << endl;
   else if (clear_global)
     mOutputFile << "clear M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info estimation_info ys0_ ex0_;" << endl;
 
   mOutputFile << "tic0 = tic;" << endl
-	      << "% Save empty dates and dseries objects in memory." << endl
-	      << "dates('initialize');" << endl
-	      << "dseries('initialize');" << endl
-	      << "% Define global variables." << endl
+              << "% Save empty dates and dseries objects in memory." << endl
+              << "dates('initialize');" << endl
+              << "dseries('initialize');" << endl
+              << "% Define global variables." << endl
               << "global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info estimation_info ys0_ ex0_" << endl
               << "options_ = [];" << endl
               << "M_.fname = '" << basename << "';" << endl
@@ -684,6 +730,8 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
       mOutputFile << "};" << endl;
     }
 
+  mOutputFile << "M_.hessian_eq_zero = " << dynamic_model.checkHessianZero() << ";" << endl;
+
   config_file.writeCluster(mOutputFile);
 
   if (byte_code)
@@ -694,7 +742,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
   bool hasModelChanged = !dynamic_model.isChecksumMatching(basename);
   if (!check_model_changes)
     hasModelChanged = true;
-  
+
   if (hasModelChanged)
     {
       // Erase possible remnants of previous runs
@@ -709,7 +757,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
       unlink((basename + "_steadystate2.m").c_str());
       unlink((basename + "_set_auxiliary_variables.m").c_str());
     }
-  
+
   if (!use_dll)
     {
       mOutputFile << "erase_compiled_function('" + basename + "_static');" << endl;
@@ -717,41 +765,46 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
     }
 
 #if defined(_WIN32) || defined(__CYGWIN32__)
-  // If using USE_DLL with MSVC, check that the user didn't use a function not supported by MSVC (because MSVC doesn't comply with C99 standard)
+# if (defined(_MSC_VER) && _MSC_VER < 1700)
+  // If using USE_DLL with MSVC 10.0 or earlier, check that the user didn't use a function not supported by the compiler (because MSVC <= 10.0 doesn't comply with C99 standard)
   if (use_dll && msvc)
     {
       if (dynamic_model.isUnaryOpUsed(oAcosh))
         {
-          dyn_error("ERROR: acosh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead.");
+          dyn_error("ERROR: acosh() function is not supported with USE_DLL option and older MSVC compilers; use Cygwin, MinGW or upgrade your MSVC compiler to 11.0 (2012) or later.\n");
         }
       if (dynamic_model.isUnaryOpUsed(oAsinh))
         {
-          dyn_error("ERROR: asinh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead.");
+          dyn_error("ERROR: asinh() function is not supported with USE_DLL option and older MSVC compilers; use Cygwin, MinGW or upgrade your MSVC compiler to 11.0 (2012) or later.\n");
         }
       if (dynamic_model.isUnaryOpUsed(oAtanh))
         {
-          dyn_error("ERROR: atanh() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead.");
-        }
-      if (dynamic_model.isTrinaryOpUsed(oNormcdf))
-        {
-          dyn_error("ERROR: normcdf() function is not supported with USE_DLL option and MSVC compiler; use Cygwin compiler instead.");
+          dyn_error("ERROR: atanh() function is not supported with USE_DLL option and older MSVC compilers; use Cygwin, MinGW or upgrade your MSVC compiler to 11.0 (2012) or later.\n");
         }
     }
+# endif
 #endif
 
   // Compile the dynamic MEX file for use_dll option
   // When check_model_changes is true, don't force compile if MEX is fresher than source
   if (use_dll)
     {
-#if defined(_WIN32) || defined(__CYGWIN32__)
+#if defined(_WIN32) || defined(__CYGWIN32__) || defined(__MINGW32__)
       if (msvc)
         // MATLAB/Windows + Microsoft Visual C++
-	mOutputFile << "dyn_mex('msvc', '" << basename << "', " << !check_model_changes << ")" <<  endl;
+        mOutputFile << "dyn_mex('msvc', '" << basename << "', " << !check_model_changes << ")" <<  endl;
       else if (cygwin)
         // MATLAB/Windows + Cygwin g++
-	mOutputFile << "dyn_mex('cygwin', '" << basename << "', " << !check_model_changes << ")" << endl;
+        mOutputFile << "dyn_mex('cygwin', '" << basename << "', " << !check_model_changes << ")" << endl;
+      else if (mingw)
+        // MATLAB/Windows + MinGW g++
+        mOutputFile << "dyn_mex('mingw', '" << basename << "', " << !check_model_changes << ")" << endl;
       else
-        mOutputFile << "    error('When using the USE_DLL option, you must give either ''cygwin'' or ''msvc'' option to the ''dynare'' command')" << endl;
+        mOutputFile << "if isoctave" << endl
+                    << "    dyn_mex('', '" << basename << "', " << !check_model_changes << ")" << endl
+                    << "else" << endl
+                    << "    error('When using the USE_DLL option on Matlab, you must give the ''cygwin'', ''msvc'', or ''mingw'' option to the ''dynare'' command')" << endl
+                    << "end" << endl;
 #else
       // other configurations
       mOutputFile << "dyn_mex('', '" << basename << "', " << !check_model_changes << ")" << endl;
@@ -764,7 +817,8 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
 
   mOutputFile << "M_.orig_eq_nbr = " << mod_file_struct.orig_eq_nbr << ";" << endl
               << "M_.eq_nbr = " << dynamic_model.equation_number() << ";" << endl
-              << "M_.ramsey_eq_nbr = " << mod_file_struct.ramsey_eq_nbr << ";" << endl;
+              << "M_.ramsey_eq_nbr = " << mod_file_struct.ramsey_eq_nbr << ";" << endl
+              << "M_.set_auxiliary_variables = exist(['./' M_.fname '_set_auxiliary_variables.m'], 'file') == 2;" << endl;
 
   if (dynamic_model.equation_number() > 0)
     {
@@ -820,7 +874,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
   config_file.writeEndParallel(mOutputFile);
 
   mOutputFile << endl << endl
-	      << "disp(['Total computing time : ' dynsec2hms(toc(tic0)) ]);" << endl;
+              << "disp(['Total computing time : ' dynsec2hms(toc(tic0)) ]);" << endl;
 
   if (!no_warn)
     {
@@ -831,7 +885,6 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
                   << "  disp('Note: warning(s) encountered in MATLAB/Octave code')" << endl
                   << "end" << endl;
     }
-  
 
   if (!no_log)
     mOutputFile << "diary off" << endl;
@@ -842,16 +895,16 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
     {
       // Create static and dynamic files
       if (dynamic_model.equation_number() > 0)
-	{
-	  if (!no_static)
-	    {
-	      static_model.writeStaticFile(basename, block, byte_code, use_dll, false);
-	      static_model.writeParamsDerivativesFile(basename, false);
-	    }
+        {
+          if (!no_static)
+            {
+              static_model.writeStaticFile(basename, block, byte_code, use_dll, false);
+              static_model.writeParamsDerivativesFile(basename, false);
+            }
 
-	  dynamic_model.writeDynamicFile(basename, block, byte_code, use_dll, mod_file_struct.order_option, false);
-	  dynamic_model.writeParamsDerivativesFile(basename, false);
-	}
+          dynamic_model.writeDynamicFile(basename, block, byte_code, use_dll, mod_file_struct.order_option, false);
+          dynamic_model.writeParamsDerivativesFile(basename, false);
+        }
 
       // Create steady state file
       steady_state_model.writeSteadyStateFile(basename, mod_file_struct.ramsey_model_present, false);
@@ -863,7 +916,7 @@ ModFile::writeOutputFiles(const string &basename, bool clear_all, bool clear_glo
 void
 ModFile::writeExternalFiles(const string &basename, FileOutputType output, LanguageOutputType language) const
 {
-  switch(language)
+  switch (language)
     {
     case c:
       writeExternalFilesC(basename, output);
@@ -875,7 +928,7 @@ ModFile::writeExternalFiles(const string &basename, FileOutputType output, Langu
       writeExternalFilesJulia(basename, output);
       break;
     default:
-      dyn_error("This case shouldn't happen. Contact the authors of Dynare");
+      dyn_error("This case shouldn't happen. Contact the authors of Dynare\n");
     }
 }
 
@@ -890,7 +943,6 @@ ModFile::writeExternalFilesC(const string &basename, FileOutputType output) cons
   if (!no_static)
     static_model.writeStaticFile(basename, false, false, true, false);
 
-
   //  static_model.writeStaticCFile(basename, block, byte_code, use_dll);
   //  static_model.writeParamsDerivativesFileC(basename, cuda);
   //  static_model.writeAuxVarInitvalC(mOutputFile, oMatlabOutsideModel, cuda);
@@ -903,19 +955,10 @@ ModFile::writeExternalFilesC(const string &basename, FileOutputType output) cons
     dynamic_model.writeSecondDerivativesC_csr(basename, cuda);
   else if (output == third)
     {
-        dynamic_model.writeSecondDerivativesC_csr(basename, cuda);
-  	dynamic_model.writeThirdDerivativesC_csr(basename, cuda);
+      dynamic_model.writeSecondDerivativesC_csr(basename, cuda);
+      dynamic_model.writeThirdDerivativesC_csr(basename, cuda);
     }
 }
-
-#ifdef USE_R
-void
-ModFile::writeCFilesForR(const string &basename) const {
-    int dum = 1;
-    dynamic_model.writeDynamicCFile(basename + "/f_dynamic", dum);
-    static_model.writeStaticCFile(basename + "/f_");
-}
-#endif
 
 void
 ModFile::writeModelC(const string &basename) const
@@ -926,7 +969,7 @@ ModFile::writeModelC(const string &basename) const
   mDriverCFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDriverCFile.is_open())
     {
-      dyn_error("Error: Can't open file " + filename + " for writing");
+      dyn_error("Error: Can't open file " + filename + " for writing\n");
     }
 
   mDriverCFile << "/*" << endl
@@ -956,7 +999,7 @@ ModFile::writeModelC(const string &basename) const
   // Print statements
   for (vector<Statement *>::const_iterator it = statements.begin();
        it != statements.end(); it++)
-      (*it)->writeCOutput(mDriverCFile, basename);
+    (*it)->writeCOutput(mDriverCFile, basename);
 
   mDriverCFile << "} DynareInfo;" << endl;
   mDriverCFile.close();
@@ -971,12 +1014,13 @@ ModFile::writeModelC(const string &basename) const
       mOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!mOutputFile.is_open())
         {
-          dyn_error("ERROR: Can't open file " + fname + " for writing");
+          dyn_error("ERROR: Can't open file " + fname
+               + " for writing\n");
         }
     }
   else
     {
-      dyn_error("ERROR: Missing file name");
+      dyn_error("ERROR: Missing file name\n");
     }
 
   mOutputFile << "%" << endl
@@ -1013,8 +1057,8 @@ ModFile::writeExternalFilesCC(const string &basename, FileOutputType output) con
     dynamic_model.writeSecondDerivativesC_csr(basename, cuda);
   else if (output == third)
     {
-        dynamic_model.writeSecondDerivativesC_csr(basename, cuda);
-  	dynamic_model.writeThirdDerivativesC_csr(basename, cuda);
+      dynamic_model.writeSecondDerivativesC_csr(basename, cuda);
+      dynamic_model.writeThirdDerivativesC_csr(basename, cuda);
     }
 }
 
@@ -1027,7 +1071,7 @@ ModFile::writeModelCC(const string &basename) const
   mDriverCFile.open(filename.c_str(), ios::out | ios::binary);
   if (!mDriverCFile.is_open())
     {
-      dyn_error("Error: Can't open file " + filename + " for writing");
+      dyn_error("Error: Can't open file " + filename + " for writing\n");
     }
 
   mDriverCFile << "/*" << endl
@@ -1057,7 +1101,7 @@ ModFile::writeModelCC(const string &basename) const
   // Print statements
   for (vector<Statement *>::const_iterator it = statements.begin();
        it != statements.end(); it++)
-      (*it)->writeCOutput(mDriverCFile, basename);
+    (*it)->writeCOutput(mDriverCFile, basename);
 
   mDriverCFile << "};" << endl;
   mDriverCFile.close();
@@ -1072,12 +1116,13 @@ ModFile::writeModelCC(const string &basename) const
       mOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!mOutputFile.is_open())
         {
-          dyn_error("ERROR: Can't open file " + fname + " for writing");
+          dyn_error("ERROR: Can't open file " + fname
+               + " for writing\n");
         }
     }
   else
     {
-      dyn_error("ERROR: Missing file name");
+      dyn_error("ERROR: Missing file name\n");
     }
 
   mOutputFile << "%" << endl
@@ -1101,12 +1146,13 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
       jlOutputFile.open(fname.c_str(), ios::out | ios::binary);
       if (!jlOutputFile.is_open())
         {
-          dyn_error("ERROR: Can't open file " + fname + " for writing");
+          dyn_error("ERROR: Can't open file " + fname
+               + " for writing\n");
         }
     }
   else
     {
-      dyn_error("ERROR: Missing file name");
+      dyn_error("ERROR: Missing file name\n");
     }
 
   jlOutputFile << "module " << basename << endl
@@ -1127,7 +1173,7 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
                << "if isfile(\"" << basename << "SteadyState2.jl"  "\")" << endl
                << "    using " << basename << "SteadyState2" << endl
                << "end" << endl << endl
-	       << "export model_, options_, oo_" << endl;
+               << "export model_, options_, oo_" << endl;
 
   // Write Output
   jlOutputFile << endl
@@ -1185,9 +1231,9 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
   steady_state_model.writeSteadyStateFile(basename, mod_file_struct.ramsey_model_present, true);
 
   // Print statements (includes parameter values)
-    for (vector<Statement *>::const_iterator it = statements.begin();
-         it != statements.end(); it++)
-        (*it)->writeJuliaOutput(jlOutputFile, basename);
+  for (vector<Statement *>::const_iterator it = statements.begin();
+       it != statements.end(); it++)
+    (*it)->writeJuliaOutput(jlOutputFile, basename);
 
   jlOutputFile << "model_.static = " << basename << "Static.static!" << endl
                << "model_.dynamic = " << basename << "Dynamic.dynamic!" << endl
@@ -1207,12 +1253,21 @@ ModFile::writeExternalFilesJulia(const string &basename, FileOutputType output) 
                << "    using " << basename << "DynamicParamsDerivs" << endl
                << "    model_.dynamic_params_derivs = " << basename << "DynamicParamsDerivs.params_derivs" << endl
                << "end" << endl
-	       << "end" << endl;
+               << "end" << endl;
   jlOutputFile.close();
   DynOut << "done" << endl;
 }
 
+
 #ifdef USE_R
+
+void
+ModFile::writeCFilesForR(const string &basename) const {
+    int dum = 1;
+    dynamic_model.writeDynamicCFile(basename + "/f_dynamic", dum);
+    static_model.writeStaticCFile(basename + "/f_");
+}
+
 Rcpp::List ModFile::getModelListR(bool internal_calc) {
 
     int exo_count = symbol_table.exo_nbr();

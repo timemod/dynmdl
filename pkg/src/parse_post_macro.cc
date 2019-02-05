@@ -47,16 +47,16 @@ ModFile *parse_post_macro(stringstream &in, string &basename, bool debug, bool c
   ModFile *mod_file = p.parse(in, debug);
 
   // Run checking pass
-  mod_file->checkPass();
+  mod_file->checkPass(nostrict);
 
   // Perform transformations on the model (creation of auxiliary vars and equations)
-  mod_file->transformPass(nostrict, max_laglead_1);
+  mod_file->transformPass(nostrict, compute_xrefs, max_laglead_1);
 
   // Evaluate parameters initialization, initval, endval and pounds
   mod_file->evalAllExpressions(warn_uninit);
 
   // Do computations
-  mod_file->computingPass(no_tmp_terms, output_mode, compute_xrefs, params_derivs_order);
+  mod_file->computingPass(no_tmp_terms, output_mode,  params_derivs_order);
 
   return mod_file;
 }

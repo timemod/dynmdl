@@ -126,7 +126,7 @@ void PolishModel::add_external_function_deriv(int index, int deriv) {
 }
 
 void PolishModel::add_external_function_numderiv(int index, int deriv) {
-    //cout << "unary minus " << endl;
+    //cout << "external_function_numeriv " << index << " " << deriv << endl;
     cur_eq->push_back(EXTFUN_NUMDERIV);
     cur_eq->push_back(index);
     cur_eq->push_back(deriv);

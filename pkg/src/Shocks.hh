@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2016 Dynare Team
+ * Copyright (C) 2003-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -94,9 +94,11 @@ class ConditionalForecastPathsStatement : public Statement
 {
 private:
   const AbstractShocksStatement::det_shocks_t paths;
+  const SymbolTable &symbol_table;
   int path_length;
 public:
-  ConditionalForecastPathsStatement(const AbstractShocksStatement::det_shocks_t &paths_arg);
+  ConditionalForecastPathsStatement(const AbstractShocksStatement::det_shocks_t &paths_arg,
+                                    const SymbolTable &symbol_table_arg);
   virtual void checkPass(ModFileStructure &mod_file_struct, WarningConsolidation &warnings);
   virtual void writeOutput(ostream &output, const string &basename, bool minimal_workspace) const;
 };
@@ -158,5 +160,5 @@ public:
   ShockGroupsStatement(const group_t &shock_groups_arg, const string &name_arg);
   virtual void writeOutput(ostream &output, const string &basename, bool minimal_workspace) const;
 };
-  
+
 #endif

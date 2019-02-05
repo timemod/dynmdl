@@ -52,7 +52,15 @@ double ExternalFunctionCalc::eval_extfun_deriv(int index, int deriv,
 
 double ExternalFunctionCalc::eval_extfun_numderiv(int index, int deriv,
               double *args) const {
-
+#if DEBUG
+    cout << "in eval_extfun_numderiv" << endl;
+    cout << "function =  " << function_names[index] << endl;
+    cout << "arguments:" << endl;
+    for (int iarg = 0; iarg < nargs[index]; iarg++) {
+        cout << args[iarg] << " ";
+    }
+    cout << endl;
+#endif
     return call_R_function.call_function_numderiv(function_names[index], 
             nargs[index], deriv, args);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003-2016 Dynare Team
+ * Copyright (C) 2003-2017 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -268,7 +268,7 @@ StaticModel::writeModelEquationsOrdered_M(const string &static_basename) const
           tmp_output.str("");
           for (temporary_terms_inuse_t::const_iterator it = v_temporary_terms_inuse[block].begin();
                it != v_temporary_terms_inuse[block].end(); it++)
-            tmp_output << "t" << *it;
+            tmp_output << " T" << *it;
           output << "  global" << tmp_output.str() << ";\n";
         }
 
@@ -342,9 +342,9 @@ StaticModel::writeModelEquationsOrdered_M(const string &static_basename) const
                     }
                 }
               else
-                {   
+                {
                   std::ostringstream msg;
-                  msg << "Type missmatch for equation " << equation_ID+1  << "\n";
+                  msg << "Type mismatch for equation " << equation_ID+1  << "\n";
                   dyn_error(msg);
                 }
               output << ";\n";
@@ -413,9 +413,10 @@ StaticModel::writeModelEquationsCode(const string file_name, const string bin_ba
   string main_name = file_name;
   main_name += ".cod";
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
-  if (!code_file.is_open()) {
+  if (!code_file.is_open())
+    {
       dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
-  }
+    }
   int count_u;
   int u_count_int = 0;
 
@@ -586,7 +587,7 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
   unsigned int instruction_number = 0;
   expr_t lhs = NULL, rhs = NULL;
   BinaryOpNode *eq_node;
-  Uff* Uf = new Uff[symbol_table.endo_nbr()];
+  Uff Uf[symbol_table.endo_nbr()];
   map<expr_t, int> reference_count;
   vector<int> feedback_variables;
   deriv_node_temp_terms_t tef_terms;
@@ -595,9 +596,10 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
   string main_name = file_name;
   main_name += ".cod";
   code_file.open(main_name.c_str(), ios::out | ios::binary | ios::ate);
-  if (!code_file.is_open()) {
+  if (!code_file.is_open())
+    {
       dyn_error("Error : Can't open file \"" + main_name + "\" for writing\n");
-  }
+    }
   //Temporary variables declaration
 
   FDIMST_ fdimst(temporary_terms.size());
@@ -660,10 +662,10 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
                   if (dynamic_cast<AbstractExternalFunctionNode *>(*it) != NULL)
                     (*it)->compileExternalFunctionOutput(code_file, instruction_number, false, tt2, map_idx, false, false, tef_terms);
 
-                  FNUMEXPR_ fnumexpr(TemporaryTerm, (int) (map_idx.find((*it)->idx)->second));
+                  FNUMEXPR_ fnumexpr(TemporaryTerm, (int)(map_idx.find((*it)->idx)->second));
                   fnumexpr.write(code_file, instruction_number);
                   (*it)->compile(code_file, instruction_number, false, tt2, map_idx, false, false, tef_terms);
-                  FSTPST_ fstpst((int) (map_idx.find((*it)->idx)->second));
+                  FSTPST_ fstpst((int)(map_idx.find((*it)->idx)->second));
                   fstpst.write(code_file, instruction_number);
                   // Insert current node into tt2
                   tt2.insert(*it);
@@ -853,12 +855,12 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
                   if (dynamic_cast<AbstractExternalFunctionNode *>(*it) != NULL)
                     (*it)->compileExternalFunctionOutput(code_file, instruction_number, false, tt3, map_idx2[block], false, false, tef_terms2);
 
-                  FNUMEXPR_ fnumexpr(TemporaryTerm, (int) (map_idx2[block].find((*it)->idx)->second));
+                  FNUMEXPR_ fnumexpr(TemporaryTerm, (int)(map_idx2[block].find((*it)->idx)->second));
                   fnumexpr.write(code_file, instruction_number);
 
                   (*it)->compile(code_file, instruction_number, false, tt3, map_idx2[block], false, false, tef_terms);
 
-                  FSTPST_ fstpst((int) (map_idx2[block].find((*it)->idx)->second));
+                  FSTPST_ fstpst((int)(map_idx2[block].find((*it)->idx)->second));
                   fstpst.write(code_file, instruction_number);
                   // Insert current node into tt2
                   tt3.insert(*it);
@@ -975,8 +977,6 @@ StaticModel::writeModelEquationsCode_Block(const string file_name, const string 
   FEND_ fend;
   fend.write(code_file, instruction_number);
   code_file.close();
-
-  delete [] Uf;
 }
 
 void
@@ -989,10 +989,11 @@ StaticModel::Write_Inf_To_Bin_File_Block(const string &static_basename, const st
     SaveCode.open((bin_basename + "_static.bin").c_str(), ios::out | ios::in | ios::binary | ios::ate);
   else
     SaveCode.open((bin_basename + "_static.bin").c_str(), ios::out | ios::binary);
-  if (!SaveCode.is_open()) {
+  if (!SaveCode.is_open())
+    {
       dyn_error("Error : Can't open file \"" + bin_basename + 
                 "_static.bin\" for writing\n");
-  }
+    }
   u_count_int = 0;
   unsigned int block_size = getBlockSize(num);
   unsigned int block_mfs = getBlockMfs(num);
@@ -1058,14 +1059,14 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
       neweqs.push_back(dynamic_cast<BinaryOpNode *>(eq_tmp->toStatic(*this)));
     }
 
-  for (unsigned int eq = 0; eq < aux_equations.size();  eq++)
+  for (unsigned int eq = 0; eq < aux_equations.size(); eq++)
     {
       expr_t eq_tmp = aux_equations[eq]->substituteStaticAuxiliaryDefinition();
       neweqs.push_back(dynamic_cast<BinaryOpNode *>(eq_tmp->toStatic(*this)));
     }
-      
+
   equations.clear();
-  copy(neweqs.begin(),neweqs.end(),back_inserter(equations));
+  copy(neweqs.begin(), neweqs.end(), back_inserter(equations));
   // Compute derivatives w.r. to all endogenous, and possibly exogenous and exogenous deterministic
   set<int> vars;
 
@@ -1074,8 +1075,8 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
       int id = symbol_table.getID(eEndogenous, i);
       //      if (!symbol_table.isAuxiliaryVariableButNotMultiplier(id))
       vars.insert(getDerivID(id, 0));
-    }        
- 
+    }
+
   // Launch computations
   DynOut << "Computing static model derivatives:" << endl
        << " - order 1" << endl;
@@ -1161,9 +1162,10 @@ StaticModel::writeStaticMFile(const string &func_name) const
 
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open()) {
-      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
-  }
+  if (!output.is_open())
+    {
+      dyn_error("ERROR: Can't open file \"" + filename + "\n for writing\n");
+    }
 
   output << "function [residual, g1, g2, g3] = " << func_name + "_static(y, x, params)" << endl
          << "%" << endl
@@ -1188,7 +1190,7 @@ StaticModel::writeStaticMFile(const string &func_name) const
          << "%                                                       columns: variables in declaration order" << endl
          << "%                                                       rows: equations in order of declaration" << endl
          << "%" << endl
-         << "%" << endl         
+         << "%" << endl
          << "% Warning : this file is generated automatically by Dynare" << endl
          << "%           from model file (.mod)" << endl << endl;
 
@@ -1208,18 +1210,22 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
   ostringstream third_derivatives_output;  // Used for storing third order derivatives equations
   ostringstream for_sym;
 
-  deriv_node_temp_terms_t tef_terms, tef_terms_tmp;
+  deriv_node_temp_terms_t tef_terms;
   temporary_terms_t temp_term_empty;
   temporary_terms_t temp_term_union = temporary_terms_res;
   temporary_terms_t temp_term_union_m_1;
 
   writeModelLocalVariables(model_local_vars_output, output_type, tef_terms);
 
+#ifdef USE_R
   // create a copy of ref_terms. writeTemporaryTerms checks which tef-terms have
   // already been written, and those terms will only be written once.
   // JacobianOutput also needs these temporary terms.
-  tef_terms_tmp = tef_terms;
+  deriv_node_temp_terms_t tef_terms_tmp = tef_terms;
   writeTemporaryTerms(temporary_terms_res, temp_term_union_m_1, model_output, output_type, tef_terms_tmp);
+#else
+  writeTemporaryTerms(temporary_terms_res, temp_term_union_m_1, model_output, output_type, tef_terms);
+#endif
 
   writeModelEquations(model_output, output_type);
 
@@ -1230,38 +1236,53 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
   // Write Jacobian w.r. to endogenous only
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g1.begin(), temporary_terms_g1.end());
-  if (!first_derivatives.empty()) {
+  if (!first_derivatives.empty())
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, jacobian_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, jacobian_output, output_type, tef_terms);
-  }
+#ifdef USE_R
   int ideriv = 0;
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
-       it != first_derivatives.end(); it++) {
+       it != first_derivatives.end(); it++)
+    {
       int eq = it->first.first;
+      int symb_id = getSymbIDByDerivID(it->first.second);
       int var = it->first.second;
       expr_t d1 = it->second;
       jacobianHelper(jacobian_output, ideriv, eq, var, output_type);
       jacobian_output << ASSIGNMENT_OPERATOR(output_type);
       d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
-      if (IS_R(output_type) || output_type == oCStaticModel) {
+      if (!IS_R(output_type)) {
           jacobian_output << ";";
       }
       jacobian_output << endl;
       ideriv++;
     }
+#else
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+       it != first_derivatives.end(); it++)
+    {
+      int eq = it->first.first;
+      int symb_id = getSymbIDByDerivID(it->first.second);
+      expr_t d1 = it->second;
+
+      jacobianHelper(jacobian_output, eq, symbol_table.getTypeSpecificID(symb_id), output_type);
+      jacobian_output << "=";
+      d1->writeOutput(jacobian_output, output_type, temp_term_union, tef_terms);
+      jacobian_output << ";" << endl;
+    }
+#endif
 
   int g2ncols = symbol_table.endo_nbr() * symbol_table.endo_nbr();
   // Write Hessian w.r. to endogenous only (only if 2nd order derivatives have been computed)
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g2.begin(), temporary_terms_g2.end());
-  if (!second_derivatives.empty()) {
+  if (!second_derivatives.empty())
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, hessian_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, hessian_output, output_type, tef_terms);
-  }
   int k = 0; // Keep the line of a 2nd derivative in v2
   for (second_derivatives_t::const_iterator it = second_derivatives.begin();
        it != second_derivatives.end(); it++)
@@ -1301,7 +1322,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
         }
 
       // Treating symetric elements
-      if (symb_id1 != symb_id2) {
+      if (symb_id1 != symb_id2)
         if (output_type == oJuliaDynamicModel)
           hessian_output << "  @inbounds g2[" << eq + 1 << "," << col_nb_sym + 1 << "] = "
                          << for_sym.str() << endl;
@@ -1320,18 +1341,16 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
             k++;
           }
-      }
     }
 
   // Writing third derivatives
   temp_term_union_m_1 = temp_term_union;
   temp_term_union.insert(temporary_terms_g3.begin(), temporary_terms_g3.end());
-  if (!third_derivatives.empty()) {
+  if (!third_derivatives.empty())
     if (julia)
       writeTemporaryTerms(temp_term_union, temp_term_empty, third_derivatives_output, output_type, tef_terms);
     else
       writeTemporaryTerms(temp_term_union, temp_term_union_m_1, third_derivatives_output, output_type, tef_terms);
-  }
   k = 0; // Keep the line of a 3rd derivative in v3
   for (third_derivatives_t::const_iterator it = third_derivatives.begin();
        it != third_derivatives.end(); it++)
@@ -1345,7 +1364,6 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
       int id1 = getSymbIDByDerivID(var1);
       int id2 = getSymbIDByDerivID(var2);
       int id3 = getSymbIDByDerivID(var3);
-
 
       // Reference column number for the g3 matrix
       int ref_col = id1 * hessianColsNbr + id2 * JacobianColsNbr + id3;
@@ -1382,7 +1400,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
       int k2 = 1; // Keeps the offset of the permutation relative to k
       for (set<int>::iterator it2 = cols.begin(); it2 != cols.end(); it2++)
-        if (*it2 != ref_col) {
+        if (*it2 != ref_col)
           if (output_type == oJuliaDynamicModel)
             third_derivatives_output << "  @inbounds g3[" << eq + 1 << "," << *it2 + 1 << "] = "
                                      << for_sym.str() << endl;
@@ -1401,12 +1419,20 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
               k2++;
             }
-        }
       k += k2;
     }
 
   if (output_type == oMatlabStaticModel)
     {
+      // Check that we don't have more than 32 nested parenthesis because Matlab does not suppor this. See Issue #1201
+      map<string, string> tmp_paren_vars;
+      bool message_printed = false;
+      fixNestedParenthesis(model_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(model_local_vars_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(jacobian_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(hessian_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(third_derivatives_output, tmp_paren_vars, message_printed);
+
       StaticOutput << "residual = zeros( " << equations.size() << ", 1);" << endl << endl
                    << "%" << endl
                    << "% Model equations" << endl
@@ -1440,22 +1466,23 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 
       // Initialize g3 matrix
       StaticOutput << "if nargout >= 4," << endl
-                    << "  %" << endl
-                    << "  % Third order derivatives" << endl
-                    << "  %" << endl
-                    << endl;
+                   << "  %" << endl
+                   << "  % Third order derivatives" << endl
+                   << "  %" << endl
+                   << endl;
       int ncols = hessianColsNbr * JacobianColsNbr;
       if (third_derivatives.size())
         StaticOutput << "  v3 = zeros(" << NNZDerivatives[2] << ",3);" << endl
-                      << third_derivatives_output.str()
-                      << "  g3 = sparse(v3(:,1),v3(:,2),v3(:,3)," << nrows << "," << ncols << ");" << endl;
+                     << third_derivatives_output.str()
+                     << "  g3 = sparse(v3(:,1),v3(:,2),v3(:,3)," << nrows << "," << ncols << ");" << endl;
       else // Either 3rd derivatives is all zero, or we didn't compute it
         StaticOutput << "  g3 = sparse([],[],[]," << nrows << "," << ncols << ");" << endl;
       StaticOutput << "end" << endl
                    << "end" << endl
                    << "end" << endl;
-
-   } else if  (output_type == oRStaticModel) {
+    }
+#ifdef USE_R
+     else if  (output_type == oRStaticModel) {
 
       int nnz = first_derivatives.size();
 
@@ -1475,8 +1502,11 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
                      << endl
                     << "return(list(rows = rows, cols = cols, values = values))"
                     << endl << "}" << endl;
-
-   } else if (output_type == oCStaticModel) {
+    }
+#endif
+  else if (output_type == oCStaticModel)
+    {
+#ifdef USE_R
       StaticOutput << "void f_static(double *y, double *x, double *params, double *residual) {" << endl
                    << endl;
       if (external_functions_table.get_total_number_of_unique_model_block_external_functions()) {
@@ -1505,6 +1535,20 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
       }
       StaticOutput << "return;" << endl;
 
+#else
+      StaticOutput << "void Static(double *y, double *x, int nb_row_x, double *params, double *residual, double *g1, double *v2)" << endl
+                   << "{" << endl
+                   << "  double lhs, rhs;" << endl
+                   << endl
+                   << "  /* Residual equations */" << endl
+                   << model_local_vars_output.str()
+                   << model_output.str()
+                   << "  /* Jacobian  */" << endl
+                   << "  if (g1 == NULL)" << endl
+                   << "    return;" << endl
+                   << endl
+                   << jacobian_output.str()
+                   << endl;
       if (second_derivatives.size())
         StaticOutput << "  /* Hessian for endogenous and exogenous variables */" << endl
                      << "  if (v2 == NULL)" << endl
@@ -1519,6 +1563,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
                      << endl
                      << third_derivatives_output.str()
                      << endl;
+#endif
     }
   else
     {
@@ -1628,9 +1673,10 @@ StaticModel::writeStaticCFile(const string &func_name) const
 
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open()) {
-      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
-  }
+  if (!output.is_open())
+    {
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
+    }
 
   output << "/*" << endl
          << " * " << filename << " : Computes static model for Dynare" << endl
@@ -1638,14 +1684,19 @@ StaticModel::writeStaticCFile(const string &func_name) const
          << " * Warning : this file is generated automatically by Dynare" << endl
          << " *           from model file (.mod)" << endl << endl
          << " */" << endl
+#if defined(_WIN32) || defined(__CYGWIN32__) || defined(__MINGW32__)
+         << "#ifdef _MSC_VER" << endl
+         << "#define _USE_MATH_DEFINES" << endl
+         << "#endif" << endl
+#endif
          << "#include <math.h>" << endl;
 
   if (external_functions_table.get_total_number_of_unique_model_block_external_functions())
     // External Matlab function, implies Static function will call mex
 #ifdef USE_R
-    output << "#include \"call_R_function.h\"" << endl;
+   output << "#include \"call_R_function.h\"" << endl;
 #else
-    dyn_error("dynmdl does not support external Matlab functions yet")
+    output << "#include \"mex.h\"" << endl;
 #endif
   else
     output << "#include <stdlib.h>" << endl;
@@ -1653,21 +1704,27 @@ StaticModel::writeStaticCFile(const string &func_name) const
   output << "#define max(a, b) (((a) > (b)) ? (a) : (b))" << endl
          << "#define min(a, b) (((a) > (b)) ? (b) : (a))" << endl;
 
-
   // Write function definition if oPowerDeriv is used
   writePowerDerivCHeader(output);
+  writeNormcdfCHeader(output);
 
   // Writing the function body
   writeStaticModel(output, oCStaticModel);
   output << "}" << endl << endl;
 
+#ifndef USE_R
+  writePowerDeriv(output);
+#endif
+  writeNormcdf(output);
   output.close();
 
 #ifndef USE_R
   output.open(filename_mex.c_str(), ios::out | ios::binary);
-  if (!output.is_open()) {
-      dyn_error("ERROR: Can't open file " + filename_mex + " for writing\n");
-  }
+  if (!output.is_open())
+    {
+      dyn_error("ERROR: Can't open file \"" + filename_mex + 
+                "\" for writing\n");
+    }
 
   // Writing the gateway routine
   output << "/*" << endl
@@ -1737,9 +1794,10 @@ StaticModel::writeStaticJuliaFile(const string &basename) const
   string filename = basename + "Static.jl";
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open()) {
-      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
-  }
+  if (!output.is_open())
+    {
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
+    }
 
   output << "module " << basename << "Static" << endl
          << "#" << endl
@@ -1764,27 +1822,37 @@ StaticModel::writeStaticFile(const string &basename, bool block, bool bytecode, 
 #else
   r = mkdir(basename.c_str(), 0777);
 #endif
-  if (r < 0 && errno != EEXIST) {
-      dyn_error("ERROR: " + string(std::strerror(errno)) + "\n");
-   }
+  if (r < 0 && errno != EEXIST)
+    {
+        dyn_error("ERROR: " + string(std::strerror(errno)) + "\n");
+    }
   if (block && bytecode)
     writeModelEquationsCode_Block(basename + "_static", basename, map_idx, map_idx2);
   else if (!block && bytecode)
     writeModelEquationsCode(basename + "_static", basename, map_idx);
   else if (block && !bytecode)
     {
-      int idum1 = chdir(basename.c_str());
+      chdir(basename.c_str());
       writeModelEquationsOrdered_M(basename + "_static");
-      int idum2 = chdir("..");
+      chdir("..");
       writeStaticBlockMFSFile(basename);
     }
-  else if(use_dll)
+  else if (use_dll)
     writeStaticCFile(basename);
   else if (julia)
     writeStaticJuliaFile(basename);
   else
     writeStaticMFile(basename);
   writeSetAuxiliaryVariables(basename, julia);
+}
+
+bool
+StaticModel::exoPresentInEqs() const
+{
+  for (int i = 0; i < (int) equations.size(); i++)
+    if (equations[i]->containsExogenous())
+      return true;
+  return false;
 }
 
 void
@@ -1794,9 +1862,10 @@ StaticModel::writeStaticBlockMFSFile(const string &basename) const
 
   ofstream output;
   output.open(filename.c_str(), ios::out | ios::binary);
-  if (!output.is_open()) {
-      dyn_error("ERROR: Can't open file " + filename + " for writing\n");
-  }
+  if (!output.is_open())
+    {
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
+    }
 
   string func_name = basename + "_static";
 
@@ -1872,7 +1941,7 @@ StaticModel::writeOutput(ostream &output, bool block) const
   for (int i = 0; i < nb_endo; i++)
     output << " " << equation_reordered[i]+1;
   output << "];\n";
-  
+
   map<pair<int, int>,  int>  row_incidence;
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
        it != first_derivatives.end(); it++)
@@ -2142,9 +2211,10 @@ StaticModel::writeAuxVarInitval(ostream &output, ExprNodeOutputType output_type)
     }
 }
 
-void StaticModel::writeSetAuxiliaryVariables(const string &basename, const bool julia) const
+void
+StaticModel::writeSetAuxiliaryVariables(const string &basename, const bool julia) const
 {
-  
+
   string func_name = basename + "_set_auxiliary_variables";
   string filename = julia ? func_name + ".jl" : func_name + ".m";
   string comment = julia ? "#" : "%";
@@ -2153,9 +2223,7 @@ void StaticModel::writeSetAuxiliaryVariables(const string &basename, const bool 
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
-      std::ostringstream msg;
-      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
     }
 
   output << "function y = " << func_name + "(y, x, params)" << endl
@@ -2195,69 +2263,21 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
       && !hessian_params_derivatives.size())
     return;
 
-  string filename = julia ? basename + "StaticParamsDerivs.jl" : basename + "_static_params_derivs.m";
-  ofstream paramsDerivsFile;
-  paramsDerivsFile.open(filename.c_str(), ios::out | ios::binary);
-  if (!paramsDerivsFile.is_open())
-    {
-      std::ostringstream msg;
-      msg << "ERROR: Can't open file " << filename << " for writing" << endl;
-      dyn_error(msg);
-    }
-
   ExprNodeOutputType output_type = (julia ? oJuliaStaticModel : oMatlabStaticModel);
 
-  if (!julia)
-    paramsDerivsFile << "function [rp, gp, rpp, gpp, hp] = " << basename << "_static_params_derivs(y, x, params)" << endl
-                     << "%" << endl
-                     << "% Status : Computes derivatives of the static model with respect to the parameters" << endl
-                     << "%" << endl
-                     << "% Inputs : " << endl
-                     << "%   y         [M_.endo_nbr by 1] double    vector of endogenous variables in declaration order" << endl
-                     << "%   x         [M_.exo_nbr by 1] double     vector of exogenous variables in declaration order" << endl
-                     << "%   params    [M_.param_nbr by 1] double   vector of parameter values in declaration order" << endl
-                     << "%" << endl
-                     << "% Outputs:" << endl
-                     << "%   rp        [M_.eq_nbr by #params] double    Jacobian matrix of static model equations with respect to parameters " << endl
-                     << "%                                              Dynare may prepend or append auxiliary equations, see M_.aux_vars" << endl
-                     << "%   gp        [M_.endo_nbr by M_.endo_nbr by #params] double    Derivative of the Jacobian matrix of the static model equations with respect to the parameters" << endl
-                     << "%                                                           rows: variables in declaration order" << endl
-                     << "%                                                           rows: equations in order of declaration" << endl
-                     << "%   rpp       [#second_order_residual_terms by 4] double   Hessian matrix of second derivatives of residuals with respect to parameters;" << endl
-                     << "%                                                              rows: respective derivative term" << endl
-                     << "%                                                              1st column: equation number of the term appearing" << endl
-                     << "%                                                              2nd column: number of the first parameter in derivative" << endl
-                     << "%                                                              3rd column: number of the second parameter in derivative" << endl
-                     << "%                                                              4th column: value of the Hessian term" << endl
-                     << "%   gpp      [#second_order_Jacobian_terms by 5] double   Hessian matrix of second derivatives of the Jacobian with respect to the parameters;" << endl
-                     << "%                                                              rows: respective derivative term" << endl
-                     << "%                                                              1st column: equation number of the term appearing" << endl
-                     << "%                                                              2nd column: column number of variable in Jacobian of the static model" << endl                    
-                     << "%                                                              3rd column: number of the first parameter in derivative" << endl
-                     << "%                                                              4th column: number of the second parameter in derivative" << endl
-                     << "%                                                              5th column: value of the Hessian term" << endl
-                     << "%" << endl
-                     << "%" << endl         
-                     << "% Warning : this file is generated automatically by Dynare" << endl
-                     << "%           from model file (.mod)" << endl << endl;
-  else
-    paramsDerivsFile << "module " << basename << "StaticParamsDerivs" << endl
-                     << "#" << endl
-                     << "# NB: this file was automatically generated by Dynare" << endl
-                     << "#     from " << basename << ".mod" << endl
-                     << "#" << endl
-                     << "export params_derivs" << endl << endl
-                     << "function params_derivs(y, x, params)" << endl;
+  ostringstream model_local_vars_output;   // Used for storing model local vars
+  ostringstream model_output;              // Used for storing model
+  ostringstream jacobian_output;           // Used for storing jacobian equations
+  ostringstream hessian_output;            // Used for storing Hessian equations
+  ostringstream hessian1_output;           // Used for storing Hessian equations
+  ostringstream third_derivs_output;       // Used for storing third order derivatives equations
+  ostringstream third_derivs1_output;      // Used for storing third order derivatives equations
 
   deriv_node_temp_terms_t tef_terms;
-  writeModelLocalVariables(paramsDerivsFile, output_type, tef_terms);
+  writeModelLocalVariables(model_local_vars_output, output_type, tef_terms);
 
   temporary_terms_t temp_terms_empty;
-  writeTemporaryTerms(params_derivs_temporary_terms, temp_terms_empty, paramsDerivsFile, output_type, tef_terms);
-
-  // Write parameter derivative
-  paramsDerivsFile << "rp = zeros(" << equation_number() << ", "
-                   << symbol_table.param_nbr() << ");" << endl;
+  writeTemporaryTerms(params_derivs_temporary_terms, temp_terms_empty, model_output, output_type, tef_terms);
 
   for (first_derivatives_t::const_iterator it = residuals_params_derivatives.begin();
        it != residuals_params_derivatives.end(); it++)
@@ -2268,16 +2288,12 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
 
       int param_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(param)) + 1;
 
-      paramsDerivsFile << "rp" << LEFT_ARRAY_SUBSCRIPT(output_type)
-                       <<  eq+1 << ", " << param_col
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << ASSIGNMENT_OPERATOR(output_type);
-      d1->writeOutput(paramsDerivsFile, output_type, params_derivs_temporary_terms, tef_terms);
-      paramsDerivsFile << ";" << endl;
+      jacobian_output << "rp" << LEFT_ARRAY_SUBSCRIPT(output_type)
+                      <<  eq+1 << ", " << param_col
+                      << RIGHT_ARRAY_SUBSCRIPT(output_type) << " = ";
+      d1->writeOutput(jacobian_output, output_type, params_derivs_temporary_terms, tef_terms);
+      jacobian_output << ";" << endl;
     }
-
-  // Write jacobian derivatives
-  paramsDerivsFile << "gp = zeros(" << equation_number() << ", " << symbol_table.endo_nbr() << ", "
-                   << symbol_table.param_nbr() << ");" << endl;
 
   for (second_derivatives_t::const_iterator it = jacobian_params_derivatives.begin();
        it != jacobian_params_derivatives.end(); it++)
@@ -2290,20 +2306,12 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
       int var_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(var)) + 1;
       int param_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(param)) + 1;
 
-      paramsDerivsFile << "gp" << LEFT_ARRAY_SUBSCRIPT(output_type)
-                       << eq+1 << ", " << var_col << ", " << param_col
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << ASSIGNMENT_OPERATOR(output_type);
-      d2->writeOutput(paramsDerivsFile, output_type, params_derivs_temporary_terms, tef_terms);
-      paramsDerivsFile << ";" << endl;
+      hessian_output << "gp" << LEFT_ARRAY_SUBSCRIPT(output_type)
+                     << eq+1 << ", " << var_col << ", " << param_col
+                     << RIGHT_ARRAY_SUBSCRIPT(output_type) << " = ";
+      d2->writeOutput(hessian_output, output_type, params_derivs_temporary_terms, tef_terms);
+      hessian_output << ";" << endl;
     }
-
-  if (!julia)
-    // If nargout >= 3...
-    paramsDerivsFile << "if nargout >= 3" << endl;
-
-  // Write parameter second derivatives (only if nargout >= 3)
-  paramsDerivsFile << "rpp = zeros(" << residuals_params_second_derivatives.size()
-                   << ",4);" << endl;
 
   int i = 1;
   for (second_derivatives_t::const_iterator it = residuals_params_second_derivatives.begin();
@@ -2317,21 +2325,17 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
       int param1_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(param1)) + 1;
       int param2_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(param2)) + 1;
 
-      paramsDerivsFile << "rpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",1"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << eq+1 << ";" << endl
-                       << "rpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",2"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param1_col << ";" << endl
-                       << "rpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",3"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param2_col << ";" << endl
-                       << "rpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",4"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=";
-      d2->writeOutput(paramsDerivsFile, output_type, params_derivs_temporary_terms, tef_terms);
-      paramsDerivsFile << ";" << endl;
+      hessian1_output << "rpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",1"
+                      << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << eq+1 << ";" << endl
+                      << "rpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",2"
+                      << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param1_col << ";" << endl
+                      << "rpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",3"
+                      << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param2_col << ";" << endl
+                      << "rpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",4"
+                      << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=";
+      d2->writeOutput(hessian1_output, output_type, params_derivs_temporary_terms, tef_terms);
+      hessian1_output << ";" << endl;
     }
-
-  // Write jacobian second derivatives  (only if nargout >= 3)
-  paramsDerivsFile << "gpp = zeros(" << jacobian_params_second_derivatives.size()
-                   << ",5);" << endl;
 
   i = 1;
   for (third_derivatives_t::const_iterator it = jacobian_params_second_derivatives.begin();
@@ -2347,27 +2351,19 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
       int param1_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(param1)) + 1;
       int param2_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(param2)) + 1;
 
-      paramsDerivsFile << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",1"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << eq+1 << ";" << endl
-                       << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",2"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << var_col << ";" << endl
-                       << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",3"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param1_col << ";" << endl
-                       << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",4"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param2_col << ";" << endl
-                       << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",5"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=";
-      d2->writeOutput(paramsDerivsFile, output_type, params_derivs_temporary_terms, tef_terms);
-      paramsDerivsFile << ";" << endl;
+      third_derivs_output << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",1"
+                          << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << eq+1 << ";" << endl
+                          << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",2"
+                          << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << var_col << ";" << endl
+                          << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",3"
+                          << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param1_col << ";" << endl
+                          << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",4"
+                          << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param2_col << ";" << endl
+                          << "gpp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",5"
+                          << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=";
+      d2->writeOutput(third_derivs_output, output_type, params_derivs_temporary_terms, tef_terms);
+      third_derivs_output << ";" << endl;
     }
-
-  if (!julia)
-    // If nargout >= 5...
-    paramsDerivsFile << "end" << endl
-                     << "if nargout >= 5" << endl;
-
-  // Write hessian derivatives (only if nargout >= 5)
-  paramsDerivsFile << "hp = zeros(" << hessian_params_derivatives.size() << ",5);" << endl;
 
   i = 1;
   for (third_derivatives_t::const_iterator it = hessian_params_derivatives.begin();
@@ -2383,27 +2379,121 @@ StaticModel::writeParamsDerivativesFile(const string &basename, bool julia) cons
       int var2_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(var2)) + 1;
       int param_col = symbol_table.getTypeSpecificID(getSymbIDByDerivID(param)) + 1;
 
-      paramsDerivsFile << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",1"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << eq+1 << ";" << endl
-                       << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",2"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << var1_col << ";" << endl
-                       << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",3"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << var2_col << ";" << endl
-                       << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",4"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param_col << ";" << endl
-                       << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",5"
-                       << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=";
-      d2->writeOutput(paramsDerivsFile, output_type, params_derivs_temporary_terms, tef_terms);
-      paramsDerivsFile << ";" << endl;
+      third_derivs1_output << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",1"
+                           << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << eq+1 << ";" << endl
+                           << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",2"
+                           << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << var1_col << ";" << endl
+                           << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",3"
+                           << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << var2_col << ";" << endl
+                           << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",4"
+                           << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=" << param_col << ";" << endl
+                           << "hp" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << ",5"
+                           << RIGHT_ARRAY_SUBSCRIPT(output_type) << "=";
+      d2->writeOutput(third_derivs1_output, output_type, params_derivs_temporary_terms, tef_terms);
+      third_derivs1_output << ";" << endl;
     }
 
-  if (julia)
-    paramsDerivsFile << "(rp, gp, rpp, gpp, hp)" << endl;
-  paramsDerivsFile << "end" << endl
-                   << "end" << endl;
+  ofstream paramsDerivsFile;
+  string filename = julia ? basename + "StaticParamsDerivs.jl" : basename + "_static_params_derivs.m";
+  paramsDerivsFile.open(filename.c_str(), ios::out | ios::binary);
+  if (!paramsDerivsFile.is_open())
+    {
+      dyn_error("ERROR: Can't open file \"" + filename + "\" for writing\n");
+    }
+
+  if (!julia)
+    {
+      // Check that we don't have more than 32 nested parenthesis because Matlab does not suppor this. See Issue #1201
+      map<string, string> tmp_paren_vars;
+      bool message_printed = false;
+      fixNestedParenthesis(model_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(model_local_vars_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(jacobian_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(hessian_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(hessian1_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(third_derivs_output, tmp_paren_vars, message_printed);
+      fixNestedParenthesis(third_derivs1_output, tmp_paren_vars, message_printed);
+
+      paramsDerivsFile << "function [rp, gp, rpp, gpp, hp] = " << basename << "_static_params_derivs(y, x, params)" << endl
+                       << "%" << endl
+                       << "% Status : Computes derivatives of the static model with respect to the parameters" << endl
+                       << "%" << endl
+                       << "% Inputs : " << endl
+                       << "%   y         [M_.endo_nbr by 1] double    vector of endogenous variables in declaration order" << endl
+                       << "%   x         [M_.exo_nbr by 1] double     vector of exogenous variables in declaration order" << endl
+                       << "%   params    [M_.param_nbr by 1] double   vector of parameter values in declaration order" << endl
+                       << "%" << endl
+                       << "% Outputs:" << endl
+                       << "%   rp        [M_.eq_nbr by #params] double    Jacobian matrix of static model equations with respect to parameters " << endl
+                       << "%                                              Dynare may prepend or append auxiliary equations, see M_.aux_vars" << endl
+                       << "%   gp        [M_.endo_nbr by M_.endo_nbr by #params] double    Derivative of the Jacobian matrix of the static model equations with respect to the parameters" << endl
+                       << "%                                                           rows: variables in declaration order" << endl
+                       << "%                                                           rows: equations in order of declaration" << endl
+                       << "%   rpp       [#second_order_residual_terms by 4] double   Hessian matrix of second derivatives of residuals with respect to parameters;" << endl
+                       << "%                                                              rows: respective derivative term" << endl
+                       << "%                                                              1st column: equation number of the term appearing" << endl
+                       << "%                                                              2nd column: number of the first parameter in derivative" << endl
+                       << "%                                                              3rd column: number of the second parameter in derivative" << endl
+                       << "%                                                              4th column: value of the Hessian term" << endl
+                       << "%   gpp      [#second_order_Jacobian_terms by 5] double   Hessian matrix of second derivatives of the Jacobian with respect to the parameters;" << endl
+                       << "%                                                              rows: respective derivative term" << endl
+                       << "%                                                              1st column: equation number of the term appearing" << endl
+                       << "%                                                              2nd column: column number of variable in Jacobian of the static model" << endl
+                       << "%                                                              3rd column: number of the first parameter in derivative" << endl
+                       << "%                                                              4th column: number of the second parameter in derivative" << endl
+                       << "%                                                              5th column: value of the Hessian term" << endl
+                       << "%" << endl
+                       << "%" << endl
+                       << "% Warning : this file is generated automatically by Dynare" << endl
+                       << "%           from model file (.mod)" << endl << endl
+                       << model_local_vars_output.str()
+                       << model_output.str()
+                       << "rp = zeros(" << equations.size() << ", "
+                       << symbol_table.param_nbr() << ");" << endl
+                       << jacobian_output.str()
+                       << "gp = zeros(" << equations.size() << ", " << symbol_table.endo_nbr() << ", "
+                       << symbol_table.param_nbr() << ");" << endl
+                       << hessian_output.str()
+                       << "if nargout >= 3" << endl
+                       << "rpp = zeros(" << residuals_params_second_derivatives.size() << ",4);" << endl
+                       << hessian1_output.str()
+                       << "gpp = zeros(" << jacobian_params_second_derivatives.size() << ",5);" << endl
+                       << third_derivs_output.str()
+                       << "end" << endl
+                       << "if nargout >= 5" << endl
+                       << "hp = zeros(" << hessian_params_derivatives.size() << ",5);" << endl
+                       << third_derivs1_output.str()
+                       << "end" << endl
+                       << "end" << endl;
+    }
+  else
+    paramsDerivsFile << "module " << basename << "StaticParamsDerivs" << endl
+                     << "#" << endl
+                     << "# NB: this file was automatically generated by Dynare" << endl
+                     << "#     from " << basename << ".mod" << endl
+                     << "#" << endl
+                     << "export params_derivs" << endl << endl
+                     << "function params_derivs(y, x, params)" << endl
+                     << model_local_vars_output.str()
+                     << model_output.str()
+                     << "rp = zeros(" << equations.size() << ", "
+                     << symbol_table.param_nbr() << ");" << endl
+                     << jacobian_output.str()
+                     << "gp = zeros(" << equations.size() << ", " << symbol_table.endo_nbr() << ", "
+                     << symbol_table.param_nbr() << ");" << endl
+                     << hessian_output.str()
+                     << "rpp = zeros(" << residuals_params_second_derivatives.size() << ",4);" << endl
+                     << hessian1_output.str()
+                     << "gpp = zeros(" << jacobian_params_second_derivatives.size() << ",5);" << endl
+                     << third_derivs_output.str()
+                     << "hp = zeros(" << hessian_params_derivatives.size() << ",5);" << endl
+                     << third_derivs1_output.str()
+                     << "(rp, gp, rpp, gpp, hp)" << endl
+                     << "end" << endl
+                     << "end" << endl;
+
   paramsDerivsFile.close();
 }
-
 
 #ifdef USE_R
 Rcpp::List StaticModel::getStaticModelR(bool internal_calc) const {
@@ -2445,4 +2535,3 @@ PolishModel* StaticModel::makePolishModel(ExternalFunctionCalc *ext_calc) const 
 }
 
 #endif
-
