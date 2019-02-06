@@ -36,7 +36,8 @@
 #include "dynout.hh"
 #include "dyn_error.hh"
 
-ModFile* parse(char * modfile, bool max_laglead_1, bool no_tmp_terms) {
+ModFile* parse(char * modfile, bool max_laglead_1, bool nostrict,
+               bool no_tmp_terms) {
   bool clear_all = true;
   bool clear_global = false;
   bool save_macro = false;
@@ -59,7 +60,6 @@ ModFile* parse(char * modfile, bool max_laglead_1, bool no_tmp_terms) {
   string cluster_name;
   bool parallel_slave_open_mode = false;
   bool parallel_test = false;
-  bool nostrict = false;
   bool check_model_changes = false;
   bool minimal_workspace = false;
   bool compute_xrefs = false;

@@ -24,6 +24,10 @@
 #' and lead of the original model is 1. Set this argument to
 #' \code{TRUE} if you want to analyse the stability of the steady state with 
 #' method \code{\link{check}} for models with a maximum lag or lead larger than 1.
+#' @param nostrict Allows Dynare to issue a warning and continue processing when
+#' there are more endogenous variables than equations,
+#' an undeclared symbol is assigned in initval or endval,
+#' or exogenous variables were declared but not used in the model block.
 #' @param fit a logical. If \code{TRUE}, then the function returns
 #' a  \code{FitMdl} object if a fit block has been found in the mod file.
 #' If \code{FALSE} then this function does not return a \code{FitMdl} object.
@@ -37,7 +41,7 @@
 dyn_mdl <- function(mod_file, period, data, 
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
-                    max_laglead_1 = FALSE,
+                    max_laglead_1 = FALSE, nostrict = FALSE,
                     fit = TRUE) {
   
   calc <- match.arg(calc)
@@ -101,7 +105,7 @@ dyn_mdl <- function(mod_file, period, data,
     fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                  instruments, debug)
     mdldef <- compile_model(fit_mod_file, use_dll, dll_dir, max_laglead_1,
-                            internal_calc)
+                            nostrict, internal_calc)
     
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
@@ -123,8 +127,8 @@ dyn_mdl <- function(mod_file, period, data,
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    mdldef <- compile_model(mod_file, use_dll, dll_dir, max_laglead_1,
-                            internal_calc)
+    mdldef <- compile_model(mod_file, use_dll, dll_dir, max_laglead_1, 
+                            nostrict, internal_calc)
     
     if (calc == "dll") {
       dll_file <- compile_c_functions(dll_dir)

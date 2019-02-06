@@ -6,7 +6,7 @@
 \usage{
 dyn_mdl(mod_file, period, data, calc = c("R", "bytecode", "dll",
   "internal"), fit_mod_file, debug = FALSE, dll_dir,
-  max_laglead_1 = FALSE, fit = TRUE)
+  max_laglead_1 = FALSE, nostrict = FALSE, fit = TRUE)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -36,6 +36,11 @@ The default is \code{FALSE}. This option has no effect if the maximum lag
 and lead of the original model is 1. Set this argument to
 \code{TRUE} if you want to analyse the stability of the steady state with 
 method \code{\link{check}} for models with a maximum lag or lead larger than 1.}
+
+\item{nostrict}{Allows Dynare to issue a warning and continue processing when
+there are more endogenous variables than equations,
+an undeclared symbol is assigned in initval or endval,
+or exogenous variables were declared but not used in the model block.}
 
 \item{fit}{a logical. If \code{TRUE}, then the function returns
 a  \code{FitMdl} object if a fit block has been found in the mod file.

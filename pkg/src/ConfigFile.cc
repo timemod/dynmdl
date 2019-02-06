@@ -106,10 +106,10 @@ ConfigFile::getConfigFileInfo(const string &config_file)
         {
           std::string msg;
           if (parallel || parallel_test)
-             msg << "ERROR: ";
+             msg = "ERROR: ";
           else
-            msg << "WARNING: ";
-          msg << "APPDATA environment variable not found." << endl;
+            msg = "WARNING: ";
+          msg = msg + "APPDATA environment variable not found.\n";
           if (parallel || parallel_test)
               dyn_error(msg.c_str());
           else {

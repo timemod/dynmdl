@@ -1,0 +1,45 @@
+Starting Dynare (version 4.5.6).
+Starting preprocessing of the model file ...
+WARNING: gx not used in model block, removed by nostrict command-line option
+Found 2 equation(s).
+Evaluating expressions...done
+Computing static model derivatives:
+ - order 1
+Computing dynamic model derivatives:
+ - order 1
+Processing outputs ...
+done
+Preprocessing completed.
+
+STEADY-STATE RESULTS:
+
+c 		 0.827623
+k 		 7.13119
+
+EIGENVALUES:
+         Modulus             Real        Imaginary
+
+          0.9143           0.9143                0
+           1.121            1.121                0
+
+
+There are 1 eigenvalue(s) larger than 1 in modulus 
+for 1 forward-looking variable(s)
+
+The rank condition is verified.
+
+
+--------------------------------------------------------
+MODEL SIMULATION:
+
+Iter: 1,	 err. = 0.88799, 	 time = 0.016
+Iter: 2,	 err. = 0.0019062, 	 time = 0.015
+Iter: 3,	 err. = 9.6434e-08, 	 time = 0
+
+Total time of simulation: 0.031
+--------------------------------------------------------
+
+Perfect foresight solution found.
+
+Total computing time : 0h00m00s
+Note: 1 warning(s) encountered in the preprocessor

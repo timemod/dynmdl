@@ -130,8 +130,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // compile_model_
-Rcpp::List compile_model_(std::string modfile, bool use_dll, std::string dll_dir, bool max_laglead_1, bool internal_calc);
-RcppExport SEXP _dynmdl_compile_model_(SEXP modfileSEXP, SEXP use_dllSEXP, SEXP dll_dirSEXP, SEXP max_laglead_1SEXP, SEXP internal_calcSEXP) {
+Rcpp::List compile_model_(std::string modfile, bool use_dll, std::string dll_dir, bool max_laglead_1, bool nostrict, bool internal_calc);
+RcppExport SEXP _dynmdl_compile_model_(SEXP modfileSEXP, SEXP use_dllSEXP, SEXP dll_dirSEXP, SEXP max_laglead_1SEXP, SEXP nostrictSEXP, SEXP internal_calcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -139,8 +139,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type use_dll(use_dllSEXP);
     Rcpp::traits::input_parameter< std::string >::type dll_dir(dll_dirSEXP);
     Rcpp::traits::input_parameter< bool >::type max_laglead_1(max_laglead_1SEXP);
+    Rcpp::traits::input_parameter< bool >::type nostrict(nostrictSEXP);
     Rcpp::traits::input_parameter< bool >::type internal_calc(internal_calcSEXP);
-    rcpp_result_gen = Rcpp::wrap(compile_model_(modfile, use_dll, dll_dir, max_laglead_1, internal_calc));
+    rcpp_result_gen = Rcpp::wrap(compile_model_(modfile, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -253,7 +254,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_prepare_internal_stat", (DL_FUNC) &_dynmdl_prepare_internal_stat, 3},
     {"_dynmdl_get_residuals_stat", (DL_FUNC) &_dynmdl_get_residuals_stat, 2},
     {"_dynmdl_get_triplet_jac_stat", (DL_FUNC) &_dynmdl_get_triplet_jac_stat, 2},
-    {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 5},
+    {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 6},
     {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 1},
     {"_dynmdl_get_residuals_", (DL_FUNC) &_dynmdl_get_residuals_, 8},
     {"_dynmdl_get_triplet_jac", (DL_FUNC) &_dynmdl_get_triplet_jac, 9},

@@ -50,10 +50,7 @@ test_that("steady state", {
   
   expect_equal(toy_internal$get_solve_status(), "OK")
   
-  expected_output_file <- file.path("expected_output",
-                                    paste0(model_name, "_ss.rds"))
-  expect_known_value(toy_internal$get_static_endos(),
-                            expected_output_file)
+  expect_equal(toy_internal$get_static_endos(), dynare_result$steady)
   
   # check that the steady state solution is consistent with the
   # dynamic model
