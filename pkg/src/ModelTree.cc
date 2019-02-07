@@ -1550,11 +1550,12 @@ ModelTree::Write_Inf_To_Bin_File(const string &basename,
 
 #ifdef USE_R
 string getFileNameWithoutPath(const string& s) {
-
-   size_t i = s.rfind("/", s.length());
+  size_t i = s.rfind("/", s.length());
 #ifdef _WIN32
    size_t i2 = s.rfind("\\", s.length());
-   i = max(i, i2);
+   if (i2 != string::npos) {
+      i = max(i, i2);
+   }
 #endif
    if (i != string::npos) {
       return(s.substr(i+1, s.length() - i));
