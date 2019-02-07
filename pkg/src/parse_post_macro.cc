@@ -58,5 +58,8 @@ ModFile *parse_post_macro(stringstream &in, string &basename, bool debug, bool c
   // Do computations
   mod_file->computingPass(no_tmp_terms, output_mode,  params_derivs_order);
 
+  // Write LaTeX files
+  mod_file->writeLatexFiles(basename);
+
   return mod_file;
 }

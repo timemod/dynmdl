@@ -22,6 +22,9 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#ifdef USE_R
+#include <algorithm>
+#endif
 
 #include "ModelTree.hh"
 #include "MinimumFeedbackSet.hh"
@@ -1545,13 +1548,40 @@ ModelTree::Write_Inf_To_Bin_File(const string &basename,
   SaveCode.close();
 }
 
+#ifdef USE_R
+string getFileNameWithoutPath(const string& s) {
+
+   size_t i = s.rfind("/", s.length());
+#ifdef _WIN32
+   size_t i2 = s.rfind("\\", s.length());
+   i = max(i, i2)
+#endif
+   if (i != string::npos) {
+      return(s.substr(i+1, s.length() - i));
+   }
+
+   return("");
+}
+#endif
+
+
 void
 ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output_type, const bool write_equation_tags) const
 {
+
   ofstream output, content_output;
+#ifdef USE_R
+  string basename_without_path = getFileNameWithoutPath(basename);
+  string latex_basename = "latex/" + basename_without_path;
+  string filename = latex_basename + ".tex";
+  string content_basename = latex_basename + "_content";
+  string content_basename_without_path = basename_without_path + "_content";
+#else
   string filename = basename + ".tex";
   string content_basename = basename + "_content";
+#endif
   string content_filename = content_basename + ".tex";
+
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
@@ -1603,8 +1633,13 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
 
                 content_output << iteqt->second.first;
 
+#ifdef USE_R
+                if (!iteqt->second.second.empty())
+                  content_output << " = `" << iteqt->second.second << "'";
+#else
                 if (iteqt->second.second.empty())
                   content_output << "= `" << iteqt->second.second << "'";
+#endif
 
                 wrote_eq_tag = true;
               }
@@ -1613,13 +1648,36 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
         content_output << "]";
 
       content_output << "\\begin{dmath}" << endl;
+#ifdef USE_R
+      bool name_tag_found = false;
+      for (vector<pair<int, pair<string, string> > >::const_iterator iteqt = equation_tags.begin();
+           iteqt != equation_tags.end(); iteqt++) {
+          if (iteqt->first == eq && iteqt->second.first == "name" && 
+             !iteqt->second.second.empty()) {
+             content_output << "\\label{" << iteqt->second.second << "_" 
+                            << basename_without_path << "}" << endl;
+             name_tag_found = true;
+             break;
+          }
+      }
+      if (!name_tag_found) {
+        content_output << "\\label{eq_" << eq + 1 << "_" << basename_without_path 
+                     << "}" << endl;
+
+      }
+#endif
       // Here it is necessary to cast to superclass ExprNode, otherwise the overloaded writeOutput() method is not found
       dynamic_cast<ExprNode *>(equations[eq])->writeOutput(content_output, output_type);
       content_output << endl << "\\end{dmath}" << endl;
     }
 
-  output << "\\include{" << content_basename << "}" << endl
+#ifdef USE_R
+  output << "\\include{" << content_basename_without_path << "}" << endl
          << "\\end{document}" << endl;
+#else
+    output << "\\include{" << content_basename << "}" << endl
+         << "\\end{document}" << endl;
+#endif
 
   output.close();
   content_output.close();
