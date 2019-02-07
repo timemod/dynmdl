@@ -1554,7 +1554,7 @@ string getFileNameWithoutPath(const string& s) {
    size_t i = s.rfind("/", s.length());
 #ifdef _WIN32
    size_t i2 = s.rfind("\\", s.length());
-   i = max(i, i2)
+   i = max(i, i2);
 #endif
    if (i != string::npos) {
       return(s.substr(i+1, s.length() - i));
