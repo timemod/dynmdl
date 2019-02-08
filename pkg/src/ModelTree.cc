@@ -1572,16 +1572,16 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
 
   ofstream output, content_output;
 #ifdef USE_R
-  string basename_without_path = getFileNameWithoutPath(basename);
-  string latex_basename = "latex/" + basename_without_path;
-  string filename = latex_basename + ".tex";
-  string content_basename = latex_basename + "_content";
-  string content_basename_without_path = basename_without_path + "_content";
+  string latex_basename_with_path = "latex/" + basename;
+  string filename = latex_basename_with_path + ".tex";
+  string content_basename_with_path = latex_basename_with_path + "_content";
+  string content_basename = basename + "_content";
+  string content_filename = content_basename_with_path + ".tex";
 #else
   string filename = basename + ".tex";
   string content_basename = basename + "_content";
-#endif
   string content_filename = content_basename + ".tex";
+#endif
 
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
@@ -1656,13 +1656,13 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
           if (iteqt->first == eq && iteqt->second.first == "name" && 
              !iteqt->second.second.empty()) {
              content_output << "\\label{" << iteqt->second.second << "_" 
-                            << basename_without_path << "}" << endl;
+                            << basename << "}" << endl;
              name_tag_found = true;
              break;
           }
       }
       if (!name_tag_found) {
-        content_output << "\\label{eq_" << eq + 1 << "_" << basename_without_path 
+        content_output << "\\label{eq_" << eq + 1 << "_" << basename
                      << "}" << endl;
 
       }
@@ -1672,13 +1672,8 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
       content_output << endl << "\\end{dmath}" << endl;
     }
 
-#ifdef USE_R
-  output << "\\include{" << content_basename_without_path << "}" << endl
-         << "\\end{document}" << endl;
-#else
     output << "\\include{" << content_basename << "}" << endl
          << "\\end{document}" << endl;
-#endif
 
   output.close();
   content_output.close();

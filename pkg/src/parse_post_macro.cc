@@ -31,7 +31,7 @@
 #include "ExtendedPreprocessorTypes.hh"
 #include "parse.hh"
 
-ModFile *parse_post_macro(stringstream &in, string &basename, bool debug, bool clear_all, bool clear_global,
+ModFile *parse_post_macro(stringstream &in, string &latex_basename, bool debug, bool clear_all, bool clear_global,
       bool no_tmp_terms, bool no_log, bool no_warn, bool warn_uninit, bool console,
       bool nograph, bool nointeractive, bool parallel, ConfigFile &config_file,
       WarningConsolidation &warnings, bool nostrict, bool check_model_changes,
@@ -59,7 +59,7 @@ ModFile *parse_post_macro(stringstream &in, string &basename, bool debug, bool c
   mod_file->computingPass(no_tmp_terms, output_mode,  params_derivs_order);
 
   // Write LaTeX files
-  mod_file->writeLatexFiles(basename);
+  mod_file->writeLatexFiles(latex_basename);
 
   return mod_file;
 }

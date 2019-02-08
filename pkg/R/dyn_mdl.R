@@ -75,6 +75,10 @@ dyn_mdl <- function(mod_file, period, data,
     dll_dir <- NA_character_
   }
   
+  # basename for latex files, only used if the mod file contains a 
+  # write_latex_dynamic_model etc.
+  latex_basename <- file_path_sans_ext(basename(mod_file))
+  
   # run macropreprocessor to preprocess the file, this is necessary
   # for get_equations()
   if (debug) {
@@ -83,8 +87,9 @@ dyn_mdl <- function(mod_file, period, data,
       unlink(preprocessed_mod_file)
     }
   } else {
-    preprocessed_mod_file <- tempfile()
+    preprocessed_mod_file <- tempfile("preproc", fileext = ".mod")
   }
+
   run_macro(mod_file, preprocessed_mod_file)
   
   mod_text <- read_file(preprocessed_mod_file)
@@ -95,20 +100,21 @@ dyn_mdl <- function(mod_file, period, data,
     stop("No fit block in model file, fit procedure not possible")
   }
   
+  
   if (!is.null(instruments) && fit)  {
     
     # FIT PROCEDURE
     
     if (missing(fit_mod_file)) {
-      basename <- basename(mod_file)
-      basename_no_ext <- file_path_sans_ext(basename)
-      fit_mod_file <- file.path(tempdir(), paste0(basename_no_ext, "_fit.mod"))
+      fit_mod_file <- tempfile(pattern = "fit", fileext = ".mod")
     }
     
-    fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
-                                 instruments, debug)
-    mdldef <- compile_model(fit_mod_file, use_dll, dll_dir, max_laglead_1,
-                            nostrict, internal_calc)
+    fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
+                               instruments, latex_basename, debug)
+    
+    latex_basename_fit <- paste0(latex_basename, "_fit")
+    mdldef <- compile_model(fit_mod_file, latex_basename_fit, use_dll, dll_dir, 
+                            max_laglead_1, nostrict, internal_calc)
     
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
@@ -130,7 +136,7 @@ dyn_mdl <- function(mod_file, period, data,
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    mdldef <- compile_model(mod_file, use_dll, dll_dir, max_laglead_1, 
+    mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, max_laglead_1, 
                             nostrict, internal_calc)
     
     if (calc == "dll") {
