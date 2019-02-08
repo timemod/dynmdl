@@ -636,7 +636,17 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     {
       if (output_type == oLatexDynamicSteadyStateOperator)
         output << "\\bar";
+#ifdef USE_R
+      // if the latex name contains a subscript, then add extra { } around name
+      string name = datatree.symbol_table.getTeXName(symb_id);
+      if (name.find("_") != string::npos &&
+          name.at(0) != '{'  && name.at(name.length() - 1) != '}') {
+          name = "{" + name + "}";
+      }
+      output << "{" << name;
+#else
       output << "{" << datatree.symbol_table.getTeXName(symb_id);
+#endif
       if (output_type == oLatexDynamicModel
           && (type == eEndogenous || type == eExogenous || type == eExogenousDet || type == eModelLocalVariable || type == eTrend || type == eLogTrend))
         {
