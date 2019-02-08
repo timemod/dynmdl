@@ -38,6 +38,7 @@
 #' @importFrom tools file_path_sans_ext
 #' @importFrom readr read_file
 #' @importFrom regts range_union
+#' @importFrom tools file_path_sans_ext
 dyn_mdl <- function(mod_file, period, data, 
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
@@ -99,7 +100,9 @@ dyn_mdl <- function(mod_file, period, data,
     # FIT PROCEDURE
     
     if (missing(fit_mod_file)) {
-      fit_mod_file <- tempfile()
+      basename <- basename(mod_file)
+      basename_no_ext <- file_path_sans_ext(basename)
+      fit_mod_file <- file.path(tempdir(), paste0(basename_no_ext, "_fit.mod"))
     }
     
     fit_info   <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
