@@ -558,6 +558,9 @@ private:
 public:
   WriteLatexDynamicModelStatement(const DynamicModel &dynamic_model_arg, bool write_equation_tags_arg);
   virtual void writeOutput(ostream &output, const string &basename, bool minimal_workspace) const;
+#ifdef USE_R
+  inline bool get_write_equation_tags() const;
+#endif
 };
 
 class WriteLatexStaticModelStatement : public Statement
@@ -999,5 +1002,12 @@ public:
   Smoother2histvalStatement(const OptionsList &options_list_arg);
   virtual void writeOutput(ostream &output, const string &basename, bool minimal_workspace) const;
 };
+
+
+#ifdef USE_R
+inline bool WriteLatexDynamicModelStatement::get_write_equation_tags() const {
+    return write_equation_tags;
+}
+#endif
 
 #endif

@@ -4463,14 +4463,23 @@ DynamicModel::writeChainRuleDerivative(ostream &output, int eqr, int varr, int l
 void
 DynamicModel::writeLatexFile(const string &basename, const bool write_equation_tags) const
 {
+#ifdef USE_R
+  dyn_error("Internal error\n");
+#else
   writeLatexModelFile(basename + "_dynamic", oLatexDynamicModel, write_equation_tags);
+#endif
 }
 
 void
 DynamicModel::writeLatexOriginalFile(const string &basename) const
 {
+#ifdef USE_R
+  dyn_error("Internal error\n");
+#else
   writeLatexModelFile(basename + "_original", oLatexDynamicModel);
+#endif
 }
+
 
 void
 DynamicModel::substituteEndoLeadGreaterThanTwo(bool deterministic_model)
@@ -5634,6 +5643,16 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
                               Rcpp::Named("max_exo_lag")   = max_exo_lag,
                               Rcpp::Named("max_exo_lead")  = max_exo_lead
                              );
+}
+
+
+void DynamicModel::writeLatexFile(const string &dirname, const string &basename, 
+                                  const bool write_equation_tags) const {
+  writeLatexModelFile(dirname, basename + "_dynamic", oLatexDynamicModel, write_equation_tags);
+}
+
+void DynamicModel::writeLatexOriginalFile(const string &dirname, const string &basename) const {
+  writeLatexModelFile(dirname, basename + "_original", oLatexDynamicModel);
 }
 
 #endif

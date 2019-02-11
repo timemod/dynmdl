@@ -1434,14 +1434,15 @@ int ModFile::get_warning_count() const {
 }
 
 
-void createLatexDir() {
-    Rcout << "dir created"  << endl;
+void createLatexDir(const string &dirname) {
 #ifdef _WIN32
-     int r = mkdir("latex");
+     int r1 = mkdir("latex");
+     int r2 = mkdir(dirname.c_str());
 #else
-     int r = mkdir("latex", 0777);
+     int r1 = mkdir("latex", 07777);
+     int r2 = mkdir(dirname.c_str(), 0777);
 #endif
-     if (r < 0 && errno != EEXIST) {
+     if ((r1 < 0 || r2 < 0) && errno != EEXIST) {
         dyn_error("ERROR: " + string(std::strerror(errno)));
     }
 }
@@ -1450,9 +1451,9 @@ void ModFile::writeLatexFiles(const string &basename) {
 
 // create directory LaTeX if it does not exist
 
-    ofstream dum;
-
     bool dir_created = false;
+
+    const string dirname = "latex/" + basename;
 
     for (vector<Statement *>::const_iterator it = statements.begin();
           it != statements.end(); it++) {
@@ -1460,25 +1461,28 @@ void ModFile::writeLatexFiles(const string &basename) {
         WriteLatexDynamicModelStatement *wldms = 
               dynamic_cast<WriteLatexDynamicModelStatement *>(*it);
         if (wldms != NULL) {
-           if (!dir_created) createLatexDir();
+           if (!dir_created) createLatexDir(dirname);
            dir_created = true;
-           (*it)->writeOutput(dum, basename, false);
+           bool write_eq_tags = wldms->get_write_equation_tags();
+           dynamic_model.writeLatexFile(dirname, basename, write_eq_tags);
            continue;
         }
+
         WriteLatexStaticModelStatement *wlsms = 
               dynamic_cast<WriteLatexStaticModelStatement *>(*it);
         if (wlsms != NULL) {
-           if (!dir_created) createLatexDir();
+           if (!dir_created) createLatexDir(dirname);
            dir_created = true;
-           (*it)->writeOutput(dum, basename, false);
+           static_model.writeLatexFile(dirname, basename);
            continue;
         }
+
         WriteLatexOriginalModelStatement *wloms = 
               dynamic_cast<WriteLatexOriginalModelStatement *>(*it);
         if (wloms != NULL) {
-           if (!dir_created) createLatexDir();
+           if (!dir_created) createLatexDir(dirname);
            dir_created = true;
-           (*it)->writeOutput(dum, basename, false);
+           original_model.writeLatexOriginalFile(dirname, basename);
            continue;
         }
     }

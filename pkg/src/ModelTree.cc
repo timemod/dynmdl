@@ -1570,13 +1570,19 @@ string getFileNameWithoutPath(const string& s) {
 #endif
 
 
+#ifdef USE_R
+void ModelTree::writeLatexModelFile(const string &dirname, const string &basename, 
+                                    ExprNodeOutputType output_type, 
+                                    const bool write_equation_tags) const
+#else
 void
 ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output_type, const bool write_equation_tags) const
+#endif
 {
 
   ofstream output, content_output;
 #ifdef USE_R
-  string latex_basename_with_path = "latex/" + basename;
+  string latex_basename_with_path = dirname + "/" + basename;
   string filename = latex_basename_with_path + ".tex";
   string content_basename_with_path = latex_basename_with_path + "_content";
   string content_basename = basename + "_content";

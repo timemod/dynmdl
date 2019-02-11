@@ -194,8 +194,14 @@ protected:
   //! Compiles model equations
   void compileModelEquations(ostream &code_file, unsigned int &instruction_number, const temporary_terms_t &tt, const map_idx_t &map_idx, bool dynamic, bool steady_dynamic) const;
 
+#ifdef USE_R
+  //! Writes LaTeX model file
+  void writeLatexModelFile(const string &dirname, const string &basename, 
+                       ExprNodeOutputType output_type, const bool write_equation_tags = false) const;
+#else
   //! Writes LaTeX model file
   void writeLatexModelFile(const string &basename, ExprNodeOutputType output_type, const bool write_equation_tags = false) const;
+#endif
 
   //! Sparse matrix of double to store the values of the Jacobian
   /*! First index is equation number, second index is endogenous type specific ID */
