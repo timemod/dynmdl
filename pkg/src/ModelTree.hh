@@ -197,7 +197,8 @@ protected:
 #ifdef USE_R
   //! Writes LaTeX model file
   void writeLatexModelFile(const string &dirname, const string &basename, 
-                       ExprNodeOutputType output_type, const bool write_equation_tags = false) const;
+                           const string &model_type, ExprNodeOutputType output_type, 
+                           const bool write_equation_tags = false) const;
 #else
   //! Writes LaTeX model file
   void writeLatexModelFile(const string &basename, ExprNodeOutputType output_type, const bool write_equation_tags = false) const;
