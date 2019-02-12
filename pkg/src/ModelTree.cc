@@ -1715,7 +1715,7 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
                  createSingleEqDir(single_eq_dir);
                  single_eq_dir_created = true;
              }
-             string single_eq_filename = single_eq_dir + "/" + eq_name;
+             string single_eq_filename = single_eq_dir + "/" + eq_name + ".tex";
              single_eq_output.open(single_eq_filename.c_str(), ios::out | ios::binary);
              if (!single_eq_output.is_open()) {
                 dyn_error("ERROR: Can't open file " + single_eq_filename + " for writing\n");
