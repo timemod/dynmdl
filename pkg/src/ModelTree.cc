@@ -1702,13 +1702,10 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
       }
       content_output << "\\begin{dmath}" << endl;
 #ifdef USE_R
-      Rcout << "length equation_tags " << equation_tags.size() << endl;
       for (vector<pair<int, pair<string, string> > >::const_iterator iteqt = equation_tags.begin();
            iteqt != equation_tags.end(); iteqt++) {
-          Rcout << "trying to find a label" << endl;
           if (iteqt->first == eq && iteqt->second.first == "name" && 
              !iteqt->second.second.empty()) {
-              Rcout << "found label"  << endl;
              string eq_name = space2underscore(iteqt->second.second); 
              content_output << "\\label{" << eq_name << "_" 
                             << model_type << "}" << endl;
