@@ -1720,11 +1720,9 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
              if (!single_eq_output.is_open()) {
                 dyn_error("ERROR: Can't open file " + single_eq_filename + " for writing\n");
              }
-             single_eq_output << "\\begin{dmath}" << endl;
              single_eq_output << "\\label{" << eq_name << "_" 
                             << model_type << "_single}" << endl;
              dynamic_cast<ExprNode *>(equations[eq])->writeOutput(single_eq_output, output_type);
-             single_eq_output << endl << "\\end{dmath}" << endl;
              single_eq_output.close();
              break;
           }
