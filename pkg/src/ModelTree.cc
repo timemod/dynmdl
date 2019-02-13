@@ -2043,4 +2043,17 @@ void ModelTree::genPolishEquations(PolishModel &mdl, bool dynamic) const {
         }
     }
 }
+
+vector<pair<string, string>>  ModelTree::getEquationTags(int eq_number) const {
+    vector<pair<string, string>> eq_tags;
+    for (vector<pair<int, pair<string, 
+        string> > >::const_iterator iteqt = equation_tags.begin();
+        iteqt != equation_tags.end(); iteqt++) {
+        if (iteqt->first == eq_number) {
+           eq_tags.push_back(iteqt->second);
+        }
+    }
+    return eq_tags;
+}
+
 #endif

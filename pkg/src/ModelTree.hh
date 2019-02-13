@@ -306,6 +306,9 @@ protected:
   virtual int getBlockInitialOtherEndogenousID(int block_number, int variable_number) const = 0;
   //! Initialize equation_reordered & variable_reordered
   void initializeVariablesAndEquations();
+#ifdef USE_R
+  vector<pair<string, string>> getEquationTags(int eq_number) const;
+#endif
 public:
   ModelTree(SymbolTable &symbol_table_arg, NumericalConstants &num_constants_arg, ExternalFunctionsTable &external_functions_table_arg);
   //! Absolute value under which a number is considered to be zero
