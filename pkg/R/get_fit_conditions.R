@@ -4,12 +4,12 @@
 # @param instruments a list of instruments used in the fit procedure
 #' @importFrom gsubfn gsubfn
 # @return a list with information about the derivatives
-get_fit_conditions <- function(mod_file, instruments) {
+get_fit_conditions <- function(mod_file,  instruments, latex_basename) {
 
     # regular expressions:
     lag_pattern <- "\\[(-?\\d+)\\]"
 
-    model_info <- compute_derivatives(mod_file)
+    model_info <- compute_derivatives(mod_file, latex_basename)
     lli <- model_info$dynamic_model$lead_lag_incidence
     sel <- lli != 0
     rows <- row(lli)[sel]

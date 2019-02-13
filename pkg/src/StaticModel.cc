@@ -2198,7 +2198,11 @@ StaticModel::writeChainRuleDerivative(ostream &output, int eqr, int varr, int la
 void
 StaticModel::writeLatexFile(const string &basename) const
 {
+#ifdef USE_R
+  dyn_error("Internal error\n");
+#else
   writeLatexModelFile(basename + "_static", oLatexStaticModel);
+#endif
 }
 
 void
@@ -2532,6 +2536,12 @@ PolishModel* StaticModel::makePolishModel(ExternalFunctionCalc *ext_calc) const 
     }
 
     return mdl;
+}
+
+void
+StaticModel::writeLatexFile(const string &dirname, const string &basename) const
+{
+  writeLatexModelFile(dirname, basename, "static", oLatexStaticModel);
 }
 
 #endif

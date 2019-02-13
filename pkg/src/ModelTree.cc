@@ -22,6 +22,9 @@
 #include <cmath>
 #include <iostream>
 #include <fstream>
+#ifdef USE_R
+#include <algorithm>
+#endif
 
 #include "ModelTree.hh"
 #include "MinimumFeedbackSet.hh"
@@ -32,6 +35,17 @@
 
 #include "dyn_error.hh"
 #include "dynout.hh"
+
+#ifdef USE_R
+// For mkdir() 
+#ifdef _WIN32
+# include <direct.h>
+#else
+# include <unistd.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+#endif
+#endif
 
 
 using namespace boost;
@@ -1545,13 +1559,75 @@ ModelTree::Write_Inf_To_Bin_File(const string &basename,
   SaveCode.close();
 }
 
+#ifdef USE_R
+string getFileNameWithoutPath(const string& s) {
+  size_t i = s.rfind("/", s.length());
+#ifdef _WIN32
+   size_t i2 = s.rfind("\\", s.length());
+   if (i2 != string::npos) {
+       if (i != string::npos) {
+           i = max(i, i2);
+       } else {
+           i = i2;
+       }
+   }
+#endif
+   if (i != string::npos) {
+      return(s.substr(i+1, s.length() - i));
+   }
+
+   return("");
+}
+#endif
+
+
+#ifdef USE_R
+
+
+void createSingleEqDir(const string &dirname) {
+#ifdef _WIN32
+    int r = mkdir(dirname.c_str());
+#else
+    int r = mkdir(dirname.c_str(), 0777);
+#endif
+    if (r < 0 && errno != EEXIST) {
+        dyn_error("ERROR: " + string(std::strerror(errno)));
+    }
+}
+
+string space2underscore(string text) {
+    for (int i = 0; i < text.length(); i++) {
+        if (isspace(text[i])) {
+            text[i] = '_';
+        }
+    }
+    return text;
+}
+
+void ModelTree::writeLatexModelFile(const string &dirname, const string &model_basename, 
+                                    const string &model_type, ExprNodeOutputType output_type, 
+                                    const bool write_equation_tags) const
+#else
 void
 ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output_type, const bool write_equation_tags) const
+#endif
 {
+
   ofstream output, content_output;
+#ifdef USE_R
+  ofstream single_eq_output;
+  string latex_basename_with_path = dirname + "/" + model_type;
+  string single_eq_dir = dirname + "/" + model_type + "_single_eqs";
+  string filename = latex_basename_with_path + ".tex";
+  string content_basename_with_path = latex_basename_with_path + "_content";
+  string content_basename = model_type + "_content";
+  string content_filename = content_basename_with_path + ".tex";
+#else
   string filename = basename + ".tex";
   string content_basename = basename + "_content";
   string content_filename = content_basename + ".tex";
+#endif
+
   output.open(filename.c_str(), ios::out | ios::binary);
   if (!output.is_open())
     {
@@ -1586,6 +1662,11 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
       content_output << endl << "\\end{dmath*}" << endl;
     }
 
+
+#ifdef USE_R
+  bool single_eq_dir_created = false;
+#endif
+
   for (int eq = 0; eq < (int) equations.size(); eq++)
     {
       content_output << "% Equation " << eq + 1 << endl;
@@ -1602,23 +1683,60 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
                   content_output << ", ";
 
                 content_output << iteqt->second.first;
-
+#ifdef USE_R
+                if (!iteqt->second.second.empty())
+                  content_output << " = `" << iteqt->second.second << "'";
+#else
                 if (iteqt->second.second.empty())
                   content_output << "= `" << iteqt->second.second << "'";
+#endif
 
                 wrote_eq_tag = true;
               }
         }
-      if (wrote_eq_tag)
+      if (wrote_eq_tag) {
         content_output << "]";
-
+#ifdef USE_R
+        content_output << endl;
+#endif 
+      }
       content_output << "\\begin{dmath}" << endl;
+#ifdef USE_R
+      for (vector<pair<int, pair<string, string> > >::const_iterator iteqt = equation_tags.begin();
+           iteqt != equation_tags.end(); iteqt++) {
+          if (iteqt->first == eq && iteqt->second.first == "name" && 
+             !iteqt->second.second.empty()) {
+             string eq_name = space2underscore(iteqt->second.second); 
+             content_output << "\\label{" << eq_name << "_" 
+                            << model_type << "}" << endl;
+
+             // now write the single equation
+             if (!single_eq_dir_created) {
+                 createSingleEqDir(single_eq_dir);
+                 single_eq_dir_created = true;
+             }
+             string single_eq_filename = single_eq_dir + "/" + eq_name + ".tex";
+             single_eq_output.open(single_eq_filename.c_str(), ios::out | ios::binary);
+             if (!single_eq_output.is_open()) {
+                dyn_error("ERROR: Can't open file " + single_eq_filename + " for writing\n");
+             }
+             single_eq_output << "\\label{" << eq_name << "_" 
+                            << model_type << "_single}" << endl;
+             dynamic_cast<ExprNode *>(equations[eq])->writeOutput(single_eq_output, output_type);
+             single_eq_output.close();
+             break;
+          }
+      }
+#endif
       // Here it is necessary to cast to superclass ExprNode, otherwise the overloaded writeOutput() method is not found
       dynamic_cast<ExprNode *>(equations[eq])->writeOutput(content_output, output_type);
       content_output << endl << "\\end{dmath}" << endl;
+#ifdef USE_R
+      content_output << endl;
+#endif 
     }
 
-  output << "\\include{" << content_basename << "}" << endl
+    output << "\\include{" << content_basename << "}" << endl
          << "\\end{document}" << endl;
 
   output.close();
@@ -1925,4 +2043,17 @@ void ModelTree::genPolishEquations(PolishModel &mdl, bool dynamic) const {
         }
     }
 }
+
+vector<pair<string, string>>  ModelTree::getEquationTags(int eq_number) const {
+    vector<pair<string, string>> eq_tags;
+    for (vector<pair<int, pair<string, 
+        string> > >::const_iterator iteqt = equation_tags.begin();
+        iteqt != equation_tags.end(); iteqt++) {
+        if (iteqt->first == eq_number) {
+           eq_tags.push_back(iteqt->second);
+        }
+    }
+    return eq_tags;
+}
+
 #endif

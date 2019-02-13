@@ -173,6 +173,7 @@ public:
   Rcpp::List getDerivativeInfo() const;
   int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
+  void writeLatexFiles(const string &basename);
 #endif
 
 };

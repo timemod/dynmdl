@@ -3804,8 +3804,16 @@ DynamicModel::cloneDynamic(DynamicModel &dynamic_model) const
     dynamic_model.AddLocalVariable(it->first, it->second->cloneDynamic(dynamic_model));
 
   // Convert equations
+#ifdef USE_R
+  for (size_t i = 0; i < equations.size(); i++) {
+      vector<pair<string, string>> eq_tags = getEquationTags(i);
+      dynamic_model.addEquation(equations[i]->cloneDynamic(dynamic_model), 
+                                    equations_lineno[i], eq_tags);
+  }
+#else
   for (size_t i = 0; i < equations.size(); i++)
     dynamic_model.addEquation(equations[i]->cloneDynamic(dynamic_model), equations_lineno[i]);
+#endif
 
   // Convert auxiliary equations
   for (deque<BinaryOpNode *>::const_iterator it = aux_equations.begin();
@@ -3932,16 +3940,29 @@ DynamicModel::toStatic(StaticModel &static_model) const
             break;
           }
 
+#ifdef USE_R
+      vector<pair<string, string>> eq_tags = getEquationTags(i);
+#endif
       try
         {
           // If yes, replace it by an equation marked [static]
           if (is_dynamic_only)
             {
+#ifdef USE_R
+              static_model.addEquation(static_only_equations[static_only_index]->toStatic(static_model), 
+                                       static_only_equations_lineno[static_only_index], eq_tags);
+#else
               static_model.addEquation(static_only_equations[static_only_index]->toStatic(static_model), static_only_equations_lineno[static_only_index]);
+#endif
               static_only_index++;
             }
-          else
+          else 
+#ifdef USE_R
+            static_model.addEquation(equations[i]->toStatic(static_model), 
+                                     equations_lineno[i], eq_tags);
+#else
             static_model.addEquation(equations[i]->toStatic(static_model), equations_lineno[i]);
+#endif
         }
       catch (DataTree::DivisionByZeroException)
         {
@@ -4463,14 +4484,23 @@ DynamicModel::writeChainRuleDerivative(ostream &output, int eqr, int varr, int l
 void
 DynamicModel::writeLatexFile(const string &basename, const bool write_equation_tags) const
 {
+#ifdef USE_R
+  dyn_error("Internal error\n");
+#else
   writeLatexModelFile(basename + "_dynamic", oLatexDynamicModel, write_equation_tags);
+#endif
 }
 
 void
 DynamicModel::writeLatexOriginalFile(const string &basename) const
 {
+#ifdef USE_R
+  dyn_error("Internal error\n");
+#else
   writeLatexModelFile(basename + "_original", oLatexDynamicModel);
+#endif
 }
+
 
 void
 DynamicModel::substituteEndoLeadGreaterThanTwo(bool deterministic_model)
@@ -5634,6 +5664,16 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
                               Rcpp::Named("max_exo_lag")   = max_exo_lag,
                               Rcpp::Named("max_exo_lead")  = max_exo_lead
                              );
+}
+
+
+void DynamicModel::writeLatexFile(const string &dirname, const string &basename, 
+                                  const bool write_equation_tags) const {
+  writeLatexModelFile(dirname, basename, "dynamic", oLatexDynamicModel, write_equation_tags);
+}
+
+void DynamicModel::writeLatexOriginalFile(const string &dirname, const string &basename) const {
+  writeLatexModelFile(dirname, basename, "original", oLatexDynamicModel);
 }
 
 #endif

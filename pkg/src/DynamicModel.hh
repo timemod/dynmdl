@@ -295,6 +295,12 @@ public:
   //! Writes LaTeX file with the equations of the dynamic model (for the original model)
   void writeLatexOriginalFile(const string &basename) const;
 
+#ifdef USE_R
+  void writeLatexFile(const string &dirname, const string &basename, 
+                      const bool write_equation_tags) const;
+  void writeLatexOriginalFile(const string &dirname, const string &basename) const;
+#endif
+
   virtual int getDerivID(int symb_id, int lag) const throw (UnknownDerivIDException);
   virtual int getDynJacobianCol(int deriv_id) const throw (UnknownDerivIDException);
   virtual void addAllParamDerivId(set<int> &deriv_id_set);
