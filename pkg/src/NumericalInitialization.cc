@@ -85,7 +85,15 @@ InitParamStatement::fillEvalContext(eval_context_t &eval_context) const
     }
   catch (ExprNode::EvalException &e)
     {
+#ifdef USE_R
+      string msg;
+      msg = "Error evaluating parameter " + symbol_table.getName(symb_id) 
+           + ".\nProbably some variables on the right hand side do"
+             " not exist.\n";
+      dyn_error(msg);
+#else
       // Do nothing
+#endif
     }
 }
 
@@ -110,7 +118,16 @@ InitOrEndValStatement::fillEvalContext(eval_context_t &eval_context) const
         }
       catch (ExprNode::EvalException &e)
         {
-          // Do nothing
+#ifdef USE_R
+            string msg;
+            msg = "Error evaluating initval/endval of variable " + 
+                       symbol_table.getName(it->first) 
+                   + ".\nProbably some variables on the right hand side do"
+                   " not exist.\n";
+            dyn_error(msg);
+#else
+           // Do nothing
+#endif
         }
     }
 }
