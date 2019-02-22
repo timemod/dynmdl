@@ -22,7 +22,7 @@ Rcpp::List compile_model_(std::string modfile, std::string latex_basename,
                               nostrict, no_tmp_terms);
     
     Rcpp::List retval;
-    retval =  mod_file->getModelListR(internal_calc);
+    retval =  mod_file->getModelListR(internal_calc, false);
         
     if (use_dll) {
         mod_file->writeCFilesForR(dll_dir);

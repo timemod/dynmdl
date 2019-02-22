@@ -212,6 +212,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_dynamic_model
+Rcpp::List get_dynamic_model(std::string modfile, std::string latex_basename);
+RcppExport SEXP _dynmdl_get_dynamic_model(SEXP modfileSEXP, SEXP latex_basenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
+    Rcpp::traits::input_parameter< std::string >::type latex_basename(latex_basenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_dynamic_model(modfile, latex_basename));
+    return rcpp_result_gen;
+END_RCPP
+}
 // run_macro
 void run_macro(std::string modfile, std::string new_modfile);
 RcppExport SEXP _dynmdl_run_macro(SEXP modfileSEXP, SEXP new_modfileSEXP) {
@@ -261,6 +273,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_get_residuals_", (DL_FUNC) &_dynmdl_get_residuals_, 8},
     {"_dynmdl_get_triplet_jac", (DL_FUNC) &_dynmdl_get_triplet_jac, 9},
     {"_dynmdl_get_jac_backwards", (DL_FUNC) &_dynmdl_get_jac_backwards, 7},
+    {"_dynmdl_get_dynamic_model", (DL_FUNC) &_dynmdl_get_dynamic_model, 2},
     {"_dynmdl_run_macro", (DL_FUNC) &_dynmdl_run_macro, 2},
     {"_dynmdl_serialize_polish_models", (DL_FUNC) &_dynmdl_serialize_polish_models, 1},
     {"_dynmdl_deserialize_polish_models", (DL_FUNC) &_dynmdl_deserialize_polish_models, 1},

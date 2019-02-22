@@ -5666,6 +5666,42 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
                              );
 }
 
+Rcpp::CharacterVector DynamicModel::getEquations() const {
+    // return the model equations. Used when the model has trend variables and if the fit
+    // procedure is used.
+    
+    int eq_count = equations.size();
+    Rcpp::CharacterVector equation_strings(eq_count);
+
+    for (int eq = 0; eq < eq_count; eq++) {
+
+      BinaryOpNode *eq_node = equations[eq];
+      expr_t lhs = eq_node->get_arg1();
+      expr_t rhs = eq_node->get_arg2();
+
+      // Test if the right hand side of the equation is empty.
+      double vrhs = 1.0;
+      try {
+          vrhs = rhs->eval(eval_context_t());
+      } catch (ExprNode::EvalException &e) {
+      }
+
+      ostringstream txt;
+      if (vrhs != 0) {
+         // The right hand side of the equation is not empty
+         lhs->writeOutput(txt, oModEquations, temporary_terms);
+         txt << " = ";
+         rhs->writeOutput(txt, oModEquations, temporary_terms);
+      } else {
+         // The right hand side of the equation is empty
+         lhs->writeOutput(txt, oModEquations, temporary_terms);
+      }
+
+      equation_strings(eq) = Rcpp::String(txt.str());
+    }
+    return equation_strings;
+}
+
 
 void DynamicModel::writeLatexFile(const string &dirname, const string &basename, 
                                   const bool write_equation_tags) const {

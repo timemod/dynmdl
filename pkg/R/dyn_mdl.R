@@ -50,10 +50,6 @@ dyn_mdl <- function(mod_file, period, data,
   use_dll <- calc == "dll"
   internal_calc <- calc == "internal"
   
-  # if (calc == "internal") {
-  #   warning("The internal calc method is still experimental.")
-  # }
-  
   if (!file.exists(mod_file)) {
     stop(paste("ERROR: Could not open file:", mod_file))
   }
@@ -104,6 +100,14 @@ dyn_mdl <- function(mod_file, period, data,
   if (!is.null(instruments) && fit)  {
     
     # FIT PROCEDURE
+    
+    # if the models contains deflators or trend vars, we need to
+    # check the mod file
+    # TODO: only do this when there are trend variables
+    # TODO: what about the latex basename
+    dynamic_model <- get_dynamic_model(preprocessed_mod_file, latex_basename)
+    #cat("dynamic_model\n")
+    #rint(dynamic_model)
     
     if (missing(fit_mod_file)) {
       fit_mod_file <- tempfile(pattern = "fit", fileext = ".mod")

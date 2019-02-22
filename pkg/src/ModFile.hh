@@ -169,8 +169,9 @@ public:
   void computeChecksum();
 #ifdef USE_R
   void writeCFilesForR(const string &basename) const;
-  Rcpp::List getModelListR(bool internal_calc);
+  Rcpp::List getModelListR(bool internal_calc, bool vars_only);
   Rcpp::List getDerivativeInfo() const;
+  Rcpp::CharacterVector getDynamicModelEquations() const;
   int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
   void writeLatexFiles(const string &basename);

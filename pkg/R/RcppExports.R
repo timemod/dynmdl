@@ -57,6 +57,10 @@ get_jac_backwards <- function(endos, lags, cols, exo_data, params, jac_dynamic, 
     .Call(`_dynmdl_get_jac_backwards`, endos, lags, cols, exo_data, params, jac_dynamic, iper)
 }
 
+get_dynamic_model <- function(modfile, latex_basename) {
+    .Call(`_dynmdl_get_dynamic_model`, modfile, latex_basename)
+}
+
 run_macro <- function(modfile, new_modfile) {
     invisible(.Call(`_dynmdl_run_macro`, modfile, new_modfile))
 }

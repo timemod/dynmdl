@@ -535,6 +535,7 @@ public:
   bool isChecksumMatching(const string &basename) const;
 
 #ifdef USE_R
+   Rcpp::CharacterVector getEquations() const;
    Rcpp::List getDynamicModelR(bool internal_calc) const;
    Rcpp::List getDerivativeInfoR() const;
 #endif

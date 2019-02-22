@@ -81,7 +81,8 @@ enum ExprNodeOutputType
     oJuliaSteadyStateFile,                         //!< Julia code, in the generated steady state file
     oRStaticModel,                                //!< R code, static model
     oRDynamicModel,                               //!< R code, dynamic model
-    oRDerivatives                                 //!< code for the analytical derivatives
+    oRDerivatives,                                //!< code for the analytical derivatives
+    oModEquations                                 //!< equation using mod syntax
   };
 
 #define IS_MATLAB(output_type) ((output_type) == oMatlabStaticModel     \
@@ -118,6 +119,8 @@ enum ExprNodeOutputType
 #define ARRAY_SUBSCRIPT_OFFSET(output_type) ((int) (IS_MATLAB(output_type) || IS_JULIA(output_type) \
                                                     || IS_R(output_type)))
 
+#define IS_MOD(output_type) ((output_type) == oRDerivatives      \
+                             || (output_type) == oModEquations)
 
 // Left and right array subscript delimiters: '(' and ')' for Matlab, '[' and ']' for C
 #define LEFT_ARRAY_SUBSCRIPT(output_type) (IS_MATLAB(output_type) ? '(' : '[')
