@@ -60,7 +60,7 @@ ModFile *parse_post_macro(stringstream &in, string &latex_basename, bool debug, 
   mod_file->computingPass(no_tmp_terms, output_mode,  params_derivs_order);
 
   // Write LaTeX files
-  mod_file->writeLatexFiles(latex_basename);
+  mod_file->writeLatexFiles(latex_basename, n_fit_derivatives > 0);
 
   return mod_file;
 }

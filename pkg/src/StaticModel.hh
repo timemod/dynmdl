@@ -187,7 +187,7 @@ public:
   //! Writes LaTeX file with the equations of the static model
   void writeLatexFile(const string &basename) const;
 #ifdef USE_R
-  void writeLatexFile(const string &dirname, const string &basename) const;
+  void writeLatexFile(const string &dirname, const string &basename, const bool fit) const;
 #endif
 
   //! Writes initializations in oo_.steady_state or steady state file for the auxiliary variables

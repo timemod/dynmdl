@@ -113,9 +113,8 @@ dyn_mdl <- function(mod_file, period, data,
                                instruments, latex_basename, debug)
    
     n_fit_derivatives <- length(fit_info$orig_endos) + length(fit_info$sigmas)
-    
-    latex_basename_fit <- paste0(latex_basename, "_fit")
-    mdldef <- compile_model(fit_mod_file, latex_basename_fit, use_dll, dll_dir, 
+ 
+    mdldef <- compile_model(fit_mod_file, latex_basename, use_dll, dll_dir, 
                             max_laglead_1, nostrict, internal_calc,
                             n_fit_derivatives)
     

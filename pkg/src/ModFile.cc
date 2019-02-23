@@ -1448,14 +1448,13 @@ void createLatexDir(const string &dirname) {
     }
 }
 
-void ModFile::writeLatexFiles(const string &basename) {
+void ModFile::writeLatexFiles(const string &basename, bool fit) {
 
 // create directory LaTeX if it does not exist
 
     bool dir_created = false;
 
     const string dirname = "latex/" + basename;
-
     for (vector<Statement *>::const_iterator it = statements.begin();
           it != statements.end(); it++) {
 
@@ -1465,7 +1464,8 @@ void ModFile::writeLatexFiles(const string &basename) {
            if (!dir_created) createLatexDir(dirname);
            dir_created = true;
            bool write_eq_tags = wldms->get_write_equation_tags();
-           dynamic_model.writeLatexFile(dirname, basename, write_eq_tags);
+           dynamic_model.writeLatexFile(dirname, basename, 
+                                        write_eq_tags, fit);
            continue;
         }
 
@@ -1474,17 +1474,21 @@ void ModFile::writeLatexFiles(const string &basename) {
         if (wlsms != NULL) {
            if (!dir_created) createLatexDir(dirname);
            dir_created = true;
-           static_model.writeLatexFile(dirname, basename);
+           static_model.writeLatexFile(dirname, basename, fit);
            continue;
         }
 
-        WriteLatexOriginalModelStatement *wloms = 
-              dynamic_cast<WriteLatexOriginalModelStatement *>(*it);
-        if (wloms != NULL) {
-           if (!dir_created) createLatexDir(dirname);
-           dir_created = true;
-           original_model.writeLatexOriginalFile(dirname, basename);
-           continue;
+        if (!fit) {
+            // do not write original model if this is a fit model
+            //  -> the original model has already been written
+            //     after the first parsing round
+            WriteLatexOriginalModelStatement *wloms = 
+                dynamic_cast<WriteLatexOriginalModelStatement *>(*it);
+            if (wloms != NULL) {
+               if (!dir_created) createLatexDir(dirname);
+               dir_created = true;
+               original_model.writeLatexOriginalFile(dirname, basename);
+            }
         }
     }
 }

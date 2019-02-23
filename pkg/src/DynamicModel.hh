@@ -297,7 +297,7 @@ public:
 
 #ifdef USE_R
   void writeLatexFile(const string &dirname, const string &basename, 
-                      const bool write_equation_tags) const;
+                      const bool write_equation_tags, const bool fit) const;
   void writeLatexOriginalFile(const string &dirname, const string &basename) const;
 #endif
 

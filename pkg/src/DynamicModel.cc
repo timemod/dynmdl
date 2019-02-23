@@ -5706,8 +5706,9 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
 
 
 void DynamicModel::writeLatexFile(const string &dirname, const string &basename, 
-                                  const bool write_equation_tags) const {
-  writeLatexModelFile(dirname, basename, "dynamic", oLatexDynamicModel, write_equation_tags);
+                                  const bool write_equation_tags, const bool fit) const {
+  string model_type = fit ? "dynamic_fit" : "dynamic";
+  writeLatexModelFile(dirname, basename, model_type, oLatexDynamicModel, write_equation_tags);
 }
 
 void DynamicModel::writeLatexOriginalFile(const string &dirname, const string &basename) const {

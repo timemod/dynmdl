@@ -2539,9 +2539,10 @@ PolishModel* StaticModel::makePolishModel(ExternalFunctionCalc *ext_calc) const 
 }
 
 void
-StaticModel::writeLatexFile(const string &dirname, const string &basename) const
+StaticModel::writeLatexFile(const string &dirname, const string &basename, const bool fit) const
 {
-  writeLatexModelFile(dirname, basename, "static", oLatexStaticModel);
+  string model_type = fit ? "static_fit" : "static";
+  writeLatexModelFile(dirname, basename, model_type, oLatexStaticModel, fit);
 }
 
 #endif
