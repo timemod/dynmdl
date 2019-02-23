@@ -4,11 +4,14 @@
 
 // [[Rcpp::export]]
 Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename) {
-    // the treatement of char in the next statement does not deserve a beauty
+
+    // Compute the derivatives for the fit procedure (first order conditions).
+   
+    // The treatement of char in the next statement does not deserve a beauty
     // price
     ModFile *mod_file = parse((char *) modfile.c_str(), 
                               (char *) latex_basename.c_str(),
-                              false, true, true);
+                              false, true, true, 0);
     
     Rcpp::List retval;
     retval =  mod_file->getDerivativeInfo();

@@ -4712,6 +4712,43 @@ DynamicModel::transformPredeterminedVariables()
     }
 }
 
+#ifdef USE_R
+void DynamicModel::detrendEquations(int n_fit_derivatives) {
+
+  // detrend equations except for the fit derivative equations, since these
+  // equations have allready been detrended
+
+  // We go backwards in the list of trend_vars, to deal correctly with I(2) processes
+  for (nonstationary_symbols_map_t::const_reverse_iterator it = nonstationary_symbols_map.rbegin();
+       it != nonstationary_symbols_map.rend(); ++it) {
+
+    for (int i = 0; i < (int) equations.size() - n_fit_derivatives; i++) {
+        BinaryOpNode *substeq = dynamic_cast<BinaryOpNode *>(equations[i]->detrend(it->first, it->second.first, it->second.second));
+        assert(substeq != NULL);
+        equations[i] = dynamic_cast<BinaryOpNode *>(substeq);
+      }
+  }
+
+  for (int i = 0; i < (int) equations.size() - n_fit_derivatives; i++) {
+      BinaryOpNode *substeq = dynamic_cast<BinaryOpNode *>(equations[i]->removeTrendLeadLag(trend_symbols_map));
+      assert(substeq != NULL);
+      equations[i] = dynamic_cast<BinaryOpNode *>(substeq);
+    }
+}
+
+void DynamicModel::removeTrendVariableFromEquations(int n_fit_derivatives) {
+
+  // remove trend variables from equation, except for the fit derivative equations, since these
+  // equations have allready been detrended
+  
+  for (int i = 0; i < (int) equations.size() - n_fit_derivatives; i++) {
+      BinaryOpNode *substeq = dynamic_cast<BinaryOpNode *>(equations[i]->replaceTrendVar());
+      assert(substeq != NULL);
+      equations[i] = dynamic_cast<BinaryOpNode *>(substeq);
+    }
+}
+
+#else
 void
 DynamicModel::detrendEquations()
 {
@@ -4743,6 +4780,7 @@ DynamicModel::removeTrendVariableFromEquations()
       equations[i] = dynamic_cast<BinaryOpNode *>(substeq);
     }
 }
+#endif
 
 void
 DynamicModel::differentiateForwardVars(const vector<string> &subset)
@@ -5664,42 +5702,6 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
                               Rcpp::Named("max_exo_lag")   = max_exo_lag,
                               Rcpp::Named("max_exo_lead")  = max_exo_lead
                              );
-}
-
-Rcpp::CharacterVector DynamicModel::getEquations() const {
-    // return the model equations. Used when the model has trend variables and if the fit
-    // procedure is used.
-    
-    int eq_count = equations.size();
-    Rcpp::CharacterVector equation_strings(eq_count);
-
-    for (int eq = 0; eq < eq_count; eq++) {
-
-      BinaryOpNode *eq_node = equations[eq];
-      expr_t lhs = eq_node->get_arg1();
-      expr_t rhs = eq_node->get_arg2();
-
-      // Test if the right hand side of the equation is empty.
-      double vrhs = 1.0;
-      try {
-          vrhs = rhs->eval(eval_context_t());
-      } catch (ExprNode::EvalException &e) {
-      }
-
-      ostringstream txt;
-      if (vrhs != 0) {
-         // The right hand side of the equation is not empty
-         lhs->writeOutput(txt, oModEquations, temporary_terms);
-         txt << " = ";
-         rhs->writeOutput(txt, oModEquations, temporary_terms);
-      } else {
-         // The right hand side of the equation is empty
-         lhs->writeOutput(txt, oModEquations, temporary_terms);
-      }
-
-      equation_strings(eq) = Rcpp::String(txt.str());
-    }
-    return equation_strings;
 }
 
 

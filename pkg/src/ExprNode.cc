@@ -670,7 +670,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case eParameter:
       if (output_type == oMatlabOutsideModel) {
         output << "M_.params" << "(" << tsid + 1 << ")";
-      } else if (IS_MOD(output_type)) {
+      } else if (output_type == oRDerivatives) {
         output <<  datatree.symbol_table.getName(symb_id);
       } else {
         output << "params" << LEFT_ARRAY_SUBSCRIPT(output_type) << tsid + ARRAY_SUBSCRIPT_OFFSET(output_type) << RIGHT_ARRAY_SUBSCRIPT(output_type);
@@ -686,7 +686,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           datatree.local_variables_table[symb_id]->writeOutput(output, output_type, temporary_terms, tef_terms);
           output << ")";
         }
-      else if (IS_MOD(output_type)) {
+      else if (output_type == oRDerivatives) {
         output << datatree.symbol_table.getName(symb_id);
       } else
         /* We append underscores to avoid name clashes with "g1" or "oo_" (see
@@ -710,13 +710,6 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           break;
         case oRDerivatives:
           output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
-          break;
-        case oModEquations:
-          if (lag != 0) {
-            output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
-          } else {
-            output <<  datatree.symbol_table.getName(symb_id);
-          }
           break;
         case oCDynamic2Model:
           i = tsid + (lag+1)*datatree.symbol_table.endo_nbr() + ARRAY_SUBSCRIPT_OFFSET(output_type);
@@ -782,13 +775,6 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           break;
         case oRDerivatives:
           output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
-          break;
-        case oModEquations:
-          if (lag == 0) {
-            output <<  datatree.symbol_table.getName(symb_id);
-          } else {
-            output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
-          }
           break;
         case oCDynamicModel:
         case oCDynamic2Model:
@@ -3263,12 +3249,12 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       } else if (IS_LATEX(output_type)) {
           output << "\\neq ";
       } else {
-          output << "!=";
+          output << " != ";
       }
       break;
     case oEqual:
       if (IS_R(output_type) || IS_C(output_type)) {
-          output << " == ";
+          output << "==";
       } else {
           output << "=";
       }
@@ -5129,7 +5115,7 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
 {
   if (output_type == oMatlabOutsideModel || output_type == oSteadyStateFile
       || output_type == oCSteadyStateFile || output_type == oJuliaSteadyStateFile
-      || IS_MOD(output_type) || IS_LATEX(output_type)) {
+      || output_type == oRDerivatives     || IS_LATEX(output_type)) {
       string name = IS_LATEX(output_type) ? datatree.symbol_table.getTeXName(symb_id)
         : datatree.symbol_table.getName(symb_id);
       output << name << "(";

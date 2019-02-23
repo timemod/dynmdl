@@ -335,11 +335,20 @@ public:
   //! Transforms the model by decreasing the lead/lag of predetermined variables in model equations by one
   void transformPredeterminedVariables();
 
+#ifdef USE_R
+  //! Transforms the model by removing trends specified by the user
+  void detrendEquations(int n_fit_derivatives);
+
+  //! Transforms the model by replacing trend variables with a 1
+  void removeTrendVariableFromEquations(int n_fit_derivatives);
+
+#else
   //! Transforms the model by removing trends specified by the user
   void detrendEquations();
 
   //! Transforms the model by replacing trend variables with a 1
   void removeTrendVariableFromEquations();
+#endif
 
   //! Transforms the model by creating aux vars for the diff of forward vars
   /*! If subset is empty, does the transformation for all fwrd vars; otherwise
@@ -535,7 +544,6 @@ public:
   bool isChecksumMatching(const string &basename) const;
 
 #ifdef USE_R
-   Rcpp::CharacterVector getEquations() const;
    Rcpp::List getDynamicModelR(bool internal_calc) const;
    Rcpp::List getDerivativeInfoR() const;
 #endif

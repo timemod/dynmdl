@@ -37,8 +37,8 @@ get_triplet_jac_stat <- function(model_index, endos) {
     .Call(`_dynmdl_get_triplet_jac_stat`, model_index, endos)
 }
 
-compile_model_ <- function(modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc) {
-    .Call(`_dynmdl_compile_model_`, modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc)
+compile_model_ <- function(modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc, n_fit_derivatives) {
+    .Call(`_dynmdl_compile_model_`, modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc, n_fit_derivatives)
 }
 
 compute_derivatives <- function(modfile, latex_basename) {
@@ -55,10 +55,6 @@ get_triplet_jac <- function(endos, lead_lag_incidence, tshift, exo_data, params,
 
 get_jac_backwards <- function(endos, lags, cols, exo_data, params, jac_dynamic, iper) {
     .Call(`_dynmdl_get_jac_backwards`, endos, lags, cols, exo_data, params, jac_dynamic, iper)
-}
-
-get_dynamic_model <- function(modfile, latex_basename) {
-    .Call(`_dynmdl_get_dynamic_model`, modfile, latex_basename)
 }
 
 run_macro <- function(modfile, new_modfile) {

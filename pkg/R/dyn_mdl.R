@@ -50,6 +50,10 @@ dyn_mdl <- function(mod_file, period, data,
   use_dll <- calc == "dll"
   internal_calc <- calc == "internal"
   
+  # if (calc == "internal") {
+  #   warning("The internal calc method is still experimental.")
+  # }
+  
   if (!file.exists(mod_file)) {
     stop(paste("ERROR: Could not open file:", mod_file))
   }
@@ -101,24 +105,19 @@ dyn_mdl <- function(mod_file, period, data,
     
     # FIT PROCEDURE
     
-    # if the models contains deflators or trend vars, we need to
-    # check the mod file
-    # TODO: only do this when there are trend variables
-    # TODO: what about the latex basename
-    dynamic_model <- get_dynamic_model(preprocessed_mod_file, latex_basename)
-    #cat("dynamic_model\n")
-    #rint(dynamic_model)
-    
     if (missing(fit_mod_file)) {
       fit_mod_file <- tempfile(pattern = "fit", fileext = ".mod")
     }
     
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                instruments, latex_basename, debug)
+   
+    n_fit_derivatives <- length(fit_info$orig_endos) + length(fit_info$sigmas)
     
     latex_basename_fit <- paste0(latex_basename, "_fit")
     mdldef <- compile_model(fit_mod_file, latex_basename_fit, use_dll, dll_dir, 
-                            max_laglead_1, nostrict, internal_calc)
+                            max_laglead_1, nostrict, internal_calc,
+                            n_fit_derivatives)
     
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
@@ -141,7 +140,7 @@ dyn_mdl <- function(mod_file, period, data,
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
     mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, max_laglead_1, 
-                            nostrict, internal_calc)
+                            nostrict, internal_calc, 0L)
     
     if (calc == "dll") {
       dll_file <- compile_c_functions(dll_dir)
