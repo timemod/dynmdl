@@ -1388,6 +1388,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
         model_index = 0;
     }
 
+    Rcpp::List trend_info = dynamic_model.get_trend_info();
+
 
     return Rcpp::List::create(Rcpp::Named("exos") = exos,
                               Rcpp::Named("endos") = endos,
@@ -1401,7 +1403,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
                               Rcpp::Named("param_long_names") = param_long_names,
                               Rcpp::Named("aux_vars") = aux_vars,
                               Rcpp::Named("dynamic_model") = dynmdl,
-                              Rcpp::Named("static_model") = statmdl);
+                              Rcpp::Named("static_model") = statmdl,
+                              Rcpp::Named("trend_info") = trend_info);
 }
 
 Rcpp::List ModFile::getDerivativeInfo() const {

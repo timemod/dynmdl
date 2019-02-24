@@ -81,7 +81,8 @@ enum ExprNodeOutputType
     oJuliaSteadyStateFile,                         //!< Julia code, in the generated steady state file
     oRStaticModel,                                //!< R code, static model
     oRDynamicModel,                               //!< R code, dynamic model
-    oRDerivatives                                 //!< code for the analytical derivatives
+    oRDerivatives,                                //!< code for the analytical derivatives
+    oRExpression                                  //!< R expressions for the original model, for example for trend_vars and deflators.
   };
 
 #define IS_MATLAB(output_type) ((output_type) == oMatlabStaticModel     \
@@ -100,7 +101,8 @@ enum ExprNodeOutputType
 
 
 #define IS_R(output_type) ((output_type) == oRStaticModel     \
-                          || (output_type) == oRDynamicModel)
+                          || (output_type) == oRDynamicModel \
+                          || (output_type) == oRExpression)
 
 
 #define IS_C(output_type) ((output_type) == oCDynamicModel              \
@@ -110,6 +112,10 @@ enum ExprNodeOutputType
                            || (output_type) == oCSteadyStateFile)
 
 #define IS_LATEX(output_type) ((output_type) == oLatexStaticModel       \
+                               || (output_type) == oLatexDynamicModel   \
+                               || (output_type) == oLatexDynamicSteadyStateOperator)
+
+#define USE__LATEX(output_type) ((output_type) == oLatexStaticModel       \
                                || (output_type) == oLatexDynamicModel   \
                                || (output_type) == oLatexDynamicSteadyStateOperator)
 

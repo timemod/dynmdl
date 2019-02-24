@@ -5715,4 +5715,56 @@ void DynamicModel::writeLatexOriginalFile(const string &dirname, const string &b
   writeLatexModelFile(dirname, basename, "original", oLatexDynamicModel);
 }
 
+
+Rcpp::List DynamicModel::get_deflated_endos() const {
+
+  int n = nonstationary_symbols_map.size();
+
+  Rcpp::CharacterVector names(n);
+  Rcpp::CharacterVector deflators(n);
+
+  temporary_terms_t temp_terms;
+  deriv_node_temp_terms_t tef_terms;
+  int i = 0;
+  nonstationary_symbols_map_t::const_iterator it;
+  for (it = nonstationary_symbols_map.begin(); it != nonstationary_symbols_map.end(); 
+       ++it) {
+    ostringstream txt;
+    it->second.second->writeOutput(txt, oRExpression, temp_terms, tef_terms);
+    names(i) = symbol_table.getName(it->first);
+    deflators(i++) = Rcpp::String(txt.str());
+  }
+  return Rcpp::List::create(
+          Rcpp::Named("names") = names,
+          Rcpp::Named("deflators") = deflators);
+}
+
+
+Rcpp::List DynamicModel::get_trend_vars() const {
+  int n = trend_symbols_map.size();
+  Rcpp::CharacterVector names(n);
+  Rcpp::CharacterVector growth_factors(n);
+
+  temporary_terms_t temp_terms;
+  deriv_node_temp_terms_t tef_terms;
+  int i = 0;
+  map<int, expr_t>::const_iterator it;
+  for (it = trend_symbols_map.begin(); it != trend_symbols_map.end(); 
+       ++it) {
+    ostringstream txt;
+    it->second->writeOutput(txt, oRExpression, temp_terms, tef_terms);
+    names(i) = symbol_table.getName(it->first);
+    growth_factors(i++) = Rcpp::String(txt.str());
+  }
+  return Rcpp::List::create(
+          Rcpp::Named("names") = names,
+          Rcpp::Named("growth_factors") = growth_factors);
+}
+
+
+Rcpp::List DynamicModel::get_trend_info() const {
+  return Rcpp::List::create(
+          Rcpp::Named("deflated_endos") = get_deflated_endos(),
+          Rcpp::Named("trend_vars") = get_trend_vars());
+}
 #endif

@@ -663,6 +663,17 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       return;
     }
 
+#ifdef USE_R
+  if (output_type == oRExpression) {
+      if (lag) {
+          output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
+      }  else {
+          output <<  datatree.symbol_table.getName(symb_id);
+      }
+      return;
+  }
+#endif
+
   int i;
   int tsid = datatree.symbol_table.getTypeSpecificID(symb_id);
   switch (type)

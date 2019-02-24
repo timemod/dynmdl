@@ -215,6 +215,10 @@ private:
 
   //!Maximum lead and lag for each block on endogenous of the block, endogenous of the previous blocks, exogenous and deterministic exogenous
   vector<pair<int, int> > endo_max_leadlag_block, other_endo_max_leadlag_block, exo_max_leadlag_block, exo_det_max_leadlag_block, max_leadlag_block;
+#ifdef USE_R
+  Rcpp::List get_deflated_endos() const;
+  Rcpp::List get_trend_vars() const;
+#endif
 
 public:
 #ifdef USE_R
@@ -546,6 +550,7 @@ public:
 #ifdef USE_R
    Rcpp::List getDynamicModelR(bool internal_calc) const;
    Rcpp::List getDerivativeInfoR() const;
+   Rcpp::List get_trend_info() const;
 #endif
 
 };
