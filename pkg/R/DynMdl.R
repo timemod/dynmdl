@@ -394,7 +394,9 @@ DynMdl <- R6Class("DynMdl",
       
       return(update_ts_labels(ret, private$mdldef$labels))
     },
-    get_endo_data = function(pattern, names, period = private$data_period) {
+
+    get_endo_data = function(pattern, names, period = private$data_period,
+                             detrended = FALSE) {
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
           private$mdldef$aux_vars$aux_count == 0) {
@@ -406,7 +408,12 @@ DynMdl <- R6Class("DynMdl",
         }
         ret <- private$endo_data[period, names, drop = FALSE]
       }
-      return(update_ts_labels(ret, private$mdldef$labels))
+      ret <- update_ts_labels(ret, private$mdldef$labels)
+      if (!detrended && length(private$mdldef$trend_info$deflated_endos) > 0) {
+        return(retrend_endo_data(ret))
+      } else {
+        return(ret)
+      }
     },
     change_endo_data = function(fun, names, pattern, 
                                 period = private$data_period, ...) {
@@ -415,6 +422,14 @@ DynMdl <- R6Class("DynMdl",
     change_exo_data = function(fun, names, pattern, 
                                period = private$data_period , ...) {
       return(private$change_data_(fun, names, pattern, period, "exo", ...))
+    },
+    get_trend_vars = function(names, pattern, period = private$data_period) {
+      if (is.null(private$model_period)) stop(private$period_error_msg)
+      period <- private$convert_period_arg(period)
+      base_per <- start_period(private$model_period)
+      return(get_trend_vars_internal(names, pattern, period, base_per, 
+                                     private$mdldef, private$exo_data, 
+                                     private$endo_data))
     },
     solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv"),
                             ...) {

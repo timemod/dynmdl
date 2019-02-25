@@ -303,7 +303,78 @@ compile_model <- function(...) {
   retval$njac_cols <- length(which(retval$lead_lag_incidence != 0)) +
                              retval$exo_count
   
+  
+  retval$trend_info <- get_trend_expressions(model_info$trend_info, names(retval$exos), 
+                             names(retval$endos))
+  cat("trend_info\n")
+  print(retval$trend_info)
+  
   return(retval)
 }
+
+
+get_var_names <- function(expr_string) {
+  # returns the variable names from a string with an R expression
+  
+  get_var_names_ <- function(x)
+    if (class(x) == "name") {
+      return(as.character(x))
+    } else if ((class(x) == "(") || (class(x) == "{")) {
+      return(get_var_names_(x[[2]]))
+    } else if (class(x) == "call") {
+      if (! deparse(x[[1]]) %in% c("*", "+", "-", "/", "^")) {
+        stop(paste("dynmdl cannot handle expression", deparse(x), "yet"))
+      }
+      # currently only unary and binary operators are supported
+      arguments <- as.list(x[-1])
+      variables <- lapply(arguments, FUN = get_var_names_)
+      return(sort(unique(do.call(c, variables))))
+    } else if (class(x) == "if") {
+      stop(paste("dynmdl cannot handle expression", deparse(x), "yet"))
+    } else if (is.numeric(x)) {
+      return(character(0))
+    } else {
+      stop(paste("dynmdl cannot handle expression", deparse(x), "yet"))
+    }
+  
+  expr <- parse(text = expr_string)
+  return(get_var_names_(expr[[1]]))
+}
+
+get_trend_expressions <- function(trend_info, exo_names, endo_names) {
+  
+  growth_factors <- unique(trend_info$trend_vars$growth_factors)
+ 
+  get_gr_vars <- function(x) {
+    names <- get_var_names(x)
+    exo_gr_names <- intersect(exo_names, names)
+    endo_gr_names <- intersect(endo_names, names)
+    if (length(setdiff(names, union(exo_gr_names, endo_gr_names))) > 0) {
+      stop(paste("dynmdl expects that all variables in growth",
+                 "expressions are endogenous or exogenous model variables"))
+    }
+    return(list(exo = exo_gr_names, endo = endo_gr_names))
+  }
+  trend_info$growth_factor_vars <- sapply(growth_factors, FUN = get_gr_vars, 
+                               simplify = FALSE)
+  
+  deflators <- unique(trend_info$deflated_endos$deflators)
+  
+  get_deflator_vars <- function(x) {
+    names <- get_var_names(x)
+    if (length(setdiff(names, trend_info$trend_vars$names)) > 0) {
+      stop(paste("dynmdl expects that all variables in deflator",
+                 "expressions are trend variables"))
+    }
+    return(names)
+  }
+  
+  trend_info$deflator_vars <- sapply(growth_factors, FUN = get_var_names, 
+                                          simplify = FALSE)
+  
+  return(trend_info)
+}
+  
+
 
 
