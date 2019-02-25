@@ -131,7 +131,11 @@ public:
   void checkPass(bool nostrict);
   //! Perform some transformations on the model (creation of auxiliary vars and equations)
   /*! \param compute_xrefs if true, equation cross references will be computed */
-  void transformPass(bool nostrict, bool compute_xrefs, bool max_laglead_1);
+#ifdef USE_R
+  void transformPass(bool nostrict, bool compute_xrefs, bool max_laglead_1, int n_fit_derivatives);
+#else
+  void transformPass(bool nostrict, bool compute_xrefs);
+#endif
   //! Execute computations
   /*! \param no_tmp_terms if true, no temporary terms will be computed in the static and dynamic files */
   /*! \param params_derivs_order compute this order of derivs wrt parameters */
@@ -173,7 +177,7 @@ public:
   Rcpp::List getDerivativeInfo() const;
   int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
-  void writeLatexFiles(const string &basename);
+  void writeLatexFiles(const string &basename, bool fit);
 #endif
 
 };

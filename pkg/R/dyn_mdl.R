@@ -111,10 +111,12 @@ dyn_mdl <- function(mod_file, period, data,
     
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                instruments, latex_basename, debug)
-    
-    latex_basename_fit <- paste0(latex_basename, "_fit")
-    mdldef <- compile_model(fit_mod_file, latex_basename_fit, use_dll, dll_dir, 
-                            max_laglead_1, nostrict, internal_calc)
+   
+    n_fit_derivatives <- length(fit_info$orig_endos) + length(fit_info$sigmas)
+ 
+    mdldef <- compile_model(fit_mod_file, latex_basename, use_dll, dll_dir, 
+                            max_laglead_1, nostrict, internal_calc,
+                            n_fit_derivatives)
     
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
@@ -137,7 +139,7 @@ dyn_mdl <- function(mod_file, period, data,
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
     mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, max_laglead_1, 
-                            nostrict, internal_calc)
+                            nostrict, internal_calc, 0L)
     
     if (calc == "dll") {
       dll_file <- compile_c_functions(dll_dir)

@@ -333,7 +333,8 @@ ModFile::checkPass(bool nostrict)
 
 #ifdef USE_R
 void
-ModFile::transformPass(bool nostrict, bool compute_xrefs, bool max_laglead_1)
+ModFile::transformPass(bool nostrict, bool compute_xrefs, bool max_laglead_1,
+                       int n_fit_derivatives)
 #else
 void
 ModFile::transformPass(bool nostrict, bool compute_xrefs)
@@ -361,9 +362,9 @@ ModFile::transformPass(bool nostrict, bool compute_xrefs)
 
   if (nonstationary_variables)
     {
-      dynamic_model.detrendEquations();
+      dynamic_model.detrendEquations(n_fit_derivatives);
       dynamic_model.cloneDynamic(trend_dynamic_model);
-      dynamic_model.removeTrendVariableFromEquations();
+      dynamic_model.removeTrendVariableFromEquations(n_fit_derivatives);
     }
 
   mod_file_struct.orig_eq_nbr = dynamic_model.equation_number();
@@ -1387,6 +1388,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
         model_index = 0;
     }
 
+    Rcpp::List trend_info = dynamic_model.get_trend_info();
+
 
     return Rcpp::List::create(Rcpp::Named("exos") = exos,
                               Rcpp::Named("endos") = endos,
@@ -1400,7 +1403,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
                               Rcpp::Named("param_long_names") = param_long_names,
                               Rcpp::Named("aux_vars") = aux_vars,
                               Rcpp::Named("dynamic_model") = dynmdl,
-                              Rcpp::Named("static_model") = statmdl);
+                              Rcpp::Named("static_model") = statmdl,
+                              Rcpp::Named("trend_info") = trend_info);
 }
 
 Rcpp::List ModFile::getDerivativeInfo() const {
@@ -1447,14 +1451,13 @@ void createLatexDir(const string &dirname) {
     }
 }
 
-void ModFile::writeLatexFiles(const string &basename) {
+void ModFile::writeLatexFiles(const string &basename, bool fit) {
 
 // create directory LaTeX if it does not exist
 
     bool dir_created = false;
 
     const string dirname = "latex/" + basename;
-
     for (vector<Statement *>::const_iterator it = statements.begin();
           it != statements.end(); it++) {
 
@@ -1464,7 +1467,8 @@ void ModFile::writeLatexFiles(const string &basename) {
            if (!dir_created) createLatexDir(dirname);
            dir_created = true;
            bool write_eq_tags = wldms->get_write_equation_tags();
-           dynamic_model.writeLatexFile(dirname, basename, write_eq_tags);
+           dynamic_model.writeLatexFile(dirname, basename, 
+                                        write_eq_tags, fit);
            continue;
         }
 
@@ -1473,17 +1477,21 @@ void ModFile::writeLatexFiles(const string &basename) {
         if (wlsms != NULL) {
            if (!dir_created) createLatexDir(dirname);
            dir_created = true;
-           static_model.writeLatexFile(dirname, basename);
+           static_model.writeLatexFile(dirname, basename, fit);
            continue;
         }
 
-        WriteLatexOriginalModelStatement *wloms = 
-              dynamic_cast<WriteLatexOriginalModelStatement *>(*it);
-        if (wloms != NULL) {
-           if (!dir_created) createLatexDir(dirname);
-           dir_created = true;
-           original_model.writeLatexOriginalFile(dirname, basename);
-           continue;
+        if (!fit) {
+            // do not write original model if this is a fit model
+            //  -> the original model has already been written
+            //     after the first parsing round
+            WriteLatexOriginalModelStatement *wloms = 
+                dynamic_cast<WriteLatexOriginalModelStatement *>(*it);
+            if (wloms != NULL) {
+               if (!dir_created) createLatexDir(dirname);
+               dir_created = true;
+               original_model.writeLatexOriginalFile(dirname, basename);
+            }
         }
     }
 }

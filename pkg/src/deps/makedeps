@@ -195,6 +195,13 @@ compute_derivatives.o : CallRFunction.hh CodeInterpreter.hh \
                        Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
                        SymbolTable.hh WarningConsolidation.hh location.hh parse.hh
 dyn_error.o : dyn_error.hh
+get_dynamic_model.o : CallRFunction.hh CodeInterpreter.hh \
+                     ConfigFile.hh DataTree.hh DynamicModel.hh ExprNode.hh \
+                     ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
+                     ExternalFunctionsTable.hh ModFile.hh ModelTree.hh \
+                     NumericalConstants.hh NumericalInitialization.hh PolishModel.hh \
+                     Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
+                     SymbolTable.hh WarningConsolidation.hh location.hh parse.hh
 parse.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
          ConfigFile.hh DataTree.hh DynamicModel.hh DynareBison.hh ExprNode.hh \
          ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \

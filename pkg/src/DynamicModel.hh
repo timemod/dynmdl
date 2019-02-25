@@ -215,6 +215,10 @@ private:
 
   //!Maximum lead and lag for each block on endogenous of the block, endogenous of the previous blocks, exogenous and deterministic exogenous
   vector<pair<int, int> > endo_max_leadlag_block, other_endo_max_leadlag_block, exo_max_leadlag_block, exo_det_max_leadlag_block, max_leadlag_block;
+#ifdef USE_R
+  Rcpp::List get_deflated_endos() const;
+  Rcpp::List get_trend_vars() const;
+#endif
 
 public:
 #ifdef USE_R
@@ -297,7 +301,7 @@ public:
 
 #ifdef USE_R
   void writeLatexFile(const string &dirname, const string &basename, 
-                      const bool write_equation_tags) const;
+                      const bool write_equation_tags, const bool fit) const;
   void writeLatexOriginalFile(const string &dirname, const string &basename) const;
 #endif
 
@@ -335,11 +339,20 @@ public:
   //! Transforms the model by decreasing the lead/lag of predetermined variables in model equations by one
   void transformPredeterminedVariables();
 
+#ifdef USE_R
+  //! Transforms the model by removing trends specified by the user
+  void detrendEquations(int n_fit_derivatives);
+
+  //! Transforms the model by replacing trend variables with a 1
+  void removeTrendVariableFromEquations(int n_fit_derivatives);
+
+#else
   //! Transforms the model by removing trends specified by the user
   void detrendEquations();
 
   //! Transforms the model by replacing trend variables with a 1
   void removeTrendVariableFromEquations();
+#endif
 
   //! Transforms the model by creating aux vars for the diff of forward vars
   /*! If subset is empty, does the transformation for all fwrd vars; otherwise
@@ -537,6 +550,7 @@ public:
 #ifdef USE_R
    Rcpp::List getDynamicModelR(bool internal_calc) const;
    Rcpp::List getDerivativeInfoR() const;
+   Rcpp::List get_trend_info() const;
 #endif
 
 };
