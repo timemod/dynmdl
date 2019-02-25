@@ -410,7 +410,9 @@ DynMdl <- R6Class("DynMdl",
       }
       ret <- update_ts_labels(ret, private$mdldef$labels)
       if (!detrended && length(private$mdldef$trend_info$deflated_endos) > 0) {
-        return(retrend_endo_data(ret))
+        base_per <- start_period(private$model_period)
+        return(retrend_endo_data(ret, base_per, private$mdldef, 
+                                 private$exo_data, private$endo_data))
       } else {
         return(ret)
       }

@@ -369,8 +369,8 @@ get_trend_expressions <- function(trend_info, exo_names, endo_names) {
     return(names)
   }
   
-  trend_info$deflator_vars <- sapply(growth_factors, FUN = get_var_names, 
-                                          simplify = FALSE)
+  trend_info$deflator_vars <- sapply(deflators, FUN = get_deflator_vars, 
+                                     simplify = FALSE)
   
   return(trend_info)
 }

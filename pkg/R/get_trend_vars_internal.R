@@ -8,6 +8,9 @@ get_trend_vars_internal <- function(names, pattern, period, base_period, mdldef,
   
   if (missing(names) && missing(pattern)) {
     names <- trend_var_info$names
+  } else if (missing(pattern)) {
+    names <- intersect(names, trend_var_info$names) 
+    # TODO: give an error if names contains invalid trend var names
   } else {
     stop("dynmdl cannot handle this situation yet")
   }
