@@ -4,7 +4,7 @@ library(dynmdl)
 context("set_fit (2) for ISLM model")
 
 rds_file <- "islm_model_fit.rds"
-capture_output(mdl <- read_mdl(rds_file))
+rep <- capture_output(mdl <- read_mdl(rds_file))
 
 # prepare rms values and fit targets
 i <- regts(200, start = '2016Q1')
@@ -14,7 +14,7 @@ ts_labels(fit_targets) <- c("Income", "Investment")
 
 fit_targets_sorted <- fit_targets[ , c("i", "y")]
  
-capture_output(mdl <- read_mdl(rds_file))
+rep <- capture_output(mdl <- read_mdl(rds_file))
  
 mdl$set_fit(fit_targets)
  
@@ -38,8 +38,8 @@ test_that("Testing get_fit after copying", {
 })
 
 test_that("Testing fit_targets after reading the model", {
-  capture_output(mdl$write_mdl("temp.rds"))
-  capture_output(mdl4 <- read_mdl("temp.rds"))
+  rep1 <- capture_output(mdl$write_mdl("temp.rds"))
+  rep2 <- capture_output(mdl4 <- read_mdl("temp.rds"))
   unlink("temp.rds")
   expect_identical(mdl4$get_fit(), fit_targets_sorted)
 })
