@@ -303,6 +303,8 @@ compile_model <- function(...) {
   retval$njac_cols <- length(which(retval$lead_lag_incidence != 0)) +
                              retval$exo_count
   
+  model_info$trend_info$has_deflated_endos <-
+                   length(model_info$trend_info$deflated_endos$names) > 0
   
   retval$trend_info <- get_trend_expressions(model_info$trend_info, names(retval$exos), 
                              names(retval$endos))
@@ -371,6 +373,8 @@ get_trend_expressions <- function(trend_info, exo_names, endo_names) {
   
   trend_info$deflator_vars <- sapply(deflators, FUN = get_deflator_vars, 
                                      simplify = FALSE)
+  
+ 
   
   return(trend_info)
 }

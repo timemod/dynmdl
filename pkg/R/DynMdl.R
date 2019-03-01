@@ -395,8 +395,7 @@ DynMdl <- R6Class("DynMdl",
       return(update_ts_labels(ret, private$mdldef$labels))
     },
 
-    get_endo_data = function(pattern, names, period = private$data_period,
-                             detrended = FALSE) {
+    get_endo_data = function(pattern, names, period = private$data_period) {
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
           private$mdldef$aux_vars$aux_count == 0) {
@@ -408,14 +407,7 @@ DynMdl <- R6Class("DynMdl",
         }
         ret <- private$endo_data[period, names, drop = FALSE]
       }
-      ret <- update_ts_labels(ret, private$mdldef$labels)
-      if (!detrended && length(private$mdldef$trend_info$deflated_endos) > 0) {
-        base_per <- start_period(private$model_period)
-        return(retrend_endo_data(ret, base_per, private$mdldef, 
-                                 private$exo_data, private$endo_data))
-      } else {
-        return(ret)
-      }
+      return(update_ts_labels(ret, private$mdldef$labels))
     },
     change_endo_data = function(fun, names, pattern, 
                                 period = private$data_period, ...) {
@@ -425,13 +417,13 @@ DynMdl <- R6Class("DynMdl",
                                period = private$data_period , ...) {
       return(private$change_data_(fun, names, pattern, period, "exo", ...))
     },
-    get_trend_vars = function(names, pattern, period = private$data_period) {
+    get_trend_data = function(names, pattern, period = private$data_period) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       period <- private$convert_period_arg(period)
-      base_per <- start_period(private$model_period)
-      return(get_trend_vars_internal(names, pattern, period, base_per, 
+      ret <- get_trend_data_internal(names, pattern, private$period, 
                                      private$mdldef, private$exo_data, 
-                                     private$endo_data))
+                                     private$endo_data)
+      return(ret[period, ])
     },
     solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv"),
                             ...) {
@@ -489,13 +481,19 @@ DynMdl <- R6Class("DynMdl",
       }
       return (invisible(self))
     },
+    
     put_static_endos = function(period = private$data_period) {
       # copy the static endogenous variables to the endogenous model data
       if (is.null(private$model_period)) stop(private$period_error_msg)
       period <- private$convert_period_arg(period)
       nper <- nperiod(period)
-      private$endo_data[period, ] <- 
-              matrix(rep(private$mdldef$endos, each = nper), nrow = nper)
+      endo_data <- regts(matrix(rep(private$mdldef$endos, each = nper), 
+                                nrow = nper), names = private$endo_names,
+                         period = period)
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        endo_data <- private$trend_endo_data(endo_data)
+      } 
+      private$endo_data[period, ] <- endo_data
       return(invisible(self))
     },
     check = function() {
@@ -520,7 +518,9 @@ DynMdl <- R6Class("DynMdl",
     },
     residual_check = function(tol = 0) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
-      private$prepare_dynamic_model()
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        private$endo_data <- private$detrend_endo_data(private$endo_data)
+      }
       
       nper <- nperiod(private$model_period)
       lags <- private$get_endo_lags()
@@ -579,7 +579,13 @@ DynMdl <- R6Class("DynMdl",
       control_[names(control)] <- control
       
       private$prepare_dynamic_model()
-
+      
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        trend_data <- private$get_trend_data_internal()
+        private$endo_data <- private$detrend_endo_data(private$endo_data, 
+                                                       trend_data)
+      } 
+      
       stacked_time <- private$mdldef$max_endo_lead > 0 || force_stacked_time   
       
       if (stacked_time) {
@@ -613,6 +619,11 @@ DynMdl <- R6Class("DynMdl",
       # update data with new iterate
       private$endo_data[private$model_period, ] <-
                       t(matrix(ret$x, nrow = private$mdldef$endo_count))
+      
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        private$endo_data <- private$trend_endo_data(private$endo_data, 
+                                                     trend_data)
+      } 
       
       if (stacked_time && grepl("non-finite value", ret$message)) {
         report_non_finite_residuals(self)
@@ -660,12 +671,18 @@ DynMdl <- R6Class("DynMdl",
     },
     get_jacob = function(sparse = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        private$endo_data <- private$detrend_endo_data(private$endo_data)
+      }
+      
       lags  <- private$get_endo_lags()
       leads <- private$get_endo_leads()
       nper <- nperiod(private$model_period)
       x <- private$get_solve_endo()
       
       private$prepare_dynamic_model()
+      
+      
       jac <- private$get_jac(x, lags, leads, nper)
       private$clean_dynamic_model()
       
@@ -714,6 +731,10 @@ DynMdl <- R6Class("DynMdl",
       
       period_index <- period - start_period(private$data_period) + 1
       var_indices <- get_var_indices_back(private$mdldef,  period_index)
+      
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        private$endo_data <- private$detrend_endo_data(private$endo_data)
+      }
       
       data <- t(private$endo_data)
       lags <- data[var_indices$lags]
@@ -1443,6 +1464,120 @@ DynMdl <- R6Class("DynMdl",
       } else {
         return(names)
       }
+    },
+    get_trend_data_internal = function(names, pattern) {
+      #
+      # calculate trend variables
+      #
+      mdldef <- private$mdldef
+      trend_info <- mdldef$trend_info
+      trend_var_info <- trend_info$trend_vars
+      
+      if (missing(names) && missing(pattern)) {
+        names <- trend_var_info$names
+      } else if (missing(pattern)) {
+        names <- intersect(names, trend_var_info$names) 
+        # TODO: give an error if names contains invalid trend var names
+      } else {
+        stop("dynmdl cannot handle this situation yet")
+      }
+      
+      growth_factors <- trend_var_info$growth_factors[names %in% 
+                                                      trend_var_info$names]
+      
+      growth_vars <-  trend_info$growth_factor_vars[unique(growth_factors)]
+      
+      gr_endos <- unname(unlist(lapply(growth_vars, FUN = function(x) x$endo)))
+      gr_exos <- unname(unlist(lapply(growth_vars, FUN = function(x) x$exo)))
+      
+      if (length(gr_exos) > 0) {
+        exo_data <- as.list(private$exo_data[ , gr_exos, drop = FALSE]) 
+      } else {
+        exo_data <- list()
+      }
+      if (length(gr_endos) > 0) {
+        endo_data <- as.list(private$endo_data[ , gr_endos, drop = FALSE])
+      } else { 
+        endo_data <- list()
+      }
+      
+      data <- c(exo_data, endo_data)
+      
+      # TODO: this part could be more efficient is more than one variable
+      # shares the same growth factor, then we do not have to transform twice.
+      expressions  <- lapply(growth_factors, FUN = function(x) {
+        parse(text = x)})
+      
+      retval <- lapply(expressions, FUN = function(x) {eval(x, envir = data)})
+      names(retval) <- names
+      
+      retval <- (do.call(cbind, retval))
+      
+      base_period <- start_period(private$data_period)
+      retval <- rel2index(retval - 1, base = base_period, scale = 1)
+      
+      if (!is.matrix(retval)) {
+        dim(retval) <- c(length(retval), 1)
+        colnames(retval) <- names
+      }
+      return(retval)
+    },
+    trend_endo_data = function(endo_data, trend_data) {
+      return(private$trend_detrend_endo_data(endo_data, TRUE, trend_data))
+    },
+    detrend_endo_data = function(endo_data, trend_data) {
+      return(private$trend_detrend_endo_data(endo_data, FALSE, trend_data))
+    },
+    trend_detrend_endo_data = function(endo_data, trend, trend_data) {                                
+      
+      if (missing(trend_data)) {
+        trend_data <- private$get_trend_data_internal()
+      }
+      
+      mdldef <- private$mdldef
+      trend_info <- mdldef$trend_info
+      
+      defl_endos <- intersect(colnames(endo_data), 
+                              trend_info$deflated_endos$names)
+      
+      if (length(defl_endos) == 0) {
+        return(endo_data)
+      }
+      
+      sel <- trend_info$deflated_endos$names %in% defl_endos
+      deflators <- trend_info$deflated_endos$deflators[sel]
+      deflators <- unique(deflators)
+      
+      deflator_vars <- trend_info$deflator_vars[deflators]
+      deflator_vars <- unique(unlist(deflator_vars, use.names = FALSE))
+      
+      trend_data <- trend_data[ , deflator_vars, drop = FALSE]
+      
+      trend_data <- as.list(trend_data)
+      
+      # the expressions could already have been credted in dyn_mdl.
+      expressions  <- lapply(deflators, FUN = function(x) {
+        parse(text = x)})
+      
+      deflator_data <- lapply(expressions, FUN = function(x) {
+        eval(x, envir = trend_data)})
+      names(deflator_data) <- deflators
+      
+      sel <- match(defl_endos, trend_info$deflated_endos$names)
+      deflators <- trend_info$deflated_endos$deflators[sel]
+      
+      defl_data <- deflator_data[deflators]
+      names(defl_data) <- defl_endos
+      
+      defl_data <- do.call(cbind, defl_data)
+      
+      if (trend) {
+        endo_data[ , defl_endos] <- endo_data[, defl_endos] * defl_data
+      } else {
+        endo_data[ , defl_endos] <- endo_data[, defl_endos] / defl_data
+      }  
+      
+      return(endo_data)
     }
   )
 )

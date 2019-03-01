@@ -2,15 +2,13 @@ library(dynmdl)
 library(testthat)
 rm(list = ls())
 
-context("ISLM model steady state")
+context("ISLM model get_period")
 
 library(utils)
 library(dynmdl)
 library(testthat)
 
-context("get_period-methods for the ISLM model")
-
-capture_output(mdl <- read_mdl("islm_model.rds"))
+rep <- capture_output(mdl <- read_mdl("islm_model.rds"))
 
 test_that("get_period_methods", {
   datap <- period_range("1997Q1/2022Q4")
