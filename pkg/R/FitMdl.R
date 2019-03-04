@@ -265,6 +265,9 @@ FitMdl <- R6Class("FitMdl",
             stop(paste("The fit procedure is only possible if the growth",
                        "factors of all endogenous variables are exogenous"))
           }
+          # TODO: method detrend_endo_data calculates the trend variables
+          # again, while they have also been calculated in DynMdl$solve().
+          # This is not efficient (this point is not very important).
           fit_targets <- private$detrend_endo_data(fit_targets)
         } 
         
@@ -285,6 +288,9 @@ FitMdl <- R6Class("FitMdl",
         
         super$set_data_(fit_switches, private$fit_info$fit_vars[names_idx], 
                         type = "exo", upd_mode = "update")
+        
+        # also update endogenous data, for a faster convergence
+        super$set_data_(fit_targets, type = "endo", upd_mode = "updval")
       } else {
         
         # no fit targets
@@ -294,9 +300,9 @@ FitMdl <- R6Class("FitMdl",
       # set old_instruments, these will be used for deactivated 
       # fit instruments (instrumnets with sigma < 0)
       private$exo_data[, private$fit_info$old_instruments] <-
-        private$endo_data[, private$fit_info$instruments] 
+         private$endo_data[, private$fit_info$instruments] 
 
-      ret <- super$solve(...)
+      return(super$solve(...))
     },
     residual_check = function(...) {
       ret <- super$residual_check(...)

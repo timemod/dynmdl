@@ -582,10 +582,10 @@ DynMdl <- R6Class("DynMdl",
       
       private$prepare_dynamic_model()
       
+      endo_data <- private$endo_data
       if (private$mdldef$trend_info$has_deflated_endos) {
         trend_data <- private$get_trend_data_internal()
-        private$endo_data <- private$detrend_endo_data(private$endo_data, 
-                                                       trend_data)
+        endo_data <- private$detrend_endo_data(endo_data, trend_data)
       } 
       
       stacked_time <- private$mdldef$max_endo_lead > 0 || force_stacked_time   
@@ -598,9 +598,9 @@ DynMdl <- R6Class("DynMdl",
                      "solver is allowed"))
         }
         nper <- nperiod(private$model_period)
-        lags <- private$get_endo_lags()
-        leads <- private$get_endo_leads()
-        x <- private$get_solve_endo()
+        lags <- private$get_endo_lags(endo_data)
+        leads <- private$get_endo_leads(endo_data)
+        x <- private$get_solve_endo(endo_data)
         
         ret <- umf_solve_nl(x, private$get_residuals,
                             private$get_jac, lags = lags,
@@ -609,7 +609,7 @@ DynMdl <- R6Class("DynMdl",
       } else {
         ret <- solve_backward_model(private$mdldef, private$calc,
                                     private$model_period, private$data_period,
-                                    private$endo_data, private$exo_data, 
+                                    endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
                                     control = control_, solver = solver,
                                     start_option = start, ...)
@@ -619,13 +619,14 @@ DynMdl <- R6Class("DynMdl",
       private$clean_dynamic_model()
       
       # update data with new iterate
-      private$endo_data[private$model_period, ] <-
-                      t(matrix(ret$x, nrow = private$mdldef$endo_count))
-      
+      endo_data <- regts(t(matrix(ret$x, nrow = private$mdldef$endo_count)),
+                           period = private$model_period, 
+                         names = private$endo_names)
       if (private$mdldef$trend_info$has_deflated_endos) {
-        private$endo_data <- private$trend_endo_data(private$endo_data, 
-                                                     trend_data)
+        endo_data <- private$trend_endo_data(endo_data, trend_data)
       } 
+      private$endo_data[private$model_period, ] <- endo_data
+      
       
       if (stacked_time && grepl("non-finite value", ret$message)) {
         report_non_finite_residuals(self)
@@ -1095,9 +1096,6 @@ DynMdl <- R6Class("DynMdl",
       private$set_data_(data, names = names, type = type)
     },
     get_endo_lags = function(endo_data) {
-      if (missing(endo_data)) {
-        endo_data <- private$endo_data 
-      }
       if (private$mdldef$max_endo_lag > 0) {
         p <- start_period(private$model_period)
         lag_per <- period_range(p - private$mdldef$max_endo_lag, p - 1)
@@ -1107,9 +1105,6 @@ DynMdl <- R6Class("DynMdl",
       }
     },
     get_endo_leads = function(endo_data) {
-      if (missing(endo_data)) {
-        endo_data <- private$endo_data 
-      }
       if (private$mdldef$max_endo_lead > 0) {
         p <- end_period(private$model_period)
         lead_per <- period_range(p + 1, p + private$mdldef$max_endo_lead)
@@ -1120,9 +1115,6 @@ DynMdl <- R6Class("DynMdl",
     },
     # returns a vector with endogenous variables in the solution period
     get_solve_endo = function(endo_data) {
-      if (missing(endo_data)) {
-        endo_data <- private$endo_data 
-      }
       return (t(endo_data[private$model_period, ]))
     },
     # returns the residual of the stacked-time system
