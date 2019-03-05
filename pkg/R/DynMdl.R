@@ -411,7 +411,8 @@ DynMdl <- R6Class("DynMdl",
       return(update_ts_labels(ret, private$mdldef$labels))
     },
 
-    get_endo_data = function(pattern, names, period = private$data_period) {
+    get_endo_data = function(pattern, names, period = private$data_period,
+                             detrended = FALSE) {
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
           private$mdldef$aux_vars$aux_count == 0) {
@@ -422,6 +423,9 @@ DynMdl <- R6Class("DynMdl",
           return(NULL)
         }
         ret <- private$endo_data[period, names, drop = FALSE]
+      }
+      if (detrended) {
+        ret <- private$detrend_endo_data(ret)
       }
       return(update_ts_labels(ret, private$mdldef$labels))
     },
@@ -1555,9 +1559,18 @@ DynMdl <- R6Class("DynMdl",
     },
     trend_detrend_endo_data = function(endo_data, trend, trend_data) {                                
       
+      # p <- "2017q4/2018q4"
+      
+      #cat("in trend_detrend_endo_data: endo_data\n")
+      #print(endo_data[p, "pl", drop = FALSE])
+    
+    
       if (missing(trend_data)) {
         trend_data <- private$get_trend_data_internal()
       }
+      
+      #cat("trend_data\n")
+      #print(trend_data[p,  ])
       
       mdldef <- private$mdldef
       trend_info <- mdldef$trend_info
@@ -1588,6 +1601,9 @@ DynMdl <- R6Class("DynMdl",
         eval(x, envir = trend_data)})
       names(deflator_data) <- deflators
       
+      #cat("deflator_delta")
+      #print(deflator_data)
+      
       sel <- match(defl_endos, trend_info$deflated_endos$names)
       deflators <- trend_info$deflated_endos$deflators[sel]
       
@@ -1601,6 +1617,9 @@ DynMdl <- R6Class("DynMdl",
       } else {
         endo_data[ , defl_endos] <- endo_data[, defl_endos] / defl_data
       }  
+      
+      #cat("endo_data result\n")
+      #print(endo_data[p, "pl", drop = FALSE])
       
       return(endo_data)
     }
