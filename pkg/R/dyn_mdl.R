@@ -39,7 +39,7 @@
 #' @importFrom readr read_file
 #' @importFrom regts range_union
 #' @importFrom tools file_path_sans_ext
-dyn_mdl <- function(mod_file, period, data, 
+dyn_mdl <- function(mod_file, period, data, base_period, 
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, nostrict = FALSE,
@@ -179,6 +179,10 @@ dyn_mdl <- function(mod_file, period, data,
     mdl$set_period(period)
   }
   
+  if (!missing(base_period)) {
+    mdl$set_base_period(base_period)
+  }
+  
   return(mdl)
 }
 
@@ -308,8 +312,6 @@ compile_model <- function(...) {
   
   retval$trend_info <- get_trend_expressions(model_info$trend_info, names(retval$exos), 
                              names(retval$endos))
-  cat("trend_info\n")
-  print(retval$trend_info)
   
   return(retval)
 }

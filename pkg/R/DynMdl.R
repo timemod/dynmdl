@@ -280,6 +280,9 @@ DynMdl <- R6Class("DynMdl",
         private$model_period <- period_range(startp, endp)
         private$period_shift <- start_period(private$model_period) - 
                                 start_period(private$data_period)
+        if (is.null(private$base_period)) {
+          private$base_period <- start_period(private$model_period)
+        } 
       } else {
         stop(paste("The data period is too short. It should contain at least",
                    private$mdldef$max_lag + private$mdldef$max_lead + 1, "periods"))
@@ -288,6 +291,7 @@ DynMdl <- R6Class("DynMdl",
       if (!missing(data)) {
         self$set_data(data)
       }
+      return(invisible(self))
     },
     set_period = function(period) {
       period <- as.period_range(period)
@@ -305,10 +309,22 @@ DynMdl <- R6Class("DynMdl",
       private$model_period <-  period
       private$period_shift <- start_period(private$model_period) -
                               start_period(private$data_period)
+      
+     if (is.null(private$base_period)) {
+        private$base_period <- start_period(private$model_period)
+     } 
+      
+     return(invisible(self))
+    },
+    set_base_period = function(period) {
+      private$base_period <- as.period(period)
       return(invisible(self))
     },
     get_period = function() {
       return (private$model_period)
+    },
+    get_base_period = function() {
+      return (private$base_period)
     },
     get_data_period = function() {
       return (private$data_period)
@@ -420,9 +436,7 @@ DynMdl <- R6Class("DynMdl",
     get_trend_data = function(names, pattern, period = private$data_period) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       period <- private$convert_period_arg(period)
-      ret <- get_trend_data_internal(names, pattern, private$period, 
-                                     private$mdldef, private$exo_data, 
-                                     private$endo_data)
+      ret <- private$get_trend_data_internal(names, pattern)
       return(ret[period, ])
     },
     solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv"),
@@ -812,6 +826,7 @@ DynMdl <- R6Class("DynMdl",
                              dll_basename = basename(private$dll_file),
                              os_type = os_type,
                              model_period = private$model_period,
+                             base_period = private$base_period,
                              endo_data = private$endo_data,
                              exo_data = private$exo_data)
       return(structure(serialized_mdl, class = "serialized_dynmdl"))
@@ -894,6 +909,7 @@ DynMdl <- R6Class("DynMdl",
     jac_dynamic = NULL,
     model_period = NULL,
     data_period =  NULL,
+    base_period = NULL,     # base period for computing trends
     period_shift =  NA,
     endo_data = NULL,
     exo_data = NULL,
@@ -1404,7 +1420,10 @@ DynMdl <- R6Class("DynMdl",
                     as.character(private$model_period)))
         cat(sprintf("%-60s%s\n", "Data period:",
                     as.character(private$data_period)))
+        cat(sprintf("%-60s%s\n", "Base period for trends:",
+                    as.character(private$base_period)))
       }
+
       if (!short) {
         cat("Names of the endogenous variables:\n")
         print(private$endo_names)
@@ -1489,8 +1508,8 @@ DynMdl <- R6Class("DynMdl",
         stop("dynmdl cannot handle this situation yet")
       }
       
-      growth_factors <- trend_var_info$growth_factors[names %in% 
-                                                      trend_var_info$names]
+      sel <- trend_var_info$names %in% names
+      growth_factors <- trend_var_info$growth_factors[sel]
       
       growth_vars <-  trend_info$growth_factor_vars[unique(growth_factors)]
       
@@ -1510,7 +1529,7 @@ DynMdl <- R6Class("DynMdl",
       
       data <- c(exo_data, endo_data)
       
-      # TODO: this part could be more efficient is more than one variable
+      # TODO: this part could be more efficient if more than one variable
       # shares the same growth factor, then we do not have to transform twice.
       expressions  <- lapply(growth_factors, FUN = function(x) {
         parse(text = x)})
@@ -1519,9 +1538,8 @@ DynMdl <- R6Class("DynMdl",
       names(retval) <- names
       
       retval <- (do.call(cbind, retval))
-      
-      base_period <- start_period(private$data_period)
-      retval <- rel2index(retval - 1, base = base_period, scale = 1)
+  
+      retval <- rel2index(retval - 1, base = private$base_period, scale = 1)
       
       if (!is.matrix(retval)) {
         dim(retval) <- c(length(retval), 1)
