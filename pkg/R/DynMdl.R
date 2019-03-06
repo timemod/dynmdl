@@ -254,6 +254,9 @@ DynMdl <- R6Class("DynMdl",
       if (!missing(data)) {
         p_data <- get_period_range(data)
       }
+      if (!missing(data_period)) {
+        data_period <- as.period_range(data_period)
+      }
       
       check_model_per <- TRUE
       
