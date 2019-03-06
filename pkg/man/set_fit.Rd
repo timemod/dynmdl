@@ -12,7 +12,8 @@ transfers data from a timeseries object to the fit targets.
 
 \preformatted{
 
-mdl$set_fit(data, names = colnames(data), upd_mode = c("upd", "updval"))
+mdl$set_fit(data, names = colnames(data), upd_mode = c("upd", "updval"),
+            name_err = c("stop", "warn", "silent"))
 }
 
 \code{mdl} is an \code{\link{FitMdl}} object
@@ -32,6 +33,11 @@ then argument \code{names} is mandatory}
 how the timeseries are updated: \code{"upd"} (standard update, default) or
 \code{"updval"} (update only with valid numbers). NOTE: currently
 \code{"updval"} is not yet supported. See details.}
+\item{\code{name_err}}{this option specifies the action that should be taken 
+when a variable name is not an endogenous model variable.
+For \code{"stop"} (the default), the execution of this function is stopped.
+For \code{"warn"} and \code{"silent"} the timeseries that are no endogenous 
+model variables are skipped. \code{"warn"} does however give a warning.}
 }
 }
 

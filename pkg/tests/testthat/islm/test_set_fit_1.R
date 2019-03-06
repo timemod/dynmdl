@@ -48,6 +48,28 @@ test_that("set_fit for update mode upd (second test)", {
   expect_equal(fit_mdl2$get_endo_data(), mdl$get_endo_data())
 })
 
+test_that("errors", {
+  
+  fit_mdl2 <- fit_mdl$copy()
+  weird_fit <- cbind(fit, x = 3)
+ 
+  msg <-   "\"x\" is not an endogenous model variable"
+  
+  expect_error(fit_mdl2$set_fit(weird_fit), msg)
+
+  
+  expect_error(fit_mdl2$set_fit(weird_fit, name_err = "silent"), NA)
+  expect_equal(fit_mdl2$get_fit(), fit_ordered)
+  
+  expect_warning(fit_mdl2$set_fit(weird_fit[, "x", drop = FALSE], 
+                                  name_err = "warn"), msg)
+  
+  msg <-   "\"x\", \"z\" are no endogenous model variables"
+  
+  expect_warning(fit_mdl2$set_fit(cbind(weird_fit, z = 2)[, drop = FALSE], 
+                                  name_err = "warn"), msg)
+})
+
 # 
 # test_that("set_fit for update mode updval", {
 #   fit_mdl2 <- fit_mdl$clone(deep = TRUE)

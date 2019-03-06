@@ -43,4 +43,5 @@ test_that("set_fit_values handles errors correctly", {
   expect_error(mdl2$set_fit_values(1, names = c("y", "xxx")), msg)
   msg <- "\"p\", \"xxx\" are no endogenous model variables"
   expect_error(mdl2$set_fit_values(1, names = c("p", "xxx")), msg)
+  expect_silent(mdl2$set_fit_values(1, pattern = "xxx"))
 })

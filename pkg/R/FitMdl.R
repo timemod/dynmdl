@@ -98,7 +98,8 @@ FitMdl <- R6Class("FitMdl",
     get_sigma_names = function() {
       return(private$fit_info$sigmas)
     },
-    set_fit = function(data, names, upd_mode = c("upd", "updval")) {
+    set_fit = function(data, names, upd_mode = c("upd", "updval"),
+                       name_err = "stop") {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       if (!inherits(data, "ts")) {
@@ -125,7 +126,7 @@ FitMdl <- R6Class("FitMdl",
                      "In that case, argument names should be specified"))
         }
       }
-      names <- private$get_names_fitmdl_("endo", names)
+      names <- private$get_names_fitmdl_("endo", names, name_err = name_err)
       if (!is.matrix(data)) {
         dim(data) <- c(length(data), 1)
         colnames(data) <- names
@@ -327,7 +328,10 @@ FitMdl <- R6Class("FitMdl",
     fit_info = NULL,
     fit_targets = NULL,
     
-    get_names_fitmdl_ = function(type, names, pattern) {
+    get_names_fitmdl_ = function(type, names, pattern,
+                                 name_err = c("stop", "warn", "silent")) {
+      
+      name_err <- match.arg(name_err)
       
       if (private$mdldef$aux_vars$aux_count > 0) {
         stop("FitMdl cannot handle auxiliary variables yet")
@@ -347,17 +351,21 @@ FitMdl <- R6Class("FitMdl",
       if (!missing(names)) {
         error_vars <- setdiff(names, vnames)
         if (length(error_vars) > 0) {
-          error_vars <- paste0("\"", error_vars, "\"")
-          type_texts <- c(all = "", endo = "endogenous ", exo = "exogenous ")
-          type_text <- type_texts[[type]]
-          if (length(error_vars) == 1) {
-            a_word <- if (type == "all") "a " else "an "
-            stop(paste0(error_vars, " is not ", a_word, type_text, 
-                        "model variable"))
-          } else {
-            stop(paste0(paste(error_vars, collapse = ", "),
-                        " are no ", type_text, "model variables"))
+          if (name_err != "silent") {
+            error_vars <- paste0("\"", error_vars, "\"")
+            type_texts <- c(all = "", endo = "endogenous ", exo = "exogenous ")
+            type_text <- type_texts[[type]]
+            error_fun <- if (name_err == "warn") warning else stop
+            if (length(error_vars) == 1) {
+              a_word <- if (type == "all") "a " else "an "
+              error_fun(paste0(error_vars, " is not ", a_word, type_text, 
+                          "model variable"))
+            } else {
+              error_fun(paste0(paste(error_vars, collapse = ", "),
+                          " are no ", type_text, "model variables"))
+            }
           }
+          names <- intersect(names, vnames)
         }
       }
       

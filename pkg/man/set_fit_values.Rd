@@ -12,7 +12,6 @@ can be used to set the values of the fit targets.
 \preformatted{
 
 mdl$set_fit_values(value, names, pattern, period = mdl$get_data_period())
-
 }
 
 \code{mdl} is an \code{\link{FitMdl}} object
