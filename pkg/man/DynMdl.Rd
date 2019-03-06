@@ -86,6 +86,9 @@ variables by applying a function}
 
 \item{\code{\link{get_exo_data}}}{Returns the exogenous model data}
 
+\item{\code{\link{get_vars_pars}}}{Returns a list with model variables and 
+                                   parameters}
+
 \item{\code{\link{solve_steady}}}{Solves the steady state}
 
 \item{\code{\link{solve}}}{Solves the model}

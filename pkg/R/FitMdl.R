@@ -169,9 +169,11 @@ FitMdl <- R6Class("FitMdl",
       }
       return(invisible(self))
     },
-    get_data = function(pattern, names, period = private$data_period) {
+    get_data = function(pattern, names, period = private$data_period,
+                        detrended = FALSE) {
       names <- private$get_names_fitmdl_("all", names, pattern)
-      return(super$get_data(period = period, names = names))
+      return(super$get_data(period = period, names = names, 
+                            detrended = detrended))
     },
     get_endo_data = function(pattern, names, period = private$data_period, 
                              detrended = FALSE) {

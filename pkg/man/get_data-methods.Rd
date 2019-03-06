@@ -63,6 +63,6 @@ mdl <- islm_mdl(period = "2017Q1/2017Q3")
 mdl$get_data(names = "c", pattern  = "y.", period = "2017Q1/2017Q2")
 }
 \seealso{
-\code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
-\code{\link{get_lagrange}}
+\code{\link{get_fit}}, \code{\link{get_fit_instruments}},
+\code{\link{get_lagrange}} and \code{\link{get_vars_pars}}.
 }

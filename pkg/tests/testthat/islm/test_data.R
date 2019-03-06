@@ -113,7 +113,6 @@ test_that("get_names", {
 })
 
 test_that("get_data errors", {
-    
   expect_error(
     mdl$get_data(names = c("aap", "g"), pattern = "^y"),
       "\"aap\" is not a model variable"
@@ -131,4 +130,18 @@ test_that("get_data errors", {
   expect_null(mdl$get_data(pattern = "xxx"))
   expect_null(mdl$get_endo_data(pattern = "xxx"))
   expect_null(mdl$get_exo_data(pattern = "xxx"))
+})
+
+
+test_that("get_vars_pars", {
+  
+  vars_pars <- mdl$get_vars_pars()
+  
+  pars <- unlist(vars_pars[mdl$get_par_names()])
+  expect_identical(pars, mdl$get_param())
+  
+  var_names <- setdiff(names(vars_pars), names(pars))
+  vars <- vars_pars[var_names]
+  var_data <- do.call(cbind, vars)
+  expect_identical(var_data, mdl$get_data())
 })

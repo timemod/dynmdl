@@ -196,8 +196,8 @@ NULL
 #' \item \code{get_exo_data}: Exogenous model variables
 #' }
 #'
-#' @seealso \code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
-#' \code{\link{get_lagrange}}
+#' @seealso \code{\link{get_fit}}, \code{\link{get_fit_instruments}},
+#' \code{\link{get_lagrange}} and \code{\link{get_vars_pars}}.
 #' @examples
 #' mdl <- islm_mdl(period = "2017Q1/2017Q3")
 #' 
@@ -915,7 +915,8 @@ NULL
 #'
 #' # print parameters c0, c1, c2 and c3
 #' print(mdl$get_param(pattern = "^c.*"))
-#' @seealso \code{\link{set_param}} and \code{\link{set_param_values}} 
+#' @seealso \code{\link{set_param}}, \code{\link{set_param_values}} 
+#' and \code{\link{get_vars_pars}}
 NULL
 
 
@@ -1054,5 +1055,54 @@ NULL
 #' mdl$set_param_values(0)
 NULL
 
-
+#' \code{\link{DynMdl}} methods: Returns a list of all model variables and 
+#' parameters
+#' @name get_vars_pars
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} 
+#' returns a list of all model variables and parameters. This makes it easy
+#' to directly evaluate expressions involving both model variables
+#' and parameters.
+#'
+#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' the variables do not include the the auxiliary endogenous and
+#' exogenous variables used in the fit procedure.
+#'
+#' @section Usage:
+#' \preformatted{
+#'
+#' mdl$get_vars_pars(pattern, names, period = mdl$get_data_period())
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+##' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
+#' object that can be coerced to a \code{period_range}}
+#' }
+#' 
+#'
+#' @seealso \code{\link{get_data-methods}}, \code{\link{get_param}}, 
+#' \code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
+#' \code{\link{get_lagrange}}
+#' @examples
+#' mdl <- islm_mdl(period = "2017Q1/2017Q3")
+#' 
+#' # create a list of all parameters and model variables for 
+#' # period 2017q1/2017q2 
+#' vars_pars <- mdl$get_vars_pars(period = "2017Q1/2017Q2")
+#' print(vars_pars)
+#' 
+#' # evaluate an expression within list vars_pars
+#' with(vars_pars, print(t0 + t1 * y))
+#'
+#' # copy all parameters to the global environment, and evaluate
+#' # an expresions in the global environment:
+#'  list2env(l, .GlobalEnv)
+#'  print(md - ms)
+#' 
+NULL
 

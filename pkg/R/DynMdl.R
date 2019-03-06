@@ -97,6 +97,9 @@ setOldClass("regts")
 #' \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 #'
 #' \item{\code{\link{get_exo_data}}}{Returns the exogenous model data}
+#' 
+#' \item{\code{\link{get_vars_pars}}}{Returns a list with model variables and 
+#'                                    parameters}
 #'
 #' \item{\code{\link{solve_steady}}}{Solves the steady state}
 #'
@@ -405,7 +408,8 @@ DynMdl <- R6Class("DynMdl",
       private$set_data_(data, names, type = "endo", upd_mode = upd_mode, fun)
       return(invisible(self))
     },
-    get_data = function(pattern, names, period = private$data_period) {
+    get_data = function(pattern, names, period = private$data_period,
+                        detrended = FALSE) {
       
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
@@ -420,6 +424,9 @@ DynMdl <- R6Class("DynMdl",
         endo_data <- private$endo_data[period , 
                                        intersect(names, private$endo_names),
                                        drop = FALSE]
+        if (detrended) {
+          endo_data <- private$detrend_endo_data(endo_data)
+        }
         exo_data <- private$exo_data[period , 
                                      intersect(names, private$exo_names),
                                      drop = FALSE]
@@ -470,6 +477,15 @@ DynMdl <- R6Class("DynMdl",
       period <- private$convert_period_arg(period)
       ret <- private$get_trend_data_internal(names, pattern)
       return(ret[period, ])
+    },
+    get_vars_pars = function(period = private$data_period, detrended = FALSE) {
+        data_list <- as.list(self$get_data(period = period, 
+                                           detrended = detrended))
+        trend_data_list <- as.list(self$get_trend_data(period = period))
+        param_list <- as.list(self$get_param())
+        ret <- c(data_list, trend_data_list, param_list)
+        ret <- ret[order(names(ret))]
+        return(ret)
     },
     solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv"),
                             ...) {
@@ -1573,6 +1589,7 @@ DynMdl <- R6Class("DynMdl",
       sel <- trend_var_info$names %in% names
       growth_factors <- trend_var_info$growth_factors[sel]
       
+
       growth_vars <-  trend_info$growth_factor_vars[unique(growth_factors)]
       
       gr_endos <- unname(unlist(lapply(growth_vars, FUN = function(x) x$endo)))
@@ -1594,12 +1611,16 @@ DynMdl <- R6Class("DynMdl",
       # TODO: this part could be more efficient if more than one variable
       # shares the same growth factor, then we do not have to transform twice.
       expressions  <- lapply(growth_factors, FUN = function(x) {
-        parse(text = x)})
+                                        parse(text = x)})
       
       retval <- lapply(expressions, FUN = function(x) {eval(x, envir = data)})
       names(retval) <- names
       
       retval <- (do.call(cbind, retval))
+  
+      if (is.null(retval)) {
+        return(NULL)
+      }
   
       retval <- rel2index(retval - 1, base = private$base_period, scale = 1)
       
@@ -1627,6 +1648,7 @@ DynMdl <- R6Class("DynMdl",
       defl_endos <- intersect(colnames(endo_data), 
                               trend_info$deflated_endos$names)
       
+
       if (length(defl_endos) == 0) {
         return(endo_data)
       }
@@ -1641,10 +1663,11 @@ DynMdl <- R6Class("DynMdl",
       trend_data <- trend_data[ , deflator_vars, drop = FALSE]
       
       trend_data <- as.list(trend_data)
+    
       
       # the expressions could already have been credted in dyn_mdl.
       expressions  <- lapply(deflators, FUN = function(x) {
-        parse(text = x)})
+                    parse(text = x)})
       
       deflator_data <- lapply(expressions, FUN = function(x) {
         eval(x, envir = trend_data)})
