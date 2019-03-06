@@ -244,27 +244,63 @@ DynMdl <- R6Class("DynMdl",
         return(private$mdldef$endos)
       }
     },
-    init_data = function(data_period, data)  {
+    init_data = function(data_period, data, upd_mode = c("upd", "updval"))  {
+      
+      upd_mode <- match.arg(upd_mode)
+      
+      if (!missing(data)) {
+        p_data <- get_period_range(data)
+      }
+      
+      check_model_per <- TRUE
+      
       if (missing(data_period)) {
-        if (!missing(data)) {
-          data_period <- get_period_range(data)
+        if (missing(data)) {
+          if (is.null(private$model_period)) {
+            stop(paste("If neither data_period nor data have been specified", 
+               "then model_period should be known"))
+          } else {
+            p <- private$model_period
+            data_period <- period_range(
+              start_period(p) - private$mdldef$max_lag,
+              end_period(p)   + private$mdldef$max_lead)
+            check_model_per <- FALSE
+          }
+        } else if (is.null(private$model_period)) {
+          data_period <- p_data
         } else {
-          stop(paste("Argument data_period is mandatory if",
-                     "argument data has not been specified"))
+          p <- private$model_period
+          data_period <- period_range(
+            min(start_period(p) - private$mdldef$max_lag, start_period(p_data)),
+            max(end_period(p)   + private$mdldef$max_lead, end_period(p_data)))
+          check_model_per <- FALSE
         }
-      } else {
-        data_period <- as.period_range(data_period)
-        if (is.na(data_period[1]) || is.na(data_period[2])) {
-          stop("data_period should have a lower and upper bound")
+      }
+    
+      
+      if (check_model_per) {
+      
+        startp <- start_period(data_period) + private$mdldef$max_lag
+        endp <- end_period(data_period) - private$mdldef$max_lead
+        if (endp < startp) {
+          stop(paste("The data period is too short. It should contain at least",
+                   private$mdldef$max_lag + private$mdldef$max_lead + 1, 
+                   "periods"))
         }
+      
+
+        if (is.null(private$model_period)) {
+          private$model_period <- period_range(startp, endp)
+          private$period_shift <- start_period(private$model_period) - 
+          if (is.null(private$base_period)) {
+            private$base_period <- start_period(private$model_period)
+          } 
+        } 
       }
       
       private$data_period <- data_period
-      nper <- nperiod(data_period)
-      endo_mat <- matrix(rep(private$mdldef$endos, each = nper), nrow = nper)
-      private$endo_data <- regts(endo_mat, start = start_period(data_period),
-                                 names = names(private$mdldef$endos))
       
+      nper <- nperiod(data_period)
       if (private$mdldef$exo_count > 0) {
         exo_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
         colnames(exo_mat) <- private$exo_names
@@ -273,23 +309,13 @@ DynMdl <- R6Class("DynMdl",
       }
       private$exo_data <- regts(exo_mat, start = start_period(data_period))
       
-      # update the model period
-      startp <- start_period(data_period) + private$mdldef$max_lag
-      endp <- end_period(data_period) - private$mdldef$max_lead
-      if (endp >= startp) {
-        private$model_period <- period_range(startp, endp)
-        private$period_shift <- start_period(private$model_period) - 
-                                start_period(private$data_period)
-        if (is.null(private$base_period)) {
-          private$base_period <- start_period(private$model_period)
-        } 
-      } else {
-        stop(paste("The data period is too short. It should contain at least",
-                   private$mdldef$max_lag + private$mdldef$max_lead + 1, "periods"))
-      }
-      
+      self$put_static_endos()
+  
       if (!missing(data)) {
-        self$set_data(data)
+        private$set_data_(data, type = "exo", upd_mode = upd_mode, 
+                          init_data = TRUE)
+        private$set_data_(data, type = "endo", upd_mode = upd_mode,
+                          init_data = TRUE)
       }
       return(invisible(self))
     },
@@ -298,6 +324,7 @@ DynMdl <- R6Class("DynMdl",
       if (is.na(period[1]) || is.na(period[2])) {
         stop("period should have a lower and upper bound")
       }
+     
       if (is.null(private$data_period)) {
         data_period <- period_range(
           start_period(period) - private$mdldef$max_lag,
@@ -306,7 +333,8 @@ DynMdl <- R6Class("DynMdl",
       } else  {
         private$check_model_period(period) 
       }
-      private$model_period <-  period
+    
+      private$model_period <- period
       private$period_shift <- start_period(private$model_period) -
                               start_period(private$data_period)
       
@@ -509,9 +537,16 @@ DynMdl <- R6Class("DynMdl",
                                 nrow = nper), names = private$endo_names,
                          period = period)
       if (private$mdldef$trend_info$has_deflated_endos) {
+        # the next statement is necessary in order to compute trend variables
+        # if there are exogenous grwoth factors.
+        private$endo_data <- endo_data
         endo_data <- private$trend_endo_data(endo_data)
       } 
-      private$endo_data[period, ] <- endo_data
+      if (!missing(period) && !is.null(private$endo_data)) {
+        private$endo_data[period, ] <- endo_data
+      } else {
+        private$endo_data <- endo_data
+      }
       return(invisible(self))
     },
     check = function() {
@@ -979,7 +1014,8 @@ DynMdl <- R6Class("DynMdl",
       return(names)
     },
     
-    set_data_ = function(data, names, type, upd_mode = "upd", fun) {
+    set_data_ = function(data, names, type, upd_mode = "upd", fun, 
+                         init_data = FALSE) {
       # generic function to set or update the endogenous or exogenous
       # variables
       
@@ -1017,6 +1053,11 @@ DynMdl <- R6Class("DynMdl",
           stop(paste("The length of arument names is less than the number of",
                      "columns of data"))
         }
+      }
+      
+      if (!init_data && private$mdldef$trend_info$has_deflated_endos 
+          && type == "exo") {
+        private$check_change_growth_exos(names)
       }
       
       if (!is.matrix(data)) {
@@ -1083,9 +1124,12 @@ DynMdl <- R6Class("DynMdl",
         stop(paste("Argument value should have length 1 or",
                    "length ", nper))
       }
-      period <- range_intersect(period, private$data_period)
-      if (is.null(period)) return(invisible(NULL))
       names <- private$get_names_(type, names, pattern)
+      
+      if (private$mdldef$trend_info$has_deflated_endos && type == "exo") {
+        private$check_change_growth_exos(names)
+      }
+      
       if (length(names) > 0) {
         if (vlen > 1) {
           value <- value[1:nperiod(period)]
@@ -1108,12 +1152,24 @@ DynMdl <- R6Class("DynMdl",
       if (type == "endo") {
         data <- self$get_endo_data(names = names, period = period)
       } else  { 
+        if (private$mdldef$trend_info$has_deflated_endos) {
+          private$check_change_growth_exos(names)
+        }
         data <- self$get_exo_data(names = names, period = period)
       }
       for (c in seq_len(ncol(data))) {
         data[, c] <- fun(data[, c], ...)
       }
       private$set_data_(data, names = names, type = type)
+    },
+    check_change_growth_exos = function(names) {
+      growth_exos <- intersect(names, private$mdldef$trend_info$growth_exos)
+      if (length(growth_exos) > 0) {
+        stop(paste0("It is not allowed to modify growth exos ",
+                    paste(growth_exos, collapse = ", "),
+                    "\nwith functions set_values, set_data or change_data.\n",
+                    "Growth exos can only be set with function init_data."))
+      }
     },
     get_endo_lags = function(endo_data) {
       if (private$mdldef$max_endo_lag > 0) {
@@ -1424,8 +1480,10 @@ DynMdl <- R6Class("DynMdl",
                     as.character(private$model_period)))
         cat(sprintf("%-60s%s\n", "Data period:",
                     as.character(private$data_period)))
-        cat(sprintf("%-60s%s\n", "Base period for trends:",
-                    as.character(private$base_period)))
+        if (private$mdldef$trend_info$has_deflated_endos) {
+          cat(sprintf("%-60s%s\n", "Base period for trends:",
+                      as.character(private$base_period)))
+        }
       }
 
       if (!short) {
@@ -1559,18 +1617,9 @@ DynMdl <- R6Class("DynMdl",
     },
     trend_detrend_endo_data = function(endo_data, trend, trend_data) {                                
       
-      # p <- "2017q4/2018q4"
-      
-      #cat("in trend_detrend_endo_data: endo_data\n")
-      #print(endo_data[p, "pl", drop = FALSE])
-    
-    
       if (missing(trend_data)) {
         trend_data <- private$get_trend_data_internal()
       }
-      
-      #cat("trend_data\n")
-      #print(trend_data[p,  ])
       
       mdldef <- private$mdldef
       trend_info <- mdldef$trend_info
@@ -1601,9 +1650,6 @@ DynMdl <- R6Class("DynMdl",
         eval(x, envir = trend_data)})
       names(deflator_data) <- deflators
       
-      #cat("deflator_delta")
-      #print(deflator_data)
-      
       sel <- match(defl_endos, trend_info$deflated_endos$names)
       deflators <- trend_info$deflated_endos$deflators[sel]
       
@@ -1617,10 +1663,7 @@ DynMdl <- R6Class("DynMdl",
       } else {
         endo_data[ , defl_endos] <- endo_data[, defl_endos] / defl_data
       }  
-      
-      #cat("endo_data result\n")
-      #print(endo_data[p, "pl", drop = FALSE])
-      
+
       return(endo_data)
     }
   )

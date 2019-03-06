@@ -14,7 +14,7 @@
 #' is obtained from the data period by subtracting the lag and lead periods.
 #' @section Usage:
 #' \preformatted{
-#' mdl$init_data(data_period)
+#' mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"))
 #'
 #' }
 #'
@@ -25,8 +25,25 @@
 #' \describe{
 #' \item{\code{data_period}}{\code{\link[regts]{period_range}}
 #' object, or an object that can be coerced to 
-#' \code{\link[regts]{period_range}}}
+#' \code{\link[regts]{period_range}},}
+#' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
+#' object with values for endogogenous and exogenous model variables.
+#' If \code{data} has labels, then these labels are used to update the model 
+#' labels.}
+#'  \item{\code{upd_mode}}{the update mode, a character string specifying
+#' how the timeseries in object \code{data} are transferred to the 
+#' model data. For  \code{"upd"} (standard update, default), the timseseries
+#' in \code{data} are used to replace the steady state values of the 
+#' exogenous and endogenous model variables.
+#' For \code{"updval"}, the static model variables are only replaced
+#' by valid (i.e. non-\code{NA}) values in \code{data}). }
 #' }
+#' If neither \code{data_period} nor \code{data} have been specified,
+#' then the data period is determined from the model period (which in that
+#' case must have been specified before \code{init_data} is called).
+#' @examples
+#' mdl <- islm_mdl()
+#' mdl$init_data("2017Q2/2021Q3")
 NULL
 
 #' \code{\link{DynMdl}} method: sets the model period

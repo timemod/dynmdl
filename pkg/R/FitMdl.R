@@ -245,21 +245,33 @@ FitMdl <- R6Class("FitMdl",
       return(super$deserialize(ser, dll_dir))
     },
     solve = function(...) {
-  
+      
+      # clean fit targets for the solution period
       if (!is.null(private$fit_targets) && length(private$fit_targets) > 0) {
+        fit_targets <- private$fit_targets
+        p <- range_intersect(get_period_range(fit_targets), 
+                             private$model_period)
+        fit_targets <- na_trim(fit_targets[p, ])
+        if (!is.null(fit_targets) && nrow(fit_targets) > 0) {
+          fit_targets <- remove_na_columns(fit_targets)
+        }
+      } else {
+        fit_targets <- NULL
+      }
+      
+      
+      if (!is.null(fit_targets) && length(fit_targets) > 0) {
      
         # prepare fit procedure
         
         # check if we have sufficient fit instruments
-        n_fit_targets <- ncol(private$fit_targets)
+        n_fit_targets <- ncol(fit_targets)
         n_sigmas <- length(self$get_sigmas())
         if (n_sigmas < n_fit_targets) {
           stop(sprintf(paste("The number of fit targets (%d) exceeds the",
                              "number of fit instruments (%d)\n."),
                        n_fit_targets, n_sigmas))
         }
-        
-        fit_targets <- private$fit_targets
         
         # detrend fit targets
         if (private$mdldef$trend_info$has_deflated_endos) {
@@ -285,8 +297,8 @@ FitMdl <- R6Class("FitMdl",
         # set fit_vars (switches), first initialise with 0
         super$set_exo_values(0, names = private$fit_info$fit_vars)
         data_mat <- ifelse(is.na(fit_targets), 0, 1)
-        fit_switches <- regts(data_mat, names = colnames(private$fit_targets),
-                              period = get_period_range(private$fit_targets))
+        fit_switches <- regts(data_mat, names = colnames(fit_targets),
+                              period = get_period_range(fit_targets))
         
         super$set_data_(fit_switches, private$fit_info$fit_vars[names_idx], 
                         type = "exo", upd_mode = "update")

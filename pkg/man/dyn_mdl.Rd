@@ -4,8 +4,8 @@
 \alias{dyn_mdl}
 \title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
 \usage{
-dyn_mdl(mod_file, period, data, calc = c("R", "bytecode", "dll",
-  "internal"), fit_mod_file, debug = FALSE, dll_dir,
+dyn_mdl(mod_file, period, data, base_period, calc = c("R", "bytecode",
+  "dll", "internal"), fit_mod_file, debug = FALSE, dll_dir,
   max_laglead_1 = FALSE, nostrict = FALSE, fit = TRUE)
 }
 \arguments{
