@@ -1071,7 +1071,7 @@ NULL
 #' @section Usage:
 #' \preformatted{
 #'
-#' mdl$get_vars_pars(pattern, names, period = mdl$get_data_period())
+#' mdl$get_vars_pars(period = mdl$get_data_period())
 #'
 #' }
 #'
