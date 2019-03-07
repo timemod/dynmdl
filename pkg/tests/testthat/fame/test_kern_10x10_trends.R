@@ -2,6 +2,9 @@ library(dynmdl)
 library(testthat)
 rm(list = ls())
 
+
+# TODO: remove this job. This job will be replaced with test_kern_5x5_trend.R.
+
 model_name <- "kern_10x10_trends"
 
 context(paste("model", model_name))
