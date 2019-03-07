@@ -314,12 +314,18 @@ DynMdl <- R6Class("DynMdl",
         exo_mat <- matrix(NA_real_, nrow = nper, ncol = 0)
       }
       private$exo_data <- regts(exo_mat, start = start_period(data_period))
+  
+      # first set exo data, before we call put_static_endos(),
+      # because put_static_endos needs the actual values of the growth variables
+      # when computing the trended variables.
+      if (!missing(data)) {
+        private$set_data_(data, type = "exo", upd_mode = upd_mode, 
+                          init_data = TRUE)
+      }
       
       self$put_static_endos()
   
       if (!missing(data)) {
-        private$set_data_(data, type = "exo", upd_mode = upd_mode, 
-                          init_data = TRUE)
         private$set_data_(data, type = "endo", upd_mode = upd_mode,
                           init_data = TRUE)
       }
