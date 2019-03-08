@@ -604,12 +604,11 @@ DynMdl <- R6Class("DynMdl",
     },
     residual_check = function(tol = 0) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
-      endo_data <- private$endo_data
-  
+      
       nper <- nperiod(private$model_period)
-      lags <- private$get_endo_lags(endo_data)
-      leads <- private$get_endo_leads(endo_data)
-      x <- private$get_solve_endo(endo_data)
+      lags <- private$get_endo_lags()
+      leads <- private$get_endo_leads()
+      x <- private$get_solve_endo()
       
       private$prepare_dynamic_model()
       residuals <- private$get_residuals(x, lags, leads, nper)
@@ -664,8 +663,6 @@ DynMdl <- R6Class("DynMdl",
       
       private$prepare_dynamic_model()
       
-      endo_data <- private$endo_data
-      
       stacked_time <- private$mdldef$max_endo_lead > 0 || force_stacked_time   
       
       if (stacked_time) {
@@ -676,9 +673,9 @@ DynMdl <- R6Class("DynMdl",
                      "solver is allowed"))
         }
         nper <- nperiod(private$model_period)
-        lags <- private$get_endo_lags(endo_data)
-        leads <- private$get_endo_leads(endo_data)
-        x <- private$get_solve_endo(endo_data)
+        lags <- private$get_endo_lags()
+        leads <- private$get_endo_leads()
+        x <- private$get_solve_endo()
         
         ret <- umf_solve_nl(x, private$get_residuals,
                             private$get_jac, lags = lags,
@@ -687,7 +684,7 @@ DynMdl <- R6Class("DynMdl",
       } else {
         ret <- solve_backward_model(private$mdldef, private$calc,
                                     private$model_period, private$data_period,
-                                    endo_data, private$exo_data, 
+                                    private$endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
                                     control = control_, solver = solver,
                                     start_option = start, ...)
@@ -749,11 +746,11 @@ DynMdl <- R6Class("DynMdl",
     },
     get_jacob = function(sparse = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
-      endo_data <- private$endo_data
-      lags  <- private$get_endo_lags(endo_data)
-      leads <- private$get_endo_leads(endo_data)
+      lags  <- private$get_endo_lags()
+      leads <- private$get_endo_leads()
+      x <- private$get_solve_endo()
       nper <- nperiod(private$model_period)
-      x <- private$get_solve_endo(endo_data)
+  
       
       private$prepare_dynamic_model()
       
@@ -1192,27 +1189,27 @@ DynMdl <- R6Class("DynMdl",
                     "Growth exos can only be set with function init_data."))
       }
     },
-    get_endo_lags = function(endo_data) {
+    get_endo_lags = function() {
       if (private$mdldef$max_endo_lag > 0) {
         p <- start_period(private$model_period)
         lag_per <- period_range(p - private$mdldef$max_endo_lag, p - 1)
-        return(t(endo_data[lag_per, ]))
+        return(t(private$endo_data[lag_per, ]))
       } else {
         return(NULL)
       }
     },
-    get_endo_leads = function(endo_data) {
+    get_endo_leads = function() {
       if (private$mdldef$max_endo_lead > 0) {
         p <- end_period(private$model_period)
         lead_per <- period_range(p + 1, p + private$mdldef$max_endo_lead)
-        return(t(endo_data[lead_per, ]))
+        return(t(private$endo_data[lead_per, ]))
       } else {
         return(NULL)
       }
     },
     # returns a vector with endogenous variables in the solution period
-    get_solve_endo = function(endo_data) {
-      return (t(endo_data[private$model_period, ]))
+    get_solve_endo = function() {
+      return (t(private$endo_data[private$model_period, ]))
     },
     # returns the residual of the stacked-time system
     # x is vector of endogenous variables in the solution period
