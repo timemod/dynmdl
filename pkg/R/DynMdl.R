@@ -1626,7 +1626,15 @@ DynMdl <- R6Class("DynMdl",
       deflator_data <- sapply(trend_info$deflators, FUN = function(x) 
             {eval(parse(text = x), envir = data)}, simplify = FALSE)
       
-      return(do.call(cbind, deflator_data))
+      deflator_data <- do.call(cbind, deflator_data)
+      if (!is.matrix(deflator_data)) {
+        dim(deflator_data) <- c(length(deflator_data), 1)
+        colnames(deflator_data) <- trend_info$deflators
+      }
+      
+      return(deflator_data)
+      
+      
     },
     trend_endo_data = function(endo_data) {
       return(private$trend_detrend_endo_data(endo_data, TRUE))
@@ -1641,7 +1649,7 @@ DynMdl <- R6Class("DynMdl",
       if (nrow(defl_endos) == 0) {
         return(endo_data)
       }
-      
+     
       defl_data <- private$deflator_data[, defl_endos$deflators]
   
       sel <- match(defl_endos$names, colnames(endo_data))

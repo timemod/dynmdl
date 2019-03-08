@@ -3,9 +3,12 @@ library(dynmdl)
 
 rm(list = ls())
 
+model_name <- "example_Ramsey"
+
+context(model_name)
+
 source("../tools/read_dynare_result.R")
 
-model_name <- "example_Ramsey"
 
 per <- period_range("2001/2100")
 
@@ -13,14 +16,14 @@ mod_file <- file.path("mod", paste0(model_name, ".mod"))
 
 expect_warning(
   capture_output(
-    message <- capture.output(
+    msg <- capture.output(
       mdl <- dyn_mdl(mod_file, period = per, nostrict = TRUE),
       type = "message"
     )
   )
   , "1 warnings encountered in the preprocessor. Check the output")
 
-expect_identical(message,
+expect_identical(msg,
 "WARNING: gx not used in model block, removed by nostrict command-line option")
 
 dynare_result <- read_dynare_result(model_name, mdl)
@@ -46,10 +49,15 @@ test_that("simulation", {
   
   mdl$put_static_endos()
   
-  mdl$set_endo_values(8, names = "k", period = "2000")
+  # For comparison with Dynare results, the detrended value of K should be 8.
+  # Dynare always works with detrended variables.
+  p <- period("2000")
+  k_2000_trended <- 8 * as.numeric(mdl$get_trend_data(names = "x", period = p))
+  mdl$set_endo_values(k_2000_trended, names = "k", period = p)
   mdl$solve(control = list(silent = TRUE))
   
-  expect_equal(mdl$get_endo_data(period = per), dynare_result$endo, tol = 1e-6)
+  expect_equal(mdl$get_endo_data(period = per, detrended = TRUE), 
+               dynare_result$endo, tol = 1e-6)
   
   # plot(mdl$get_endo_data(names = "k"))
   # lines(dynare_result$endo[, "k"], ylab = "k", col = "red")
