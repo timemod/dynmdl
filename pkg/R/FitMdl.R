@@ -278,16 +278,8 @@ FitMdl <- R6Class("FitMdl",
         
         # detrend fit targets
         if (private$mdldef$trend_info$has_deflated_endos) {
-          if (length(private$trend_info$growth_factor_vars$endo) > 0) {
-            stop(paste("The fit procedure is only possible if the growth",
-                       "factors of all endogenous variables are exogenous"))
-          }
-          # TODO: method detrend_endo_data calculates the trend variables
-          # again, while they have also been calculated in DynMdl$solve().
-          # This is not efficient (this point is not very important).
           fit_targets <- private$detrend_endo_data(fit_targets)
         } 
-        
         
         # update the exogenous data for the fit procedure
         names_idx <- match(colnames(fit_targets), private$fit_info$orig_endos)

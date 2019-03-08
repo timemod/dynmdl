@@ -158,6 +158,10 @@ dyn_mdl <- function(mod_file, period, data, base_period,
     period <- as.period_range(period)
   }
   
+  if (!missing(base_period)) {
+    mdl$set_base_period(base_period)
+  }
+  
   if (!missing(data)) {
     data_period <- get_period_range(data)
     if (!missing(period)) {
@@ -177,10 +181,6 @@ dyn_mdl <- function(mod_file, period, data, base_period,
   
   if (!missing(period)) {
     mdl$set_period(period)
-  }
-  
-  if (!missing(base_period)) {
-    mdl$set_base_period(base_period)
   }
   
   return(mdl)
@@ -307,11 +307,10 @@ compile_model <- function(...) {
   retval$njac_cols <- length(which(retval$lead_lag_incidence != 0)) +
                              retval$exo_count
   
-  model_info$trend_info$has_deflated_endos <-
-                   length(model_info$trend_info$deflated_endos$names) > 0
   
-  retval$trend_info <- get_trend_expressions(model_info$trend_info, names(retval$exos), 
-                             names(retval$endos))
+  retval$trend_info <- convert_trend_info(model_info$trend_info, 
+                                          names(retval$exos), 
+                                          names(retval$endos))
   
   return(retval)
 }
@@ -342,44 +341,48 @@ get_var_names <- function(expr_string) {
     }
   
   expr <- parse(text = expr_string)
-  return(get_var_names_(expr[[1]]))
+  return(unique(get_var_names_(expr[[1]])))
 }
 
-get_trend_expressions <- function(trend_info, exo_names, endo_names) {
+
+convert_trend_info <- function(trend_info, exo_names, endo_names) {
   
-  growth_factors <- unique(trend_info$trend_vars$growth_factors)
- 
-  get_gr_vars <- function(x) {
-    names <- get_var_names(x)
-    exo_gr_names <- intersect(exo_names, names)
-    endo_gr_names <- intersect(endo_names, names)
-    if (length(setdiff(names, union(exo_gr_names, endo_gr_names))) > 0) {
-      stop(paste("dynmdl expects that all variables in growth",
-                 "expressions are endogenous or exogenous model variables"))
-    }
-    return(list(exo = exo_gr_names, endo = endo_gr_names))
-  }
-  trend_info$growth_factor_vars <- sapply(growth_factors, FUN = get_gr_vars, 
-                               simplify = FALSE)
+  trend_info$trend_vars <- as.data.frame(trend_info$trend_vars, 
+                                         stringsAsFactors = FALSE)
+  trend_info$deflated_endos <- as.data.frame(trend_info$deflated_endos,
+                                             stringsAsFactors = FALSE)
   
-  trend_info$growth_exos <- sapply(trend_info$growth_factor_vars, 
-                                   FUN = function(x) x$exo, USE.NAMES = FALSE)
+  trend_info$growth_factors <- unique(trend_info$trend_vars$growth_factors)
+  trend_info$deflators <- unique(trend_info$deflated_endos$deflators)
   
-  deflators <- unique(trend_info$deflated_endos$deflators)
-  
-  get_deflator_vars <- function(x) {
-    names <- get_var_names(x)
-    if (length(setdiff(names, trend_info$trend_vars$names)) > 0) {
-      stop(paste("dynmdl expects that all variables in deflator",
-                 "expressions are trend variables"))
-    }
-    return(names)
+  growth_factor_vars <- unique(unlist(lapply(trend_info$growth_factors, 
+                                      FUN = get_var_names)))
+  if (length(setdiff(growth_factor_vars, exo_names)) > 0) {
+    # TODO: improve error message
+    stop(paste("dynmdl expects that all variables in growth",
+               "expressions are exogenous model variables"))
   }
   
-  trend_info$deflator_vars <- sapply(deflators, FUN = get_deflator_vars, 
-                                     simplify = FALSE)
+  trend_info$growth_exos <- growth_factor_vars
+
   
- 
+  deflator_vars <- unique(unlist(lapply(trend_info$deflators, 
+                                        FUN = get_var_names)))
+
+  if (length(setdiff(deflator_vars, trend_info$trend_vars$names)) > 0) {
+    # TODO: improve error message
+    stop(paste("dynmdl expects that all variables in deflator",
+               "expressions are trend variables"))
+  }
+  
+  # TODO: check that all trend variables are used in deflators, otherwise
+  # give a warning
+  
+  trend_info$has_deflated_endos <- nrow(trend_info$deflated_endo) > 0
+  
+  
+  cat("trend_info\n")
+  print(trend_info)
   
   return(trend_info)
 }
