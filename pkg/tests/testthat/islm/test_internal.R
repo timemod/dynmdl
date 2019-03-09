@@ -62,5 +62,13 @@ test_that("get_static_jacob and get_jacob", {
   expect_known_value(jac,  "expected_output/islm_jac.rds")
 })
 
+test_that("check for model without model data", {
+  mod_file <- file.path("mod", paste0(mod_name, ".mod"))
+  rep <- capture_output(mdl <- dyn_mdl(mod_file, calc = "internal"))
+  check_report <- capture_output(mdl$check())
+  eigvals <- mdl$get_eigval()
+  expect_equal(eigvals[1:3], dynare_result$eigval[1:3, 1])
+})
+
 
 

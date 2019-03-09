@@ -47,8 +47,8 @@ test_that("solve", {
 test_that("check", {
   msg <- paste("Function solve_first_order does not work for models with",
                "max_lag > 1 or max_lead > 1.\n Tip: call function dyn_mdl",
-              "with option max_laglead = TRUE.")
-  capture_output(expect_error(mdl$check(), msg))
+              "with option max_laglead_1 = TRUE.")
+  expect_error(mdl$check(), msg)
 })
 
 # now compile the model with option max_laglead_1

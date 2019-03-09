@@ -590,15 +590,10 @@ DynMdl <- R6Class("DynMdl",
         stop("No steady state ... checking model is not possible")
       }
       
-      private$prepare_dynamic_model()
-      private$ss  <- solve_first_order(private$ss,
-                                       private$mdldef$lead_lag_incidence,
-                                       private$mdldef$exos, private$mdldef$endos,
-                                       private$mdldef$params,
-                                       private$jac_dynamic,
-                                       private$mdldef$endo_count,
-                                       private$mdldef$njac_cols,
-                                       check_only = TRUE, debug = FALSE)
+      private$prepare_dynamic_model(solve_first_order = TRUE)
+      private$ss <- solve_first_order(private$ss, private$mdldef,
+                                      private$jac_dynamic, check_only = TRUE, 
+                                       debug = FALSE)
       private$clean_dynamic_model()
       return(invisible(self))
     },
@@ -727,14 +722,11 @@ DynMdl <- R6Class("DynMdl",
                    "with exogenous lags or leads"))
       }
       
-      private$prepare_dynamic_model()
+      private$prepare_dynamic_model(solve_first_order = TRUE)
       
-      private$ss <- solve_first_order(private$ss, private$mdldef$lead_lag_incidence,
-                                      private$mdldef$exos, private$mdldef$endos,
-                                      private$mdldef$params, private$jac_dynamic,
-                                      private$mdldef$endo_count, 
-                                      private$mdldef$njac_cols,
-                                      check_only = FALSE, debug = FALSE)
+      private$ss <- solve_first_order(private$ss, private$mdldef, 
+                                      private$jac_dynamic, check_only = FALSE, 
+                                      debug = FALSE)
       
       private$endo_data <- solve_perturbation_(private$ss,
                                                private$mdldef$max_endo_lag,
@@ -1282,7 +1274,7 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values, 
                           dims = as.integer(rep(private$mdldef$endo_count, 2))))
     },
-    prepare_dynamic_model = function() {
+    prepare_dynamic_model = function(solve_first_order =  FALSE) {
       #
       # prepare dll calculations or the internal calculator
       #
@@ -1294,8 +1286,24 @@ DynMdl <- R6Class("DynMdl",
         # a function that calls another function.
         #
       } else if (private$calc == "internal") {
-        prepare_internal_dyn(private$mdldef$model_index, private$exo_data,
-                              nrow(private$exo_data), private$mdldef$params)
+        
+        if (solve_first_order) {
+          # for method check or solve_perturbation, we should use the static 
+          # exos for computing the Jacobian
+          
+          # max_lag and max_lead computed in the following way are not the same
+          # as mdldef$max_lag or mdldef$max_lead when max_laglead_1 = TRUE:
+          lead_lag_incidence <- private$mdldef$lead_lag_incidence
+          max_lag <- -as.integer(colnames(lead_lag_incidence)[1])
+          max_lead <- as.integer(colnames(lead_lag_incidence)[ncol(lead_lag_incidence)])
+          nper <- max_lag + max_lead + 1
+          exo_data <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
+        } else {
+          exo_data <- private$exo_data
+        }
+         
+         prepare_internal_dyn(private$mdldef$model_index, exo_data,
+                              nrow(exo_data), private$mdldef$params)
       }
       
       # prepare the auxiliary variables

@@ -1,15 +1,18 @@
 # construct the solution of the linear state space model.
 # also computes the eigenvalues.
 #' @importFrom regts printobj
-solve_first_order <- function(ss, lead_lag_incidence, static_exos,
-                              static_endos, params, jac_dynamic,
-                              nendo, njac_cols, check_only = FALSE,
+solve_first_order <- function(ss, mdldef, jac_dynamic, check_only = FALSE,
                               debug = FALSE) {
   
-  if (is.null(ss)) {
-    ss <- init_state_space(length(static_exos), lead_lag_incidence, debug)
-  }
+  lead_lag_incidence <- mdldef$lead_lag_incidence
+  static_exos <- mdldef$exos
+  static_endos <- mdldef$endos
+  params <- mdldef$params
+  nendo <- mdldef$endo_count
+  njac_cols <- mdldef$njac_cols
   
+  # max_lag and max_lead computed in the following way are not the same
+  # as mdldef$max_lag or mdldef$max_lead when max_laglead_1 = TRUE:
   max_lag <- -as.integer(colnames(lead_lag_incidence)[1])
   max_lead <- as.integer(colnames(lead_lag_incidence)[ncol(lead_lag_incidence)])
   
@@ -20,9 +23,15 @@ solve_first_order <- function(ss, lead_lag_incidence, static_exos,
   if (max_lag > 1 || max_lead > 1) {
     stop(paste("Function solve_first_order does not work for models",
                "with max_lag > 1 or max_lead > 1.\n",
-               "Tip: call function dyn_mdl with option max_laglead = TRUE."))
+               "Tip: call function dyn_mdl with option max_laglead_1 = TRUE."))
   }
   
+  
+  if (is.null(ss)) {
+    ss <- init_state_space(length(static_exos), lead_lag_incidence, debug)
+  }
+  
+ 
   # calculate the Jacobian
   nper <- max_lag + max_lead + 1
   exos <- matrix(rep(static_exos, each = nper), nrow = nper)
