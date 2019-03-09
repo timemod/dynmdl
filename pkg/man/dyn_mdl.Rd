@@ -4,17 +4,23 @@
 \alias{dyn_mdl}
 \title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
 \usage{
-dyn_mdl(mod_file, period, data, base_period, calc = c("R", "bytecode",
-  "dll", "internal"), fit_mod_file, debug = FALSE, dll_dir,
+dyn_mdl(mod_file, period, data, base_period = NULL, calc = c("R",
+  "bytecode", "dll", "internal"), fit_mod_file, debug = FALSE, dll_dir,
   max_laglead_1 = FALSE, nostrict = FALSE, fit = TRUE)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
 
-\item{period}{a \code{\link[regts]{period_range}} object}
+\item{period}{a \code{\link[regts]{period_range}} object specifying the
+model period, i.e. the period range for which the model will be solved. Thus
+this period range excludes the lag and lead period.}
 
 \item{data}{the model data as a  \code{\link[regts]{regts}} object with column
 names}
+
+\item{base_period}{a \code{\link[regts]{period}} object specifying
+the base period for the trends. This is used if the model has trend variables.
+All trend variables will be equal to 1 at the base period.}
 
 \item{calc}{Method used to evaluate the model equations. 
 Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and 

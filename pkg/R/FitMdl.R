@@ -54,13 +54,14 @@
 FitMdl <- R6Class("FitMdl",
   inherit = DynMdl,
   public = list(
-    initialize = function(mdldef, fit_info, equations, calc, dll_dir, dll_file,
-                          debug = FALSE) {
+    initialize = function(mdldef, fit_info, equations, base_period, 
+                          calc, dll_dir, dll_file, debug = FALSE) {
 
       # no arguments supplied
       if (nargs() == 0) return()
       
-      super$initialize(mdldef, equations, calc, dll_dir,  dll_file)
+      super$initialize(mdldef, equations, base_period, calc, dll_dir,  
+                       dll_file)
       
       private$fit_info <- fit_info
     }, 

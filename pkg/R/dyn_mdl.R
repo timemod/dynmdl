@@ -5,9 +5,14 @@
 #' object, which is an extension of a \code{DynMdl} object.
 #'
 #' @param mod_file the name of the model file (including extension .mod)
-#' @param period a \code{\link[regts]{period_range}} object
+#' @param period a \code{\link[regts]{period_range}} object specifying the
+#' model period, i.e. the period range for which the model will be solved. Thus
+#' this period range excludes the lag and lead period.
 #' @param data the model data as a  \code{\link[regts]{regts}} object with column
 #' names
+#' @param base_period a \code{\link[regts]{period}} object specifying
+#' the base period for the trends. This is used if the model has trend variables.
+#' All trend variables will be equal to 1 at the base period.
 #' @param calc Method used to evaluate the model equations. 
 #' Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and 
 #' \code{"internal"}. See details.
@@ -39,7 +44,7 @@
 #' @importFrom readr read_file
 #' @importFrom regts range_union
 #' @importFrom tools file_path_sans_ext
-dyn_mdl <- function(mod_file, period, data, base_period, 
+dyn_mdl <- function(mod_file, period, data, base_period = NULL, 
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, nostrict = FALSE,
@@ -128,9 +133,8 @@ dyn_mdl <- function(mod_file, period, data, base_period,
     }
     fit_mod_text <- read_file(fit_mod_file)
     equations <- get_equations(fit_mod_text)
-    mdl <- FitMdl$new(mdldef, fit_info, equations, calc, dll_dir, dll_file,
-                      debug)
-    
+    mdl <- FitMdl$new(mdldef, fit_info, equations, base_period, calc, 
+                      dll_dir, dll_file, debug)
   } else {
     
     # NO FIT 
@@ -138,8 +142,8 @@ dyn_mdl <- function(mod_file, period, data, base_period,
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, max_laglead_1, 
-                            nostrict, internal_calc, 0L)
+    mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, 
+                            max_laglead_1, nostrict, internal_calc, 0L)
     
     if (calc == "dll") {
       dll_file <- compile_c_functions(dll_dir)
@@ -147,36 +151,31 @@ dyn_mdl <- function(mod_file, period, data, base_period,
       dll_file <- NA_character_
     }
     equations <- get_equations(mod_text)
-    mdl <- DynMdl$new(mdldef, equations, calc, dll_dir, dll_file)
+    mdl <- DynMdl$new(mdldef, equations, base_period, calc, dll_dir, dll_file)
   }
   
   if (!debug) {
     unlink(preprocessed_mod_file)
   }
   
-  if (!missing(period)) {
-    period <- as.period_range(period)
-  }
-  
-  if (!missing(base_period)) {
-    mdl$set_base_period(base_period)
-  }
-  
   if (!missing(data)) {
+    data <- as.regts(data)
+    if (is.null(colnames(data))) {
+      stop("data has no column names")
+    }
     data_period <- get_period_range(data)
+    
     if (!missing(period)) {
       # data_period should be the union of the period_range of data
       # and the supplied period extended with a lag and lead period.
+      period <- as.period_range(period)
       data_period_2 <- period_range(
         start_period(period) - mdl$get_max_lag(),
         end_period(period)   + mdl$get_max_lead())
       data_period <- range_union(data_period, data_period_2)
     }
-    if (is.null(colnames(data))) {
-      stop("data has no column names")
-    } else {
-      mdl$init_data(data_period = data_period, data = data)
-    }
+  
+    mdl$init_data(data_period = data_period, data = data)
   }
   
   if (!missing(period)) {

@@ -137,12 +137,14 @@ setOldClass("regts")
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(
-    initialize = function(mdldef, equations, calc, dll_dir, dll_file) {
+    initialize = function(mdldef, equations, base_period, calc, dll_dir, 
+                          dll_file) {
 
       # no arguments supplied
       if (nargs() == 0) return()
       
       private$equations <- equations
+      private$base_period <- base_period
       private$calc <- calc
       private$dll_dir <- dll_dir
       private$dll_file <- dll_file
@@ -298,13 +300,14 @@ DynMdl <- R6Class("DynMdl",
         if (is.null(private$model_period)) {
           private$model_period <- period_range(startp, endp)
           private$period_shift <- start_period(private$model_period) - 
-          if (is.null(private$base_period)) {
-            private$base_period <- start_period(private$model_period)
-          } 
+                                  start_period(data_period)
         } 
       }
       
       private$data_period <- data_period
+      if (is.null(private$base_period)) {
+        private$base_period <- start_period(private$model_period)
+      } 
       
       nper <- nperiod(data_period)
       if (private$mdldef$exo_count > 0) {
@@ -345,24 +348,19 @@ DynMdl <- R6Class("DynMdl",
         data_period <- period_range(
           start_period(period) - private$mdldef$max_lag,
           end_period(period)   + private$mdldef$max_lead)
+        private$model_period <- period
         self$init_data(data_period)
       } else  {
         private$check_model_period(period) 
+        private$model_period <- period
       }
-    
-      private$model_period <- period
+      
       private$period_shift <- start_period(private$model_period) -
                               start_period(private$data_period)
       
-     if (is.null(private$base_period)) {
-        private$base_period <- start_period(private$model_period)
-     } 
+     
       
      return(invisible(self))
-    },
-    set_base_period = function(period) {
-      private$base_period <- as.period(period)
-      return(invisible(self))
     },
     get_period = function() {
       return (private$model_period)
