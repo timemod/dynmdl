@@ -1458,14 +1458,14 @@ DynMdl <- R6Class("DynMdl",
           # NOTE: creating a new res array every function call is
           # inefficient, therefore use private$res.
           .Call("f_dynamic_", y, x, params, it - 1, 
-                nrow(private$exo_data), private$res, PACKAGE = "mdl_functions")
+                nrow(x), private$res, PACKAGE = "mdl_functions")
           return(private$res)
         }
         
         private$jac_dynamic <- function(y, x, params, it) {
           # NOTE: creating a new jac every function call is
           # inefficient, therefore use private$jac
-          .Call("jac_dynamic_", y, x, params, it - 1, nrow(private$exo_data),
+          .Call("jac_dynamic_", y, x, params, it - 1, nrow(x),
                 private$jac$rows, private$jac$cols, private$jac$values,
                 PACKAGE = "mdl_functions")
           return(private$jac)
