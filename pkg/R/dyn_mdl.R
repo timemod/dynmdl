@@ -381,9 +381,6 @@ convert_trend_info <- function(trend_info, exo_names, endo_names) {
   trend_info$has_deflated_endos <- nrow(trend_info$deflated_endo) > 0
   
   
-  cat("trend_info\n")
-  print(trend_info)
-  
   return(trend_info)
 }
   
