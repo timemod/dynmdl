@@ -652,6 +652,7 @@ DynMdl <- R6Class("DynMdl",
         control_$maxiter <- 20
       } else {
         control_$maxit <- 20
+        control_$silent <- NULL
       }
       control_[names(control)] <- control
       
@@ -662,19 +663,27 @@ DynMdl <- R6Class("DynMdl",
       if (stacked_time) {
         
         # preparations
-        if (solver != "umfpackr") {
-          stop(paste("For forward looking models only the umfpackr",
-                     "solver is allowed"))
-        }
+     
         nper <- nperiod(private$model_period)
         lags <- private$get_endo_lags()
         leads <- private$get_endo_leads()
         x <- private$get_solve_endo()
         
-        ret <- umf_solve_nl(x, private$get_residuals,
-                            private$get_jac, lags = lags,
-                            leads = leads, nper = nper,
-                            control = control_, ...)
+        if (solver == "umfpackr") {
+          ret <- umf_solve_nl(x, private$get_residuals,
+                              private$get_jac, lags = lags,
+                              leads = leads, nper = nper,
+                              control = control_, ...)
+        } else if (solver == "nleqslv") {
+          jac_fun <- function(x, lags, leads, nper) {
+            return(as(private$get_jac(x, lags, leads, nper), "matrix"))
+          }
+          ret <- nleqslv(x, fn = private$get_residuals, jac = jac_fun, 
+                         method = "Newton", lags = lags, leads = leads, 
+                         nper = nper, control = control_, ...)
+          ret$solved <- ret$termcd == 1
+        }
+        
       } else {
         ret <- solve_backward_model(private$mdldef, private$calc,
                                     private$model_period, private$data_period,
