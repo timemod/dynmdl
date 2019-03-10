@@ -252,17 +252,10 @@ DynMdl <- R6Class("DynMdl",
     init_data = function(data_period, data, upd_mode = c("upd", "updval"))  {
       
       upd_mode <- match.arg(upd_mode)
-      
-      if (!missing(data)) {
-        p_data <- get_period_range(data)
-      }
-      if (!missing(data_period)) {
-        data_period <- as.period_range(data_period)
-      }
-      
-      check_model_per <- TRUE
-      
+
       if (missing(data_period)) {
+        # data_period not specified: determine data_period from data and 
+        # model_period
         if (missing(data)) {
           if (is.null(private$model_period)) {
             stop(paste("If neither data_period nor data have been specified", 
@@ -272,39 +265,47 @@ DynMdl <- R6Class("DynMdl",
             data_period <- period_range(
               start_period(p) - private$mdldef$max_lag,
               end_period(p)   + private$mdldef$max_lead)
-            check_model_per <- FALSE
           }
         } else if (is.null(private$model_period)) {
-          data_period <- p_data
+          data_period <- get_period_range(data)
         } else {
           p <- private$model_period
+          p_data <- get_period_range(data)
           data_period <- period_range(
             min(start_period(p) - private$mdldef$max_lag, start_period(p_data)),
             max(end_period(p)   + private$mdldef$max_lead, end_period(p_data)))
-          check_model_per <- FALSE
+        }
+      } else {
+        # data period specified
+        data_period <- as.period_range(data_period)
+        if (!is.null(private$model_period)) {
+          mp <- private$model_period
+          startp <- start_period(mp) - private$mdldef$max_lag
+          endp <- end_period(mp) + private$mdldef$max_lead
+          if (start_period(data_period) > startp || 
+              end_period(data_period)  < endp) {
+            stop(paste("The data period should include the range", 
+                      as.character(mp), "."))
+          }
         }
       }
     
       
-      if (check_model_per) {
-      
+      if (is.null(private$model_period)) {
         startp <- start_period(data_period) + private$mdldef$max_lag
         endp <- end_period(data_period) - private$mdldef$max_lead
         if (endp < startp) {
           stop(paste("The data period is too short. It should contain at least",
-                   private$mdldef$max_lag + private$mdldef$max_lead + 1, 
-                   "periods"))
+               private$mdldef$max_lag + private$mdldef$max_lead + 1, 
+               "periods"))
         }
-      
-
-        if (is.null(private$model_period)) {
-          private$model_period <- period_range(startp, endp)
-          private$period_shift <- start_period(private$model_period) - 
-                                  start_period(data_period)
-        } 
+        private$model_period <- period_range(startp, endp)
       }
       
+      
       private$data_period <- data_period
+      private$period_shift <- start_period(private$model_period) - 
+                               start_period(data_period)
       if (is.null(private$base_period)) {
         private$base_period <- start_period(private$model_period)
       } 
