@@ -173,8 +173,27 @@ FitMdl <- R6Class("FitMdl",
     get_data = function(pattern, names, period = private$data_period,
                         detrended = FALSE) {
       names <- private$get_names_fitmdl_("all", names, pattern)
-      return(super$get_data(period = period, names = names, 
-                            detrended = detrended))
+      if (length(names) == 0) {
+        return(NULL)
+      }
+      inst_names <- intersect(names, private$fit_info$instruments)
+      no_inst_names <- setdiff(names, inst_names)
+    
+      # NOTE: we cannot simply use super$get_data(names = names,...),
+      # because this method calls method get_endo_data() of FitMdl and this 
+      # method does not return fit instruments.
+      no_inst_data <- super$get_data(names = no_inst_names, period = period, 
+                                     detrended = detrended)
+      if (length(inst_names) > 0) {
+        inst_data <- self$get_fit_instruments(names = inst_names, 
+                                              period = period)
+        inst_data <- update_ts_labels(inst_data, private$mdldef$labels)
+        data <- cbind(no_inst_data, inst_data)
+        data <- data[ , order(colnames(data)), drop = FALSE]
+      } else {
+        data <- no_inst_data
+      }
+      return(data)
     },
     get_endo_data = function(pattern, names, period = private$data_period, 
                              detrended = FALSE) {
@@ -194,19 +213,15 @@ FitMdl <- R6Class("FitMdl",
       }
       return(fit)
     },
-    get_fit_instruments = function(names = private$fit_info$instruments, 
-                             period = private$model_period) {
-      if (!missing(names)) {
-        names <- intersect(names, sort(private$fit_info$instruments))
-      }
-      ret <- private$endo_data[period, names, drop = FALSE]
-      cols <- !apply(ret == 0, 2, all)
-      if (!any(cols)) {
-        # no fit instruments
+    get_fit_instruments = function(pattern, names, 
+                                   period = private$model_period) {
+      period <- super$convert_period_arg(period)
+      names <- private$get_names_fitmdl_("inst", names, pattern)
+      if (length(names) == 0) {
         return(NULL)
-      } else {
-        return(zero_trim(ret[, cols, drop = FALSE]))
       }
+      data <- private$endo_data[period, names, drop = FALSE]
+      return(update_ts_labels(data, private$mdldef$labels))
     },
     get_lagrange = function(names = private$fit_info$l_vars,
                             period = private$model_period) {
@@ -334,11 +349,14 @@ FitMdl <- R6Class("FitMdl",
       
       endo_names <- private$fit_info$orig_endos
       exo_names <- private$fit_info$orig_exos
-    
+      inst_names <- private$fit_info$instruments
+      
       if (type == "all") {
-        vnames <- union(endo_names, exo_names)
+        vnames <- union(union(endo_names, exo_names), inst_names)
       } else if (type == "endo") {
         vnames <- endo_names
+      } else if (type == "inst") {
+        vnames <- inst_names
       } else {
         vnames <- exo_names
       }
@@ -348,17 +366,26 @@ FitMdl <- R6Class("FitMdl",
         if (length(error_vars) > 0) {
           if (name_err != "silent") {
             error_vars <- paste0("\"", error_vars, "\"")
-            type_texts <- c(all = "", endo = "endogenous ", exo = "exogenous ")
-            type_text <- type_texts[[type]]
+            error_var_txt <- paste(error_vars, collapse = ", ")
             error_fun <- if (name_err == "warn") warning else stop
-            if (length(error_vars) == 1) {
-              a_word <- if (type == "all") "a " else "an "
-              error_fun(paste0(error_vars, " is not ", a_word, type_text, 
-                          "model variable"))
+            if (type == "inst") {
+              if (length(error_vars) == 1) {
+                msg <- "is not a fit instrument" 
+              } else {
+                msg <-  "are no fit instruments"
+              }
             } else {
-              error_fun(paste0(paste(error_vars, collapse = ", "),
-                          " are no ", type_text, "model variables"))
+              type_texts <- c(all = "", endo = "endogenous ", 
+                              exo = "exogenous ")
+              type_text <- type_texts[[type]]
+              if (length(error_vars) == 1) {
+                a_word <- if (type == "all") "a " else "an "
+                msg <- paste0("is not ", a_word, type_text, "model variable")
+              } else {
+                msg <- paste0("are no ", type_text, "model variables")
+              }
             }
+            error_fun(paste(error_var_txt, msg)) 
           }
           names <- intersect(names, vnames)
         }
@@ -375,8 +402,7 @@ FitMdl <- R6Class("FitMdl",
           names <- pattern_names
         }
       }
-      return(names)
-     
+      
       return(names)
     }
   )

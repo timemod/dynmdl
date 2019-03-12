@@ -73,10 +73,12 @@ test_that("dynare result equal to islm result", {
 
 test_that("get_data", {
   p <- mdl$get_period()
+  mdp <- mdl$get_data_period()
   endo_data <- mdl$get_endo_data()
   exo_data <- mdl$get_exo_data()
   expect_identical(colnames(exo_data), c("g", "ms"))
-  all_data <- cbind(endo_data, exo_data)
+  fit_inst <- mdl$get_fit_instruments(period = mdp)
+  all_data <- cbind(endo_data, exo_data, fit_inst)
   all_data <- all_data[, order(colnames(all_data))]
 
   expect_equal(mdl$get_data(), all_data)
@@ -88,11 +90,18 @@ test_that("get_data", {
                 all_data[p, c("ms", "y", "yd")])
 
   # errors
-  expect_error(mdl$get_data(names = "ui"), "\"ui\" is not a model variable")
+  expect_error(mdl$get_fit_instruments(names = "uii"), 
+               "\"uii\" is not a fit instrument")
+  expect_error(mdl$get_fit_instruments(names = c("uc", "uii", "aap")), 
+               "\"uii\", \"aap\" are no fit instruments")
+  expect_error(mdl$get_data(names = "uii"), "\"uii\" is not a model variable")
   expect_error(mdl$get_exo_data(names = c("ui", "aap")),
               "\"ui\", \"aap\" are no exogenous model variables")
 
-  expect_null(mdl$get_data(pattern = "^u"))
+  expect_null(mdl$get_endo_data(pattern = "^u"))
+  expect_null(mdl$get_data(pattern = "^z"))
+  expect_null(mdl$get_fit_instruments(pattern = "^z"))
+  
 })
 
 

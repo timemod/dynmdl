@@ -423,39 +423,32 @@ DynMdl <- R6Class("DynMdl",
     get_data = function(pattern, names, period = private$data_period,
                         detrended = FALSE) {
       
-      period <- private$convert_period_arg(period)
-      if (missing(pattern) && missing(names) && 
-          private$mdldef$aux_vars$aux_count == 0) {
-        endo_data <- private$endo_data[period, ]
-        exo_data <- private$exo_data[period, ]
-      } else {
+      if (missing(pattern)  && missing(names)) {
+        endo_data <- self$get_endo_data(period = period, detrended = detrended)
+        exo_data <- self$get_exo_data(period = period)
+        trend_data <- self$get_trend_data(period = period)
+      } else { 
         names <- private$get_names_("all", names, pattern)
         if (length(names) == 0) {
           return(NULL)
         }
-        endo_data <- private$endo_data[period , 
-                                       intersect(names, private$endo_names),
-                                       drop = FALSE]
-        if (detrended) {
-          endo_data <- private$detrend_endo_data(endo_data)
-        }
-        exo_data <- private$exo_data[period , 
-                                     intersect(names, private$exo_names),
-                                     drop = FALSE]
+        endo_names <- intersect(names, private$endo_names)
+        exo_names <- intersect(names, private$exo_names)
+        trend_names <- intersect(names, 
+                                 private$mdldef$trend_info$trend_vars$names)
+        endo_data <- self$get_endo_data(names = endo_names, period = period, 
+                                      detrended = detrended)
+        exo_data <- self$get_exo_data(names = exo_names, period = period)
+        trend_data <- self$get_trend_data(names = trend_names, period = period)
       }
+    
+      data_list <- list(endo_data, exo_data, trend_data)
+      sel <- sapply(data_list, FUN = function(x) {!is.null(x) && NCOL(x) > 0})
+      data_list <- data_list[sel]
+      data <- do.call(cbind, data_list)
+      data <- data[ , order(colnames(data)), drop = FALSE]
       
-      nendo <- ncol(endo_data)
-      nexo <- ncol(exo_data)
-      if (nendo > 0 && nexo > 0) {
-        ret <- cbind(endo_data, exo_data)
-        ret <- ret[ , order(colnames(ret))]
-      } else if (nendo == 0) {
-        ret <- exo_data
-      } else if (nexo == 0) {
-        ret <- endo_data
-      }
-      
-      return(update_ts_labels(ret, private$mdldef$labels))
+      return(update_ts_labels(data, private$mdldef$labels))
     },
 
     get_endo_data = function(pattern, names, period = private$data_period,
@@ -487,18 +480,15 @@ DynMdl <- R6Class("DynMdl",
     get_trend_data = function(names, pattern, period = private$data_period) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       period <- private$convert_period_arg(period)
-      trend_var_info <- private$mdldef$trend_info$trend_vars
-      if (missing(names) && missing(pattern)) {
-        names <- trend_var_info$names
-      } else if (missing(pattern)) {
-        names <- intersect(names, trend_var_info$names) 
-        # TODO: give an error if names contains invalid trend var names
+      if (missing(pattern) && missing(names)) {
+        return(private$trend_data[period, ])
       } else {
-        # TODO: give an error if names contains invalid trend var names
-        names <- union(intersect(names, trend_var_info$names),
-                       grep(pattern, trend_var_info$names, value = TRUE))
+        names <- private$get_names_("trend", names, pattern)
+        if (length(names) == 0) {
+          return(NULL)
+        }
+        return(private$trend_data[period, names, drop = FALSE])
       }
-      return(private$trend_data[period, names, drop = FALSE])
     },
     get_vars_pars = function(period = private$data_period, detrended = FALSE) {
         data_list <- as.list(self$get_data(period = period, 
@@ -975,11 +965,14 @@ DynMdl <- R6Class("DynMdl",
     res = numeric(),
     solve_status = NA_character_,
     
-    get_names_ = function(type, names, pattern) {
+    get_names_ = function(type, names, pattern,
+                          name_err = c("stop", "warn", "silent")) {
       
       # This function selects model variable names from names and pattern.
       # Tt gives an error if names contain any invalid name for the 
       # specified type of model variable.
+      
+      name_err <- match.arg(name_err)
       
       if (type %in% c("all", "endo")) {
         endo_names <- private$endo_names
@@ -988,30 +981,40 @@ DynMdl <- R6Class("DynMdl",
         }
       }
       
+      if (type %in% c("all", "trend")) {
+        trend_names <- private$mdldef$trend_info$trend_vars$names
+      }
+      
       # return model variable names
       if (type == "all") {
-        vnames <- union(endo_names, private$exo_names)
+        vnames <- union(union(endo_names, private$exo_names), trend_names)
       } else if (type == "endo") {
         vnames <- endo_names
-      } else {
+      } else if (type == "exo") {
         vnames <- private$exo_names
+      } else {
+        vnames <- trend_names
       }
       if (!missing(names)) {
         error_vars <- setdiff(names, vnames)
         if (length(error_vars) > 0) {
           error_vars <- paste0("\"", error_vars, "\"")
-          type_texts <- c(all = "", endo = "endogenous ", exo = "exogenous ")
+          error_var_txt <- paste(error_vars, collapse = ", ")
+          error_fun <- if (name_err == "warn") warning else stop
+          type_texts <- c(all = "model", endo = "endogenous model", 
+                          exo = "exogenous model", trend = "trend")
           type_text <- type_texts[[type]]
           if (length(error_vars) == 1) {
-            a_word <- if (type == "all") "a " else "an "
-            stop(paste0(error_vars, " is not ", a_word, type_text, 
-                        "model variable"))
+            a_word <- if (type %in% c("trend", "all")) "a" else "an"
+            msg <- paste("is not", a_word, type_text, "variable")
           } else {
-            stop(paste0(paste(error_vars, collapse = ", "),
-                        " are no ", type_text, "model variables"))
+            msg <- paste("are no", type_text, "variables")
           }
+          error_fun(paste(error_var_txt, msg)) 
         }
+        names <- intersect(names, vnames)
       }
+   
       if (missing(pattern) && missing(names)) {
         names <- vnames
       } else if (!missing(pattern)) {
@@ -1025,7 +1028,6 @@ DynMdl <- R6Class("DynMdl",
       }
       return(names)
     },
-    
     set_data_ = function(data, names, type, upd_mode = "upd", fun, 
                          init_data = FALSE) {
       # generic function to set or update the endogenous or exogenous
