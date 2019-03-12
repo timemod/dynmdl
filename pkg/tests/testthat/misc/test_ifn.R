@@ -52,12 +52,28 @@ test_that("solve", {
 
 test_that("solve_steady, check and solve_perturb give an error", {
   # for the ifn model the steady state cannot be computed  
-  msg <- paste("Solving the steady state not succesful.\nThe Jacobian is \\(nearly\\)",
-              "singular. The inverse condition is 0.\n")
-  outp <- capture_output(expect_warning(mdl$solve_steady(), msg))
-  expect_equal(outp, "No convergence after 1 iterations")
-  outp <- capture_output(expect_error(expect_warning(mdl$check(), msg), 
-                                      "No steady state ... checking model is not possible"))
-  error_msg <-  "Method solve_perturbation does not work for models with exogenous lags or leads"
-  expect_warning(expect_error(mdl$solve_perturbation(), error_msg), msg)
+
+  omsg <- paste("The Jacobian is \\(nearly\\)",
+                "singular at iteration 1. The inverse condition is 0.")
+  wmsg <- paste("Solving the steady state not succesful.\nThe Jacobian is",
+                "\\(nearly\\) singular at iteration 1.",
+                "The inverse condition is 0.")
+  expect_warning(
+    expect_output(mdl$solve_steady(), omsg),
+   wmsg)
+  
+  expect_warning(
+    expect_output(mdl$solve_steady(control = list(silent = TRUE)), NA),
+    wmsg)
+  
+  emsg <- "No steady state ... checking model is not possible"
+  expect_warning(
+    expect_error(mdl$check(), emsg), 
+    wmsg)
+    
+  emsg <- paste("Method solve_perturbation does not work for models with",
+                "exogenous lags or leads")
+  expect_warning(
+    expect_error(mdl$solve_perturbation(), emsg), 
+    wmsg)
 })
