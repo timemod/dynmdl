@@ -421,10 +421,10 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     get_data = function(pattern, names, period = private$data_period,
-                        detrended = FALSE) {
+                        trend = TRUE) {
       
       if (missing(pattern)  && missing(names)) {
-        endo_data <- self$get_endo_data(period = period, detrended = detrended)
+        endo_data <- self$get_endo_data(period = period, trend = trend)
         exo_data <- self$get_exo_data(period = period)
         trend_data <- self$get_trend_data(period = period)
       } else { 
@@ -437,7 +437,7 @@ DynMdl <- R6Class("DynMdl",
         trend_names <- intersect(names, 
                                  private$mdldef$trend_info$trend_vars$names)
         endo_data <- self$get_endo_data(names = endo_names, period = period, 
-                                      detrended = detrended)
+                                       trend = trend)
         exo_data <- self$get_exo_data(names = exo_names, period = period)
         trend_data <- self$get_trend_data(names = trend_names, period = period)
       }
@@ -452,7 +452,7 @@ DynMdl <- R6Class("DynMdl",
     },
 
     get_endo_data = function(pattern, names, period = private$data_period,
-                             detrended = FALSE) {
+                             trend = TRUE) {
       period <- private$convert_period_arg(period)
       if (missing(pattern) && missing(names) && 
           private$mdldef$aux_vars$aux_count == 0) {
@@ -464,7 +464,7 @@ DynMdl <- R6Class("DynMdl",
         }
         endo_data <- private$endo_data[period, names, drop = FALSE]
       }
-      if (!detrended) {
+      if (trend) {
         endo_data <- private$trend_endo_data(endo_data)
       }
       return(update_ts_labels(endo_data, private$mdldef$labels))
@@ -490,9 +490,8 @@ DynMdl <- R6Class("DynMdl",
         return(private$trend_data[period, names, drop = FALSE])
       }
     },
-    get_vars_pars = function(period = private$data_period, detrended = FALSE) {
-        data_list <- as.list(self$get_data(period = period, 
-                                           detrended = detrended))
+    get_vars_pars = function(period = private$data_period, trend = TRUE) {
+        data_list <- as.list(self$get_data(period = period, trend = trend))
         trend_data_list <- as.list(self$get_trend_data(period = period))
         param_list <- as.list(self$get_param())
         ret <- c(data_list, trend_data_list, param_list)
@@ -1014,12 +1013,15 @@ DynMdl <- R6Class("DynMdl",
         }
         names <- intersect(names, vnames)
       }
-   
+      return(private$select_names(vnames, names, pattern))
+    },
+    select_names = function(all_names, names, pattern) {
+      # this function selects names from vector all_names, 
+      # based on a list of names and a regular expression
       if (missing(pattern) && missing(names)) {
-        names <- vnames
+        names <- all_names
       } else if (!missing(pattern)) {
-        sel <- grep(pattern, vnames)
-        pattern_names <- vnames[sel]
+        pattern_names <- grep(pattern, all_names, value = TRUE)
         if (!missing(names)) {
           names <- union(pattern_names, names)
         } else {

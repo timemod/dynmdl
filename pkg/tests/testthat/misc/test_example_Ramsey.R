@@ -56,9 +56,35 @@ test_that("simulation", {
   mdl$set_endo_values(k_2000_trended, names = "k", period = p)
   mdl$solve(control = list(silent = TRUE))
   
-  expect_equal(mdl$get_endo_data(period = per, detrended = TRUE), 
+  expect_equal(mdl$get_endo_data(period = per, trend = FALSE), 
                dynare_result$endo, tol = 1e-6)
   
   # plot(mdl$get_endo_data(names = "k"))
   # lines(dynare_result$endo[, "k"], ylab = "k", col = "red")
+})
+
+test_that("trend_data", {
+  endo_data <- mdl$get_endo_data()
+  exo_data <- mdl$get_exo_data()
+  trend_data <- mdl$get_trend_data()
+  
+  all_data <- cbind(endo_data, exo_data, trend_data)
+  
+  dif <- tsdif(all_data, mdl$get_data())
+  expect_true(dif$equal)
+  
+  p <- period_range("2002")
+  dif2 <- tsdif(all_data[p], mdl$get_data(period = p))
+  expect_true(dif2$equal)
+  
+  c_trend <- mdl$get_data(names = "c")
+  c_no_trend <- mdl$get_data(names = "c", trend = FALSE)
+  x <- mdl$get_trend_data(names = "x")
+  expect_equal(c_no_trend * x, c_trend)
+  
+  # errors
+  expect_error(mdl$get_trend_data(names = "c"), 
+               "\"c\" is not a trend variable")
+  expect_error(mdl$get_endo_data(names = "x"), 
+               "\"x\" is not an endogenous model variable")
 })

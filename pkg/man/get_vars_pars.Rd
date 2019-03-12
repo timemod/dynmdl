@@ -18,7 +18,7 @@ exogenous variables used in the fit procedure.
 
 \preformatted{
 
-mdl$get_vars_pars(period = mdl$get_data_period())
+mdl$get_vars_pars(period = mdl$get_data_period(), trend = TRUE)
 
 }
 
@@ -31,6 +31,10 @@ mdl$get_vars_pars(period = mdl$get_data_period())
 \describe{
 \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
 object that can be coerced to a \code{period_range}}
+#' \item{\code{trend}}{a logical. This argument is used for model with
+trend variables. If \code{TRUE} (the default), then the
+endogenous variables are multiplied with their trends (called deflators
+in the mod file)}
 }
 }
 

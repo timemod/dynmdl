@@ -171,7 +171,7 @@ FitMdl <- R6Class("FitMdl",
       return(invisible(self))
     },
     get_data = function(pattern, names, period = private$data_period,
-                        detrended = FALSE) {
+                        trend = TRUE) {
       names <- private$get_names_fitmdl_("all", names, pattern)
       if (length(names) == 0) {
         return(NULL)
@@ -183,7 +183,7 @@ FitMdl <- R6Class("FitMdl",
       # because this method calls method get_endo_data() of FitMdl and this 
       # method does not return fit instruments.
       no_inst_data <- super$get_data(names = no_inst_names, period = period, 
-                                     detrended = detrended)
+                                     trend = trend)
       if (length(inst_names) > 0) {
         inst_data <- self$get_fit_instruments(names = inst_names, 
                                               period = period)
@@ -196,10 +196,9 @@ FitMdl <- R6Class("FitMdl",
       return(data)
     },
     get_endo_data = function(pattern, names, period = private$data_period, 
-                             detrended = FALSE) {
+                             trend = TRUE) {
       names <- private$get_names_fitmdl_("endo", names, pattern)
-      return(super$get_endo_data(period = period, names = names, 
-                                 detrended = detrended))
+      return(super$get_endo_data(period = period, names = names, trend = trend))
     },
     get_exo_data = function(pattern, names, period = private$data_period) {
       names <- private$get_names_fitmdl_("exo", names, pattern)
@@ -391,19 +390,7 @@ FitMdl <- R6Class("FitMdl",
         }
       }
       
-      if (missing(pattern) && missing(names)) {
-        names <- vnames
-      } else if (!missing(pattern)) {
-        sel <- grep(pattern, vnames)
-        pattern_names <- vnames[sel]
-        if (!missing(names)) {
-          names <- union(pattern_names, names)
-        } else {
-          names <- pattern_names
-        }
-      }
-      
-      return(names)
+      return(super$select_names(vnames, names, pattern))
     }
   )
 )

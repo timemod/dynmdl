@@ -151,27 +151,30 @@ NULL
 
 #' \code{\link{DynMdl}} methods: Retrieve timeseries from the model data
 #' @name get_data-methods
-#' @aliases get_data get_endo_data get_exo_data
+#' @aliases get_data get_endo_data get_exo_data get_trend_data
 #' @description
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' can be used to retrieve timeseries from the model data.
 #'
 #' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
-#' the \code{get-data} methods do not include the the auxiliary endogenous and
-#' exogenous variables used in the fit procedure. Use 
-#' \code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
-#' \code{\link{get_lagrange}} to obtain the various variables used 
-#' in the fit procedure.
+#' \code{get_data} also returns the fit instruments. In contrast,
+#' \code{get_endo_data} does not return these fit instruments.
+#' Both \code{get_data} and \code{get_endo_data} do not return
+#' the Lagrange multipliers used in the fit procedure. Use method  
+#' \code{\link{get_lagrange}} to obtain these Lagrange multipliers.
 #'
 #' @section Usage:
 #' \preformatted{
 #' 
-#' mdl$get_data(pattern, names, period = mdl$get_data_period())
+#' mdl$get_data(pattern, names, period = mdl$get_data_period(), 
+#'              trend = TRUE)
 #' 
-#' mdl$get_endo_data(pattern, names, period = mdl$get_data_period())
+#' mdl$get_endo_data(pattern, names, period = mdl$get_data_period(),
+#'                   trend = TRUE)
 #'
 #' mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
-#'
+#' 
+#' mdl$get_trend_data(pattern, names, period = mdl$get_data_period())
 #' }
 #'
 #' \code{mdl} is an \code{\link{DynMdl}} object
@@ -179,24 +182,32 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{names}}{a character vector with variable names}
 #' \item{\code{pattern}}{a regular expression}
+#' \item{\code{names}}{a character vector with variable names}
 #' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
 #' object that can be coerced to a \code{period_range}}
+#' \item{\code{trend}}{a logical. This argument is used for model with
+#' trend variables. If \code{TRUE} (the default), then the
+#' endogenous variables are multiplied with their trends (called deflators
+#' in the mod file)}
 #' }
 #' 
 #' If neither \code{names} nor \code{pattern} have been specified,
-#' then all endogenous or exogenous variables are set to the specified value.
+#' then all variables with the specific type are returned.
 #' @section Methods:
 #' \itemize{
 #' 
-#' \item \code{get_data}: All model variables
-#' \item \code{get_endo_data}: Endogenous model variables
-#'
+#' \item \code{get_data}: All model variables: exogenous and endogenous model
+#' variables, trends variables, and fit instruments for \code{\link{FitMdl}}
+#' objects
+#' \item \code{get_endo_data}: Endogenous model variables, excluding
+#' fit instruments.
 #' \item \code{get_exo_data}: Exogenous model variables
+#' \item \code{get_trend_data}: Trend variables (variables declared with
+#' \code{trend_var} in the mod file).
 #' }
 #'
-#' @seealso \code{\link{get_fit}}, \code{\link{get_fit_instruments}},
+#' @seealso \code{\link{get_fit-methods}}, \code{\link{get_fit}}, \code{\link{get_fit_instruments}},
 #' \code{\link{get_lagrange}} and \code{\link{get_vars_pars}}.
 #' @examples
 #' mdl <- islm_mdl(period = "2017Q1/2017Q3")
@@ -1071,7 +1082,7 @@ NULL
 #' @section Usage:
 #' \preformatted{
 #'
-#' mdl$get_vars_pars(period = mdl$get_data_period())
+#' mdl$get_vars_pars(period = mdl$get_data_period(), trend = TRUE)
 #'
 #' }
 #'
@@ -1082,6 +1093,10 @@ NULL
 #' \describe{
 ##' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
 #' object that can be coerced to a \code{period_range}}
+#' #' \item{\code{trend}}{a logical. This argument is used for model with
+#' trend variables. If \code{TRUE} (the default), then the
+#' endogenous variables are multiplied with their trends (called deflators
+#' in the mod file)}
 #' }
 #' 
 #'
