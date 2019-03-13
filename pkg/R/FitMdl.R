@@ -99,8 +99,7 @@ FitMdl <- R6Class("FitMdl",
     get_sigma_names = function() {
       return(private$fit_info$sigmas)
     },
-    set_fit = function(data, names, upd_mode = c("upd", "updval"),
-                       name_err = "stop") {
+    set_fit = function(data, names, upd_mode = "upd", name_err = "stop") {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       if (!inherits(data, "ts")) {
@@ -108,7 +107,7 @@ FitMdl <- R6Class("FitMdl",
         # length(x) == 0
         stop("Argument data is not a timeseries object")
       }
-      data <- as.regts(data)
+      
       if (frequency(data) != frequency(private$data_period)) {
         stop(paste0("The frequency of data does not agree with the data",
                     " period ", as.character(private$data_period), "."))
@@ -116,9 +115,8 @@ FitMdl <- R6Class("FitMdl",
       
       upd_mode <- match.arg(upd_mode)
       period <- range_intersect(get_period_range(data), private$data_period)
-      if (upd_mode == "updval") {
-        stop("upd_mode updval has not yet implemented")
-      }
+      if (is.null(period)) return(invisible(NULL))
+     
       if (missing(names)) {
         if (!is.null(colnames(data))) {
           names <- colnames(data)
@@ -127,24 +125,33 @@ FitMdl <- R6Class("FitMdl",
                      "In that case, argument names should be specified"))
         }
       }
-      names <- private$get_names_fitmdl_("endo", names, name_err = name_err)
+      fit_names <- private$get_names_fitmdl_("endo", names, 
+                                             name_err = name_err)
+      if (length(fit_names) == 0) return(invisible(self))
+      
       if (!is.matrix(data)) {
         dim(data) <- c(length(data), 1)
-        colnames(data) <- names
+        colnames(data) <- fit_names
       } 
-      data <- data[period, names, drop = FALSE]
+      data <- data[period, fit_names, drop = FALSE]
       
-      if (is.null(private$fit_targets)) {
-        private$fit_targets <- data
-      } else {
-        private$fit_targets[period, names] <- data
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        data <- private$detrend_endo_data(data)
       }
-
-      # clean fit fit_targets
-      private$fit_targets <- na_trim(private$fit_targets)
-      if (!is.null(private$fit_targets) && nrow(private$fit_targets) > 0) {
-        private$fit_targets <- remove_na_columns(private$fit_targets)
-      }
+      
+      fit_names_idx <- match(fit_names, private$fit_info$orig_endos)
+      
+      data_na <- is.na(data)
+      
+      # set fit switches
+      exo_names <- private$fit_info$fit_vars[fit_names_idx]
+      private$exo_data[period, exo_names] <- ifelse(data_na, 0, 1)
+    
+      # Set fit exo values. Note: when the fit target is NA, the value
+      # of the fit exo value is irrelevant and can be set to 0.
+      data[data_na] <- 0
+      exo_names <- private$fit_info$exo_vars[fit_names_idx]
+      private$exo_data[period, exo_names] <- data
       
       return(invisible(self))
     },
@@ -164,6 +171,7 @@ FitMdl <- R6Class("FitMdl",
         if (vlen > 1) {
           value <- value[1:nperiod(period)]
         }
+        private$endo_data[period, names] <- value
         data <- matrix(rep(value, nvar), ncol = nvar)
         data <- regts(data, period = period, names = names)
         self$set_fit(data)
@@ -205,12 +213,30 @@ FitMdl <- R6Class("FitMdl",
       return(super$get_exo_data(period = period, names = names))
     },
     get_fit = function() {
-      fit <- private$fit_targets
-      if (!is.null(fit)) {
-        fit <- fit[, order(colnames(fit)), drop = FALSE]
-        fit <- update_ts_labels(fit, private$mdldef$labels)
+      fit_vars <- private$exo_data[private$data_period, 
+                                   private$fit_info$fit_vars, drop = FALSE]
+      fit_exos <- private$exo_data[private$data_period, 
+                                   private$fit_info$exo_vars, drop = FALSE]
+    
+      rows <- !apply(fit_vars == 0, 1, all)
+      if (!any(rows)) {
+        # no fit targets
+        return (NULL)
       }
-      return(fit)
+      rowsel <- min(which(rows)) : max(which(rows))
+      cols <- !apply(fit_vars == 0, 2, all)
+      fit_vars <- fit_vars[rowsel, cols, drop = FALSE]
+      fit_exos <- fit_exos[rowsel, cols, drop = FALSE]
+      fit_exos <- ifelse(fit_vars == 1, fit_exos, NA)
+      ps <- start_period(private$data_period) + min(which(rows)) - 1
+      ret <- regts(fit_exos, start = ps)
+      colnames(ret) <- gsub("^fit_", "", colnames(ret))
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        ret <- private$trend_endo_data(ret)
+      }
+      ret <- ret[, order(colnames(ret)), drop = FALSE]
+      ret <- update_ts_labels(ret, private$mdldef$labels)
+      return(ret)
     },
     get_fit_instruments = function(pattern, names, 
                                    period = private$model_period) {
@@ -255,39 +281,23 @@ FitMdl <- R6Class("FitMdl",
     },
     serialize = function() {
       ser <- as.list(super$serialize())
-      ret <- c(ser, list(fit_info = private$fit_info, 
-                         fit_targets = private$fit_targets))
+      ret <- c(ser, list(fit_info = private$fit_info))
       return(structure(ret, class = "serialized_fitmdl"))
     },
     deserialize = function(ser, dll_dir) {
       private$fit_info <- ser$fit_info
-      private$fit_targets <- ser$fit_targets
       ser$fit_info <- NULL
-      ser$fit_targets <- NULL
       return(super$deserialize(ser, dll_dir))
     },
     solve = function(...) {
       
-      # clean fit targets for the solution period
-      if (!is.null(private$fit_targets) && length(private$fit_targets) > 0) {
-        fit_targets <- private$fit_targets
-        p <- range_intersect(get_period_range(fit_targets), 
-                             private$model_period)
-        fit_targets <- na_trim(fit_targets[p, ])
-        if (!is.null(fit_targets) && nrow(fit_targets) > 0) {
-          fit_targets <- remove_na_columns(fit_targets)
-        }
-      } else {
-        fit_targets <- NULL
-      }
-      
-      
-      if (!is.null(fit_targets) && length(fit_targets) > 0) {
-     
-        # prepare fit procedure
-        
-        # check if we have sufficient fit instruments
-        n_fit_targets <- ncol(fit_targets)
+      # check if we have sufficient fit instruments.
+      fit_switches <- private$exo_data[private$model_period, 
+                                   private$fit_info$exo_vars, drop = FALSE]
+      fit_switches <- fit_switches == 1
+      is_fit_var <- apply(fit_switches, MARGIN = 2, FUN = any)
+      n_fit_targets <- sum(is_fit_var)
+      if (n_fit_targets > 0) {
         n_sigmas <- length(self$get_sigmas())
         if (n_sigmas < n_fit_targets) {
           stop(sprintf(paste("The number of fit targets (%d) exceeds the",
@@ -295,40 +305,20 @@ FitMdl <- R6Class("FitMdl",
                        n_fit_targets, n_sigmas))
         }
         
-        # detrend fit targets
-        if (private$mdldef$trend_info$has_deflated_endos) {
-          fit_targets <- private$detrend_endo_data(fit_targets)
-        } 
-        
-        # update the exogenous data for the fit procedure
-        names_idx <- match(colnames(fit_targets), private$fit_info$orig_endos)
-        
-        # set exo_vars, first initialize with NA
-        super$set_data_(fit_targets, 
-                        names = private$fit_info$exo_vars[names_idx], 
-                        type = "exo", upd_mode = "updval")
-        
-        # set fit_vars (switches), first initialise with 0
-        super$set_exo_values(0, names = private$fit_info$fit_vars)
-        data_mat <- ifelse(is.na(fit_targets), 0, 1)
-        fit_switches <- regts(data_mat, names = colnames(fit_targets),
-                              period = get_period_range(fit_targets))
-        
-        super$set_data_(fit_switches, private$fit_info$fit_vars[names_idx], 
-                        type = "exo", upd_mode = "update")
-        
-        # also update endogenous data, for a faster convergence
-        super$set_data_(fit_targets, type = "endo", upd_mode = "updval")
-      } else {
-        
-        # no fit targets
-        super$set_exo_values(0, names = private$fit_info$fit_vars)
+        # TODO: update private$endo_data with fit exos, this may 
+        # speed up convergence
       }
       
       # set old_instruments, these will be used for deactivated 
-      # fit instruments (instrumnets with sigma < 0)
-      private$exo_data[, private$fit_info$old_instruments] <-
-         private$endo_data[, private$fit_info$instruments] 
+      # fit instruments (instruments with sigma < 0), so that the
+      # sigmas do not change.
+      private$exo_data[ , private$fit_info$old_instruments] <-
+         private$endo_data[ , private$fit_info$instruments] 
+      
+      
+      #
+      # TODO: update endo_data with fit targets.
+      #
 
       return(super$solve(...))
     },
@@ -377,8 +367,7 @@ FitMdl <- R6Class("FitMdl",
   ), 
   private = list(
     fit_info = NULL,
-    fit_targets = NULL,
-    
+   
     get_names_fitmdl_ = function(type, names, pattern,
                                  name_err = c("stop", "warn", "silent")) {
       

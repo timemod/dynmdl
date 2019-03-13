@@ -8,7 +8,7 @@
 #' @section Usage:
 #' \preformatted{
 #'
-#' mdl$set_fit(data, names = colnames(data), upd_mode = c("upd", "updval"),
+#' mdl$set_fit(data, names = colnames(data), 
 #'             name_err = c("stop", "warn", "silent"))
 #' }
 #'
@@ -23,10 +23,6 @@
 #' same length as the number of timeseries in \code{data}. Defaults to the
 #' column names of \code{data}. If \code{data} does not have column names,
 #' then argument \code{names} is mandatory}
-#' \item{\code{upd_mode}}{the update mode, a character string specifying
-#' how the timeseries are updated: \code{"upd"} (standard update, default) or
-#' \code{"updval"} (update only with valid numbers). NOTE: currently
-#' \code{"updval"} is not yet supported. See details.}
 #' \item{\code{name_err}}{this option specifies the action that should be taken 
 #' when a variable name is not an endogenous model variable.
 #' For \code{"stop"} (the default), the execution of this function is stopped.
@@ -43,13 +39,6 @@
 #' name as the column name. If \code{data} does not have column names,
 #' or if the column names do not correspond to the model variable names,
 #' then argument \code{names} should be specified.
-#'
-#' By default, all values in \code{data} are used to update the corresponding
-#' model variable. Sometimes it is desirable to skip the \code{NA} values
-#' in \code{data}. This can be achieved by selecting \code{"updval"} for argument
-#' \code{upd_mode}. Other non finite numbers (\code{NaN}, \code{Inf}, and
-#' \code{-Inf}) are also disregarded for this update mode.
-#' NOTE: currently, update mode \code{"updval"} has not yet been implemented.
 #'
 #' @examples
 #'

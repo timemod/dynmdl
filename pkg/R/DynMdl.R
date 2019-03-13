@@ -1122,7 +1122,9 @@ DynMdl <- R6Class("DynMdl",
       }
       
       if (type == "endo") {
-        new_data <- private$detrend_endo_data(new_data)
+        if (private$mdldef$trend_info$has_deflated_endos) {
+          new_data <- private$detrend_endo_data(new_data)
+        }
         private$endo_data[per, names] <- new_data
       } else {
         private$exo_data[per, names] <- new_data
