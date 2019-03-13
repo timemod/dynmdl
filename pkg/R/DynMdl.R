@@ -234,6 +234,14 @@ DynMdl <- R6Class("DynMdl",
       private$mdldef$exos[exo_names] <- exos[exo_names]
       return(invisible(self))
     },
+    set_static_exo_values = function(value, names, pattern) {
+      if (!is.numeric(value) && length(value) != 1) {
+        stop("Argument value should be a scalar numeric")
+      }
+      names <- private$get_names_("exo", names, pattern)
+      private$mdldef$exos[names] <- value
+      return(invisible(self))
+    },
     get_static_exos = function() {
       return(private$mdldef$exos)
     },
@@ -301,7 +309,6 @@ DynMdl <- R6Class("DynMdl",
         }
         private$model_period <- period_range(startp, endp)
       }
-      
       
       private$data_period <- data_period
       private$period_shift <- start_period(private$model_period) - 
@@ -512,27 +519,17 @@ DynMdl <- R6Class("DynMdl",
         start[private$mdldef$aux_vars$endos]  <- aux_endos
       }
       
-      if (private$calc == "internal") {
-        f_res <- function(endos) {
-          return(get_residuals_stat(private$mdldef$model_index, endos))
-        }
-      } else {
-        f_res <- function(endos) {
-          return(private$f_static(endos, private$mdldef$exos, private$mdldef$params))
-        }
-      }
-      
       if (solver == "umfpackr") {
-        out <- umf_solve_nl(start, fn = f_res, jac = private$get_static_jac, 
-                            control = control, ...)
+        out <- umf_solve_nl(start, fn = private$get_static_residuals, 
+                            jac = private$get_static_jac, control = control, ...)
         error <- !out$solved
       } else {
         jacf <- function(endos) {
           j <- private$get_static_jac(endos)
           return(as(j, "matrix"))
         }
-        out <- nleqslv(start, fn = f_res, jac = jacf, method = "Newton",
-                       control = control,  ...)
+        out <- nleqslv(start, fn = private$get_static_residuals, jac = jacf, 
+                       method = "Newton", control = control,  ...)
         error <- out$termcd != 1
       }
       private$clean_static_model()
@@ -541,7 +538,7 @@ DynMdl <- R6Class("DynMdl",
      
       if (error) {
         if (grepl("contains non-finite value", out$message)) {
-          res <- f_res(out$x)
+          res <- private$get_static_residuals(out$x)
           names(res) <- paste("eq", seq_along(res))
           res <- res[!is.finite(res)]
           cat("Non-finite values in residuals for the following equations:\n")
@@ -1231,6 +1228,14 @@ DynMdl <- R6Class("DynMdl",
                               private$exo_data, private$mdldef$params,
                               private$f_dynamic, private$mdldef$endo_count,
                               nper, private$period_shift))
+      }
+    },
+    get_static_residuals  = function(endos) {
+      if (private$calc == "internal") {
+        return(get_residuals_stat(private$mdldef$model_index, endos))
+      } else {
+        return(private$f_static(endos, private$mdldef$exos, 
+                                private$mdldef$params))
       }
     },
     get_jac = function(x, lags, leads, nper) {

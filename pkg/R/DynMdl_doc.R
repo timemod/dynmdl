@@ -784,13 +784,15 @@ NULL
 #' model variables
 #' @name set/get_static_endos/exos
 #' @aliases set_static_exos set_static_endos get_static_endos get_static_exos
+#'          set_static_exo_values
 #'
 #' @description
 #' 
-#' \code{\link{set_static_exos}} and \code{\link{set_static_endos}}
-#' can be used to set one or more static values of the endogenous
-#' or exogenous model variables, respectively. The correspondig
-#' \code{get} method can be used to retrieve them.
+#' \code{\link{set_static_exos}},   \code{\link{set_static_exo_values}}
+#' and \code{\link{set_static_endos}} can be used to set one or 
+#' more static values of the endogenous or exogenous model variables, 
+#' respectively. The correspondig \code{get} methods can be used to retrieve 
+#' them.
 #' 
 #' Each \code{\link{DynMdl}} object contains a set of static values
 #' for the exogenous and endogenous model variables.
@@ -810,6 +812,8 @@ NULL
 #' \preformatted{
 #' mdl$set_static_endos(endos)
 #' mdl$set_static_exos(exos)
+#' mdl$set_static_exo_values(value, names, pattern)
+#' mdl$get_static_endos()
 #' mdl$get_static_endos()
 #' mdl$get_static_endos()
 #' }
@@ -822,10 +826,19 @@ NULL
 #' endogenous variables}
 #' \item{\code{exos}}{A named numerical vector with new static values of the
 #' exogenous variables}
+#' \item{\code{value}}{a numeric vector of length 1}
+#' \item{\code{names}}{a character vector with names of model variables}
+#' \item{\code{pattern}}{a regular expression}
 #' }
 #' @examples
-#' mdl <- islm_mdl(period = "2018Q1/2023Q3")
+#' mdl <- islm_mdl()
 #' mdl$set_static_endos(c(y = 1250))
+#'
+#' #  set static values of all exogenous variables starting with m 
+#' # (for this model only "ms") to zero. 
+#' mdl$set_static_exo_values(333, pattern = "^m")
+#' 
+#' print(mdl$get_static_endos())
 #' @seealso \code{\link{solve_steady}}, \code{\link{check}}
 NULL
 

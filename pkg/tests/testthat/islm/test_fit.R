@@ -19,6 +19,8 @@ inames <- c("ut", "uc", "umd", "ui")
 
 mdl_old <- mdl$copy()
 
+mdp <- mdl$get_data_period()
+
 test_that("all.equal works correctly for fit models", {
   expect_true(isTRUE(all.equal(mdl, mdl_old)))
 })
@@ -43,13 +45,23 @@ test_that("steady state and eigenvalues original model", {
   expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
 })
 
-
-
 test_that("check steady state is compatible with dynamic model", {
   expect_output(mdl$solve(), "Convergence after 0 iterations")   
 })
 
-
+test_that("fit instruments are zero in steady state", {
+  inst <- mdl$get_fit_instruments(period = mdp)
+  inst_ref <- regts(matrix(0, ncol = length(inames)), names = inames,
+                    period = mdp)
+  ts_labels(inst_ref) <- ts_labels(inst)
+  expect_equal(inst, inst_ref)
+  
+  lagr <- mdl$get_lagrange(period = mdp)
+  nlagr <- length(endo_names)
+  lagr_ref <- regts(matrix(0, ncol = nlagr), names = paste0("l_", 1:nlagr),
+                    period = mdp)
+  expect_equal(lagr, lagr_ref)
+})
 
 mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
 mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")
@@ -80,15 +92,15 @@ test_that("get_data", {
   fit_inst <- mdl$get_fit_instruments(period = mdp)
   all_data <- cbind(endo_data, exo_data, fit_inst)
   all_data <- all_data[, order(colnames(all_data))]
-
+  
   expect_equal(mdl$get_data(), all_data)
   expect_equal(mdl$get_data(names = "g", period = p),
-              all_data[p, "g", drop = FALSE])
-
+               all_data[p, "g", drop = FALSE])
+  
   expect_equal(mdl$get_data(names = "ms", pattern = "^y",
-                             period = p),
-                all_data[p, c("ms", "y", "yd")])
-
+                            period = p),
+               all_data[p, c("ms", "y", "yd")])
+  
   # errors
   expect_error(mdl$get_fit_instruments(names = "uii"), 
                "\"uii\" is not a fit instrument")
@@ -96,30 +108,45 @@ test_that("get_data", {
                "\"uii\", \"aap\" are no fit instruments")
   expect_error(mdl$get_data(names = "uii"), "\"uii\" is not a model variable")
   expect_error(mdl$get_exo_data(names = c("ui", "aap")),
-              "\"ui\", \"aap\" are no exogenous model variables")
-
+               "\"ui\", \"aap\" are no exogenous model variables")
+  
   expect_null(mdl$get_endo_data(pattern = "^u"))
   expect_null(mdl$get_data(pattern = "^z"))
   expect_null(mdl$get_fit_instruments(pattern = "^z"))
+})
+
+
+test_that("set_exo_values", {
+  mdl2 <- mdl$copy()
+  mdl2$set_static_exo_values(0)
+  expect_identical(mdl2$get_static_exos(), c(g = 0, ms = 0))
+  mdl2$set_static_exo_values(2, pattern = "^m")
+  expect_identical(mdl2$get_static_exos(), c(g = 0, ms = 2))
+  mdl2$set_static_exo_values(3, names = "g")
+  expect_identical(mdl2$get_static_exos(), c(g = 3, ms = 2))
   
+  expect_error(mdl2$set_static_exo_values(0, names = "ui"), 
+               "\\ui\" is not an exogenous model variable")
+  expect_error(mdl2$set_static_exo_values(0, names = c("ui", "l_1")), 
+               "\"ui\", \"l_1\" are no exogenous model variables")
 })
 
 
 test_that("get_names", {
-
+  
   expect_equal(mdl$get_endo_names(), endo_names)
-
+  
   expect_equal(mdl$get_endo_names(type = "lag"), c("y", "yd"))
   expect_equal(mdl$get_endo_names(type = "lead"), c("y", "yd"))
-
+  
   expect_equal(mdl$get_exo_names(), c("g", "ms"))
-
+  
   par_names <- c(paste0("sigma_u", c("t", "c", "i", "md")),
                  paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
                  paste0("t", 0:1))
   expect_equal(mdl$get_par_names(), par_names)
-
-
+  
+  
   expect_equal(mdl$get_sigma_names(), paste0("sigma_", inames))
 })
 
@@ -127,7 +154,7 @@ test_that("start solution with correct lagrange multipliers", {
   l <- mdl$get_lagrange()
   inst <- mdl$get_fit_instruments()
   endo_data <- mdl$get_endo_data(period = mdl$get_period())
-
+  
   mdl2 <- mdl_old$copy()
   mdl2$set_fit(fit_targets)
   msg <- "The maximum number of iterations \\(1\\) has been reached"
@@ -170,8 +197,4 @@ test_that("get_vars_pars", {
   var_data <- do.call(cbind, vars)
   expect_identical(var_data, mdl$get_data(period = "2016q1/2016q2"))
 })
-
-
-
-
 

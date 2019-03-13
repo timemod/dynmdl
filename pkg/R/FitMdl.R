@@ -246,6 +246,10 @@ FitMdl <- R6Class("FitMdl",
       private$mdldef$exos[exo_names] <- exos[exo_names]
       return(invisible(self))
     },
+    set_static_exo_values = function(value, names, pattern) {
+      exo_names <- private$get_names_fitmdl_("exo", names, pattern)
+      return(super$set_static_exo_values(value, names = exo_names))
+    },
     get_static_exos = function() {
       return(super$get_static_exos()[private$fit_info$orig_exos])
     },
@@ -331,6 +335,32 @@ FitMdl <- R6Class("FitMdl",
     residual_check = function(...) {
       ret <- super$residual_check(...)
       return(ret[, seq_along(private$fit_info$orig_endos), drop = FALSE])
+    },
+    solve_steady = function(control = list(), ...) {
+
+      super$solve_steady(control, ...)
+    
+      if (private$solve_status == "OK") {
+        # For the steady state model, the fit instruments and lagrange 
+        # multipliers should be exactly 0. However, they are sometimes small
+        # because of numerical inaccuracies. Therefore set then to zero and 
+        # check the maximum static residual
+        names <- c(private$fit_info$instruments, private$fit_info$l_vars)
+        private$mdldef$endos[names] <- 0
+        fmax <- max(abs(private$get_static_residuals(private$mdldef$endos)))
+        ftol <- if (is.null(control$ftol)) {
+                  1e-8 
+                } else { 
+                  control$ftol
+                }
+        if (fmax > ftol) {
+          stop(paste("The steady state values for the fit instruments",
+                     "and lagrange multipliers are significantly different",
+                     "from 0."))
+        }
+      }
+      
+      return(invisible(self)) 
     }
   ), 
   private = list(
