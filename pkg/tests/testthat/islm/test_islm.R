@@ -26,6 +26,17 @@ test_that("solve", {
   expect_error(mdl2$solve_perturbation(),
                paste("The perturbation approach currently only allows shocks",
                      "in the first period"))
+  
+  # set_exo_values / set_data with strange period", 
+  p <- period_range("2007q3/2007q4")
+  mdl2$set_exo_values(c(2500, 2600), names = "g", period = p)
+  data <- regts(matrix(999,  ncol = 2), names = c("g", "y"),
+                period = "2005q1")
+  mdl2$set_data(data)
+  
+  expect_warning(mdl2$solve(control = list(silent = TRUE)), NA)
+  expect_equal(mdl2$get_solve_status(), "OK")
+  expect_equal(dynare_endo, mdl2$get_endo_data(period = model_period))
 })
 
 test_that("solve_perturb", {

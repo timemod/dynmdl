@@ -1133,6 +1133,8 @@ DynMdl <- R6Class("DynMdl",
     set_values_ = function(value, names, pattern, period, type) {
       value <- as.numeric(value)
       period <- private$convert_period_arg(period)
+      period <- range_intersect(period, private$data_period)
+      if (is.null(period)) return(invisible(NULL))
       nper <- nperiod(period)
       vlen <- length(value)
       if (vlen != 1 && vlen < nper) {
@@ -1140,8 +1142,6 @@ DynMdl <- R6Class("DynMdl",
                    "length ", nper))
       }
       names <- private$get_names_(type, names, pattern)
-      
-     
       
       if (length(names) > 0) {
         if (vlen > 1) {
@@ -1164,6 +1164,8 @@ DynMdl <- R6Class("DynMdl",
     },
     change_data_ = function(fun, names, pattern, period, type, ...) {
       period <- private$convert_period_arg(period)
+      period <- range_intersect(period, private$data_period)
+      if (is.null(period)) return(invisible(NULL))
       if (!is.function(fun)) {
         stop("argument fun is not a function")
       }
