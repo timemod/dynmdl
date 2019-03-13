@@ -336,6 +336,14 @@ FitMdl <- R6Class("FitMdl",
       ret <- super$residual_check(...)
       return(ret[, seq_along(private$fit_info$orig_endos), drop = FALSE])
     },
+    static_residual_check = function(tol = 0, ...) {
+      residuals <- super$static_residual_check(...)
+      residuals <- residuals[seq_along(private$fit_info$orig_endos)]
+      if (tol > 0) {
+        residuals <- residuals[abs(residuals) > tol]
+      }
+      return(residuals)
+    },
     solve_steady = function(control = list(), ...) {
 
       super$solve_steady(control, ...)
@@ -346,8 +354,7 @@ FitMdl <- R6Class("FitMdl",
         # because of numerical inaccuracies. Therefore set then to zero and 
         # check the maximum static residual
         names <- c(private$fit_info$instruments, private$fit_info$l_vars)
-        private$mdldef$endos[names] <- 0
-        fmax <- max(abs(private$get_static_residuals(private$mdldef$endos)))
+        fmax <- max(abs(super$static_residual_check()))
         ftol <- if (is.null(control$ftol)) {
                   1e-8 
                 } else { 

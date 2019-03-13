@@ -70,3 +70,21 @@ test_that("steady state and eigenvalues", {
   expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
 })
 
+test_that("static_residual_check", {
+  
+  res1 <- mdl$static_residual_check()
+  expect_equal(abs(unname(res1)) < 1e-12, rep(TRUE, 7))
+  expect_equal(names(res1), paste0("eq_", 1:7))
+  
+  mdl$set_static_exos(c(g = 250))
+  res2a <- mdl$static_residual_check()
+  
+  expected_res2 <- res1
+  expected_res2[1] <- -10
+  expect_equal(res2a, expected_res2)
+  
+  res2b <- mdl$static_residual_check(tol = 1e-8)
+  expect_equal(res2b, expected_res2[1])
+})
+
+

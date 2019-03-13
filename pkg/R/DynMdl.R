@@ -56,6 +56,9 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{set_static_exos}}}{Sets the static values of
 #' the exogenous variables used to compute the steady state.}
+#' 
+#' \item{\code{\link{set_static_exo_values}}}{Sets the values of one or more
+#' static exogenous variables}
 #'
 #' \item{\code{\link{get_static_exos}}}{Returns the static values of
 #' the exogenous variables.}
@@ -108,8 +111,11 @@ setOldClass("regts")
 #' \item{\code{\link{check}}}{Compute the eigenvalues of the linear
 #' system and check if the Blachard and Kahn conditions are satisfied.}
 #'
-#' \item{\code{\link{residual_check}}}{Calculates the residuals of the equation
-#' and report the differences larger than a tolerance parameters}
+#' \item{\code{\link{residual_check}}}{Calculates the residuals of the equations
+#' and reports the differences larger than a tolerance parameters}
+#' 
+#' \item{\code{\link{static_residual_check}}}{Calculates the residuals of the 
+#' static model equations and reports the differences larger than a tolerance parameters}
 #'
 #' \item{\code{solve_perturbation}}{Solves the model using the perturbation
 #' theory used in the Dynare function stoch_simul. Only shocks in the first
@@ -551,7 +557,16 @@ DynMdl <- R6Class("DynMdl",
       }
       return (invisible(self))
     },
-    
+    static_residual_check = function(tol = 0) {
+      private$prepare_static_model()
+      residuals <- private$get_static_residuals(private$mdldef$endos)
+      private$clean_static_model()
+      names(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
+      if (tol > 0) {
+        residuals <- residuals[abs(residuals) > tol]
+      }
+      return(residuals)
+    },
     put_static_endos = function(period = private$data_period) {
       # copy the static endogenous variables to the endogenous model data
       if (is.null(private$model_period)) stop(private$period_error_msg)

@@ -45,6 +45,9 @@ variables and parameters}
 \item{\code{\link{set_static_exos}}}{Sets the static values of
 the exogenous variables used to compute the steady state.}
 
+\item{\code{\link{set_static_exo_values}}}{Sets the values of one or more
+static exogenous variables}
+
 \item{\code{\link{get_static_exos}}}{Returns the static values of
 the exogenous variables.}
 
@@ -96,8 +99,11 @@ variables by applying a function}
 \item{\code{\link{check}}}{Compute the eigenvalues of the linear
 system and check if the Blachard and Kahn conditions are satisfied.}
 
-\item{\code{\link{residual_check}}}{Calculates the residuals of the equation
-and report the differences larger than a tolerance parameters}
+\item{\code{\link{residual_check}}}{Calculates the residuals of the equations
+and reports the differences larger than a tolerance parameters}
+
+\item{\code{\link{static_residual_check}}}{Calculates the residuals of the 
+static model equations and reports the differences larger than a tolerance parameters}
 
 \item{\code{solve_perturbation}}{Solves the model using the perturbation
 theory used in the Dynare function stoch_simul. Only shocks in the first

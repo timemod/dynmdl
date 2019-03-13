@@ -535,6 +535,30 @@ NULL
 #' whose residuals are smaller than \code{tol}}}
 NULL
 
+#' \code{\link{DynMdl}} method: Calculates the residuals of the equations
+#' of the static model
+#' @name static_residual_check
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} calculates the 
+#' residuals for the static version of the model. The result is a named numeric
+#' vector, where the names are the equation numbers.
+#' @section Usage:
+#' \preformatted{
+#' mdl$static_residual_check(tol = 0)
+#'
+#' }
+#'
+#' \code{mdl} is an \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{tol}}{the tolerance parameter. 
+#' The return value does not include equations whose residuals are smaller 
+#' than \code{tol}}}
+NULL
+
+
 #' \code{\link{DynMdl}} method: Solves the steady state.
 #' @name solve_steady
 #'
