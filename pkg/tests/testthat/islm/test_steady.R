@@ -17,7 +17,7 @@ mdl_steady1$set_period(period)
 mdl_steady2 <- mdl_period$copy()$solve_steady(control = list(silent = TRUE))
 
 test_that("steady state result is correct", {
-
+  
   expect_false(isTRUE(all.equal(mdl_steady1$get_endo_data(), 
                                 mdl_period$get_endo_data())))
   
@@ -38,7 +38,7 @@ test_that("steady state result is correct", {
 test_that("put_static_endos", {
   
   mdl_steady3 <- mdl_steady2$copy()$put_static_endos()
-
+  
   expect_equal(mdl_steady3$get_endo_data(), mdl_steady1$get_endo_data())
   expect_false(isTRUE(all.equal(mdl_steady3$get_endo_data(), 
                                 mdl_steady2$get_endo_data())))
@@ -93,4 +93,18 @@ test_that("errors", {
                "\"xxx\" is not an endogenous model variable")
   expect_error(mdl$set_static_exos(c(c = 12, xxx = 3, g = 12)),
                "\"c\", \"xxx\" are no exogenous model variables")
+})
+
+
+test_that("set_static_exo_values", {
+  mdl2 <- mdl$copy()
+  mdl2$set_static_exo_values(0)
+  expect_identical(mdl2$get_static_exos(), c(g = 0, ms = 0))
+  mdl2$set_static_exo_values(2, pattern = "^m")
+  expect_identical(mdl2$get_static_exos(), c(g = 0, ms = 2))
+  mdl2$set_static_exo_values(3, names = "g")
+  expect_identical(mdl2$get_static_exos(), c(g = 3, ms = 2))
+  
+  expect_error(mdl2$set_static_exo_values(0, names = "xxx"), 
+               "\"xxx\" is not an exogenous model variable")
 })
