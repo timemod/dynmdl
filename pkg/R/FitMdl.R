@@ -332,12 +332,17 @@ FitMdl <- R6Class("FitMdl",
 
       return(super$solve(...))
     },
-    residual_check = function(...) {
-      ret <- super$residual_check(...)
-      return(ret[, seq_along(private$fit_info$orig_endos), drop = FALSE])
+    residual_check = function(tol = 0) {
+      residuals <- super$residual_check()
+      residuals <- residuals[ , seq_along(private$fit_info$orig_endos), 
+                              drop = FALSE]
+      if (tol != 0) {
+        residuals <- trim_ts(residuals, private$model_period, tol)
+      }
+      return(residuals)
     },
-    static_residual_check = function(tol = 0, ...) {
-      residuals <- super$static_residual_check(...)
+    static_residual_check = function(tol = 0) {
+      residuals <- super$static_residual_check()
       residuals <- residuals[seq_along(private$fit_info$orig_endos)]
       if (tol > 0) {
         residuals <- residuals[abs(residuals) > tol]

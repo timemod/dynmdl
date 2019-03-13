@@ -615,29 +615,15 @@ DynMdl <- R6Class("DynMdl",
       
       if (private$mdldef$aux_vars$aux_count > 0) {
         # remove the residuals for the auxiliary equations
-        residuals <- residuals[, -private$mdldef$aux_vars$endos]
+        residuals <- residuals[, -private$mdldef$aux_vars$endos, drop = FALSE]
       }
 
-      p_start <- start_period(private$model_period)
-      p_end <- end_period(private$model_period)
-      
+      residuals <- regts(residuals, period = private$model_period)
       if (tol != 0) {
-        col_sel <- apply(residuals, MARGIN = 2, 
-                         FUN = function(x) max(abs(x)) > tol)
-        residuals <- residuals[ , col_sel, drop = FALSE]
-        if (ncol(residuals) > 0) {
-          row_sel <-  which(apply(residuals, MARGIN = 1, 
-                            FUN = function(x) max(abs(x)) > tol))
-          imin <- min(row_sel)
-          imax <- max(row_sel)
-          if (imax >= imin) {
-            residuals <- residuals[imin : imax, , drop = FALSE]
-          }
-          p_start <- p_start + (imin - 1)
-          p_end <- p_end - (nper - imax)
-        }
+        residuals <- trim_ts(residuals, private$model_period, tol)
       }
-      return(regts(residuals, start = p_start, end = p_end))
+      return(residuals)
+     
     },
     solve = function(control = list(), force_stacked_time = FALSE,
                      solver = c("umfpackr", "nleqslv"),  

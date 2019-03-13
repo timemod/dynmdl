@@ -63,3 +63,35 @@ test_that("static_residual_check", {
   res2b <- mdl$static_residual_check(tol = 1e-8)
   expect_equal(res2b, expected_res2[2])
 })
+
+test_that("residual_check", {
+  
+  mdl2 <- mdl$copy()  
+  mp <- mdl2$get_period()
+  
+  res1a <- mdl2$residual_check()
+  res1a_check <- res1a
+  res1a_check[abs(res1a) < 1e-12] <- 0
+  res1a_ref <- regts(matrix(0, ncol = 7), names = paste0("eq_", 1:7),
+                     period = mp)
+  
+  expect_identical(res1a_check, res1a_ref)
+  
+  res1b <- mdl2$residual_check(tol = 1e-8)
+  expect_equal(ncol(res1b), 0)
+  expect_equal(get_period_range(res1b), mp)
+  
+  p <- period_range("2016q1/2016q2")
+  
+  mdl2$set_exo_values(c(250, 260), names = "g", period = p)
+  mdl2$set_endo_values(111, names = "l_1")
+  
+  res2a <- mdl2$residual_check()
+  
+  expected_res2 <- res1a_ref
+  expected_res2[p, 2] <- c(-10, -20)
+  expect_equal(res2a, expected_res2)
+  
+  res2b <- mdl2$residual_check(tol = 1e-8)
+  expect_equal(res2b, expected_res2[p, 2, drop = FALSE])
+})
