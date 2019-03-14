@@ -213,30 +213,26 @@ FitMdl <- R6Class("FitMdl",
       return(super$get_exo_data(period = period, names = names))
     },
     get_fit = function() {
-      fit_vars <- private$exo_data[private$data_period, 
-                                   private$fit_info$fit_vars, drop = FALSE]
-      fit_exos <- private$exo_data[private$data_period, 
-                                   private$fit_info$exo_vars, drop = FALSE]
-    
-      rows <- !apply(fit_vars == 0, 1, all)
-      if (!any(rows)) {
-        # no fit targets
-        return (NULL)
+      
+      fit_switches <- private$exo_data[ , private$fit_info$fit_vars, 
+                                       drop = FALSE]
+      fit <- private$exo_data[ , private$fit_info$exo_vars, drop = FALSE]
+      fit[fit_switches == 0] <- NA
+      colnames(fit) <- private$fit_info$orig_endos
+      
+      # remove NA columns and leading/trailing NA rows
+      fit <- remove_na_columns(fit)
+      if (is.null(fit)) {
+        return(NULL) 
+      } else {
+        fit <- na_trim(fit)
+        if (private$mdldef$trend_info$has_deflated_endos) {
+          fit <- private$trend_endo_data(fit)
+        }
+        fit <- fit[ , order(colnames(fit)), drop = FALSE]
+        fit <- update_ts_labels(fit, private$mdldef$labels)
+        return(fit)
       }
-      rowsel <- min(which(rows)) : max(which(rows))
-      cols <- !apply(fit_vars == 0, 2, all)
-      fit_vars <- fit_vars[rowsel, cols, drop = FALSE]
-      fit_exos <- fit_exos[rowsel, cols, drop = FALSE]
-      fit_exos <- ifelse(fit_vars == 1, fit_exos, NA)
-      ps <- start_period(private$data_period) + min(which(rows)) - 1
-      ret <- regts(fit_exos, start = ps)
-      colnames(ret) <- gsub("^fit_", "", colnames(ret))
-      if (private$mdldef$trend_info$has_deflated_endos) {
-        ret <- private$trend_endo_data(ret)
-      }
-      ret <- ret[, order(colnames(ret)), drop = FALSE]
-      ret <- update_ts_labels(ret, private$mdldef$labels)
-      return(ret)
     },
     get_fit_instruments = function(pattern, names, 
                                    period = private$model_period) {
