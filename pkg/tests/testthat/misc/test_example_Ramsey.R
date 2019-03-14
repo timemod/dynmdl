@@ -88,3 +88,17 @@ test_that("trend_data", {
   expect_error(mdl$get_endo_data(names = "x"), 
                "\"x\" is not an endogenous model variable")
 })
+
+
+test_that("write model to file and read again", {
+  rds_file <- tempfile(fileext = "rds")  
+  outp <- capture_output({
+    mdl$write_mdl(rds_file)
+    mdl2 <- read_mdl(rds_file)
+  })
+  expect_equal(mdl, mdl2)
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
+  expect_equal(mdl$get_trend_data(), mdl2$get_trend_data())
+  expect_equal(mdl$get_endo_data(), mdl2$get_endo_data())
+})
+

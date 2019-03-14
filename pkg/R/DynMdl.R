@@ -864,7 +864,9 @@ DynMdl <- R6Class("DynMdl",
                              model_period = private$model_period,
                              base_period = private$base_period,
                              endo_data = private$endo_data,
-                             exo_data = private$exo_data)
+                             exo_data = private$exo_data,
+                             trend_data = private$trend_data,
+                             deflator_data = private$deflator_data)
       return(structure(serialized_mdl, class = "serialized_dynmdl"))
     },
     deserialize = function(ser, dll_dir) {

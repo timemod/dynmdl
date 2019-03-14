@@ -36,9 +36,11 @@
 #' @aliases all.equal all.equal.DynMdl
 all.equal.DynMdl <- function(target, current, ...) {
   target <- target$serialize()
+  target$mdldef$model_index <- NA_integer_
   if (!inherits(current, "DynMdl")) {
     stop("the second object compared is not a DynMdl object")
   }
   current <- current$serialize()
+  current$mdldef$model_index <- NA_integer_
   return(NextMethod(.Generic))
 }

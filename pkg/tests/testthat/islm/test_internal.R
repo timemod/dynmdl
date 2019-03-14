@@ -16,7 +16,7 @@ lag_per <- mdl$get_lag_period()
 dynare_result <- read_dynare_result("islm", mdl)
 
 test_that("solve", {
-  mdl2 <- mdl$clone()
+  mdl2 <- mdl$copy()
   expect_true(isTRUE(all.equal(mdl, mdl2)))
   mdl2 <- simul_islm(mdl2)
   expect_false(isTRUE(all.equal(mdl, mdl2)))
@@ -70,5 +70,13 @@ test_that("check for model without model data", {
   expect_equal(eigvals[1:3], dynare_result$eigval[1:3, 1])
 })
 
+test_that("write model to file and read again", {
+  rds_file <- tempfile(fileext = "rds")  
+  outp <- capture_output({
+    mdl$write_mdl(rds_file)
+    mdl2 <- read_mdl(rds_file)
+  })
+  expect_equal(mdl, mdl2)
+})
 
 
