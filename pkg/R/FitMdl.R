@@ -388,9 +388,11 @@ FitMdl <- R6Class("FitMdl",
       endo_names <- private$fit_info$orig_endos
       exo_names <- private$fit_info$orig_exos
       inst_names <- private$fit_info$instruments
-      
+
       if (type == "all") {
         vnames <- union(union(endo_names, exo_names), inst_names)
+        trend_names <- private$mdldef$trend_info$trend_vars$names
+        vnames <- union(vnames, trend_names)
       } else if (type == "endo") {
         vnames <- endo_names
       } else if (type == "inst") {
