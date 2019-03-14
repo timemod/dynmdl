@@ -165,13 +165,13 @@ FitMdl <- R6Class("FitMdl",
         stop(paste("Argument value should have length 1 or length ", nper))
       }
       period <- range_intersect(period, private$data_period)
+      if (is.null(period)) return(invisible(NULL))
       names <- private$get_names_fitmdl_("endo", names, pattern)
       nvar <- length(names)
       if (nvar > 0) {
         if (vlen > 1) {
           value <- value[1:nperiod(period)]
         }
-        private$endo_data[period, names] <- value
         data <- matrix(rep(value, nvar), ncol = nvar)
         data <- regts(data, period = period, names = names)
         self$set_fit(data)
@@ -291,13 +291,18 @@ FitMdl <- R6Class("FitMdl",
     },
     solve = function(...) {
       
-      # check if we have sufficient fit instruments.
-      fit_switches <- private$exo_data[private$model_period, 
-                                   private$fit_info$exo_vars, drop = FALSE]
-      fit_switches <- fit_switches == 1
-      is_fit_var <- apply(fit_switches, MARGIN = 2, FUN = any)
+      mp <- private$model_period
+      
+      fit_switches <- private$exo_data[mp, private$fit_info$fit_vars, 
+                                       drop = FALSE]
+      fit_sel <- fit_switches == 1
+     
+      is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
       n_fit_targets <- sum(is_fit_var)
+      
       if (n_fit_targets > 0) {
+        
+        # check if there are sufficient fit instruments
         n_sigmas <- length(self$get_sigmas())
         if (n_sigmas < n_fit_targets) {
           stop(sprintf(paste("The number of fit targets (%d) exceeds the",
@@ -305,8 +310,8 @@ FitMdl <- R6Class("FitMdl",
                        n_fit_targets, n_sigmas))
         }
         
-        # TODO: update private$endo_data with fit exos, this may 
-        # speed up convergence
+        private$endo_data[mp, private$fit_info$orig_endos][fit_sel] <-
+          private$exo_data[mp, private$fit_info$exo_vars][fit_sel]
       }
       
       # set old_instruments, these will be used for deactivated 
@@ -315,26 +320,33 @@ FitMdl <- R6Class("FitMdl",
       private$exo_data[ , private$fit_info$old_instruments] <-
          private$endo_data[ , private$fit_info$instruments] 
       
-      
-      #
-      # TODO: update endo_data with fit targets.
-      #
 
       return(super$solve(...))
     },
-    residual_check = function(tol = 0) {
+    residual_check = function(tol, include_fit_eqs = FALSE) {
+      
+      # set old_instruments, these will be used for deactivated 
+      # fit instruments (instruments with sigma < 0), so that the
+      # sigmas do not change.
+      private$exo_data[ , private$fit_info$old_instruments] <-
+        private$endo_data[ , private$fit_info$instruments] 
+      
       residuals <- super$residual_check()
-      residuals <- residuals[ , seq_along(private$fit_info$orig_endos), 
+      if (!include_fit_eqs) {
+        residuals <- residuals[ , seq_along(private$fit_info$orig_endos), 
                               drop = FALSE]
-      if (tol != 0) {
+      }
+      if (!missing(tol)) {
         residuals <- trim_ts(residuals, private$model_period, tol)
       }
       return(residuals)
     },
-    static_residual_check = function(tol = 0) {
+    static_residual_check = function(tol, include_fit_eqs = FALSE) {
       residuals <- super$static_residual_check()
-      residuals <- residuals[seq_along(private$fit_info$orig_endos)]
-      if (tol > 0) {
+      if (!include_fit_eqs) {
+        residuals <- residuals[seq_along(private$fit_info$orig_endos)]
+      }
+      if (!missing(tol)) {
         residuals <- residuals[abs(residuals) > tol]
       }
       return(residuals)

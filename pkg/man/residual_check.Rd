@@ -11,7 +11,7 @@ result  as a \code{\link[regts]{regts}} timeseries object.
 \section{Usage}{
 
 \preformatted{
-mdl$residual_check(tol = 0)
+mdl$residual_check(tol, include_fit_eqs = False)
 
 }
 
@@ -22,8 +22,15 @@ mdl$residual_check(tol = 0)
 
 
 \describe{
-\item{\code{tol}}{the tolerance parameter. 
-The return value does not include columns for the euqations
-whose residuals are smaller than \code{tol}}}
+\item{\code{tol}}{the tolerance parameter.
+If specified, then the return value does not include columns for the equations
+whose residuals are smaller than \code{tol}}
+\item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).  
+This argument is only used if \code{mdl} is a \code{\link{FitMdl}} object. 
+If \code{TRUE}, then the fit equations are included in the residual check.}
+}
 }
 
+\seealso{
+\code{\link{static_residual_check}}
+}

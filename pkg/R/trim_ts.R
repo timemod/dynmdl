@@ -10,7 +10,7 @@ trim_ts <- function(x, period, tol) {
   
   x_abs <- abs(x)
   
-  sel_fun <- function(x) {any(is.na(x) | x > tol)}
+  sel_fun <- function(x) {any(is.na(x) | x >= tol)}
   
   # first select columns with values > tol, or NA values
   col_sel <- apply(x_abs, MARGIN = 2,  FUN = sel_fun)

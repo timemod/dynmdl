@@ -168,8 +168,9 @@ test_that("start solution with correct lagrange multipliers", {
 
 test_that("miscellaneous set functions", {
   
-  mdl$set_endo_values(2, names = "l_2")
-  expect_identical(mdl$get_lagrange(names = "l_2")[, 1],
+  mdl2 <- mdl$copy()
+  mdl2$set_endo_values(2, names = "l_2")
+  expect_identical(mdl2$get_lagrange(names = "l_2")[, 1],
                    regts(2, period = mdl$get_period()))
   
   # errors
@@ -198,3 +199,43 @@ test_that("get_vars_pars", {
   expect_identical(var_data, mdl$get_data(period = "2016q1/2016q2"))
 })
 
+test_that("too many fit targets", {
+  
+  mdl2 <- mdl$copy()
+ 
+  mdl2$set_param(c(sigma_umd = -1))
+
+  # set fit targets outside model period and with NA values should not mattter
+  mdl2$set_fit_values(-999, names = "y", period = "2015q3/2015q4")
+  mdl2$set_fit_values(3, names = "c", period = "2008q1")
+  mdl2$set_fit_values(NA, names = "c", period = "2016q1")
+  mdl2$set_fit_values(NA, names = "r", period = "2016q1/2016q4")
+  
+  expected_result <- mdl$get_fit()
+  expected_result["2015q4", "y"] <- -999
+  expect_identical(mdl2$get_fit(), expected_result)
+  
+  expect_identical(ncol(mdl2$residual_check(include_fit_eqs = TRUE, tol = 1e-8)), 
+                   0L)
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
+ 
+  mdl2$set_fit_values(720, names = "c", period = "2016q1")
+  mdl2$set_fit_values(3.35, names = "r", period = "2016q1/2016q4")
+  msg <- paste("The number of fit targets \\(4\\) exceeds the number",
+                "of fit instruments \\(3\\)")
+  expect_error(mdl2$solve(), msg)
+})
+
+test_that("solve replaces endogenous variables with fit targets before solving", {
+
+  mdl$set_endo_values(999, names = "y", period = "2016q1/2016q3")
+  mdl$set_endo_values(NA, names = "t", period = "2016q1")
+  
+  # residual check should give errors
+  expect_true(max(abs(mdl$residual_check()), na.rm = TRUE) > 1e-6)
+  expect_true(is.na(max(abs(mdl$residual_check()), na.rm = FALSE)))
+  
+  # solve should convergence in 0 iterations, because it replaced endos with
+  # fit targets (if present)
+  expect_output(mdl$solve(), "Convergence after 0 iterations")
+})

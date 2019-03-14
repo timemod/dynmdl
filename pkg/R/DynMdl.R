@@ -557,12 +557,12 @@ DynMdl <- R6Class("DynMdl",
       }
       return (invisible(self))
     },
-    static_residual_check = function(tol = 0) {
+    static_residual_check = function(tol) {
       private$prepare_static_model()
       residuals <- private$get_static_residuals(private$mdldef$endos)
       private$clean_static_model()
       names(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
-      if (tol > 0) {
+      if (!missing(tol)) {
         residuals <- residuals[abs(residuals) > tol]
       }
       return(residuals)
@@ -597,7 +597,7 @@ DynMdl <- R6Class("DynMdl",
       private$clean_dynamic_model()
       return(invisible(self))
     },
-    residual_check = function(tol = 0) {
+    residual_check = function(tol) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       
       nper <- nperiod(private$model_period)
@@ -619,7 +619,7 @@ DynMdl <- R6Class("DynMdl",
       }
 
       residuals <- regts(residuals, period = private$model_period)
-      if (tol != 0) {
+      if (!missing(tol)) {
         residuals <- trim_ts(residuals, private$model_period, tol)
       }
       return(residuals)
