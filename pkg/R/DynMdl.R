@@ -1138,32 +1138,35 @@ DynMdl <- R6Class("DynMdl",
     set_values_ = function(value, names, pattern, period, type) {
       value <- as.numeric(value)
       period <- private$convert_period_arg(period)
-      period <- range_intersect(period, private$data_period)
-      if (is.null(period)) return(invisible(NULL))
       nper <- nperiod(period)
       vlen <- length(value)
       if (vlen != 1 && vlen < nper) {
         stop(paste("Argument value should have length 1 or",
-                   "length ", nper))
+                   "length", nper))
       }
-      names <- private$get_names_(type, names, pattern)
       
-      if (length(names) > 0) {
-        if (vlen > 1) {
-          value <- value[1:nperiod(period)]
+      upd_per <- range_intersect(period, private$data_period)
+      if (is.null(upd_per)) return(invisible(NULL))
+      
+      names <- private$get_names_(type, names, pattern)
+      if (length(names) == 0) return(invisible(NULL))
+      if (type == "exo" && private$mdldef$trend_info$has_deflated_endos) {
+        private$check_change_growth_exos(names)
+      }
+                
+      # convert value to ts, to that we can select the period                     
+      value_ts <- regts(value, period = period)
+      value_ts <- value_ts[upd_per]
+      
+      if (type == "endo") {
+        private$endo_data[upd_per, names] <- value_ts
+        if (private$mdldef$trend_info$has_deflated_endos) {
+          private$endo_data[upd_per, names] <- 
+              private$detrend_endo_data(private$endo_data[upd_per, names, 
+                                                          drop = FALSE])
         }
-        if (type == "endo") {
-          private$endo_data[period, names] <- value
-          if (private$mdldef$trend_info$has_deflated_endos) {
-            private$endo_data[period, names] <- private$detrend_endo_data(
-                     private$endo_data[period, names, drop = FALSE])
-          }
-        } else {
-          if (private$mdldef$trend_info$has_deflated_endos) {
-            private$check_change_growth_exos(names)
-          }
-          private$exo_data[period, names]  <- value
-        }
+      } else {
+        private$exo_data[upd_per, names]  <- value_ts
       }
       return(invisible(NULL))
     },

@@ -123,11 +123,25 @@ test_that("write model to file and read again", {
 
 
 test_that("set_endo_values", {
+  
   mdl2 <- mdl$copy()
+  
   p <- period("2008")
-  mdl2$set_endo_values(5, pattern = "^c$", names = c("c", "k"), period = p)
+  mdl2$set_endo_values("5", pattern = "^c$", names = c("c", "k"), period = p)
   expected_result <- mdl$get_endo_data()
   expected_result[p, ] <- 5
+  expect_equal(mdl2$get_endo_data(), expected_result)
+  
+  p <- period_range("1999/2001")
+  expect_error(mdl2$set_endo_values(c(1, 2), pattern = ".*", period = p),
+               "Argument value should have length 1 or length 3")
+  
+  mdl2$set_endo_values(c(10, 11, 12), pattern = ".*", period = p)
+  datap <- period_range("2000/2001")
+  expected_result[datap , 1] <- c(11, 12)
+  expected_result[datap , 2] <- c(11, 12)
+  
+  mdl2$set_endo_values(6, pattern = "^c$", period = "1990/1992")
   expect_equal(mdl2$get_endo_data(), expected_result)
 })
 
