@@ -31,14 +31,14 @@ test_that("set_fit update mode upd", {
   expect_equal(fit_mdl$get_endo_data(), mdl$get_endo_data())
   
   fit_mdl2 <- mdl$copy()
-  fit_mdl2$set_fit(fit, upd_mode = "upd")
+  fit_mdl2$set_fit(fit)
 
   expect_equal(fit_mdl2$get_fit(), fit_ordered)
 })
 
 test_that("set_fit for update mode upd (second test)", {
   fit_mdl2 <- fit_mdl$copy()
-  fit_mdl2$set_fit(fit2, upd_mode = "upd")
+  fit_mdl2$set_fit(fit2)
 
   fit_combi <- update_ts(fit, fit2, method = "upd")[, c("c", "y")]
   

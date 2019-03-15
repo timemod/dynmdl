@@ -99,24 +99,15 @@ FitMdl <- R6Class("FitMdl",
     get_sigma_names = function() {
       return(private$fit_info$sigmas)
     },
-    set_fit = function(data, names, upd_mode = "upd", name_err = "stop") {
+    set_fit = function(data, names, name_err = c("stop", "warn", "silent")) {
       
-      if (is.null(private$model_period)) stop(private$period_error_msg)
       if (!inherits(data, "ts")) {
         # we use inherits and not is.ts, because is.ts returns FALSE if
         # length(x) == 0
         stop("Argument data is not a timeseries object")
       }
-      
-      if (frequency(data) != frequency(private$data_period)) {
-        stop(paste0("The frequency of data does not agree with the data",
-                    " period ", as.character(private$data_period), "."))
-      }
-      
-      upd_mode <- match.arg(upd_mode)
-      period <- range_intersect(get_period_range(data), private$data_period)
-      if (is.null(period)) return(invisible(NULL))
-     
+    
+      # TODO: combine this code with set_data()?
       if (missing(names)) {
         if (!is.null(colnames(data))) {
           names <- colnames(data)
@@ -124,36 +115,27 @@ FitMdl <- R6Class("FitMdl",
           stop(paste("Argument data has no colnames.",
                      "In that case, argument names should be specified"))
         }
+      } else {
+        # check if specified argument names is o.k.
+        if (is.null(names)) {
+          stop("names is null")
+        } else if (length(names) < NCOL(data)) {
+          stop(paste("The length of arument names is less than the number of",
+                     "columns of data"))
+        }
       }
-      fit_names <- private$get_names_fitmdl_("endo", names, 
-                                             name_err = name_err)
-      if (length(fit_names) == 0) return(invisible(self))
+      
+      names <- private$get_names_fitmdl_("endo", names, name_err = name_err)
+      if (length(names) == 0) return(invisible(self))
       
       if (!is.matrix(data)) {
         dim(data) <- c(length(data), 1)
-        colnames(data) <- fit_names
-      } 
-      data <- data[period, fit_names, drop = FALSE]
-      
-      if (private$mdldef$trend_info$has_deflated_endos) {
-        data <- private$detrend_endo_data(data)
+        colnames(data) <- names
       }
       
-      fit_names_idx <- match(fit_names, private$fit_info$orig_endos)
+      data <- data[ , names, drop = FALSE]
       
-      data_na <- is.na(data)
-      
-      # set fit switches
-      exo_names <- private$fit_info$fit_vars[fit_names_idx]
-      private$exo_data[period, exo_names] <- ifelse(data_na, 0, 1)
-    
-      # Set fit exo values. Note: when the fit target is NA, the value
-      # of the fit exo value is irrelevant and can be set to 0.
-      data[data_na] <- 0
-      exo_names <- private$fit_info$exo_vars[fit_names_idx]
-      private$exo_data[period, exo_names] <- data
-      
-      return(invisible(self))
+      return(private$set_fit_internal(data, get_period_range(data)))
     },
     set_fit_values = function(value, names, pattern, 
                               period = private$data_period) {
@@ -171,7 +153,7 @@ FitMdl <- R6Class("FitMdl",
       
       data <- matrix(rep(value, nvar), ncol = nvar)
       data <- regts(data, period = period, names = names)
-      return(self$set_fit(data))
+      return(private$set_fit_internal(data, period))
     },
     get_data = function(pattern, names, period = private$data_period,
                         trend = TRUE) {
@@ -427,6 +409,45 @@ FitMdl <- R6Class("FitMdl",
       }
       
       return(super$select_names(vnames, names, pattern))
+    },
+    set_fit_internal = function(data, period) {
+     
+      # internal version of set_fit which does not need to check names
+      # and the number of columns of data.
+      
+      if (is.null(private$model_period)) stop(private$period_error_msg)
+      
+      if (frequency(data) != frequency(private$data_period)) {
+        stop(paste0("The frequency of data does not agree with the data",
+                    " period ", as.character(private$data_period), "."))
+      }
+      
+      period <- range_intersect(period, private$data_period)
+      if (is.null(period)) return(invisible(NULL))
+      
+      # select period from data
+      data <- data[period]
+      
+      if (private$mdldef$trend_info$has_deflated_endos) {
+        data <- private$detrend_endo_data(data)
+      }
+      
+      fit_names <- colnames(data)
+      fit_names_idx <- match(fit_names, private$fit_info$orig_endos)
+      
+      data_na <- is.na(data)
+      
+      # set fit switches
+      exo_names <- private$fit_info$fit_vars[fit_names_idx]
+      private$exo_data[period, exo_names] <- ifelse(data_na, 0, 1)
+      
+      # Set fit exo values. Note: when the fit target is NA, the value
+      # of the fit exo value is irrelevant and can be set to 0.
+      data[data_na] <- 0
+      exo_names <- private$fit_info$exo_vars[fit_names_idx]
+      private$exo_data[period, exo_names] <- data
+      
+      return(invisible(self))
     }
   )
 )
