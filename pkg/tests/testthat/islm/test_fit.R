@@ -239,3 +239,24 @@ test_that("solve replaces endogenous variables with fit targets before solving",
   # fit targets (if present)
   expect_output(mdl$solve(), "Convergence after 0 iterations")
 })
+
+test_that("changing fit instruments", {
+  
+  mdl2 <- mdl$copy()
+  
+  ut <- regts(1:2, start = "2016q1")
+  mdl$set_data(ut, names = "ut")
+  mdl$set_endo_values(3, names = "uc", period = "2016q1")
+  mdl$change_endo_data(function(x) {x + 2}, names = "ui", 
+                       period = "2016q1/2016q3")
+  
+  expected_result <- mdl$get_fit_instruments()
+  expected_result["2016q1/2016q2", "ut"] <- c(1,2)
+  expected_result["2016q1", "ui"] <- c(3)
+  expected_result["2016q1/2016q3"] <-  expected_result["2016q1/2016q3"] + 3
+  
+  
+  expect_error(mdl$change_endo_data(function(x) {x + 2}, names = "g", 
+                                    period = "2016q1/2016q3"),
+               "\"g\" is not an endogenous model variable")
+})

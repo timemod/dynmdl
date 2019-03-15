@@ -109,7 +109,6 @@ test_that("trend_data", {
 })
 
 
-
 test_that("write model to file and read again", {
   rds_file <- tempfile(fileext = "rds")  
   outp <- capture_output({
@@ -120,5 +119,31 @@ test_that("write model to file and read again", {
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
   expect_equal(mdl$get_trend_data(), mdl2$get_trend_data())
   expect_equal(mdl$get_endo_data(), mdl2$get_endo_data())
+})
+
+
+test_that("set_endo_values", {
+  mdl2 <- mdl$copy()
+  p <- period("2008")
+  mdl2$set_endo_values(5, pattern = "^c$", names = c("c", "k"), period = p)
+  expected_result <- mdl$get_endo_data()
+  expected_result[p, ] <- 5
+  expect_equal(mdl2$get_endo_data(), expected_result)
+})
+
+
+test_that("change_endo_data", {
+  
+ mdl2 <- mdl$copy()
+ 
+ mdl2$change_endo_data(function(x) {x + 1}, pattern = "xxx",
+                       period = "2000/2001")
+ expect_equal(mdl$get_endo_data(), mdl2$get_endo_data())
+
+ mdl2$change_endo_data(function(x) {x + 1}, period = "2000/2001")
+ expected_result <- mdl$get_endo_data()
+ expected_result[1:2, ] <- expected_result[1:2, ] + 1
+ expect_equal(mdl2$get_endo_data(), expected_result)
+ 
 })
 

@@ -372,8 +372,6 @@ DynMdl <- R6Class("DynMdl",
       private$period_shift <- start_period(private$model_period) -
                               start_period(private$data_period)
       
-     
-      
      return(invisible(self))
     },
     get_period = function() {
@@ -1178,18 +1176,31 @@ DynMdl <- R6Class("DynMdl",
       }
       nper <- nperiod(period)
       names <- private$get_names_(type, names, pattern)
+      if (length(names) == 0) return(invisible(NULL))
       if (type == "endo") {
-        data <- self$get_endo_data(names = names, period = period)
+        # do not call private$get_data(), because the the FitMDl
+        # version will be called for fitmdl objects
+        data <- private$endo_data[period, names, drop = FALSE]
+        if (private$mdldef$trend_info$has_deflated_endos) {
+          data <- private$trend_endo_data(data)
+        }
       } else  { 
         if (private$mdldef$trend_info$has_deflated_endos) {
           private$check_change_growth_exos(names)
         }
-        data <- self$get_exo_data(names = names, period = period)
+        data <- private$exo_data[period, names, drop = FALSE]
       }
       for (c in seq_len(ncol(data))) {
         data[, c] <- fun(data[, c], ...)
       }
-      private$set_data_(data, names = names, type = type)
+      if (type == "endo") {
+        if (private$mdldef$trend_info$has_deflated_endos) {
+          data <- private$detrend_endo_data(data)
+        }
+        private$endo_data[period, names] <- data
+      } else  { 
+        private$exo_data[period, names] <- data
+      }
     },
     check_change_growth_exos = function(names) {
       growth_exos <- intersect(names, private$mdldef$trend_info$growth_exos)
