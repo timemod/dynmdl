@@ -335,7 +335,11 @@ DynMdl <- R6Class("DynMdl",
       # first set exo data, before we call put_static_endos(),
       # because put_static_endos needs the actual values of the growth variables
       # when computing the trended variables.
-      if (!missing(data)) {
+      if (!missing(data) && !is.null(data)) {
+        if (is.null(colnames(data))) {
+          stop("data should be a timeseries with colnames")
+        }
+        data <- private$convert_data_internal(data)
         private$set_data_(data, type = "exo", upd_mode = upd_mode, 
                           init_data = TRUE)
       }
@@ -346,7 +350,7 @@ DynMdl <- R6Class("DynMdl",
       
       self$put_static_endos()
   
-      if (!missing(data)) {
+      if (!missing(data) && !is.null(data)) {
         private$set_data_(data, type = "endo", upd_mode = upd_mode,
                           init_data = TRUE)
       }
@@ -427,8 +431,10 @@ DynMdl <- R6Class("DynMdl",
     },
     set_data = function(data, names, upd_mode = c("upd", "updval"), fun) {
       upd_mode <- match.arg(upd_mode)
-      private$set_data_(data, names, type = "exo", upd_mode = upd_mode, fun)
-      private$set_data_(data, names, type = "endo", upd_mode = upd_mode, fun)
+      data <- private$convert_data_internal(data, names)
+      if (is.null(data)) return(invisible(self))
+      private$set_data_(data, type = "exo", upd_mode = upd_mode, fun = fun)
+      private$set_data_(data, type = "endo", upd_mode = upd_mode, fun = fun)
       return(invisible(self))
     },
     get_data = function(pattern, names, period = private$data_period,
@@ -1031,64 +1037,59 @@ DynMdl <- R6Class("DynMdl",
       }
       return(names)
     },
-    set_data_ = function(data, names, type, upd_mode = "upd", fun, 
-                         init_data = FALSE) {
-      # generic function to set or update the endogenous or exogenous
-      # variables
+    convert_data_internal = function(data, names) {
+      # Used by set_data and set_fit: checks the period range of data and 
+      # selects the appropriate period. Also converts data to a matrix ts with 
+      # colnames if necessary.
+      
+      if (NCOL(data) == 0) return(NULL)
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
+      
       if (!inherits(data, "ts")) {
         # we use inherits and not is.ts, because is.ts returns FALSE if
         # length(x) == 0
         stop("Argument data is not a timeseries object")
       }
-      data <- as.regts(data)
+      
       if (frequency(data) != frequency(private$data_period)) {
         stop(paste0("The frequency of data does not agree with the data",
                     " period ", as.character(private$data_period), "."))
       }
       
       per <- range_intersect(get_period_range(data), private$data_period)
-      if (is.null(per)) return(invisible(NULL))
-      if (NCOL(data) == 0) {
-        return(invisible(NULL))
+      if (is.null(per)) return(NULL)
+      data <- data[per]
+   
+      # convert data to a matrix if necessary
+      if (!is.matrix(data)) {
+        dim(data) <- c(length(data), 1)
       }
       
-      names_missing <- missing(names)
-      if (names_missing) {
-        if (is.null(colnames(data))) {
-          stop(paste("Argument data has no colnames.",
-                     "In that case, argument names should be specified"))
-        } else {
-          names <- colnames(data)
-        }
-      } else {
-        # check if specified argument names is o.k.
+      if (!missing(names)) {
         if (is.null(names)) {
           stop("names is null")
         } else if (length(names) < NCOL(data)) {
-          stop(paste("The length of arument names is less than the number of",
+          stop(paste("The length of argument names is less than the number of",
                      "columns of data"))
         }
+        colnames(data) <- names
+      } else if (is.null(colnames(data))) { 
+          stop(paste("Argument data has no colnames.",
+                   "In that case, argument names should be specified"))
       }
+      
+      return(data)
+    },
+    set_data_ = function(data, type, upd_mode = "upd", fun, init_data = FALSE) {
+      # generic function to set or update the endogenous or exogenous
+      # variables
+  
+      names <- colnames(data)
       
       if (!init_data && private$mdldef$trend_info$has_deflated_endos 
           && type == "exo") {
         private$check_change_growth_exos(names)
-      }
-      
-      if (!is.matrix(data)) {
-        dim(data) <- c(length(data), 1)
-        colnames(data) <- names
-      } else if (!names_missing) {
-        colnames(data) <- names
-      }
-      
-      # handle labels
-      lbls <- ts_labels(data)
-      if (!is.null(lbls)) {
-        names(lbls) <- names
-        private$update_labels(lbls)
       }
       
       if (type == "endo") {
@@ -1101,7 +1102,15 @@ DynMdl <- R6Class("DynMdl",
         return(invisible(self))
       }
       
-      data <- data[per, names, drop = FALSE]
+      data <- data[ , names, drop = FALSE]
+      per <- get_period_range(data)
+      
+      # handle labels
+      lbls <- ts_labels(data)
+      if (!is.null(lbls)) {
+        names(lbls) <- names
+        private$update_labels(lbls)
+      }
       
       apply_fun <- !missing(fun)
       if (upd_mode != "upd" || apply_fun) {

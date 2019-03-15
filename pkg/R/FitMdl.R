@@ -99,42 +99,12 @@ FitMdl <- R6Class("FitMdl",
     get_sigma_names = function() {
       return(private$fit_info$sigmas)
     },
-    set_fit = function(data, names, name_err = c("stop", "warn", "silent")) {
-      
-      if (!inherits(data, "ts")) {
-        # we use inherits and not is.ts, because is.ts returns FALSE if
-        # length(x) == 0
-        stop("Argument data is not a timeseries object")
-      }
-    
-      # TODO: combine this code with set_data()?
-      if (missing(names)) {
-        if (!is.null(colnames(data))) {
-          names <- colnames(data)
-        } else {
-          stop(paste("Argument data has no colnames.",
-                     "In that case, argument names should be specified"))
-        }
-      } else {
-        # check if specified argument names is o.k.
-        if (is.null(names)) {
-          stop("names is null")
-        } else if (length(names) < NCOL(data)) {
-          stop(paste("The length of arument names is less than the number of",
-                     "columns of data"))
-        }
-      }
-      
-      names <- private$get_names_fitmdl_("endo", names, name_err = name_err)
+    set_fit = function(data, names, name_err = "stop") {
+      data <- private$convert_data_internal(data, names)
+      names <- private$get_names_fitmdl_("endo", names = colnames(data), 
+                                         name_err = name_err)
       if (length(names) == 0) return(invisible(self))
-      
-      if (!is.matrix(data)) {
-        dim(data) <- c(length(data), 1)
-        colnames(data) <- names
-      }
-      
       data <- data[ , names, drop = FALSE]
-      
       return(private$set_fit_internal(data, get_period_range(data)))
     },
     set_fit_values = function(value, names, pattern, 
@@ -153,7 +123,10 @@ FitMdl <- R6Class("FitMdl",
       
       data <- matrix(rep(value, nvar), ncol = nvar)
       data <- regts(data, period = period, names = names)
-      return(private$set_fit_internal(data, period))
+      
+      per <- range_intersect(period, private$data_period)
+      if (is.null(per)) return(invisible(self))
+      return(private$set_fit_internal(data[per], per))
     },
     get_data = function(pattern, names, period = private$data_period,
                         trend = TRUE) {
@@ -414,20 +387,7 @@ FitMdl <- R6Class("FitMdl",
      
       # internal version of set_fit which does not need to check names
       # and the number of columns of data.
-      
-      if (is.null(private$model_period)) stop(private$period_error_msg)
-      
-      if (frequency(data) != frequency(private$data_period)) {
-        stop(paste0("The frequency of data does not agree with the data",
-                    " period ", as.character(private$data_period), "."))
-      }
-      
-      period <- range_intersect(period, private$data_period)
-      if (is.null(period)) return(invisible(NULL))
-      
-      # select period from data
-      data <- data[period]
-      
+     
       if (private$mdldef$trend_info$has_deflated_endos) {
         data <- private$detrend_endo_data(data)
       }
