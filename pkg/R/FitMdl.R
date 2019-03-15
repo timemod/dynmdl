@@ -162,21 +162,16 @@ FitMdl <- R6Class("FitMdl",
       nper <- nperiod(period)
       vlen <- length(value)
       if (vlen != 1 && vlen < nper) {
-        stop(paste("Argument value should have length 1 or length ", nper))
+        stop(paste("Argument value should have length 1 or length", nper))
       }
-      period <- range_intersect(period, private$data_period)
-      if (is.null(period)) return(invisible(NULL))
+      
       names <- private$get_names_fitmdl_("endo", names, pattern)
       nvar <- length(names)
-      if (nvar > 0) {
-        if (vlen > 1) {
-          value <- value[1:nperiod(period)]
-        }
-        data <- matrix(rep(value, nvar), ncol = nvar)
-        data <- regts(data, period = period, names = names)
-        self$set_fit(data)
-      }
-      return(invisible(self))
+      if (nvar == 0) return(invisible(self))
+      
+      data <- matrix(rep(value, nvar), ncol = nvar)
+      data <- regts(data, period = period, names = names)
+      return(self$set_fit(data))
     },
     get_data = function(pattern, names, period = private$data_period,
                         trend = TRUE) {
