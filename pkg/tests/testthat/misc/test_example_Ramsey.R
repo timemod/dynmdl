@@ -87,7 +87,27 @@ test_that("trend_data", {
                "\"c\" is not a trend variable")
   expect_error(mdl$get_endo_data(names = "x"), 
                "\"x\" is not an endogenous model variable")
+  
+  per <- period_range("1999/2002")
+  per_data <- period_range("2000/2002")
+  endo_data_per <- mdl$get_endo_data(period = per)
+  expect_equal(get_period_range(endo_data_per), per)
+  expect_equal(endo_data_per[per_data], endo_data[per_data])
+  
+  per <- period_range("1999/2103")
+  per_data <- period_range("2001/2102")
+  trend_data_per <- mdl$get_trend_data(period = per)
+  expect_equal(get_period_range(trend_data_per), per)
+  expect_equal(trend_data_per[per_data], trend_data[per_data])
+  
+  per <- period_range("2100/2103")
+  per_data <- period_range("2100/2102")
+  all_data_per <- mdl$get_data(period = per)
+  expect_equal(get_period_range(all_data_per), per)
+  expect_equal(all_data_per[per_data], all_data[per_data, 
+                                                colnames(all_data_per)])
 })
+
 
 
 test_that("write model to file and read again", {
