@@ -477,8 +477,11 @@ DynMdl <- R6Class("DynMdl",
         }
         endo_data <- private$endo_data[period, names, drop = FALSE]
       }
-      if (trend) {
-        endo_data <- private$trend_endo_data(endo_data)
+      if (trend  && private$mdldef$trend_info$has_deflated_endos) {
+        # NOTE: period may include period outside the data_period. The results
+        # for these periods are NA, so we do not have to trend this data.
+        p <- range_intersect(period, private$data_period)
+        endo_data[p] <- private$trend_endo_data(endo_data[p])
       }
       return(update_ts_labels(endo_data, private$mdldef$labels))
     },
@@ -1678,9 +1681,15 @@ DynMdl <- R6Class("DynMdl",
       if (nrow(defl_endos) == 0) {
         return(endo_data)
       }
-     
-      defl_data <- private$deflator_data[, defl_endos$deflators]
   
+      dp <- get_period_range(endo_data)
+      if (range_intersect(dp, private$data_period) != dp) {
+        stop(paste("Internal error in trend_detrend_endo_data:",
+                   "Period range of endo_data not within data period."))
+      }    
+      
+      defl_data <- private$deflator_data[ , defl_endos$deflators]
+
       sel <- match(defl_endos$names, colnames(endo_data))
       if (trend) {
         endo_data[ , sel] <- endo_data[ , sel] * defl_data
