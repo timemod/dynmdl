@@ -27,10 +27,17 @@ Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and
 \code{"internal"}. See details.}
 
 \item{fit_mod_file}{the name of the generated fit mod file. If not specified,
-then the fit mod file is destroyed after the model has been parsed.}
+then the fit mod file is destroyed after the model has been parsed.
+This argument should not be specified if the model contains
+trends, since in that case the fit mod file cannot be used a input mod file 
+for function \code{dyn_mdl} or for Dynare. If wou want to check the 
+equations in the fit mod file, use argument \code{DEBUG} (see below).}
 
-\item{debug}{If \code{TRUE}, then some print statements
-are executed.}
+\item{debug}{If logical (default \code{FALSE}), only used when the 
+model is a fit model. If \code{TRUE}, then intermediate files created when
+preparing the fit model are written to the current directory. By default
+these files are written in a temporary directory and deleted when the 
+R session terminates.}
 
 \item{dll_dir}{the directory where the dynamically linked library is stored.
 Primarily used for testing.

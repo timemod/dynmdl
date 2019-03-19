@@ -11,7 +11,7 @@ result  as a \code{\link[regts]{regts}} timeseries object.
 \section{Usage}{
 
 \preformatted{
-mdl$residual_check(tol, include_fit_eqs = False)
+mdl$residual_check(tol, include_fit_eqs = FALSE)
 
 }
 

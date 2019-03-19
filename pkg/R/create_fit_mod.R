@@ -11,8 +11,7 @@
 # @param instruments a character vector with the names of the fit instruments
 # @return a list with the names of the auxiliary variables
 #' @importFrom stringi stri_split_fixed
-create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename, 
-                           debug = FALSE) {
+create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename) {
   
   if (file.exists(fit_mod)) {
     unlink(fit_mod)

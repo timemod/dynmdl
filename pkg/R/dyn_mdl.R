@@ -18,8 +18,15 @@
 #' \code{"internal"}. See details.
 #' @param fit_mod_file the name of the generated fit mod file. If not specified,
 #' then the fit mod file is destroyed after the model has been parsed.
-#' @param debug If \code{TRUE}, then some print statements
-#' are executed.
+#' This argument should not be specified if the model contains
+#' trends, since in that case the fit mod file cannot be used a input mod file 
+#' for function \code{dyn_mdl} or for Dynare. If wou want to check the 
+#' equations in the fit mod file, use argument \code{DEBUG} (see below).
+#' @param debug If logical (default \code{FALSE}), only used when the 
+#' model is a fit model. If \code{TRUE}, then intermediate files created when
+#' preparing the fit model are written to the current directory. By default
+#' these files are written in a temporary directory and deleted when the 
+#' R session terminates.
 #' @param dll_dir the directory where the dynamically linked library is stored.
 #' Primarily used for testing.
 #' Only used if argument \code{use_dll} is \code{TRUE}.
@@ -98,6 +105,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   run_macro(mod_file, preprocessed_mod_file)
   
   mod_text <- read_file(preprocessed_mod_file)
+
   
   instruments <- get_fit_instruments(mod_text)
   
@@ -111,11 +119,17 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     # FIT PROCEDURE
     
     if (missing(fit_mod_file)) {
-      fit_mod_file <- tempfile(pattern = "fit", fileext = ".mod")
+      fit_mod_file <- if (debug) "fitmod.mod" else 
+                       tempfile(pattern = "fit", fileext = ".mod")
+    } else if (regexpr("trend_var\\(.+\\)", mod_text) != -1) {
+      if (file.exists(fit_mod_file)) unlink(fit_mod_file)
+      stop(paste("For models with trends, it is not possible to create a fit",
+                 "mod file that\ncan be used as input mod file for dyn_mdl or",
+                 "Dynare."))
     }
     
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
-                               instruments, latex_basename, debug)
+                               instruments, latex_basename)
    
     n_fit_derivatives <- length(fit_info$orig_endos) + length(fit_info$sigmas)
  
