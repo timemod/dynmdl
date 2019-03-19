@@ -331,10 +331,6 @@ FitMdl <- R6Class("FitMdl",
       
       name_err <- match.arg(name_err)
       
-      if (private$mdldef$aux_vars$aux_count > 0) {
-        stop("FitMdl cannot handle auxiliary variables yet")
-      }
-      
       endo_names <- private$fit_info$orig_endos
       exo_names <- private$fit_info$orig_exos
       inst_names <- private$fit_info$instruments
