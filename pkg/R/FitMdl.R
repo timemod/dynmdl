@@ -134,24 +134,7 @@ FitMdl <- R6Class("FitMdl",
       if (length(names) == 0) {
         return(NULL)
       }
-      inst_names <- intersect(names, private$fit_info$instruments)
-      no_inst_names <- setdiff(names, inst_names)
-    
-      # NOTE: we cannot simply use super$get_data(names = names,...),
-      # because this method calls method get_endo_data() of FitMdl and this 
-      # method does not return fit instruments.
-      no_inst_data <- super$get_data(names = no_inst_names, period = period, 
-                                     trend = trend)
-      if (length(inst_names) > 0) {
-        inst_data <- self$get_fit_instruments(names = inst_names, 
-                                              period = period)
-        inst_data <- update_ts_labels(inst_data, private$mdldef$labels)
-        data <- cbind(no_inst_data, inst_data)
-        data <- data[ , order(colnames(data)), drop = FALSE]
-      } else {
-        data <- no_inst_data
-      }
-      return(data)
+      return(super$get_data(names = names, period = period, trend = trend))
     },
     get_endo_data = function(pattern, names, period = private$data_period, 
                              trend = TRUE) {

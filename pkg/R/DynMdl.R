@@ -1089,8 +1089,9 @@ DynMdl <- R6Class("DynMdl",
       return(data)
     },
     get_endo_data_internal = function(names, period, trend) {
-      # internal function to obtain endo data (without labels).
-      # names (if specified) and period are assumed to be correct
+      # Internal function that returns endo data (without labels), exluding 
+      # the auxiliary variables.
+      # Argument names (if specified) and period are assumed to be correct.
       if (missing(names)) {
         if (private$mdldef$aux_vars$aux_count > 0) {
           data <- private$endo_data[period, - private$mdldef$aux_vars$endos, 
