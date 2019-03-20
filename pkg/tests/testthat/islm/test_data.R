@@ -66,6 +66,11 @@ test_that("set_data, set_endo_values and set_exo_values works correctly (1)", {
                data[, c("c", "g", "y", 'yd')])
   
   expect_equal(mdl3$get_data(names = "i"), data[, "i", drop = FALSE])
+  
+  expect_equal(mdl3$get_data(period = "2017"), data["2017"])
+  expect_equal(mdl3$get_data(period = "2017m1"), data["2017q1"])
+  
+  expect_equal(mdl3$get_data(names = "g"), data[, "g", drop = FALSE])
 })
 
 test_that("mdl2 is a different object than mdl", {

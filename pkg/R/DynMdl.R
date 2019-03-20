@@ -265,6 +265,7 @@ DynMdl <- R6Class("DynMdl",
     },
     init_data = function(data_period, data, upd_mode = c("upd", "updval"))  {
       
+      
       upd_mode <- match.arg(upd_mode)
 
       if (missing(data_period)) {
@@ -440,52 +441,58 @@ DynMdl <- R6Class("DynMdl",
     get_data = function(pattern, names, period = private$data_period,
                         trend = TRUE) {
       
+      period <- private$convert_period_arg(period)
+
+      exo_data <- NULL
+      trend_data <- NULL
+      
       if (missing(pattern)  && missing(names)) {
-        endo_data <- self$get_endo_data(period = period, trend = trend)
-        exo_data <- self$get_exo_data(period = period)
-        trend_data <- self$get_trend_data(period = period)
+        endo_data <- private$get_endo_data_internal(period = period, 
+                                                    trend = trend)
+        if (private$mdldef$exo_count > 0) exo_data <- private$exo_data[period]
+        if (!is.null(private$trend_data)) trend_data <- private$trend_data[period]
       } else { 
         names <- private$get_names_("all", names, pattern)
         if (length(names) == 0) {
           return(NULL)
         }
         endo_names <- intersect(names, private$endo_names)
-        exo_names <- intersect(names, private$exo_names)
-        trend_names <- intersect(names, 
-                                 private$mdldef$trend_info$trend_vars$names)
-        endo_data <- self$get_endo_data(names = endo_names, period = period, 
-                                       trend = trend)
-        exo_data <- self$get_exo_data(names = exo_names, period = period)
-        trend_data <- self$get_trend_data(names = trend_names, period = period)
+        endo_data <- private$get_endo_data_internal(names = endo_names, 
+                                                    period = period, 
+                                                    trend = trend)
+        if (private$mdldef$exo_count > 0) {
+          exo_names <- intersect(names, private$exo_names)
+          exo_data <- private$exo_data[period, exo_names, drop = FALSE]
+        }
+        if (length(private$mdldef$trend_info$trend_vars$names) > 0) {
+          trend_names <- intersect(names, 
+                                   private$mdldef$trend_info$trend_vars$names)
+          trend_data <- private$trend_data[period, trend_names]
+        }
       }
     
-      data_list <- list(endo_data, exo_data, trend_data)
-      sel <- sapply(data_list, FUN = function(x) {!is.null(x) && NCOL(x) > 0})
-      data_list <- data_list[sel]
-      data <- do.call(cbind, data_list)
+      data <- cbind(endo_data, exo_data, trend_data)
       data <- data[ , order(colnames(data)), drop = FALSE]
       
+      if (ncol(data) == 0) return(NULL)
       return(update_ts_labels(data, private$mdldef$labels))
     },
 
     get_endo_data = function(pattern, names, period = private$data_period,
                              trend = TRUE) {
       period <- private$convert_period_arg(period)
-      if (missing(pattern) && missing(names) && 
-          private$mdldef$aux_vars$aux_count == 0) {
-        endo_data <- private$endo_data[period, ]
+      if (missing(pattern) && missing(names)) {
+        endo_data <- private$get_endo_data_internal(period = period, 
+                                                    trend = trend)
       } else {
         names <- private$get_names_("endo", names, pattern)
         if (length(names) == 0) {
           return(NULL)
-        }
-        endo_data <- private$endo_data[period, names, drop = FALSE]
-      }
-      if (trend  && private$mdldef$trend_info$has_deflated_endos) {
-        # NOTE: period may include period outside the data_period. The results
-        # for these periods are NA, so we do not have to trend this data.
-        p <- range_intersect(period, private$data_period)
-        endo_data[p] <- private$trend_endo_data(endo_data[p])
+        }  
+        endo_data <- private$get_endo_data_internal(names = names, 
+                                                    period = period, 
+                                                    trend = trend)
+        
       }
       return(update_ts_labels(endo_data, private$mdldef$labels))
     },
@@ -1081,6 +1088,27 @@ DynMdl <- R6Class("DynMdl",
       
       return(data)
     },
+    get_endo_data_internal = function(names, period, trend) {
+      # internal function to obtain endo data (without labels).
+      # names (if specified) and period are assumed to be correct
+      if (missing(names)) {
+        if (private$mdldef$aux_vars$aux_count > 0) {
+          data <- private$endo_data[period, - private$mdldef$aux_vars$endos, 
+                                    drop = FALSE]
+        } else {
+          data <- private$endo_data[period]
+        }
+      } else {
+        data <- private$endo_data[period, names, drop = FALSE]
+      }
+      if (trend  && private$mdldef$trend_info$has_deflated_endos) {
+        # NOTE: period may include period outside the data_period. The results
+        # for these periods are NA, so we do not have to trend this data.
+        p <- range_intersect(period, private$data_period)
+        data[p] <- private$trend_endo_data(data[p])
+      }
+      return(data)
+    },
     set_data_ = function(data, type, upd_mode = "upd", fun, init_data = FALSE) {
       # generic function to set or update the endogenous or exogenous
       # variables
@@ -1190,12 +1218,7 @@ DynMdl <- R6Class("DynMdl",
       names <- private$get_names_(type, names, pattern)
       if (length(names) == 0) return(invisible(NULL))
       if (type == "endo") {
-        # do not call private$get_data(), because the the FitMDl
-        # version will be called for fitmdl objects
-        data <- private$endo_data[period, names, drop = FALSE]
-        if (private$mdldef$trend_info$has_deflated_endos) {
-          data <- private$trend_endo_data(data)
-        }
+        data <- private$get_endo_data_internal(names, period, trend = TRUE)
       } else  { 
         if (private$mdldef$trend_info$has_deflated_endos) {
           private$check_change_growth_exos(names)
