@@ -22,6 +22,7 @@ setOldClass("regts")
 #' @importFrom compiler compile
 #' @importFrom utils zip
 #' @importFrom utils compareVersion
+#' @importFrom data.table shift
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -1411,22 +1412,20 @@ DynMdl <- R6Class("DynMdl",
     prepare_aux_vars = function() {
       # calculate the auxiliary auxiliary variables before solving
       if (private$mdldef$aux_vars$aux_count == 0) {
-        return(invisible(NULL))
+        return()
       }
-      nper <- nrow(private$endo_data)
+      
       with(private$mdldef$aux_vars, {
+        types <- ifelse(orig_leads < 0, "lag", "lead")
+        nvals <- abs(orig_leads)
+        orig_endo_data <- private$endo_data[ , orig_endos, drop = FALSE]
         for (i in seq_len(aux_count)) {
-          if (orig_leads[i] > 0) {
-            sel_orig <- (1 + orig_leads[i]) : nper
-          } else {
-            sel_orig <- 1 : (nper + orig_leads[i])
-          }
-          sel_endo <- sel_orig - orig_leads[i]
-          private$endo_data[sel_endo , endos[i]] <- 
-                        private$endo_data[sel_orig , orig_endos[i]]
+          private$endo_data[ , endos[i]] <- 
+                   data.table::shift(orig_endo_data[ , i], n = nvals[i], 
+                                     type = types[i])
         }
       })
-      return(invisible(NULL))
+      return()
     },
     check_model_period = function(period) {
       

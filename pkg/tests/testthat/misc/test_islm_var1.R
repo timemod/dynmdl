@@ -189,4 +189,23 @@ test_that("get_data also works with aux vars", {
                mdl_new$get_data(pattern = ".."))
 })
 
+test_that("lag eand lead shocks", {
+  
+  outp <- capture.output(mdl2 <- dyn_mdl(mod_file, period = "2015/2032",
+                    max_laglead_1 = TRUE, calc = "internal"))
+  
+  mdl3 <- mdl2$copy()
+  mdl3$set_endo_values(c(4750, 4755, 4760), names = "y", 
+                          period = "2012/2013")
+  mdl3$set_endo_values(c(4730, 4735, 7740), names = "yd", 
+                          period = "2033/2035")
+  mdl3$set_endo_values(c(8062), names = "y", period = "2011")
+  
+  mdl3$solve(control = list(silent = TRUE))
+  
+  mdl2$set_data(mdl3$get_endo_data())
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
+  expect_identical(mdl2$get_data(), mdl3$get_data())
+})
+
 
