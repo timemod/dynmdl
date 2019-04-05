@@ -22,7 +22,8 @@ Imports:
     stringi,
     umfpackr,
     numDeriv,
-    readr
+    readr,
+    data.table
 Depends:
     regts,
     methods

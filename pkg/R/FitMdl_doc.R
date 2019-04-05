@@ -39,6 +39,10 @@
 #' name as the column name. If \code{data} does not have column names,
 #' or if the column names do not correspond to the model variable names,
 #' then argument \code{names} should be specified.
+#' 
+#' If \code{data} contains  \code{NA} values, then the variable is not a fit 
+#' target for the corresponding periods, which implies that the variable
+#' will be calculated according to the equations of the model.
 #'
 #' @examples
 #'
@@ -54,14 +58,16 @@
 #' 
 #' print(mdl$get_fit())
 #
-#' @seealso \code{\link{get_fit}}
+#' @seealso \code{\link{get_fit}}, \code{\link{set_fit}}
+#' and \code{\link{clear_fit}}
 NULL
 
 #' \code{\link{FitMdl}} method: Sets the values of the fit targets
 #' @name set_fit_values
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
-#' can be used to set the values of the fit targets.
+#' can be used to set the values of the fit targets. See the documentation
+#' of function \code{\link{set_fit}} for more information about fit targets.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -89,6 +95,7 @@ NULL
 #' mdl$set_fit_values(c(190, 195), names = "i", period = "2017Q1/2017Q2")
 #'
 #' print(mdl$get_fit())
+#' @seealso \code{\link{set_fit}} and \code{\link{clear_fit}}
 NULL
 
 #' \code{\link{FitMdl}} methods: Retrieve the names of the fit instruments
@@ -173,6 +180,54 @@ NULL
 #' print(mdl$get_fit_instruments())
 #' print(mdl$get_lagrange())
 #' 
-#' @seealso \code{\link{get_data-methods}}, \code{\link{set_fit}} and  
-#' \code{\link{set_fit_values}}.
+#' @seealso \code{\link{get_data-methods}}, \code{\link{set_fit}},
+#' \code{\link{set_fit_values}} and \code{\link{clear_fit}}.
+NULL
+
+
+#' \code{\link{FitMdl}} method: removes fit targets and turns off fit
+#' instruments.
+#' @name clear_fit
+
+#' @description
+#' This method of R6 class \code{FitMdl} removes all fit targets, sets 
+#' the sigma-parameters of the fit-instruments to \code{-1} and sets
+#' all Lagrange multipliers to 0. 
+#' 
+#' By removing the fit targets (which is equivalent to setting all fit targets to
+#' \code{NA}), all endogenous variables are calculated according to the equations
+#' of the model, while the fit instruments stay fixed at their current value, 
+#' and are efficitively exogenous (even though they are still implemented
+#' as endogenous variables).
+#' 
+#' If the model had been solved before \code{clear_fit} was called, then the
+#' model is still solved after \code{clear_fit} has been called.
+#' 
+#' @section Usage:
+#' \preformatted{
+#' 
+#' mdl$clear_fit()
+#' }
+#'
+#' \code{mdl} is an \code{\link{FitMdl}} object
+#''
+#' @examples
+#'
+#' mdl <- islm_mdl(period = "2016Q1/2017Q3", fit = TRUE)
+#'
+#' # create a regts with fit targets
+#' y <- regts(c(1250, 1255, 1260), start = "2016Q1")
+#' t <- regts(c(250, 255), start = "2016Q1")
+#' fit_targets <- cbind(y, t)
+#' 
+#' # register the fit targets in the FitMdl object
+#' mdl$set_fit(fit_targets)
+#' 
+#' mdl$solve()
+#' mdl$clear_fit()
+#' 
+#' # the next statements gives 0 iterations.
+#' mdl$solve()
+#' @seealso \code{\link{get_data-methods}}, \code{\link{set_fit}},
+#' \code{\link{set_fit_values}} and \code{\link{clear_fit}}.
 NULL

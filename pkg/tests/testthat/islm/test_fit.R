@@ -174,16 +174,16 @@ test_that("miscellaneous set functions", {
                    regts(2, period = mdl$get_period()))
   
   # errors
-  expect_error(mdl$set_static_endos(c(l_2 = 2)),
+  expect_error(mdl2$set_static_endos(c(l_2 = 2)),
                "\"l_2\" is not an endogenous model variable")
   
-  expect_error(mdl$set_fit_values(2, names = c("g", "l_2")),
+  expect_error(mdl2$set_fit_values(2, names = c("g", "l_2")),
                "\"g\", \"l_2\" are no endogenous model variables")
   
   
   x <- regts(matrix(1, nrow = 2, ncol = 3), names = c("g", "l_2", "y"),
              period = "2016Q1")
-  expect_error(mdl$set_fit(x), "\"g\", \"l_2\" are no endogenous model variables")
+  expect_error(mdl2$set_fit(x), "\"g\", \"l_2\" are no endogenous model variables")
 })
 
 test_that("get_vars_pars", {
@@ -245,18 +245,28 @@ test_that("changing fit instruments", {
   mdl2 <- mdl$copy()
   
   ut <- regts(1:2, start = "2016q1")
-  mdl$set_data(ut, names = "ut")
-  mdl$set_endo_values(3, names = "uc", period = "2016q1")
-  mdl$change_endo_data(function(x) {x + 2}, names = "ui", 
+  mdl2$set_data(ut, names = "ut")
+  mdl2$set_endo_values(3, names = "uc", period = "2016q1")
+  mdl2$change_endo_data(function(x) {x + 2}, names = "ui", 
                        period = "2016q1/2016q3")
   
-  expected_result <- mdl$get_fit_instruments()
+  expected_result <- mdl2$get_fit_instruments()
   expected_result["2016q1/2016q2", "ut"] <- c(1,2)
   expected_result["2016q1", "ui"] <- c(3)
   expected_result["2016q1/2016q3"] <-  expected_result["2016q1/2016q3"] + 3
   
   
-  expect_error(mdl$change_endo_data(function(x) {x + 2}, names = "g", 
+  expect_error(mdl2$change_endo_data(function(x) {x + 2}, names = "g", 
                                     period = "2016q1/2016q3"),
                "\"g\" is not an endogenous model variable")
 })
+
+test_that("clear_fit", {
+  mdl2 <- mdl$copy()
+  mdl2$clear_fit()
+  expect_null(mdl2$get_fit())
+  expect_equal(unname(mdl2$get_sigmas()), numeric(0))
+  expect_equal(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
+})
+

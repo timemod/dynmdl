@@ -50,6 +50,7 @@
 #' @importFrom tools file_path_sans_ext
 #' @importFrom readr read_file
 #' @importFrom regts range_union
+#' @importFrom regts as.regts
 #' @importFrom tools file_path_sans_ext
 dyn_mdl <- function(mod_file, period, data, base_period = NULL, 
                     calc = c("R", "bytecode", "dll", "internal"),

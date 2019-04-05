@@ -128,6 +128,11 @@ FitMdl <- R6Class("FitMdl",
       if (is.null(per)) return(invisible(self))
       return(private$set_fit_internal(data[per], per))
     },
+    clear_fit = function() {
+      self$set_fit_values(NA)
+      self$set_param_values(-1, names = private$fit_info$sigmas)
+      self$set_endo_values(0, names = private$fit_info$l_vars)
+    },
     get_data = function(pattern, names, period = private$data_period,
                         trend = TRUE) {
       names <- private$get_names_fitmdl_("all", names, pattern)

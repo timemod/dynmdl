@@ -1163,8 +1163,8 @@ NULL
 #'
 #' # copy all parameters to the global environment, and evaluate
 #' # an expresions in the global environment:
-#'  list2env(l, .GlobalEnv)
-#'  print(md - ms)
+#' list2env(vars_pars, .GlobalEnv)
+#' print(md - ms)
 #' 
 NULL
 
