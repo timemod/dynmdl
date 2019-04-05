@@ -5,7 +5,8 @@
 \title{\code{\link{FitMdl}} method: Sets the values of the fit targets}
 \description{
 This method of R6 class \code{\link{DynMdl}} 
-can be used to set the values of the fit targets.
+can be used to set the values of the fit targets. See the documentation
+of function \code{\link{set_fit}} for more information about fit targets.
 }
 \section{Usage}{
 
@@ -38,4 +39,7 @@ mdl <- islm_mdl(period = "2017Q1/2018Q3", fit = TRUE)
 mdl$set_fit_values(c(190, 195), names = "i", period = "2017Q1/2017Q2")
 
 print(mdl$get_fit())
+}
+\seealso{
+\code{\link{set_fit}} and \code{\link{clear_fit}}
 }

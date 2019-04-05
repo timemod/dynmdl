@@ -47,6 +47,10 @@ each column is used to update the fit target with the same
 name as the column name. If \code{data} does not have column names,
 or if the column names do not correspond to the model variable names,
 then argument \code{names} should be specified.
+
+If \code{data} contains  \code{NA} values, then the variable is not a fit 
+target for the corresponding periods, which implies that the variable
+will be calculated according to the equations of the model.
 }
 
 \examples{
@@ -64,5 +68,6 @@ mdl$set_fit(fit_targets)
 print(mdl$get_fit())
 }
 \seealso{
-\code{\link{get_fit}}
+\code{\link{get_fit}}, \code{\link{set_fit}}
+and \code{\link{clear_fit}}
 }
