@@ -200,7 +200,7 @@ NULL
 #' and are efficitively exogenous (even though they are still implemented
 #' as endogenous variables).
 #' 
-#' If the model has been solved before \code{clear_fit} was called, then the
+#' If the model had been solved before \code{clear_fit} was called, then the
 #' model is still solved after \code{clear_fit} has been called.
 #' 
 #' @section Usage:
