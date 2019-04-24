@@ -176,9 +176,9 @@ DynMdl <- R6Class("DynMdl",
       if (type == "leads" || type == "lags") {
         lli <- private$mdldef$lead_lag_incidence
         if (type == "leads") {
-            lli <- lli[, as.integer(colnames(lli)) > 0, drop = FALSE]
+            lli <- lli[ , as.integer(colnames(lli)) > 0, drop = FALSE]
         } else {
-            lli <- lli[, as.integer(colnames(lli)) < 0, drop = FALSE]
+            lli <- lli[ , as.integer(colnames(lli)) < 0, drop = FALSE]
         }
         lli <- rowSums(lli)
         names <- names(lli[lli > 0])
@@ -1048,9 +1048,7 @@ DynMdl <- R6Class("DynMdl",
       # Used by set_data and set_fit: checks the period range of data and 
       # selects the appropriate period. Also converts data to a matrix ts with 
       # colnames if necessary.
-      
-      if (NCOL(data) == 0) return(NULL)
-      
+
       if (is.null(private$model_period)) stop(private$period_error_msg)
       
       if (!inherits(data, "ts")) {
@@ -1058,6 +1056,10 @@ DynMdl <- R6Class("DynMdl",
         # length(x) == 0
         stop("Argument data is not a timeseries object")
       }
+      
+      if (NCOL(data) == 0) return(NULL)
+      
+      data <- as.regts(data)
       
       if (frequency(data) != frequency(private$data_period)) {
         stop(paste0("The frequency of data does not agree with the data",
