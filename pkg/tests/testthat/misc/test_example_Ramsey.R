@@ -150,8 +150,9 @@ test_that("change_endo_data", {
   
  mdl2 <- mdl$copy()
  
- mdl2$change_endo_data(function(x) {x + 1}, pattern = "xxx",
-                       period = "2000/2001")
+ expect_warning(mdl2$change_endo_data(function(x) {x + 1}, pattern = "xxx",
+                       period = "2000/2001"),
+                "No endogenous variables match pattern \"xxx\".")
  expect_equal(mdl$get_endo_data(), mdl2$get_endo_data())
 
  mdl2$change_endo_data(function(x) {x + 1}, period = "2000/2001")

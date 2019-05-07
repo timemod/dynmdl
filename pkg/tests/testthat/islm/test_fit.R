@@ -110,9 +110,14 @@ test_that("get_data", {
   expect_error(mdl$get_exo_data(names = c("ui", "aap")),
                "\"ui\", \"aap\" are no exogenous model variables")
   
-  expect_null(mdl$get_endo_data(pattern = "^u"))
-  expect_null(mdl$get_data(pattern = "^z"))
-  expect_null(mdl$get_fit_instruments(pattern = "^z"))
+  expect_warning(expect_null(mdl$get_endo_data(pattern = "^u")),
+                 "No endogenous variables match pattern \"\\^u\".")
+                 
+  expect_warning(expect_null(mdl$get_data(pattern = "^z")),
+                 "No model variables match pattern \"\\^z\".")
+  
+  expect_warning(expect_null(mdl$get_fit_instruments(pattern = "^z")),
+                 "No fit instruments match pattern \"\\^z\".")
 })
 
 

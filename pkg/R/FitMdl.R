@@ -365,7 +365,7 @@ FitMdl <- R6Class("FitMdl",
         }
       }
       
-      return(super$select_names(vnames, names, pattern))
+      return(super$select_names(vnames, names, pattern, type))
     },
     set_fit_internal = function(data, period) {
      

@@ -1027,15 +1027,25 @@ DynMdl <- R6Class("DynMdl",
         }
         names <- intersect(names, vnames)
       }
-      return(private$select_names(vnames, names, pattern))
+      return(private$select_names(vnames, names, pattern, type))
     },
-    select_names = function(all_names, names, pattern) {
+    select_names = function(all_names, names, pattern, type) {
       # this function selects names from vector all_names, 
       # based on a list of names and a regular expression
       if (missing(pattern) && missing(names)) {
         names <- all_names
       } else if (!missing(pattern)) {
         pattern_names <- grep(pattern, all_names, value = TRUE)
+        if (length(pattern_names) == 0) {
+          type_texts <- c(all = "model variables", 
+                          endo = "endogenous variables", 
+                          exo = "exogenous variables", 
+                          trend = "trend variables",
+                          inst = "fit instruments")
+          type_text <- type_texts[[type]]
+          warning(sprintf("No %s match pattern \"%s\".\n",
+                          type_text, pattern))
+        }
         if (!missing(names)) {
           names <- union(pattern_names, names)
         } else {

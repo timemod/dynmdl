@@ -132,9 +132,14 @@ test_that("get_data errors", {
     "\"aap\" is not an exogenous model variable"
   )
   
-  expect_null(mdl$get_data(pattern = "xxx"))
-  expect_null(mdl$get_endo_data(pattern = "xxx"))
-  expect_null(mdl$get_exo_data(pattern = "xxx"))
+  expect_warning(expect_null(mdl$get_data(pattern = "xxx")),
+                 "No model variables match pattern \"xxx\".")
+  
+  expect_warning(expect_null(mdl$get_endo_data(pattern = "xxx")),
+                 "No endogenous variables match pattern \"xxx\".")
+  
+  expect_warning(expect_null(mdl$get_exo_data(pattern = "xxx")),
+                 "No exogenous variables match pattern \"xxx\".")
 })
 
 
