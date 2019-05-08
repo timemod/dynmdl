@@ -13,7 +13,8 @@ transfers data from a timeseries object to the model data
 
 \preformatted{
 mdl$set_data(data, names = colnames(data), 
-             upd_mode = c("update", "updval"), fun)
+             upd_mode = c("update", "updval"), fun,
+             name_err = c("stop", "warn", "silent"))
 
 }
 
@@ -37,6 +38,11 @@ how the timeseries are updated: \code{"upd"} (standard update, default) or
 be a function with two arguments. The original model data is passed to 
 the first argument of the function and \code{data} to the second argument.
 See the examples.}
+\item{\code{name_err}}{this option specifies the action that should be taken 
+when a variable name is not a model variable.
+For \code{"stop"} (the default), the execution of this function is stopped.
+For \code{"warn"} and \code{"silent"} the timeseries that are no model
+variables are skipped. \code{"warn"} does however give a warning.}
 }
 }
 

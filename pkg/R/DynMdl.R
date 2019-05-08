@@ -430,10 +430,15 @@ DynMdl <- R6Class("DynMdl",
       private$set_values_(value, names, pattern, period, type = "exo")
       return(invisible(self))
     },
-    set_data = function(data, names, upd_mode = c("upd", "updval"), fun) {
+    set_data = function(data, names, upd_mode = c("upd", "updval"), fun,
+                        name_err = "stop") {
       upd_mode <- match.arg(upd_mode)
       data <- private$convert_data_internal(data, names)
       if (is.null(data)) return(invisible(self))
+      names <- private$get_names_("endo_exo", names = colnames(data), 
+                                  name_err = name_err)
+      if (length(names) == 0) return(invisible(self))
+      
       private$set_data_(data, type = "exo", upd_mode = upd_mode, fun = fun)
       private$set_data_(data, type = "endo", upd_mode = upd_mode, fun = fun)
       return(invisible(self))
@@ -987,7 +992,7 @@ DynMdl <- R6Class("DynMdl",
       
       name_err <- match.arg(name_err)
       
-      if (type %in% c("all", "endo")) {
+      if (type %in% c("all", "endo", "endo_exo")) {
         endo_names <- private$endo_names
         if (private$mdldef$aux_vars$aux_count > 0) {
           endo_names <- endo_names[-private$mdldef$aux_vars$endos]
@@ -1001,6 +1006,8 @@ DynMdl <- R6Class("DynMdl",
       # return model variable names
       if (type == "all") {
         vnames <- union(union(endo_names, private$exo_names), trend_names)
+      } else if (type == "endo_exo") {
+        vnames <- union(endo_names, private$exo_names)
       } else if (type == "endo") {
         vnames <- endo_names
       } else if (type == "exo") {
@@ -1011,21 +1018,24 @@ DynMdl <- R6Class("DynMdl",
       if (!missing(names)) {
         error_vars <- setdiff(names, vnames)
         if (length(error_vars) > 0) {
-          error_vars <- paste0("\"", error_vars, "\"")
-          error_var_txt <- paste(error_vars, collapse = ", ")
-          error_fun <- if (name_err == "warn") warning else stop
-          type_texts <- c(all = "model", endo = "endogenous model", 
-                          exo = "exogenous model", trend = "trend")
-          type_text <- type_texts[[type]]
-          if (length(error_vars) == 1) {
-            a_word <- if (type %in% c("trend", "all")) "a" else "an"
-            msg <- paste("is not", a_word, type_text, "variable")
-          } else {
-            msg <- paste("are no", type_text, "variables")
+          if (name_err != "silent") {
+            error_vars <- paste0("\"", error_vars, "\"")
+            error_var_txt <- paste(error_vars, collapse = ", ")
+            error_fun <- if (name_err == "warn") warning else stop
+            type_texts <- c(all = "model", endo = "endogenous model", 
+                            exo = "exogenous model", trend = "trend",
+                            endo_exo = "model")
+            type_text <- type_texts[[type]]
+            if (length(error_vars) == 1) {
+              a_word <- if (type %in% c("trend", "all")) "a" else "an"
+              msg <- paste("is not", a_word, type_text, "variable")
+            } else {
+              msg <- paste("are no", type_text, "variables")
+            }
+            error_fun(paste(error_var_txt, msg))
           }
-          error_fun(paste(error_var_txt, msg)) 
+          names <- intersect(names, vnames)
         }
-        names <- intersect(names, vnames)
       }
       return(private$select_names(vnames, names, pattern, type))
     },
