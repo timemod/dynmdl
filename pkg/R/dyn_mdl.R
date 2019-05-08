@@ -48,7 +48,6 @@
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext
-#' @importFrom readr read_file
 #' @importFrom regts range_union
 #' @importFrom regts as.regts
 #' @importFrom tools file_path_sans_ext
@@ -104,9 +103,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   }
 
   run_macro(mod_file, preprocessed_mod_file)
-  
-  mod_text <- read_file(preprocessed_mod_file)
 
+  mod_text <- read_file(preprocessed_mod_file)
   
   instruments <- get_fit_instruments(mod_text)
   
@@ -398,6 +396,13 @@ convert_trend_info <- function(trend_info, exo_names, endo_names) {
   return(trend_info)
 }
   
+
+
+# read the text of a file into a single character string
+read_file <- function(filename) {
+  nchars <- file.info(filename)$size
+  return(readChar(filename, nchars))
+}
 
 
 
