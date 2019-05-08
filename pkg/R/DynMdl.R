@@ -889,11 +889,8 @@ DynMdl <- R6Class("DynMdl",
       return(structure(serialized_mdl, class = "serialized_dynmdl"))
     },
     deserialize = function(ser, dll_dir) {
-      
-      # for the time being we will not make the serialized model file
-      # backwards compatible
-      minimal_version <- as.character(packageVersion("dynmdl"))
-      if (compareVersion(as.character(ser$version), minimal_version)) {
+      minimal_version <- "0.7"
+      if (compareVersion(as.character(ser$version), minimal_version) < 0) {
         stop(paste("It is not possible to read model files",
                    "created with dynmdl versions prior to",
                   minimal_version, "\nPlease regenerate the model with function",
