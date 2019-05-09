@@ -7,15 +7,9 @@
 PKGDIR=pkg
 INSTALL_FLAGS=--no-multiarch --with-keep.source 
 RCHECKARG=--no-multiarch
-R_HOME=$(shell R RHOME)
 
-OSNAME := $(shell uname | tr A-Z a-z)
-ifeq ($(findstring windows, $(OSNAME)), windows) 
-    OSTYPE = windows
-else
-    # Linux or MAC OSX
-    OSTYPE = unix
-endif
+OSTYPE=$(shell Rscript -e "cat(.Platform[['OS.type']])")
+RCPP_CXXFLAGS = $(shell Rscript -e "Rcpp:::CxxFlags()")
 
 # Package name, Version and date from DESCIPTION
 PKG=$(shell grep 'Package:' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2)
@@ -28,12 +22,9 @@ TODAY=$(shell date "+%Y-%m-%d")
 CC=$(shell R CMD config CC)
 CPP=$(shell R CMD config CXX)
 CPP_FLAGS=$(shell R CMD config --cppflags)
-RCEREAL_DIR=`"$(R_HOME)/bin/Rscript" -e "cat(system.file(\"include\", package = \"Rcereal\"))"`
-BH_DIR=`"$(R_HOME)/bin/Rscript" -e "cat(system.file(\"include\", package = \"BH\"))"`
-PKG_CXXFLAGS = -DPACKAGE_NAME=\"dynare\" -DPACKAGE_TARNAME=\"dynare\" -DPACKAGE_VERSION=\"R-0.1-unstable\" -DPACKAGE_STRING=\"dynare\ R\ 0.1-unstable\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_BOOST_GRAPH_ADJACENCY_LIST_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_TRIM_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_SPLIT_HPP=1 -DHAVE_BOOST_LEXICAL_CAST_HPP=1 -DBOOST_NO_HASH=/\*\*/ -DUSE_R -I$(PKGDIR)/src -I$(RCEREAL_DIR) -I$(BH_DIR) `"$(R_HOME)/bin/Rscript" -e "Rcpp:::CxxFlags()"` -std=c++11
-
-testje:
-	echo $(PKG_CXXFLAGS)
+RCEREAL_DIR=$(shell Rscript -e "cat(system.file(\"include\", package = \"Rcereal\"))")
+BH_DIR=$(shell Rscript -e "cat(system.file(\"include\", package = \"BH\"))")
+PKG_CXXFLAGS = -DPACKAGE_NAME=\"dynare\" -DPACKAGE_TARNAME=\"dynare\" -DPACKAGE_VERSION=\"R-0.1-unstable\" -DPACKAGE_STRING=\"dynare\ R\ 0.1-unstable\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_BOOST_GRAPH_ADJACENCY_LIST_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_TRIM_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_SPLIT_HPP=1 -DHAVE_BOOST_LEXICAL_CAST_HPP=1 -DBOOST_NO_HASH=/\*\*/ -DUSE_R -I$(PKGDIR)/src -I$(RCEREAL_DIR) -I$(BH_DIR) $(RCPP_CXXFLAGS) -std=c++11
 
 .PHONY: clean cleanx check install uninstall mkpkg bin pdf
 
@@ -55,18 +46,20 @@ help:
 	@echo "   flags     - display R config flags and some macros"
 
 flags:
-	@echo "R_HOME=$(R_HOME)"
-	@echo "SHELL=$(SHELL)"
+	@echo "OSTYPE=$(OSTYPE)"
+	@echo "RCPP_CXXFLAGS=$(RCPP_CXXFLAGS)"
+	@echo "BH_DIR=$(BH_DIR)"
+	@echo "RCEREAL_DIR=$(RCEREAL_DIR)"
 	@echo "CPP_FLAGS=$(CPP_FLAGS)"
 	@echo "PKGDIR=$(PKGDIR)"
 	@echo "PKG=$(PKG)"
 	@echo "PKGTAR=$(PKGTAR)"
 	@echo "PKGDATE=$(PKGDATE)"
-	@echo "R .libPaths()"
 	@echo "CC=$(CC)"
 	@echo "CPP=$(CPP)"
 	@echo "CPP_FLAGS=$(CPP_FLAGS)"
 	@echo "PKG_CXXFLAGS=$(PKG_CXXFLAGS)"
+	@echo ".libPaths():"
 	@R --no-save --quiet --slave -e '.libPaths()'
 
 test:
@@ -87,12 +80,12 @@ check: cleanx syntax
 	@echo ""
 
 syntax:
-	$(CXX) "$(CPP_FLAGS)" $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/*.c*
-	$(CXX) "$(CPP_FLAGS)" $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/macro/*.c*
+	$(CPP) $(CPP_FLAGS) $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/*.c*
+	$(CPP) $(CPP_FLAGS) $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/macro/*.c*
 
 cleanx:
 # Apple Finder rubbish
-ifneq ($(findstring windows, $(OSNAME)), windows) 
+ifneq ($(OSTYPE), windows) 
 	@find . -name '.DS_Store' -delete
 endif
 	@rm -f $(PKGTAR)
