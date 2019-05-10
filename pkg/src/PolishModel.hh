@@ -38,6 +38,8 @@ enum ecode {
     EXP,
     LOG,
     SQRT,
+    NORMCDF,
+    NORMPDF,
     EXTFUN,    // external function
     EXTFUN_DERIV, // external function with analytical numerical derivative
     EXTFUN_NUMDERIV // external function numerical derivative
@@ -144,6 +146,7 @@ class PolishModel {
        // private functions
        void allocate_extfun_args();
        inline double eval_function(int code, double arg) const;
+       inline double eval_norm_function(int code, double x, double mu, double sigma) const;
        inline double get_pow_deriv(double x, double p, int k) const;
 };
 

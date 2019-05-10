@@ -4294,7 +4294,7 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         }
       else
         {
-          output << "normcdf(";
+          output << "pnorm(";
           arg1->writeOutput(output, output_type, temporary_terms, tef_terms);
           output << ",";
           arg2->writeOutput(output, output_type, temporary_terms, tef_terms);
@@ -4319,7 +4319,7 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         }
       else
         {
-          output << "normpdf(";
+          output << "dnorm(";
           arg1->writeOutput(output, output_type, temporary_terms, tef_terms);
           output << ",";
           arg2->writeOutput(output, output_type, temporary_terms, tef_terms);
@@ -6081,7 +6081,19 @@ void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
 
 
 void TrinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
-    dyn_error("genPolishCode not implemented for this type");
+    arg3->genPolishCode(mdl, dynamic);
+    arg2->genPolishCode(mdl, dynamic);
+    arg1->genPolishCode(mdl, dynamic);
+    switch (op_code) {
+       case oNormcdf:
+        mdl.add_op(NORMCDF);
+        break;
+       case oNormpdf:
+        mdl.add_op(NORMPDF);
+        break;
+       default:
+         dyn_error("genPolishCode not implemented for this trinary operator");
+    }
 }
 
 

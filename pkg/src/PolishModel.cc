@@ -155,7 +155,7 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
 
    int *codes = &((*eq)[0]);
    int index, lag;
-   double op, lop, rop, res;
+   double op, lop, rop, res, xarg, mu, sigma;
    while (pos < eq->size()) {
        int code = codes[pos];
        switch (code) {
@@ -221,6 +221,15 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
            case EXP:
            case LOG:
            case SQRT: stk.top() = eval_function(code, stk.top());
+                      break;
+           case NORMCDF:
+           case NORMPDF:
+                      xarg = stk.top();
+                      stk.pop();
+                      mu = stk.top();
+                      stk.pop();
+                      sigma = stk.top();
+                      stk.top() = eval_norm_function(code, xarg, mu, sigma);
                       break;
            case POW_DERIV:  rop = stk.top();
                             stk.pop();
@@ -302,6 +311,17 @@ double PolishModel::eval_function(int  code, double arg) const {
         case LOG: return log(arg);
         case SQRT: return sqrt(arg);
         default: return 0;
+    }
+}
+
+
+// evaluate the (cumulative) normal distribution function
+double PolishModel::eval_norm_function(int  code, double x, double mu, 
+                                       double sigma) const {  
+    switch(code) {
+        case NORMCDF: return 0.5 * (1 + erf(((x- mu)/(sigma * M_SQRT2))));
+        case NORMPDF: return 1 / (sigma *sqrt(2 * M_PI) * exp(pow((x - mu) / sigma, 
+                                                     2) / 2));
     }
 }
 
