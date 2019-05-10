@@ -397,11 +397,9 @@ convert_trend_info <- function(trend_info, exo_names, endo_names) {
 }
   
 
-
 # read the text of a file into a single character string
 read_file <- function(filename) {
-  nchars <- file.info(filename)$size
-  return(readChar(filename, nchars))
+  return(readChar(filename, nchars = file.size(filename), useBytes = TRUE))
 }
 
 
