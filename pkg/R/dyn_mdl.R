@@ -392,14 +392,15 @@ convert_trend_info <- function(trend_info, exo_names, endo_names) {
   
   trend_info$has_deflated_endos <- nrow(trend_info$deflated_endo) > 0
   
-  
   return(trend_info)
 }
   
 
 # read the text of a file into a single character string
 read_file <- function(filename) {
-  return(readChar(filename, nchars = file.size(filename), useBytes = TRUE))
+  text <- readChar(filename, nchars = file.size(filename), useBytes = TRUE)
+  Encoding(text) <- "latin1"
+  return(text)
 }
 
 
