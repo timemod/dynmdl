@@ -22,7 +22,6 @@ Imports:
     stringi,
     umfpackr,
     numDeriv,
-    readr,
     data.table
 Depends:
     regts,
@@ -30,5 +29,6 @@ Depends:
 Suggests:
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    caret
 VignetteBuilder: knitr
