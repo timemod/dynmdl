@@ -1,8 +1,8 @@
 # construct the solution of the linear state space model.
 # also computes the eigenvalues.
 #' @importFrom regts printobj
-solve_first_order <- function(ss, mdldef, jac_dynamic, check_only = FALSE,
-                              debug = FALSE) {
+solve_first_order <- function(ss, calc, mdldef, jac_dynamic, 
+                              check_only = FALSE, debug = FALSE) {
   
   lead_lag_incidence <- mdldef$lead_lag_incidence
   static_exos <- mdldef$exos
@@ -38,7 +38,12 @@ solve_first_order <- function(ss, mdldef, jac_dynamic, check_only = FALSE,
   endos <- rep(static_endos, nper)
   y <- endos[which(lead_lag_incidence != 0)]
   it <- max_lag + 1
-  jacobia <- jac_dynamic(y, exos, params, it)
+  
+  if (calc == "internal") {
+    jacobia <- get_jac_dyn(mdldef$model_index, y, it - 1)
+  } else {
+    jacobia <- jac_dynamic(y, exos, params, it)
+  }
   jacobia <- sparseMatrix(i = jacobia$rows, j = jacobia$cols,
                           x = jacobia$values, dims = c(nendo, njac_cols))
   jacobia <- as(jacobia, "matrix")

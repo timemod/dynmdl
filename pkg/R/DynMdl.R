@@ -610,9 +610,9 @@ DynMdl <- R6Class("DynMdl",
       }
       
       private$prepare_dynamic_model(solve_first_order = TRUE)
-      private$ss <- solve_first_order(private$ss, private$mdldef,
-                                      private$jac_dynamic, check_only = TRUE, 
-                                       debug = FALSE)
+      private$ss <- solve_first_order(private$ss, private$calc, private$mdldef, 
+                                      private$jac_dynamic, 
+                                      check_only = TRUE, debug = FALSE)
       private$clean_dynamic_model()
       return(invisible(self))
     },
@@ -738,9 +738,9 @@ DynMdl <- R6Class("DynMdl",
       
       private$prepare_dynamic_model(solve_first_order = TRUE)
       
-      private$ss <- solve_first_order(private$ss, private$mdldef, 
-                                      private$jac_dynamic, check_only = FALSE, 
-                                      debug = FALSE)
+      private$ss <- solve_first_order(private$ss, private$calc, private$mdldef, 
+                                      private$jac_dynamic, 
+                                      check_only = FALSE, debug = FALSE)
       
       private$endo_data <- solve_perturbation_(private$ss,
                                                private$mdldef$max_endo_lag,
@@ -855,7 +855,17 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     copy = function() {
-      return(self$clone(deep = TRUE))
+      ret <- self$clone(deep = TRUE)
+      if (private$calc == "internal") {
+        # Also create a new PolishModel in memory. This is be required for
+        # parallel applications using forking.
+        bin_data <- serialize_polish_models(private$mdldef$model_index)
+        ret$deserialize_polish(bin_data)
+      }
+      return(ret)
+    },
+    deserialize_polish = function(bin_data) {
+      private$mdldef$model_index <- deserialize_polish_models(bin_data)
     },
     serialize = function() {
       
@@ -1319,7 +1329,6 @@ DynMdl <- R6Class("DynMdl",
       nper <- nperiod(private$model_period)
       tshift  <- -private$mdldef$max_endo_lag : private$mdldef$max_endo_lead
       if (private$calc == "internal") {
-        # for the time begin, assume that the model index is 0
         mat_info <- get_triplet_jac_dyn(private$mdldef$model_index, endos, 
                           private$mdldef$lead_lag_incidence, tshift, 
                           private$mdldef$endo_count, nper, private$period_shift)
@@ -1394,8 +1403,8 @@ DynMdl <- R6Class("DynMdl",
         } else {
           exo_data <- private$exo_data
         }
-         
-         prepare_internal_dyn(private$mdldef$model_index, exo_data,
+        
+        prepare_internal_dyn(private$mdldef$model_index, exo_data,
                               nrow(exo_data), private$mdldef$params)
       }
       
@@ -1560,13 +1569,6 @@ DynMdl <- R6Class("DynMdl",
                 private$jac$rows, private$jac$cols, private$jac$values,
                 PACKAGE = "mdl_functions")
           return(private$jac)
-        }
-        
-      } else if (private$calc == "internal") {
-        
-        private$jac_dynamic <- function(y, x, params, it) {
-          # note: x and params set by prepare_dynamic_model
-          return(get_jac_dyn(private$mdldef$model_index, y, it - 1))
         }
       }
     },

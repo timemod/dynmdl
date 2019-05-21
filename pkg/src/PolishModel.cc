@@ -164,6 +164,8 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                        break;
            case ENDO:  index = codes[++pos];
                        stk.push(y[index]);
+                       //cout << "ENDO, index " << index << endl;
+                       //cout << "ENDO, value " << y[index] << endl;
                        break;
            case EXO:   index = codes[++pos];
                        stk.push(x[index * nrow_exo + it]);
@@ -176,6 +178,8 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                          break;
            case PARAM: index = codes[++pos];
                        stk.push(p[index]);
+                       //cout << "PARAM, index " << index << endl;
+                       //cout << "PARAM, value " << p[index] << endl;
                        break;
            case MULT: 
            case PLUS: 
