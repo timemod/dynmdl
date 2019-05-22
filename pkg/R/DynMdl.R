@@ -857,8 +857,12 @@ DynMdl <- R6Class("DynMdl",
     copy = function() {
       ret <- self$clone(deep = TRUE)
       if (private$calc == "internal") {
-        # Also create a new PolishModel in memory. This is be required for
-        # parallel applications using forking.
+        # Also create a new PolishModel in memory. This is probably not
+        # necessary. I once thought that this is necessary for parallization
+        # with forking (on Linux and other non-Windows OS), but this is probably
+        # not necessary because forking creates a subprocess with its own 
+        # virtual memory space. This point should be examined later.
+        # See the parallel examples in directory examples.
         bin_data <- serialize_polish_models(private$mdldef$model_index)
         ret$deserialize_polish(bin_data)
       }
