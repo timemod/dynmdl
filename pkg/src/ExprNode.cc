@@ -3198,8 +3198,11 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           || (op_code == oPower && barg1 != NULL && barg1->op_code == oPower)
 #ifdef USE_R
          // For relational operators (==, >, >= etc), R needs parenthesis around the left argument if the
-         // left operand is also a relational operator.
-          || (IS_R(output_type) && barg1 != NULL && IS_RELOP(barg1->op_code) && IS_RELOP(op_code))
+         // left operand is also a relational operator.  For C++, parentheses
+         // are also needed for mod-file expressions such as (x < 3) < (x >= 1)
+         // (paranthesis should be maintained in this case). Therefore always use paratheses for R/C code 
+         // in this case, this does'nt harm and makes the code more readable.
+          || (barg1 != NULL && IS_RELOP(barg1->op_code) && IS_RELOP(op_code))
 #endif
           )
         {
@@ -3299,8 +3302,14 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           || (op_code == oDivide && arg2_prec == prec && !IS_LATEX(output_type))
 #ifdef USE_R
          // For relational operators (==, >, >= etc), R needs parenthesis around the right argument if the
-         // right operand is also a relational operator.
-          || (IS_R(output_type) && barg2 != NULL && IS_RELOP(barg2->op_code) && IS_RELOP(op_code))
+         // right operand is also a relational operator.  For C++, parentheses
+         // are also needed for mod-file expressions such as (x < 3) < (x >= 1)
+         // (paranthesis should be maintained in this case). Therefore always use paratheses for R/C code 
+         // in this case, this does'nt harm and makes the code more readable.
+         // are also needed for mod-file expressions such as (x < 3) < (x >= 1)
+         // Therefore always use paratheses for R/C code in this case, this
+         // does'nt harm and makes the code more readable.
+          || (barg2 != NULL && IS_RELOP(barg2->op_code) && IS_RELOP(op_code))
         )
 #endif
         {
