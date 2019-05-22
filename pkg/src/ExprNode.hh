@@ -100,9 +100,18 @@ enum ExprNodeOutputType
                                || (output_type) == oJuliaSteadyStateFile)
 
 
+#ifdef USE_R
 #define IS_R(output_type) ((output_type) == oRStaticModel     \
                           || (output_type) == oRDynamicModel \
                           || (output_type) == oRExpression)
+#define IS_RELOP(opcode)  (  (opcode) == oEqual \
+                          || (opcode) == oEqualEqual \
+                          || (opcode) == oDifferent \
+                          || (opcode) == oLessEqual \
+                          || (opcode) == oGreaterEqual \
+                          || (opcode) == oLess \
+                          || (opcode) == oGreater)
+#endif
 
 
 #define IS_C(output_type) ((output_type) == oCDynamicModel              \

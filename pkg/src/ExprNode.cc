@@ -3195,7 +3195,13 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       // If left argument has a lower precedence, or if current and left argument are both power operators, add parenthesis around left argument
       BinaryOpNode *barg1 = dynamic_cast<BinaryOpNode *>(arg1);
       if (arg1->precedence(output_type, temporary_terms) < prec
-          || (op_code == oPower && barg1 != NULL && barg1->op_code == oPower))
+          || (op_code == oPower && barg1 != NULL && barg1->op_code == oPower)
+#ifdef USE_R
+         // For relational operators (==, >, >= etc), R needs parenthesis around the left argument if the
+         // left operand is also a relational operator.
+          || (IS_R(output_type) && barg1 != NULL && IS_RELOP(barg1->op_code) && IS_RELOP(op_code))
+#endif
+          )
         {
           output << LEFT_PAR(output_type);
           close_parenthesis = true;
@@ -3290,7 +3296,13 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       if (arg2_prec < prec
           || (op_code == oPower && barg2 != NULL && barg2->op_code == oPower && !IS_LATEX(output_type))
           || (op_code == oMinus && arg2_prec == prec)
-          || (op_code == oDivide && arg2_prec == prec && !IS_LATEX(output_type)))
+          || (op_code == oDivide && arg2_prec == prec && !IS_LATEX(output_type))
+#ifdef USE_R
+         // For relational operators (==, >, >= etc), R needs parenthesis around the right argument if the
+         // right operand is also a relational operator.
+          || (IS_R(output_type) && barg2 != NULL && IS_RELOP(barg2->op_code) && IS_RELOP(op_code))
+        )
+#endif
         {
           output << LEFT_PAR(output_type);
           close_parenthesis = true;
