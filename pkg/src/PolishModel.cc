@@ -1,7 +1,8 @@
 #include "PolishModel.hh"
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <iostream>
 #include <algorithm>
-#include <math.h>
 #include <memory.h>
 
 using namespace std;
