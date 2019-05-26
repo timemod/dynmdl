@@ -1,7 +1,7 @@
 Package: dynmdl
 Type: Package
 Title: Parse a Dynare model an generate R code
-Version: 0.8.0
+Version: 0.8.1
 Author: Who wrote it
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: A Dynare parser.
