@@ -219,7 +219,8 @@ ExprNode::createEndoLeadAuxiliaryVarForMyself(subst_table_t &subst_table, vector
       if (it == subst_table.end())
         {
 #ifdef USE_R
-          int symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(orig_expr->idx, 0, substexpr);
+          // question: is this code ever evaluated?
+          int symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(orig_expr->idx, orig_expr->idx, 0, substexpr);
 #else
           int symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(orig_expr->idx, substexpr);
 #endif
@@ -1251,7 +1252,7 @@ VariableNode::substituteEndoLeadGreaterThanTwo(subst_table_t &subst_table, vecto
              it = subst_table.find(orig_expr);
              if (it == subst_table.end()) {
                  int aux_symb_id = datatree.symbol_table.addEndoLeadAuxiliaryVar(
-                               symb_id, cur_lead - 1, substexpr);
+                               orig_expr->idx, symb_id, cur_lead - 1, substexpr);
                  neweqs.push_back(dynamic_cast<BinaryOpNode *>(datatree.AddEqual(
                               datatree.AddVariable(aux_symb_id, 0), substexpr)));
                  substexpr = datatree.AddVariable(aux_symb_id, 1);

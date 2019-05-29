@@ -1174,3 +1174,21 @@ NULL
 #' 
 NULL
 
+#' Writes the model data to a Dynare initval file
+#' @name write_initval_file
+#'
+#' @description
+#' This method of R6 class \code{\link{DynMdl}}
+#' writes all endogous and exogenous model variables
+#' to a so called "initval file", i.e. an xlsx-file that
+#' can be read by Dynare and specifies the path of all
+#' model variables.
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{file}}{the name of the xlsx file}
+#' }
+#' @examples
+#' mdl <- islm_mdl("2017Q1/2019Q2")
+#' mdl$write_initval_file("dynare_input/islm_initval.xlsx")
+NULL

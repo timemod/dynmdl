@@ -1333,16 +1333,19 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
     Rcpp::NumericVector aux_endos(aux_count);
     Rcpp::NumericVector aux_orig_endos(aux_count);
     Rcpp::NumericVector aux_orig_leads(aux_count);
+    Rcpp::NumericVector aux_orig_expr_index(aux_count);
     for (int i = 0; i < aux_count; i++) {
         aux_endos[i] = symbol_table.get_aux_endo(i);
         aux_orig_endos[i] = symbol_table.get_aux_orig_endo(i);
         aux_orig_leads[i] = symbol_table.get_aux_orig_lead_lag(i);
+        aux_orig_expr_index[i] = symbol_table.get_aux_orig_expr_index(i);
     }
     Rcpp::List aux_vars = Rcpp::List::create(
             Rcpp::Named("aux_count") = aux_count,
             Rcpp::Named("endos") = aux_endos,
             Rcpp::Named("orig_endos") = aux_orig_endos,
-            Rcpp::Named("orig_leads") = aux_orig_leads);
+            Rcpp::Named("orig_leads") = aux_orig_leads,
+            Rcpp::Named("orig_expr_index") = aux_orig_expr_index);
 
     Rcpp::List dynmdl = dynamic_model.getDynamicModelR(internal_calc);
     Rcpp::List statmdl = static_model.getStaticModelR(internal_calc);
