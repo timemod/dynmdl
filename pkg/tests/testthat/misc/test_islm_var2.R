@@ -12,11 +12,14 @@ mod_file <- file.path("mod", paste0(model, ".mod"))
 
 expected_equations_file <- "expected_output/expected_equations_islm_var2.rds"
 
+solve_period <- "2015/2032"
+
 # compile the model 
-report <- capture_output(mdl <- dyn_mdl(mod_file, period = "2015/2032",
+report <- capture_output(mdl <- dyn_mdl(mod_file, period = solve_period,
               fit_mod_file = file.path("mod_out", paste0(model, "_fit.mod"))))
 
 dynare_result <- read_dynare_result("islm_var2", mdl)
+dynare_result_with_aux <- read_dynare_result("islm_var2", mdl, all_vars = TRUE)
 
 create_solve_mdl <- function(mdl) {
   mdl2 <- mdl$clone()
@@ -61,7 +64,7 @@ test_that("solve_steady with max_laglead_1", {
 })
 
 test_that("solve with max_laglead_1", {
-  mdl2 <- create_solve_mdl(mdl)
+  mdl2 <- create_solve_mdl(mdl_new)
   p1 <- start_period(mdl2$get_period())
   mdl2$set_exo_values(c(245, 250, 260), names = "g", 
                       period = period_range(p1, p1 + 2))
@@ -75,6 +78,24 @@ test_that("solve with max_laglead_1", {
   expected_res_check <- regts(matrix(0, ncol = neq), period = mdl2$get_period(),
                               names = paste0("eq_", 1:neq))
   expect_equal(res_check, expected_res_check)
+  
+  # check write_initval_file
+
+  initval_file <- tempfile()
+  expect_silent(mdl2$write_initval_file(initval_file))
+  initval_data <- readxl::read_excel(initval_file)
+  initval_data <- regts(initval_data, period = mdl2$get_data_period())
+  initval_data <- initval_data[solve_period]
+
+  dynare_data <- cbind(dynare_result_with_aux$endo,
+                       dynare_result_with_aux$exo)
+  
+  # When a FitMdl object is solved, the old fit instruments
+  # is made euqal to the current instrument. That does not happen in Dynare 
+  # (uc_old is not used when sigma_uc > 0
+  dynare_data[ , "uc_old"] <- dynare_data[ , "uc"]
+  
+  expect_true(tsdif(initval_data, dynare_data, fun = cvgdif, tol = 1e-8)$equal)
 })
 
 test_that("eigenvalues", {

@@ -25,13 +25,23 @@
 #include "SymbolTable.hh"
 #include "dyn_error.hh"
 
+#ifdef USE_R
+AuxVarInfo::AuxVarInfo(int symb_id_arg, aux_var_t type_arg, int orig_symb_id_arg, 
+                       int orig_lead_lag_arg, int orig_expr_index_arg, 
+                       int equation_number_for_multiplier_arg, int information_set_arg,
+                       expr_t expr_node_arg) :
+#else
 AuxVarInfo::AuxVarInfo(int symb_id_arg, aux_var_t type_arg, int orig_symb_id_arg, int orig_lead_lag_arg,
                        int equation_number_for_multiplier_arg, int information_set_arg,
                        expr_t expr_node_arg) :
+#endif
   symb_id(symb_id_arg),
   type(type_arg),
   orig_symb_id(orig_symb_id_arg),
   orig_lead_lag(orig_lead_lag_arg),
+#ifdef USE_R
+  orig_expr_index(orig_expr_index_arg),
+#endif
   equation_number_for_multiplier(equation_number_for_multiplier_arg),
   information_set(information_set_arg),
   expr_node(expr_node_arg)
@@ -560,8 +570,8 @@ SymbolTable::writeCCOutput(ostream &output) const throw (NotYetFrozenException)
 
 #ifdef USE_R
 
-int SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, 
-                 int orig_lead_lag, expr_t expr_arg) throw (FrozenException) {
+int SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int index, int orig_symb_id, 
+                 int orig_lead_lag,  expr_t expr_arg) throw (FrozenException) {
   ostringstream varname;
   varname << name_table[orig_symb_id] << "_lead_" << orig_lead_lag;
   int symb_id;
@@ -573,7 +583,7 @@ int SymbolTable::addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id,
   }
 
   aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLead : avExoLead), 
-              orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
+              orig_symb_id, orig_lead_lag, index, 0, 0, expr_arg));
 
   return symb_id;
 }
@@ -592,20 +602,21 @@ int SymbolTable::addLagAuxiliaryVarInternal(bool endo, int orig_symb_id,
               ", this name is internally used by Dynare");
   }
 
-  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLag : avExoLag), orig_symb_id, orig_lead_lag, 0, 0, expr_arg));
+  aux_vars.push_back(AuxVarInfo(symb_id, (endo ? avEndoLag : avExoLag), orig_symb_id, orig_lead_lag, 
+                     -1, 0, 0, expr_arg));
 
   return symb_id;
 }
 
-int SymbolTable::addEndoLeadAuxiliaryVar(int orig_symb_id, int orig_lead_lag, 
+int SymbolTable::addEndoLeadAuxiliaryVar(int index, int orig_symb_id, int orig_lead_lag, 
                   expr_t expr_arg) throw (FrozenException) {
-  return addLeadAuxiliaryVarInternal(true, orig_symb_id, orig_lead_lag, expr_arg);
+  return addLeadAuxiliaryVarInternal(true, index, orig_symb_id, orig_lead_lag, expr_arg);
 }
 
 int
 SymbolTable::addExoLeadAuxiliaryVar(int index, expr_t expr_arg) throw (FrozenException)
 {
-  return addLeadAuxiliaryVarInternal(false, index, 0, expr_arg);
+  return addLeadAuxiliaryVarInternal(false, index, index, 0, expr_arg);
 }
 
 #else
@@ -705,7 +716,7 @@ SymbolTable::addExpectationAuxiliaryVar(int information_set, int index, expr_t e
                 varname.str() + ", this name is internally used by Dynare\n");
     }
 
-  aux_vars.push_back(AuxVarInfo(symb_id, avExpectation, 0, 0, 0, information_set, expr_arg));
+  aux_vars.push_back(AuxVarInfo(symb_id, avExpectation, 0, 0, index, 0, information_set, expr_arg));
 
   return symb_id;
 }
@@ -727,7 +738,7 @@ SymbolTable::addMultiplierAuxiliaryVar(int index) throw (FrozenException)
                 varname.str() + ", this name is internally used by Dynare\n");
     }
 
-  aux_vars.push_back(AuxVarInfo(symb_id, avMultiplier, 0, 0, index, 0, NULL));
+  aux_vars.push_back(AuxVarInfo(symb_id, avMultiplier, 0, 0, index, 0, 0, NULL));
   return symb_id;
 }
 
@@ -748,7 +759,7 @@ SymbolTable::addDiffForwardAuxiliaryVar(int orig_symb_id, expr_t expr_arg) throw
                 varname.str() + ", this name is internally used by Dynare\n");
     }
 
-  aux_vars.push_back(AuxVarInfo(symb_id, avDiffForward, orig_symb_id, 0, 0, 0, expr_arg));
+  aux_vars.push_back(AuxVarInfo(symb_id, avDiffForward, orig_symb_id, 0, -1, 0, 0, expr_arg));
   return symb_id;
 }
 
@@ -1124,8 +1135,15 @@ int SymbolTable::get_aux_orig_endo(int i) const {
     return getTypeSpecificID(aux_vars[i].get_orig_symb_id()) + 1;
 }
 
+int SymbolTable::get_aux_orig_symb_id(int i) const {
+    return aux_vars[i].get_orig_symb_id() + 1;
+}
+
 int SymbolTable::get_aux_orig_lead_lag(int i) const {
     return aux_vars[i].get_orig_lead_lag();
 }
 
+int SymbolTable::get_aux_orig_expr_index(int i) const {
+    return aux_vars[i].get_orig_expr_index();
+}
 #endif

@@ -854,6 +854,11 @@ DynMdl <- R6Class("DynMdl",
       cat("Done\n")
       return (invisible(self))
     },
+    write_initval_file = function(file) {
+      write_initval_file_internal(file, private$mdldef, private$endo_data,
+                                  private$exo_data)
+      return(invisible(self))
+    },
     copy = function() {
       ret <- self$clone(deep = TRUE)
       # We no longer create a new PolishModel object. This is not necessary.

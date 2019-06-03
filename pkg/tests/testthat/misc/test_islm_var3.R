@@ -10,11 +10,15 @@ model <- "islm_var3"
 
 mod_file <- file.path("mod", paste0(model, ".mod"))
 
+solve_period <- "2015/2032"
+
 # compile the model 
-report <- capture_output(mdl <- dyn_mdl(mod_file, period = "2015/2032",
+report <- capture_output(mdl <- dyn_mdl(mod_file, period = solve_period,
                                         max_laglead_1 = TRUE))
 
 dynare_result <- read_dynare_result("islm_var3", mdl)
+dynare_result_with_aux <- read_dynare_result("islm_var3", mdl, all_vars = TRUE)
+
 
 create_solve_mdl <- function(mdl) {
   mdl2 <- mdl$clone()
@@ -53,6 +57,20 @@ test_that("solve", {
   expected_res_check <- regts(matrix(0, ncol = neq), period = mdl2$get_period(),
                               names = paste0("eq_", 1:neq))
   expect_equal(res_check, expected_res_check)
+  
+  # check write_initval_file
+  
+  initval_file <- tempfile()
+  expect_silent(mdl2$write_initval_file(initval_file))
+  initval_data <- readxl::read_excel(initval_file)
+  initval_data <- regts(initval_data, period = mdl2$get_data_period())
+  initval_data <- initval_data[solve_period]
+  
+  dynare_data <- cbind(dynare_result_with_aux$endo,
+                       dynare_result_with_aux$exo)
+  
+  expect_true(tsdif(initval_data, dynare_data, fun = cvgdif, tol = 1e-7)$equal)
+  
 })
 
 test_that("eigenvalues", {

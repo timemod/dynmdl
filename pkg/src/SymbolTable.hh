@@ -53,11 +53,23 @@ private:
   aux_var_t type; //!< Its type
   int orig_symb_id; //!< Symbol ID of the endo of the original model represented by this aux var. Only used for avEndoLag and avExoLag.
   int orig_lead_lag; //!< Lead/lag of the endo of the original model represented by this aux var. Only used for avEndoLag and avExoLag.
+#ifdef USE_R
+  int orig_expr_index; //!<Index of original variable expression. This index is used by Dynare 
+                       // (but not dynmdl) to create the name of the lead
+                       // variable.
+#endif
   int equation_number_for_multiplier; //!< Stores the original constraint equation number associated with this aux var. Only used for avMultiplier.
   int information_set; //! Argument of expectation operator. Only used for avExpectation.
   expr_t expr_node; //! Auxiliary variable definition
 public:
+#ifdef USE_R
+  AuxVarInfo(int symb_id_arg, aux_var_t type_arg, int orig_symb_id, 
+             int orig_lead_lag, int orig_expr_index, 
+             int equation_number_for_multiplier_arg, 
+             int information_set_arg, expr_t expr_node_arg);
+#else
   AuxVarInfo(int symb_id_arg, aux_var_t type_arg, int orig_symb_id, int orig_lead_lag, int equation_number_for_multiplier_arg, int information_set_arg, expr_t expr_node_arg);
+#endif
   int
   get_symb_id() const
   {
@@ -78,6 +90,11 @@ public:
   {
     return orig_lead_lag;
   };
+#ifdef USE_R
+  int get_orig_expr_index() const {
+    return orig_expr_index;
+  };
+#endif
   int
   get_equation_number_for_multiplier() const
   {
@@ -223,7 +240,7 @@ private:
   int addLagAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
   //! Factorized code for adding aux lead variables
 #ifdef USE_R
-  int addLeadAuxiliaryVarInternal(bool endo, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
+  int addLeadAuxiliaryVarInternal(bool endo, int index, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
 #else
   int addLeadAuxiliaryVarInternal(bool endo, int index, expr_t arg) throw (FrozenException);
 #endif
@@ -240,7 +257,7 @@ public:
     \param[in] index Used to construct the variable name
     \return the symbol ID of the new symbol */
 #ifdef USE_R
-  int addEndoLeadAuxiliaryVar(int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
+  int addEndoLeadAuxiliaryVar(int index, int orig_symb_id, int orig_lead_lag, expr_t arg) throw (FrozenException);
 #else
   int addEndoLeadAuxiliaryVar(int index, expr_t arg) throw (FrozenException);
 #endif
@@ -379,7 +396,9 @@ public:
 
   int get_aux_endo(int i) const;
   int get_aux_orig_endo(int i) const;
+  int get_aux_orig_symb_id(int i) const;
   int get_aux_orig_lead_lag(int i) const;
+  int get_aux_orig_expr_index(int i) const;
   inline int get_aux_count() const throw (NotYetFrozenException);
 #endif
 };
