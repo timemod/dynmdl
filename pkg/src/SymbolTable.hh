@@ -396,6 +396,7 @@ public:
 
   int get_aux_endo(int i) const;
   int get_aux_orig_endo(int i) const;
+  int get_aux_orig_symb_id(int i) const;
   int get_aux_orig_lead_lag(int i) const;
   int get_aux_orig_expr_index(int i) const;
   inline int get_aux_count() const throw (NotYetFrozenException);

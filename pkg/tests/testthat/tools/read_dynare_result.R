@@ -1,4 +1,4 @@
-read_dynare_result <- function(model_name, mdl) {
+read_dynare_result <- function(model_name, mdl, all_vars = FALSE) {
   
   dynare_dir     <- "dynare/output"
   endo_name_file <- file.path(dynare_dir, paste0(model_name, "_endo_names.txt"))
@@ -37,7 +37,11 @@ read_dynare_result <- function(model_name, mdl) {
                              end_period(model_period) + max_lead_dynare)
     endo <- regts(endo_data, period = dyn_period, names = endo_names_dynare,
                   labels = endo_names_dynare)
-    endo <- endo[model_period, endo_names]
+    if (!all_vars) {
+      endo <- endo[model_period, endo_names, drop = FALSE]
+    } else {
+      endo <- endo[model_period]
+    }
   } else {
     endo <- NULL
   }
@@ -64,7 +68,11 @@ read_dynare_result <- function(model_name, mdl) {
                                end_period(model_period) + max_lead_dynare)
     exo <- regts(exo_data, period = dyn_period, names = exo_names_dynare,
                   labels = exo_names_dynare)
-    exo <- exo[model_period, exo_names]
+    if (!all_vars) {
+      exo <- exo[model_period, exo_names]
+    } else {
+      exo <- exo[model_period]
+    }
   } else {
     exo <- NULL
   }

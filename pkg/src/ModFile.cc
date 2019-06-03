@@ -1328,23 +1328,40 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
         param_long_names[i] = symbol_table.getLongName(eParameter, i).c_str();
     }
     
-    // auxiliary variables (only used for check_mdl)
+    // create a list with information about auxiliary variables
     int aux_count = symbol_table.get_aux_count();
     Rcpp::NumericVector aux_endos(aux_count);
     Rcpp::NumericVector aux_orig_endos(aux_count);
     Rcpp::NumericVector aux_orig_leads(aux_count);
+    Rcpp::NumericVector aux_orig_symb_ids(aux_count);
     Rcpp::NumericVector aux_orig_expr_index(aux_count);
     for (int i = 0; i < aux_count; i++) {
         aux_endos[i] = symbol_table.get_aux_endo(i);
         aux_orig_endos[i] = symbol_table.get_aux_orig_endo(i);
         aux_orig_leads[i] = symbol_table.get_aux_orig_lead_lag(i);
+        aux_orig_symb_ids[i] = symbol_table.get_aux_orig_symb_id(i);
         aux_orig_expr_index[i] = symbol_table.get_aux_orig_expr_index(i);
     }
+
+    // create a list with info about auxiliary endogenous variable
+    // (which are lagged or leaded version of original endogenous variables).
+    // aux_count: number of auxiliary variables
+    // endos: index of the auxiliary variables in list of endogenous
+    //        variables.
+    // orig_endos: index of original endos in the list of endegenous variables
+    // orig_leads: lag or lead of original endos
+    // orig_symb_ids: index if the original endenous variables in symbol table,
+    //                used by Dynare to create the names of auxiliary 
+    //                variables for lags.
+    // orig_expr_index: index of the original expression, used by Dynare to
+    //                  create the names of auxiliary variables for leads, 
+    //                  also used in write_initval_file.
     Rcpp::List aux_vars = Rcpp::List::create(
             Rcpp::Named("aux_count") = aux_count,
             Rcpp::Named("endos") = aux_endos,
             Rcpp::Named("orig_endos") = aux_orig_endos,
             Rcpp::Named("orig_leads") = aux_orig_leads,
+            Rcpp::Named("orig_symb_ids") = aux_orig_symb_ids,
             Rcpp::Named("orig_expr_index") = aux_orig_expr_index);
 
     Rcpp::List dynmdl = dynamic_model.getDynamicModelR(internal_calc);

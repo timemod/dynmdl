@@ -27,6 +27,7 @@ write_initval_file_internal <- function(file, mdldef, endo_data, exo_data) {
                  "created with dynmdl version < 0.9.0.",
                  "Create a new model object"))
     }
+  
     # rename auxiliary lags and leads
     with(aux_vars, {
       is_lead <- orig_leads > 0
@@ -39,8 +40,8 @@ write_initval_file_internal <- function(file, mdldef, endo_data, exo_data) {
       is_lag <- orig_leads < 0
       if (any(is_lag)) {
         lag_aux_vars <- endos[is_lag]
-        lag_aux_var_names <- paste("AUX_ENDO_LAG_", orig_endos[is_lead],
-                                   -orig_leads, sep = "_")
+        lag_aux_var_names <- paste("AUX_ENDO_LAG", orig_symb_ids[is_lag] - 1,
+                                   -orig_leads[is_lag], sep = "_")
         colnames(endo_data)[lag_aux_vars] <<- lag_aux_var_names
       }
     })

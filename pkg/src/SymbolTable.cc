@@ -1135,6 +1135,10 @@ int SymbolTable::get_aux_orig_endo(int i) const {
     return getTypeSpecificID(aux_vars[i].get_orig_symb_id()) + 1;
 }
 
+int SymbolTable::get_aux_orig_symb_id(int i) const {
+    return aux_vars[i].get_orig_symb_id() + 1;
+}
+
 int SymbolTable::get_aux_orig_lead_lag(int i) const {
     return aux_vars[i].get_orig_lead_lag();
 }

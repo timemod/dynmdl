@@ -6,9 +6,8 @@
 \description{
 This method of R6 class \code{\link{DynMdl}}
 writes all endogous and exogenous model variables
-to a so called "initval file", i.e. an xlsx-file that
-can be read by Dynare and specifies the path of all
-model variables.
+to a so called "initval file" that can be read by Dynare.
+An initval_file contains the paths of all model variables.
 }
 \section{Arguments}{
 
