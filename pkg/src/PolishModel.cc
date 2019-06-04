@@ -339,7 +339,7 @@ double PolishModel::eval_norm_function(int  code, double x, double mu,
 
 // calculate the linearized logarithm
 double PolishModel::linlog(double x, double eps) const {  
-    if (x > eps) {
+    if (x > eps || eps < 0) {
         return log(x);
     } else {
         return log(eps) + (x - eps) / eps;

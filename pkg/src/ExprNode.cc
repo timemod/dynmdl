@@ -2926,6 +2926,10 @@ BinaryOpNode::cost(int cost, bool is_matlab) const
         return cost + (MIN_COST_MATLAB/2+1);
       case oEqual:
         return cost;
+#ifdef USE_R
+      case oLinlog:
+        return cost + 1000;
+#endif
       }
   else
     // Cost for C files
@@ -2953,6 +2957,10 @@ BinaryOpNode::cost(int cost, bool is_matlab) const
         return cost + (MIN_COST_C/2+1);;
       case oEqual:
         return cost;
+#ifdef USE_R
+      case oLinlog:
+        return cost + 1000;
+#endif
       }
   // Suppress GCC warning
   exit(EXIT_FAILURE);
