@@ -454,6 +454,15 @@ DataTree::AddMin(expr_t iArg1, expr_t iArg2)
   return AddBinaryOp(iArg1, oMin, iArg2);
 }
 
+#ifdef USE_R
+expr_t
+DataTree::AddLinlog(expr_t iArg1, expr_t iArg2)
+{
+  return AddBinaryOp(iArg1, oLinlog, iArg2);
+}
+#endif
+
+
 expr_t
 DataTree::AddNormcdf(expr_t iArg1, expr_t iArg2, expr_t iArg3)
 {

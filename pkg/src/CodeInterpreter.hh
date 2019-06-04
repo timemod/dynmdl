@@ -213,6 +213,9 @@ enum BinaryOpcode
     oEqual,
     oMax,
     oMin,
+#ifdef USE_R
+    oLinlog,
+#endif
     oLess,
     oGreater,
     oLessEqual,

@@ -2790,6 +2790,12 @@ BinaryOpNode::composeDerivatives(expr_t darg1, expr_t darg2)
       t13 = datatree.AddMinus(datatree.One, t11);
       t14 = datatree.AddTimes(t13, darg2);
       return datatree.AddPlus(t14, t12);
+#ifdef USE_R
+    case oLinlog:
+      t11 = datatree.AddMax(arg1, arg2);
+      // ignore the derivative with respect to arg2
+      return datatree.AddDivide(darg1, t11);
+#endif
     case oEqual:
       return datatree.AddMinus(darg1, darg2);
     }
@@ -2857,6 +2863,9 @@ BinaryOpNode::precedence(ExprNodeOutputType output_type, const temporary_terms_t
         return 5;
     case oMin:
     case oMax:
+#ifdef USE_R
+    case oLinlog:
+#endif
       return 100;
     }
   // Suppress GCC warning
@@ -3042,6 +3051,14 @@ BinaryOpNode::eval_opcode(double v1, BinaryOpcode op_code, double v2, int derivO
         return v2;
       else
         return v1;
+#ifdef USE_R
+    case oLinlog:
+      if (v1 > v2) {
+          return log(v1);
+      } else {
+          return log(v2) + (v1 - v2) / v2;
+     }
+#endif
     case oLess:
       return (v1 < v2);
     case oGreater:
@@ -3057,6 +3074,7 @@ BinaryOpNode::eval_opcode(double v1, BinaryOpcode op_code, double v2, int derivO
     case oEqual:
       throw EvalException();
     }
+
   // Suppress GCC warning
   exit(EXIT_FAILURE);
 }
@@ -3130,6 +3148,7 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
                           const temporary_terms_t &temporary_terms,
                           deriv_node_temp_terms_t &tef_terms) const
 {
+
   // If current node is a temporary term
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<BinaryOpNode *>(this));
   if (it != temporary_terms.end())
@@ -3162,7 +3181,12 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     }
 
   // Treat special case of power operator in C, and case of max and min operators
+#ifdef USE_R
+  if ((op_code == oPower && IS_C(output_type)) || op_code == oMax || op_code == oMin ||
+          op_code == oLinlog)
+#else
   if ((op_code == oPower && IS_C(output_type)) || op_code == oMax || op_code == oMin)
+#endif
     {
       switch (op_code)
         {
@@ -3175,6 +3199,11 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oMin:
           output << "min(";
           break;
+#ifdef USE_R
+        case oLinlog:
+          output << "dynmdl::linlog(";
+          break;
+#endif
         default:
           ;
         }
@@ -3681,6 +3710,10 @@ BinaryOpNode::buildSimilarBinaryOpNode(expr_t alt_arg1, expr_t alt_arg2, DataTre
       return alt_datatree.AddMax(alt_arg1, alt_arg2);
     case oMin:
       return alt_datatree.AddMin(alt_arg1, alt_arg2);
+#ifdef USE_R
+    case oLinlog:
+      return alt_datatree.AddLinlog(alt_arg1, alt_arg2);
+#endif
     case oLess:
       return alt_datatree.AddLess(alt_arg1, alt_arg2);
     case oGreater:

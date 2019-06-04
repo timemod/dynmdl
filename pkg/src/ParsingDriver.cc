@@ -2480,6 +2480,16 @@ ParsingDriver::add_sign(expr_t arg1)
   return data_tree->AddSign(arg1);
 }
 
+#ifdef USE_R
+expr_t ParsingDriver::add_linlog(expr_t arg1) {
+  return data_tree->AddLinlog(arg1, data_tree->AddNonNegativeConstant("0.001"));
+}
+
+expr_t ParsingDriver::add_linlog(expr_t arg1, expr_t arg2) {
+  return data_tree->AddLinlog(arg1, arg2);
+}
+#endif
+
 expr_t
 ParsingDriver::add_max(expr_t arg1, expr_t arg2)
 {

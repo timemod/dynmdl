@@ -676,6 +676,11 @@ public:
   expr_t add_abs(expr_t arg1);
   //! Writes token "sign(arg1)" to model tree
   expr_t add_sign(expr_t arg1);
+#ifdef USE_R
+  //! Writes token "linlog(arg1,arg2)" to model tree
+  expr_t add_linlog(expr_t arg1);
+  expr_t add_linlog(expr_t arg1, expr_t arg2);
+#endif
   //! Writes token "max(arg1,arg2)" to model tree
   expr_t add_max(expr_t arg1, expr_t arg2);
   //! Writes token "min(arg1,arg2)" to model tree
