@@ -2794,6 +2794,11 @@ BinaryOpNode::composeDerivatives(expr_t darg1, expr_t darg2)
     case oLinlog:
       t11 = datatree.AddMax(arg1, arg2);
       // ignore the derivative with respect to arg2
+      if (darg2 != datatree.Zero) {
+          // NOTE: package dynmdl never calculates derivatives of parameters,
+          // so darg2 is always zero if argument arg2 is a parameter (or constant).
+          dyn_error("Linlog: second argument should be a constant or parameter.");
+      }
       return datatree.AddDivide(darg1, t11);
 #endif
     case oEqual:
