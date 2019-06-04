@@ -208,6 +208,7 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
            case LE: 
            case MIN:
            case MAX: 
+           case LINLOG:
                       rop = stk.top();
                       stk.pop();
                       lop = stk.top();
@@ -220,12 +221,16 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                           case LE: res = lop <= rop; break;
                           case MAX: res = max(lop, rop); break;
                           case MIN: res = min(lop, rop); break;
+                          case LINLOG: res = linlog(lop, rop); break;
                       }
                       stk.top() = res;
                       break;
            case EXP:
            case LOG:
-           case SQRT: stk.top() = eval_function(code, stk.top());
+           case SQRT:
+           case ABS:
+           case SIGN:
+                      stk.top() = eval_function(code, stk.top());
                       break;
            case NORMCDF:
            case NORMPDF:
@@ -315,6 +320,8 @@ double PolishModel::eval_function(int  code, double arg) const {
         case EXP: return exp(arg);
         case LOG: return log(arg);
         case SQRT: return sqrt(arg);
+        case ABS: return abs(arg);
+        case SIGN: return (arg > 0) ? 1 : ((arg < 0) ? -1 : 0);
         default: return 0;
     }
 }
@@ -330,6 +337,14 @@ double PolishModel::eval_norm_function(int  code, double x, double mu,
     }
 }
 
+// calculate the linearized logarithm
+double PolishModel::linlog(double x, double eps) const {  
+    if (x > eps) {
+        return log(x);
+    } else {
+        return log(eps) + (x - eps) / eps;
+    }
+}
 
 /*
  * The k-th derivative of x^p

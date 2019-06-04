@@ -6073,6 +6073,12 @@ void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     case oSqrt:
       mdl.add_op(SQRT);
       break;
+    case oAbs:
+      mdl.add_op(ABS);
+      break;
+    case oSign:
+      mdl.add_op(SIGN);
+      break;
     default:
       dyn_error("genPolishCode not implemented for unary operator");
     }
@@ -6128,6 +6134,9 @@ void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         break;
     case oMin:
         mdl.add_op(MIN);
+        break;
+    case oLinlog:
+        mdl.add_op(LINLOG);
         break;
     default:
       dyn_error("genPolishCode not implemented for this binary operator");

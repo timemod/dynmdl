@@ -35,9 +35,12 @@ enum ecode {
     LE,
     MAX,
     MIN,
+    LINLOG,
     EXP,
     LOG,
     SQRT,
+    ABS,
+    SIGN,
     NORMCDF,
     NORMPDF,
     EXTFUN,    // external function
@@ -148,6 +151,7 @@ class PolishModel {
        inline double eval_function(int code, double arg) const;
        inline double eval_norm_function(int code, double x, double mu, double sigma) const;
        inline double get_pow_deriv(double x, double p, int k) const;
+       inline double linlog(double x, double eps) const;
 };
 
 #endif
