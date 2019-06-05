@@ -460,6 +460,12 @@ DataTree::AddLinlog(expr_t iArg1, expr_t iArg2)
 {
   return AddBinaryOp(iArg1, oLinlog, iArg2);
 }
+
+expr_t
+DataTree::AddLinpow(expr_t iArg1, expr_t iArg2, expr_t iArg3)
+{
+  return AddTrinaryOp(iArg1, oLinpow, iArg2, iArg3);
+}
 #endif
 
 

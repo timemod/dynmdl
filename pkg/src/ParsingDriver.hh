@@ -680,6 +680,8 @@ public:
   //! Writes token "linlog(arg1,arg2)" to model tree
   expr_t add_linlog(expr_t arg1);
   expr_t add_linlog(expr_t arg1, expr_t arg2);
+  expr_t add_linpow(expr_t arg1, expr_t arg2);
+  expr_t add_linpow(expr_t arg1, expr_t arg2, expr_t arg3);
 #endif
   //! Writes token "max(arg1,arg2)" to model tree
   expr_t add_max(expr_t arg1, expr_t arg2);

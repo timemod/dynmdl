@@ -43,6 +43,7 @@ enum ecode {
     SIGN,
     NORMCDF,
     NORMPDF,
+    LINPOW,
     EXTFUN,    // external function
     EXTFUN_DERIV, // external function with analytical numerical derivative
     EXTFUN_NUMDERIV // external function numerical derivative
@@ -152,6 +153,7 @@ class PolishModel {
        inline double eval_norm_function(int code, double x, double mu, double sigma) const;
        inline double get_pow_deriv(double x, double p, int k) const;
        inline double linlog(double x, double eps) const;
+       inline double linpow(double x, double p, double eps) const;
 };
 
 #endif

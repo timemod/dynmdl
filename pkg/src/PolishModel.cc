@@ -241,6 +241,14 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                       sigma = stk.top();
                       stk.top() = eval_norm_function(code, xarg, mu, sigma);
                       break;
+           case LINPOW:
+                      xarg = stk.top();
+                      stk.pop();
+                      mu = stk.top();
+                      stk.pop();
+                      sigma = stk.top();
+                      stk.top() = linpow(xarg, mu, sigma);
+                      break;
            case POW_DERIV:  rop = stk.top();
                             stk.pop();
                             lop = stk.top();
@@ -339,12 +347,22 @@ double PolishModel::eval_norm_function(int  code, double x, double mu,
 
 // calculate the linearized logarithm
 double PolishModel::linlog(double x, double eps) const {  
-    if (x > eps || eps < 0) {
+    if (x > eps) {
         return log(x);
     } else {
         return log(eps) + (x - eps) / eps;
     }
 }
+
+// calculate the linearized power
+double PolishModel::linpow(double x, double p, double eps) const {  
+    if (x > eps) {
+        return pow(x, p);
+    } else {
+        return pow(eps, p) * (1 + p * (x - eps) / eps);
+    }
+}
+
 
 /*
  * The k-th derivative of x^p

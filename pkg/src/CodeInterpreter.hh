@@ -226,6 +226,9 @@ enum BinaryOpcode
 
 enum TrinaryOpcode
   {
+#ifdef USE_R
+    oLinpow,
+#endif
     oNormcdf,
     oNormpdf
   };
