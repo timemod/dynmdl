@@ -2790,6 +2790,17 @@ BinaryOpNode::composeDerivatives(expr_t darg1, expr_t darg2)
       t13 = datatree.AddMinus(datatree.One, t11);
       t14 = datatree.AddTimes(t13, darg2);
       return datatree.AddPlus(t14, t12);
+#ifdef USE_R
+    case oLinlog:
+      t11 = datatree.AddMax(arg1, arg2);
+      // ignore the derivative with respect to arg2
+      if (darg2 != datatree.Zero) {
+          // NOTE: package dynmdl never calculates derivatives of parameters,
+          // so darg2 is always zero if argument arg2 is a parameter (or constant).
+          dyn_error("Linlog: second argument should be a constant or parameter.");
+      }
+      return datatree.AddDivide(darg1, t11);
+#endif
     case oEqual:
       return datatree.AddMinus(darg1, darg2);
     }
@@ -2857,6 +2868,9 @@ BinaryOpNode::precedence(ExprNodeOutputType output_type, const temporary_terms_t
         return 5;
     case oMin:
     case oMax:
+#ifdef USE_R
+    case oLinlog:
+#endif
       return 100;
     }
   // Suppress GCC warning
@@ -2917,6 +2931,10 @@ BinaryOpNode::cost(int cost, bool is_matlab) const
         return cost + (MIN_COST_MATLAB/2+1);
       case oEqual:
         return cost;
+#ifdef USE_R
+      case oLinlog:
+        return cost + 1000;
+#endif
       }
   else
     // Cost for C files
@@ -2944,6 +2962,10 @@ BinaryOpNode::cost(int cost, bool is_matlab) const
         return cost + (MIN_COST_C/2+1);;
       case oEqual:
         return cost;
+#ifdef USE_R
+      case oLinlog:
+        return cost + 1000;
+#endif
       }
   // Suppress GCC warning
   exit(EXIT_FAILURE);
@@ -3042,6 +3064,14 @@ BinaryOpNode::eval_opcode(double v1, BinaryOpcode op_code, double v2, int derivO
         return v2;
       else
         return v1;
+#ifdef USE_R
+    case oLinlog:
+      if (v1 > v2) {
+          return log(v1);
+      } else {
+          return log(v2) + (v1 - v2) / v2;
+     }
+#endif
     case oLess:
       return (v1 < v2);
     case oGreater:
@@ -3057,6 +3087,7 @@ BinaryOpNode::eval_opcode(double v1, BinaryOpcode op_code, double v2, int derivO
     case oEqual:
       throw EvalException();
     }
+
   // Suppress GCC warning
   exit(EXIT_FAILURE);
 }
@@ -3130,6 +3161,7 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
                           const temporary_terms_t &temporary_terms,
                           deriv_node_temp_terms_t &tef_terms) const
 {
+
   // If current node is a temporary term
   temporary_terms_t::const_iterator it = temporary_terms.find(const_cast<BinaryOpNode *>(this));
   if (it != temporary_terms.end())
@@ -3162,7 +3194,12 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     }
 
   // Treat special case of power operator in C, and case of max and min operators
+#ifdef USE_R
+  if ((op_code == oPower && IS_C(output_type)) || op_code == oMax || op_code == oMin ||
+          op_code == oLinlog)
+#else
   if ((op_code == oPower && IS_C(output_type)) || op_code == oMax || op_code == oMin)
+#endif
     {
       switch (op_code)
         {
@@ -3175,6 +3212,15 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oMin:
           output << "min(";
           break;
+#ifdef USE_R
+        case oLinlog:
+          if (IS_R(output_type)) {
+              output << "dynmdl::linlog(";
+          } else {
+              output << "linlog(";
+          }
+          break;
+#endif
         default:
           ;
         }
@@ -3681,6 +3727,10 @@ BinaryOpNode::buildSimilarBinaryOpNode(expr_t alt_arg1, expr_t alt_arg2, DataTre
       return alt_datatree.AddMax(alt_arg1, alt_arg2);
     case oMin:
       return alt_datatree.AddMin(alt_arg1, alt_arg2);
+#ifdef USE_R
+    case oLinlog:
+      return alt_datatree.AddLinlog(alt_arg1, alt_arg2);
+#endif
     case oLess:
       return alt_datatree.AddLess(alt_arg1, alt_arg2);
     case oGreater:
@@ -4067,6 +4117,30 @@ TrinaryOpNode::composeDerivatives(expr_t darg1, expr_t darg2, expr_t darg3)
       // total derivative:
       // (this / sigma) * (((x - mu)/sigma) * (darg2 - darg1 + darg3 * (x - mu)/sigma) - darg3)
       return datatree.AddTimes(t11, t12);
+#ifdef USE_R
+    case oLinpow:
+      if (darg3 != datatree.Zero) {
+         // NOTE: package dynmdl never calculates derivatives of parameters,
+         // so darg3 is always zero if argument arg2 is a parameter (or constant).
+         dyn_error("Linpow: third argument should be a constant or parameter.");
+      }
+      if (darg2 != datatree.Zero) {
+         // NOTE: package dynmdl never calculates derivatives of parameters,
+         // so darg2 is always zero if argument arg2 is a parameter (or constant).
+         dyn_error("Linpow: second argument should be a constant or parameter.");
+      }
+      if (darg1 == datatree.Zero) {
+          return datatree.Zero;
+      } else {
+          // first calculate derivative part used if x > eps
+          // first compute the max of x and eps if so that the result is finite
+          t11 = datatree.AddMax(arg1, arg3);
+          t12 = datatree.AddMinus(arg2, datatree.One);
+          t13 = datatree.AddPower(t11, t12);
+          t14 = datatree.AddTimes(arg2, t13);
+          return datatree.AddTimes(darg1, t14);
+        }
+#endif
     }
   // Suppress GCC warning
   exit(EXIT_FAILURE);
@@ -4093,6 +4167,7 @@ TrinaryOpNode::precedence(ExprNodeOutputType output_type, const temporary_terms_
     {
     case oNormcdf:
     case oNormpdf:
+    case oLinpow:
       return 100;
     }
   // Suppress GCC warning
@@ -4138,6 +4213,7 @@ TrinaryOpNode::cost(int cost, bool is_matlab) const
       {
       case oNormcdf:
       case oNormpdf:
+      case oLinpow:
         return cost+1000;
       }
   else
@@ -4146,6 +4222,7 @@ TrinaryOpNode::cost(int cost, bool is_matlab) const
       {
       case oNormcdf:
       case oNormpdf:
+      case oLinpow:
         return cost+1000;
       }
   // Suppress GCC warning
@@ -4216,6 +4293,14 @@ TrinaryOpNode::eval_opcode(double v1, TrinaryOpcode op_code, double v2, double v
       return (0.5*(1+erf((v1-v2)/v3/M_SQRT2)));
     case oNormpdf:
       return (1/(v3*sqrt(2*M_PI)*exp(pow((v1-v2)/v3, 2)/2)));
+#ifdef USE_R
+    case oLinpow:
+      if (v1 > v3) {
+          return pow(v1, v2);
+      } else {
+          return pow(v3, v2) * (1 + v2 * (v1 - v3) / v3);
+     }
+#endif
     }
   // Suppress GCC warning
   exit(EXIT_FAILURE);
@@ -4350,6 +4435,17 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output << ")";
         }
       break;
+#ifdef USE_R
+    case oLinpow:
+          output << "dynmdl::linpow(";
+          arg1->writeOutput(output, output_type, temporary_terms, tef_terms);
+          output << ",";
+          arg2->writeOutput(output, output_type, temporary_terms, tef_terms);
+          output << ",";
+          arg3->writeOutput(output, output_type, temporary_terms, tef_terms);
+          output << ")";
+          break;
+#endif
     }
 }
 
@@ -4421,6 +4517,8 @@ TrinaryOpNode::buildSimilarTrinaryOpNode(expr_t alt_arg1, expr_t alt_arg2, expr_
       return alt_datatree.AddNormcdf(alt_arg1, alt_arg2, alt_arg3);
     case oNormpdf:
       return alt_datatree.AddNormpdf(alt_arg1, alt_arg2, alt_arg3);
+    case oLinpow:
+      return alt_datatree.AddLinpow(alt_arg1, alt_arg2, alt_arg3);
     }
   // Suppress GCC warning
   exit(EXIT_FAILURE);
@@ -6040,6 +6138,12 @@ void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     case oSqrt:
       mdl.add_op(SQRT);
       break;
+    case oAbs:
+      mdl.add_op(ABS);
+      break;
+    case oSign:
+      mdl.add_op(SIGN);
+      break;
     default:
       dyn_error("genPolishCode not implemented for unary operator");
     }
@@ -6096,6 +6200,9 @@ void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
     case oMin:
         mdl.add_op(MIN);
         break;
+    case oLinlog:
+        mdl.add_op(LINLOG);
+        break;
     default:
       dyn_error("genPolishCode not implemented for this binary operator");
     }
@@ -6112,6 +6219,9 @@ void TrinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         break;
        case oNormpdf:
         mdl.add_op(NORMPDF);
+        break;
+       case oLinpow:
+        mdl.add_op(LINPOW);
         break;
        default:
          dyn_error("genPolishCode not implemented for this trinary operator");

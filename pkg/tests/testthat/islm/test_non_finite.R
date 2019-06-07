@@ -13,8 +13,10 @@ test_that("single period", {
  
   msg <- paste("Initial value of function contains non-finite values",
               "\\(starting at index=1\\)")
-  expect_known_output(expect_warning(mdl$solve(control = list(silent = TRUE)), 
-                                     msg), 
+  expect_silent(expect_warning(mdl$solve(control = list(silent = TRUE)), 
+                                     msg))
+  expect_known_output(expect_warning(mdl$solve(control = list(silent = FALSE)), 
+                               msg),
                       file = "expected_output/non_finite1.txt")
 })
 
@@ -25,7 +27,7 @@ test_that("multiple periods", {
   
   msg <- paste("Initial value of function contains non-finite values",
                "\\(starting at index=1\\)")
-  expect_known_output(expect_warning(mdl$solve(control = list(silent = TRUE)), 
+  expect_known_output(expect_warning(mdl$solve(control = list(silent = FALSE)), 
                                      msg), 
                       file = "expected_output/non_finite2.txt")
 })

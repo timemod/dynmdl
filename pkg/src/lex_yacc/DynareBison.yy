@@ -139,7 +139,7 @@ class ParsingDriver;
 %left TIMES DIVIDE
 %left UMINUS UPLUS
 %nonassoc POWER
-%token EXP LOG LN LOG10 SIN COS TAN ASIN ACOS ATAN SINH COSH TANH ERF
+%token EXP LOG LN LOG10 LINLOG LINPOW SIN COS TAN ASIN ACOS ATAN SINH COSH TANH ERF
 %token ASINH ACOSH ATANH SQRT NORMCDF NORMPDF STEADY_STATE EXPECTATION
 /* GSA analysis */
 %token DYNARE_SENSITIVITY MORRIS STAB REDFORM PPRIOR PRIOR_RANGE PPOST ILPTAU MORRIS_NLIV
@@ -617,6 +617,14 @@ expression : '(' expression ')'
              { $$ = driver.add_max($3, $5); }
            | MIN '(' expression COMMA expression ')'
              { $$ = driver.add_min($3, $5); }
+           | LINLOG '(' expression ')'
+             { $$ = driver.add_linlog($3); }
+           | LINLOG '(' expression COMMA expression ')'
+             { $$ = driver.add_linlog($3, $5); }
+           | LINPOW '(' expression COMMA expression ')'
+             { $$ = driver.add_linpow($3, $5); }
+           | LINPOW '(' expression COMMA expression COMMA expression')'
+             { $$ = driver.add_linpow($3, $5, $7); }
            | symbol { driver.push_external_function_arg_vector_onto_stack(); } '(' comma_expression ')'
              { $$ = driver.add_model_var_or_external_function($1, false); }
            | NORMCDF '(' expression COMMA expression COMMA expression ')'
@@ -795,6 +803,14 @@ hand_side : '(' hand_side ')'
             { $$ = driver.add_max($3, $5); }
           | MIN '(' hand_side COMMA hand_side ')'
             { $$ = driver.add_min($3, $5); }
+          | LINLOG '(' hand_side ')'
+            { $$ = driver.add_linlog($3); }
+          | LINLOG '(' hand_side COMMA hand_side ')'
+            { $$ = driver.add_linlog($3, $5); }
+          | LINPOW '(' hand_side COMMA hand_side ')'
+            { $$ = driver.add_linpow($3, $5); }
+          | LINPOW '(' hand_side COMMA hand_side COMMA hand_side ')'
+            { $$ = driver.add_linpow($3, $5, $7); }
           | symbol { driver.push_external_function_arg_vector_onto_stack(); } '(' comma_hand_side ')'
             { $$ = driver.add_model_var_or_external_function($1, true); }
           | NORMCDF '(' hand_side COMMA hand_side COMMA hand_side ')'

@@ -532,7 +532,7 @@ DynMdl <- R6Class("DynMdl",
     },
     solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv"),
                             ...) {
-
+    
       solver <- match.arg(solver)
       
       private$prepare_static_model()
@@ -560,9 +560,9 @@ DynMdl <- R6Class("DynMdl",
       private$clean_static_model()
       private$mdldef$endos <- out$x
       
-     
       if (error) {
-        if (grepl("contains non-finite value", out$message)) {
+        if ((is.null(control$silent) || !control$silent) && 
+                grepl("contains non-finite value", out$message)) {
           res <- private$get_static_residuals(out$x)
           names(res) <- paste("eq", seq_along(res))
           res <- res[!is.finite(res)]
@@ -708,8 +708,8 @@ DynMdl <- R6Class("DynMdl",
                          names = private$endo_names)
       private$endo_data[private$model_period, ] <- endo_data
       
-      
-      if (stacked_time && grepl("non-finite value", ret$message)) {
+      if ((is.null(control$silent) || !control$silent) && stacked_time && 
+          grepl("non-finite value", ret$message)) {
         report_non_finite_residuals(self)
       }
       

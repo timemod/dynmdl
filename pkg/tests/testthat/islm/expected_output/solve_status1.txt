@@ -1,4 +1,0 @@
-Non-finite values in residuals for the following equations and periods:
-       eq_1 eq_2 eq_3 eq_5 eq_6
-2018Q1 NA   NA   NA   NA   NA  
-2018Q2                NA       

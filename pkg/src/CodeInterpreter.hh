@@ -213,6 +213,9 @@ enum BinaryOpcode
     oEqual,
     oMax,
     oMin,
+#ifdef USE_R
+    oLinlog,
+#endif
     oLess,
     oGreater,
     oLessEqual,
@@ -223,6 +226,9 @@ enum BinaryOpcode
 
 enum TrinaryOpcode
   {
+#ifdef USE_R
+    oLinpow,
+#endif
     oNormcdf,
     oNormpdf
   };

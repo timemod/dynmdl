@@ -1,7 +1,7 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("NK_baseline model")
+context("NK_baseline model (internal calc.)")
 
 source("../tools/read_dynare_result.R")
 
@@ -20,8 +20,8 @@ expected_equations_file <- "expected_output/expected_equations.rds"
 # compile the model
 model_period <- period_range("2015/2033")
 report <- capture_output({
-  mdl <- dyn_mdl(mod_file)
-  mdl_linlog <- dyn_mdl(mod_file_linlog)
+  mdl <- dyn_mdl(mod_file, calc = "internal")
+  mdl_linlog <- dyn_mdl(mod_file_linlog, calc = "internal")
 })
 mdl$set_period(model_period)
 mdl_linlog$set_period(model_period)

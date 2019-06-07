@@ -199,6 +199,12 @@ public:
   expr_t AddMax(expr_t iArg1, expr_t iArg2);
   //! Adds "min(arg1,arg2)" to model tree
   expr_t AddMin(expr_t iArg1, expr_t iArg2);
+#ifdef USE_R
+  //! Adds "linlog(arg1,arg2)" to model tree
+  expr_t AddLinlog(expr_t iArg1, expr_t iArg2);
+  //! Adds "linpow(arg1,arg2,arg3)" to model tree
+  expr_t AddLinpow(expr_t iArg1, expr_t iArg2, expr_t iArg3);
+#endif
   //! Adds "normcdf(arg1,arg2,arg3)" to model tree
   expr_t AddNormcdf(expr_t iArg1, expr_t iArg2, expr_t iArg3);
   //! Adds "normpdf(arg1,arg2,arg3)" to model tree

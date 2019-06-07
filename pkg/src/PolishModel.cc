@@ -208,6 +208,7 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
            case LE: 
            case MIN:
            case MAX: 
+           case LINLOG:
                       rop = stk.top();
                       stk.pop();
                       lop = stk.top();
@@ -220,12 +221,16 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                           case LE: res = lop <= rop; break;
                           case MAX: res = max(lop, rop); break;
                           case MIN: res = min(lop, rop); break;
+                          case LINLOG: res = linlog(lop, rop); break;
                       }
                       stk.top() = res;
                       break;
            case EXP:
            case LOG:
-           case SQRT: stk.top() = eval_function(code, stk.top());
+           case SQRT:
+           case ABS:
+           case SIGN:
+                      stk.top() = eval_function(code, stk.top());
                       break;
            case NORMCDF:
            case NORMPDF:
@@ -235,6 +240,14 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                       stk.pop();
                       sigma = stk.top();
                       stk.top() = eval_norm_function(code, xarg, mu, sigma);
+                      break;
+           case LINPOW:
+                      xarg = stk.top();
+                      stk.pop();
+                      mu = stk.top();
+                      stk.pop();
+                      sigma = stk.top();
+                      stk.top() = linpow(xarg, mu, sigma);
                       break;
            case POW_DERIV:  rop = stk.top();
                             stk.pop();
@@ -315,6 +328,8 @@ double PolishModel::eval_function(int  code, double arg) const {
         case EXP: return exp(arg);
         case LOG: return log(arg);
         case SQRT: return sqrt(arg);
+        case ABS: return abs(arg);
+        case SIGN: return (arg > 0) ? 1 : ((arg < 0) ? -1 : 0);
         default: return 0;
     }
 }
@@ -327,6 +342,24 @@ double PolishModel::eval_norm_function(int  code, double x, double mu,
         case NORMCDF: return 0.5 * (1 + erf(((x- mu)/(sigma * M_SQRT2))));
         case NORMPDF: return 1 / (sigma *sqrt(2 * M_PI) * exp(pow((x - mu) / sigma, 
                                                      2) / 2));
+    }
+}
+
+// calculate the linearized logarithm
+double PolishModel::linlog(double x, double eps) const {  
+    if (x > eps) {
+        return log(x);
+    } else {
+        return log(eps) + (x - eps) / eps;
+    }
+}
+
+// calculate the linearized power
+double PolishModel::linpow(double x, double p, double eps) const {  
+    if (x > eps) {
+        return pow(x, p);
+    } else {
+        return pow(eps, p) * (1 + p * (x - eps) / eps);
     }
 }
 
