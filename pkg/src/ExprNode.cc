@@ -3214,7 +3214,11 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           break;
 #ifdef USE_R
         case oLinlog:
-          output << "dynmdl::linlog(";
+          if (IS_R(output_type)) {
+              output << "dynmdl::linlog(";
+          } else {
+              output << "linlog(";
+          }
           break;
 #endif
         default:

@@ -31,7 +31,8 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename) {
                   "."))
     }
 
-    exo_deriv <- model_info$dynamic_model$derivatives[, -(1:length(endo_names))]
+    exo_deriv <- model_info$dynamic_model$derivatives[, -(1:length(endo_names)),
+                                                      drop = FALSE]
     colnames(exo_deriv) <- model_info$exo_names
     res_deriv <- exo_deriv[, instruments, drop = FALSE]
 
