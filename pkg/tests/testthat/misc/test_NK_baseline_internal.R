@@ -7,7 +7,7 @@ source("../tools/read_dynare_result.R")
 
 model_name <- "NK_baseline"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
-mod_file_linlog <- file.path("mod", paste0(model_name, "_linlog.mod"))
+mod_file_linlogpow <- file.path("mod", paste0(model_name, "_linlogpow.mod"))
 dynare_dir     <- "dynare/output"
 param_name_file <-  file.path(dynare_dir, "NK_baseline_param_names.txt")
 param_value_file <-  file.path(dynare_dir, "NK_baseline_param_values.txt")
@@ -21,10 +21,10 @@ expected_equations_file <- "expected_output/expected_equations.rds"
 model_period <- period_range("2015/2033")
 report <- capture_output({
   mdl <- dyn_mdl(mod_file, calc = "internal")
-  mdl_linlog <- dyn_mdl(mod_file_linlog, calc = "internal")
+  mdl_linlogpow <- dyn_mdl(mod_file_linlogpow, calc = "internal")
 })
 mdl$set_period(model_period)
-mdl_linlog$set_period(model_period)
+mdl_linlogpow$set_period(model_period)
 
 dynare_result <- read_dynare_result(model_name, mdl)
 
@@ -32,8 +32,8 @@ test_that("solve_steady", {
   mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
   expect_equal(mdl$get_static_endos(), dynare_result$steady)
   
-  mdl_linlog$solve_steady(control = list(trace = FALSE, silent = TRUE))
-  expect_equal(mdl_linlog$get_static_endos(), dynare_result$steady)
+  mdl_linlogpow$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  expect_equal(mdl_linlogpow$get_static_endos(), dynare_result$steady)
 })
 
 test_that("eigenvalues", {
@@ -42,8 +42,8 @@ test_that("eigenvalues", {
   # the last eigenvalues are Inf or almost infinite
   expect_equal(Re(eigval[1:19]), dynare_result$eigval[1:19, 1])
   
-  check_output <- capture_output(mdl_linlog$check())
-  eigval <- mdl_linlog$get_eigval()
+  check_output <- capture_output(mdl_linlogpow$check())
+  eigval <- mdl_linlogpow$get_eigval()
   # the last eigenvalues are Inf or almost infinite
   expect_equal(Re(eigval[1:19]), dynare_result$eigval[1:19, 1])
 })
@@ -64,8 +64,8 @@ test_that("solve", {
   expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })
 
-test_that("solve linlog", {
-  mdl2 <- mdl_linlog$clone()
+test_that("solve linlogpow", {
+  mdl2 <- mdl_linlogpow$clone()
   mdl2$put_static_endos()
   p <- start_period(model_period)
   with (as.list(mdl2$get_param()), {
@@ -75,7 +75,19 @@ test_that("solve linlog", {
     mdl2$set_exo_values(exp(sigma_A), names = "epsA", period = p);
     mdl2$set_exo_values(exp(sigma_m), names = "epsm", period = p);
   })
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl2$set_endo_values(names = "phi", value = -1, period = p)
+  mdl2$set_endo_values(names = "ld", value = -1, period = p)
+  
+  
+  # TODO: with global = "no" an incorrect solution is found (not the real 
+  # solution of the model)
+  mdl2$solve(control = list(silent = TRUE, trace = TRUE, allow_singular = TRUE,
+                            maxiter = 100),  global = "cline")
+ 
+  
+  mdl2$set_param(c(eps = -Inf, eps_lp = -Inf))
+  mdl2$solve(control = list(silent = TRUE, trace = TRUE, allow_singular = TRUE,
+                            maxiter = 100))
   
   expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })
@@ -123,3 +135,4 @@ test_that("get_names", {
   expect_known_output(mdl$get_par_names(),
                       "expected_output/NK_baseline_par_names.rds")
 })
+

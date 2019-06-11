@@ -171,10 +171,14 @@ Lambdax
 
 
 
+
 /*
 The following model equations are the stationary model equations, taken from
 FV(2006), p. 20, section 3.2.
 */
+
+parameters eps eps_lp;
+eps = 0.0001; eps_lp = 0.0001;
 
 model; 
 //1. FOC consumption
@@ -189,31 +193,33 @@ q=betta*lambda(+1)/lambda*mu_z(+1)^(-1)*mu_I(+1)^(-1)*((1-delta)*q(+1)+r(+1)*u(+
 1=q*(1-(kappa/2*(x/x(-1)*mu_z-Lambdax)^2)-(kappa*(x/x(-1)*mu_z-Lambdax)*x/x(-1)*mu_z))
   +betta*q(+1)*lambda(+1)/lambda*mu_z(+1)^(-1)*kappa*(x(+1)/x*mu_z(+1)-Lambdax)*(x(+1)/x*mu_z(+1))^2;
 //6-7. Wage setting
-f=(eta-1)/eta*wstar^(1-eta)*lambda*w^eta*ld+betta*thetaw*(PI^chiw/PI(+1))^(1-eta)*(wstar(+1)/wstar*mu_z(+1))^(eta-1)*f(+1);
-f=varpsi*d*phi*PIstarw^(-eta*(1+gammma))*ld^(1+gammma)+betta*thetaw*(PI^chiw/PI(+1))^(-eta*(1+gammma))*(wstar(+1)/wstar*mu_z(+1))^(eta*(1+gammma))*f(+1);
+f=(eta-1)/eta*wstar^(1-eta)*lambda*w^eta*ld+betta*thetaw*(linpow(PI, chiw, eps_lp)/PI(+1))^(1-eta)*(wstar(+1)/wstar*mu_z(+1))^(eta-1)*f(+1);
+f=varpsi*d*phi*linpow(PIstarw, -eta*(1+gammma), eps_lp)*linpow(ld, 1+gammma, eps_lp)+betta*thetaw*linpow(linpow(PI, chiw, eps_lp)/PI(+1), -eta*(1+gammma), eps_lp)
+       *linpow(wstar(+1)/wstar*mu_z(+1), eta*(1+gammma), eps_lp)*f(+1);
 
 //8-10. firm's price setting
-g1=lambda*mc*yd+betta*thetap*(PI^chi/PI(+1))^(-epsilon)*g1(+1);
-g2=lambda*PIstar*yd+betta*thetap*(PI^chi/PI(+1))^(1-epsilon)*PIstar/PIstar(+1)*g2(+1);
+g1=lambda*mc*yd+betta*thetap*(linpow(PI, chi, eps_lp)/PI(+1))^(-epsilon)*g1(+1);
+g2=lambda*PIstar*yd+betta*thetap*(linpow(PI, chi, eps_lp)/PI(+1))^(1-epsilon)*PIstar/PIstar(+1)*g2(+1);
 epsilon*g1=(epsilon-1)*g2;
 //11-12. optimal inputs
 u*k/ld=alppha/(1-alppha)*w/r*mu_z*mu_I;
-mc=(1/(1-alppha))^(1-alppha)*(1/alppha)^alppha*w^(1-alppha)*r^alppha;
+mc=(1/(1-alppha))^(1-alppha)*(1/alppha)^alppha*linpow(w, 1-alppha, eps_lp)*linpow(r, alppha, eps_lp);
 //13. law of motion wages
-1=thetaw*(PI(-1)^chiw/PI)^(1-eta)*(w(-1)/w*mu_z^(-1))^(1-eta)+(1-thetaw)*PIstarw^(1-eta);
+1=thetaw*(linpow(PI(-1), chiw, eps_lp)/PI)^(1-eta)*(w(-1)/w*mu_z^(-1))^(1-eta)+(1-thetaw)*PIstarw^(1-eta);
 //14. law of motion prices
-1=thetap*(PI(-1)^chi/PI)^(1-epsilon)+(1-thetap)*PIstar^(1-epsilon);
+1=thetap*(linpow(PI(-1), chi, eps_lp)/PI)^(1-epsilon)+(1-thetap)*PIstar^(1-epsilon);
 
 //15. Taylor Rule
-R/Rbar=(R(-1)/Rbar)^gammmaR*((PI/PIbar)^gammmaPI*((yd/yd(-1)*mu_z)/exp(LambdaYd))^gammmay)^(1-gammmaR)*exp(epsm);
+R/Rbar=linpow(R(-1)/Rbar, gammmaR, eps_lp)*linpow(linpow(PI/PIbar, gammmaPI, eps_lp)*linpow((yd/yd(-1)*mu_z)/exp(LambdaYd), gammmay, eps_lp), 1-gammmaR, eps_lp)*exp(epsm);
 
 //16-17. Market clearing
 yd=c+x+mu_z^(-1)*mu_I^(-1)*(gammma1*(u-1)+gammma2/2*(u-1)^2)*k;
-yd=(mu_A*mu_z^(-1)*(u*k)^alppha*ld^(1-alppha)-Phi)/vp;
+%yd=(mu_A*mu_z^(-1)*(u*k)^alppha*ld^(1-alppha)-Phi)/vp;
+yd=(mu_A*mu_z^(-1)*linpow(u*k, alppha, eps_lp)*linpow(ld, 1-alppha, eps_lp)-Phi)/vp;
 //18-20. Price and wage dispersion terms
 l=vw*ld; 
-vp=thetap*(PI(-1)^chi/PI)^(-epsilon)*vp(-1)+(1-thetap)*PIstar^(-epsilon);
-vw=thetaw*(w(-1)/w*mu_z^(-1)*PI(-1)^chiw/PI)^(-eta)*vw(-1)+(1-thetaw)*(PIstarw)^(-eta);
+vp=thetap*(linpow(PI(-1), chi, eps_lp)/PI)^(-epsilon)*vp(-1)+(1-thetap)*PIstar^(-epsilon);
+vw=thetaw*(w(-1)/w*mu_z^(-1)*linpow(PI(-1), chiw, eps_lp)/PI)^(-eta)*vw(-1)+(1-thetaw)*(PIstarw)^(-eta);
 //21. Law of motion for capital
 k(+1)*mu_z*mu_I-(1-delta)*k-mu_z*mu_I*(1-kappa/2*(x/x(-1)*mu_z-Lambdax)^2)*x=0;
 //22. Profits
@@ -223,13 +229,13 @@ PIstarw=wstar/w;
 
 //exogenous processes
 //24. Preference Shock
-linlog(d)=rhod*linlog(d(-1))+epsd;
+linlog(d, eps)=rhod*linlog(d(-1), eps)+epsd;
 //25. Labor disutility Shock
-linlog(phi)=rhophi*linlog(phi(-1))+epsphi;
+linlog(phi, eps)=rhophi*linlog(phi(-1), eps)+epsphi;
 //26. Investment specific technology
-linlog(mu_I)=Lambdamu+epsmu_I;
+linlog(mu_I,eps)=Lambdamu+epsmu_I;
 //27. Neutral technology
-linlog(mu_A)=LambdaA+epsA; 
+linlog(mu_A,eps)=LambdaA+epsA; 
 //28. Defininition composite technology
 mu_z=mu_A^(1/(1-alppha))*mu_I^(alppha/(1-alppha));
 
