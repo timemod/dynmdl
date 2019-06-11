@@ -29,12 +29,12 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     cat(sprintf("\nSolving backwards model for period %s\n",
                 as.character(solve_period)))
   }
-
+  
   control_ <- control
   if (solver == "nleqslv") {
     control_$silent <- NULL
-  } else {
-    control_["silent"] <- TRUE
+  } else if (!control$trace) {
+    control_$silent <- TRUE
   }
   
   nper <- nperiod(solve_period)
@@ -67,8 +67,11 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
       error <- !out$solved
     }
     
+    if (!control$silent && control$trace) {
+      cat("\n")
+    }
     
-    if (error) {
+    if (error && !control$silent) {
       if (grepl("contains non-finite value", out$message)) {
         res <- f(out$x, lags = lags, period_index = period_index)
         names(res) <- paste("eq", seq_along(res))

@@ -8,17 +8,27 @@ context("linlog2")
 model <- "linlog2"
 
 mod_file <- file.path("mod", paste0(model, ".mod"))
+fit_mod_file <- file.path("mod_out", paste0(model, ".mod"))
+
 #x <- seq(0, 4, length.out = 100)[-1]
 #plot(x, log(x), type = "l")
 #lines(x,  0.5 * ( x - 1), type = "l", col = "red")
 #lines(x,  2   * ( x - 1), type = "l", col = "blue")
 
+# TODO: fit_mod_file controleren
 report <- capture_output({
   mdl <- dyn_mdl(mod_file, period = "2018/2018", calc = "R")
-  mdl_internal <-  dyn_mdl(mod_file, period = "2018/2018", calc = "internal")
+  mdl_internal <-  dyn_mdl(mod_file, period = "2018/2018", calc = "internal",
+                           fit_mod_file = fit_mod_file)
 })
 
 correct_result <- c(y1 = 1, y2 = 1)
+
+test_that("check fit_mod_file", {
+  lines <- readLines(fit_mod_file)
+  expect_known_output(lines, print = TRUE,
+                      "expected_output/linlog2_fit_mod_file.txt")
+})
 
 test_that("easy starting values (1)", {
   mdl$set_static_endos(c(y1 = -0.1, y2 = 0.8))
@@ -41,7 +51,7 @@ test_that("easy starting values (2)", {
   expect_equal(mdl$get_static_endos(), correct_result)
 })
 
-test_that("easy starting values (2)", {
+test_that("problematic starting values", {
 
   mdl$set_static_endos(c(y1 = 2, y2 = 1.1))
   msg <- paste0("Solving the steady state not succesful.\n",
@@ -75,46 +85,68 @@ test_that("disable linlog for the first equation", {
   expect_equal(mdl$get_static_endos(), c(y1 = 2, y2 = 1))
 })
 
-# test_that("fit procedure", {
-#   mdl$set_static_endos(c(y1 = 1.8, y2 = 0.8))
-#   mdl$set_param_values(1, names = "sigma_uy1")
-#   rep1 <- capture_output(mdl$solve_steady())
-#   expect_equal(mdl$get_solve_status(), "OK")
-#   mdl$init_data(data_period = "2018/2020")
-#   mdl$set_period("2018/2020")
-#   mdl$set_static_endos(c(y1 = 1.8, y2 = 0.8))
-#   mdl$set_endo_values(names = "y1", value = 1.8)
-#   mdl$set_fit_values(names = "y1", value = 1.25, period = "2018")
-#   mdl$solve(control = list(trace = TRUE))
-#   expect_known_value(mdl$get_endo_data(),
-#                      "expected_output/linlog2_fit_result.rds")
-#   
-#   print(mdl$get_endo_data())
-#   print(mdl$get_fit())
-#   print(mdl$get_fit_instruments())
-#   
-#   mdl$set_static_endos(c(y1 = 2))
-#   mdl$solve_steady((control = list(silent = FALSE, trace = TRUE, 
-#                                                        allow_singular = TRUE)))
-#   expect_equal(mdl$get_solve_status(), "OK")
-#   expect_equal(mdl$get_static_endos(), c(y1 = 2, y2 = 1))
-#   
-#   # TODO: waarom is het resultaat anders na onderstaande opdracht:
-#   # set endo_values mag geen effect hebben op resultaat. Of komt dit door
-#   # de niet-lineariteit?
-#   mdl$set_endo_values(2, names = "y1")
-#   
-#   mdl$solve(control = list(silent = FALSE, trace = TRUE, 
-#                            allow_singular = TRUE), force_stacked_time = TRUE)
-#   
-#   #
-#   # hier gebeuren hele rare dingen....
-#   # 
-#   # expect_equal(mdl$get_solve_status(), "OK")
-#   print(mdl$get_endo_data())
-#   print(mdl$get_fit())
-#   print(mdl$get_fit_instruments())
-#   
-#   # TODO: hoe zit het met de trace van backward looking modellen.
-# })
-# 
+test_that("sigma_uy1 > 0", {
+  
+  # turn on fit procedure
+  mdl$set_param_values(1, names = "sigma_uy1")
+  
+  # if sigma_uy1 > 1, there are two solutions:
+  #  1)  (y1, y2) = (1, 1)
+  #  2)  (y1, y2) = (2, 1)
+  
+  # first attempt: find solution (2)
+  mdl$set_static_endos(c(y1 = 2, y2 = 0.8))
+  mdl$solve_steady(control = list(silent = TRUE, trace = TRUE, 
+                                  allow_singular = TRUE))
+  expect_equal(mdl$get_solve_status(), "OK")
+  expect_equal(mdl$get_static_endos(), c(y1 = 2, y2 = 1))
+  expect_known_value(mdl$get_static_jacob(),  
+                     "expected_output/linlog2_steady_sol2.rds")
+                           
+  
+  # second attempt: find solution (1)
+  mdl$set_static_endos(c(y1 = 1, y2 = 0.8))
+  mdl$solve_steady(control = list(silent = TRUE, trace = TRUE))
+  expect_equal(mdl$get_solve_status(), "OK")
+  expect_equal(mdl$get_static_endos(), c(y1 = 1, y2 = 1))
+  expect_known_value(mdl$get_static_jacob(),  
+                     "expected_output/linlog2_steady_sol1.rds")
+})
+
+test_that("fit procedure", {
+  
+  per <- period_range("2018/2020")
+  mdl$init_data(data_period = per)
+  mdl$set_period(per)
+
+  mdl$set_static_endos(c(y1 = 1.8, y2 = 0.8))
+  mdl$set_endo_values(names = "y1", value = 1.8)
+  mdl$set_fit_values(names = "y1", value = 1.25, period = "2018")
+  mdl$solve(control = list(silent = TRUE, trace = TRUE))
+  expect_equal(mdl$get_solve_status(), "OK")
+  #print(mdl$get_endo_data())
+  #print(mdl$get_fit_instruments())
+  expect_known_value(mdl$get_endo_data(),
+                      "expected_output/linlog2_fit_result1.rds")
+    
+  expect_equal(mdl$get_fit_instruments(),
+               regts(matrix(c(1/8 - log(5/4), 0, 0)), period =  per, names = "uy1",
+                     labels = "uy1"))
+  
+  # now other solution
+  mdl$set_endo_values(2, names = "y1")
+   
+  mdl$solve(control = list(silent = TRUE, trace = TRUE,
+                            allow_singular = TRUE), force_stacked_time = TRUE)
+  
+  expect_equal(mdl$get_solve_status(), "OK")
+  #print(mdl$get_endo_data())
+  expect_known_value(mdl$get_endo_data(),
+                     "expected_output/linlog2_fit_result2.rds")
+  
+  #print(mdl$get_fit_instruments())
+  expect_equal(mdl$get_fit_instruments(),
+               regts(matrix(c(1/8 - log(5/4), rep(0.5 - log(2), 2))), 
+                     period =  per, names = "uy1", labels = "uy1"))
+})
+
