@@ -8,7 +8,7 @@ using namespace std;
 
 // [[Rcpp::export]]
 void prepare_internal_dyn(int model_index, NumericVector exos, int nrow_exo,
-                           NumericVector params) {
+                          NumericVector params) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
     mdl->set_param(REAL(params));
@@ -18,7 +18,7 @@ void prepare_internal_dyn(int model_index, NumericVector exos, int nrow_exo,
 // [[Rcpp::export]]
 NumericVector get_residuals_dyn(int model_index, NumericVector endos, 
                                 NumericVector icols, int n_endo, int nper,
-                                int period_shift) {
+                                int period_shift, bool debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
@@ -32,7 +32,7 @@ NumericVector get_residuals_dyn(int model_index, NumericVector endos,
         for (int i = 0; i < icols.size(); i++) {
             y[i] = endos(icols(i) +  it * n_endo);
         }
-        mdl->get_residuals(y, res_t, it + period_shift);
+        mdl->get_residuals(y, res_t, it + period_shift, debug_eqs);
         for (int id = 0; id < n_endo; id++) {
             residuals[id + it * n_endo] = res_t[id];
         }
@@ -47,7 +47,7 @@ NumericVector get_residuals_dyn(int model_index, NumericVector endos,
 // [[Rcpp::export]]
 List get_triplet_jac_dyn(int model_index, NumericVector endos, 
        IntegerMatrix lead_lag_incidence, IntegerVector tshift, 
-       int n_endo, int nper, int period_shift) {
+       int n_endo, int nper, int period_shift, bool debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
         
@@ -84,7 +84,7 @@ List get_triplet_jac_dyn(int model_index, NumericVector endos,
         for (int i = 0; i < nendo; i++) {
             y[i] = endos(icols[i] +  it * n_endo);
         }
-        mdl->get_jac(y, rows_t, cols_t, values_t, it + period_shift);
+        mdl->get_jac(y, rows_t, cols_t, values_t, it + period_shift, debug_eqs);
         for (int ideriv = 0; ideriv < njac_t;  ideriv++) {
             int ieq  = rows_t[ideriv];
             int icol = cols_t[ideriv];
@@ -123,7 +123,7 @@ List get_triplet_jac_dyn(int model_index, NumericVector endos,
 }
 
 // [[Rcpp::export]]
-List get_jac_dyn(int model_index, NumericVector endos, int it) {
+List get_jac_dyn(int model_index, NumericVector endos, int it, bool debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
@@ -131,7 +131,8 @@ List get_jac_dyn(int model_index, NumericVector endos, int it) {
     IntegerVector rows(njac), cols(njac);
     NumericVector values(njac);
 
-    mdl->get_jac(REAL(endos), INTEGER(rows), INTEGER(cols), REAL(values), it - 1);
+    mdl->get_jac(REAL(endos), INTEGER(rows), INTEGER(cols), REAL(values), 
+                 it - 1, debug_eqs);
 
      // add 1 because the index origin in R is 1
     rows = rows + 1;
@@ -144,7 +145,7 @@ List get_jac_dyn(int model_index, NumericVector endos, int it) {
 
 // [[Rcpp::export]]
 NumericVector get_res_back_dyn(int model_index, NumericVector endos,
-                               NumericVector lags, int it) {
+                               NumericVector lags, int it, bool  debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
@@ -161,7 +162,7 @@ NumericVector get_res_back_dyn(int model_index, NumericVector endos,
     }
     
     NumericVector res(nendo);
-    mdl->get_residuals(x, REAL(res), it - 1);
+    mdl->get_residuals(x, REAL(res), it - 1, debug_eqs);
 
     delete[] x;
 
@@ -170,7 +171,7 @@ NumericVector get_res_back_dyn(int model_index, NumericVector endos,
 
 // [[Rcpp::export]]
 List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags,
-                      NumericVector cols, int iper) {
+                      NumericVector cols, int iper, bool debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
@@ -191,7 +192,7 @@ List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags,
     int *cols_t = new int[njac];
     double *values_t = new double[njac];
 
-    mdl->get_jac(x, rows_t, cols_t, values_t, iper - 1);
+    mdl->get_jac(x, rows_t, cols_t, values_t, iper - 1, debug_eqs);
 
     vector<int> rows; 
     vector<int> columns;

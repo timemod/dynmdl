@@ -19,8 +19,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_residuals_dyn
-NumericVector get_residuals_dyn(int model_index, NumericVector endos, NumericVector icols, int n_endo, int nper, int period_shift);
-RcppExport SEXP _dynmdl_get_residuals_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP icolsSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP) {
+NumericVector get_residuals_dyn(int model_index, NumericVector endos, NumericVector icols, int n_endo, int nper, int period_shift, bool debug_eqs);
+RcppExport SEXP _dynmdl_get_residuals_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP icolsSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP, SEXP debug_eqsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -30,13 +30,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_endo(n_endoSEXP);
     Rcpp::traits::input_parameter< int >::type nper(nperSEXP);
     Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_residuals_dyn(model_index, endos, icols, n_endo, nper, period_shift));
+    Rcpp::traits::input_parameter< bool >::type debug_eqs(debug_eqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_residuals_dyn(model_index, endos, icols, n_endo, nper, period_shift, debug_eqs));
     return rcpp_result_gen;
 END_RCPP
 }
 // get_triplet_jac_dyn
-List get_triplet_jac_dyn(int model_index, NumericVector endos, IntegerMatrix lead_lag_incidence, IntegerVector tshift, int n_endo, int nper, int period_shift);
-RcppExport SEXP _dynmdl_get_triplet_jac_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP) {
+List get_triplet_jac_dyn(int model_index, NumericVector endos, IntegerMatrix lead_lag_incidence, IntegerVector tshift, int n_endo, int nper, int period_shift, bool debug_eqs);
+RcppExport SEXP _dynmdl_get_triplet_jac_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lead_lag_incidenceSEXP, SEXP tshiftSEXP, SEXP n_endoSEXP, SEXP nperSEXP, SEXP period_shiftSEXP, SEXP debug_eqsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,26 +48,28 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type n_endo(n_endoSEXP);
     Rcpp::traits::input_parameter< int >::type nper(nperSEXP);
     Rcpp::traits::input_parameter< int >::type period_shift(period_shiftSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_triplet_jac_dyn(model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift));
+    Rcpp::traits::input_parameter< bool >::type debug_eqs(debug_eqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_triplet_jac_dyn(model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift, debug_eqs));
     return rcpp_result_gen;
 END_RCPP
 }
 // get_jac_dyn
-List get_jac_dyn(int model_index, NumericVector endos, int it);
-RcppExport SEXP _dynmdl_get_jac_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP itSEXP) {
+List get_jac_dyn(int model_index, NumericVector endos, int it, bool debug_eqs);
+RcppExport SEXP _dynmdl_get_jac_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP itSEXP, SEXP debug_eqsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
     Rcpp::traits::input_parameter< int >::type it(itSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_jac_dyn(model_index, endos, it));
+    Rcpp::traits::input_parameter< bool >::type debug_eqs(debug_eqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_jac_dyn(model_index, endos, it, debug_eqs));
     return rcpp_result_gen;
 END_RCPP
 }
 // get_res_back_dyn
-NumericVector get_res_back_dyn(int model_index, NumericVector endos, NumericVector lags, int it);
-RcppExport SEXP _dynmdl_get_res_back_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lagsSEXP, SEXP itSEXP) {
+NumericVector get_res_back_dyn(int model_index, NumericVector endos, NumericVector lags, int it, bool debug_eqs);
+RcppExport SEXP _dynmdl_get_res_back_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lagsSEXP, SEXP itSEXP, SEXP debug_eqsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -74,13 +77,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type lags(lagsSEXP);
     Rcpp::traits::input_parameter< int >::type it(itSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_res_back_dyn(model_index, endos, lags, it));
+    Rcpp::traits::input_parameter< bool >::type debug_eqs(debug_eqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_res_back_dyn(model_index, endos, lags, it, debug_eqs));
     return rcpp_result_gen;
 END_RCPP
 }
 // get_jac_back_dyn
-List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags, NumericVector cols, int iper);
-RcppExport SEXP _dynmdl_get_jac_back_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP iperSEXP) {
+List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags, NumericVector cols, int iper, bool debug_eqs);
+RcppExport SEXP _dynmdl_get_jac_back_dyn(SEXP model_indexSEXP, SEXP endosSEXP, SEXP lagsSEXP, SEXP colsSEXP, SEXP iperSEXP, SEXP debug_eqsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -89,7 +93,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type lags(lagsSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type cols(colsSEXP);
     Rcpp::traits::input_parameter< int >::type iper(iperSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_jac_back_dyn(model_index, endos, lags, cols, iper));
+    Rcpp::traits::input_parameter< bool >::type debug_eqs(debug_eqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_jac_back_dyn(model_index, endos, lags, cols, iper, debug_eqs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -106,26 +111,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_residuals_stat
-NumericVector get_residuals_stat(int model_index, NumericVector endos);
-RcppExport SEXP _dynmdl_get_residuals_stat(SEXP model_indexSEXP, SEXP endosSEXP) {
+NumericVector get_residuals_stat(int model_index, NumericVector endos, bool debug_eqs);
+RcppExport SEXP _dynmdl_get_residuals_stat(SEXP model_indexSEXP, SEXP endosSEXP, SEXP debug_eqsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_residuals_stat(model_index, endos));
+    Rcpp::traits::input_parameter< bool >::type debug_eqs(debug_eqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_residuals_stat(model_index, endos, debug_eqs));
     return rcpp_result_gen;
 END_RCPP
 }
 // get_triplet_jac_stat
-List get_triplet_jac_stat(int model_index, NumericVector endos);
-RcppExport SEXP _dynmdl_get_triplet_jac_stat(SEXP model_indexSEXP, SEXP endosSEXP) {
+List get_triplet_jac_stat(int model_index, NumericVector endos, bool debug_eqs);
+RcppExport SEXP _dynmdl_get_triplet_jac_stat(SEXP model_indexSEXP, SEXP endosSEXP, SEXP debug_eqsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type endos(endosSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_triplet_jac_stat(model_index, endos));
+    Rcpp::traits::input_parameter< bool >::type debug_eqs(debug_eqsSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_triplet_jac_stat(model_index, endos, debug_eqs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -249,14 +256,14 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_prepare_internal_dyn", (DL_FUNC) &_dynmdl_prepare_internal_dyn, 4},
-    {"_dynmdl_get_residuals_dyn", (DL_FUNC) &_dynmdl_get_residuals_dyn, 6},
-    {"_dynmdl_get_triplet_jac_dyn", (DL_FUNC) &_dynmdl_get_triplet_jac_dyn, 7},
-    {"_dynmdl_get_jac_dyn", (DL_FUNC) &_dynmdl_get_jac_dyn, 3},
-    {"_dynmdl_get_res_back_dyn", (DL_FUNC) &_dynmdl_get_res_back_dyn, 4},
-    {"_dynmdl_get_jac_back_dyn", (DL_FUNC) &_dynmdl_get_jac_back_dyn, 5},
+    {"_dynmdl_get_residuals_dyn", (DL_FUNC) &_dynmdl_get_residuals_dyn, 7},
+    {"_dynmdl_get_triplet_jac_dyn", (DL_FUNC) &_dynmdl_get_triplet_jac_dyn, 8},
+    {"_dynmdl_get_jac_dyn", (DL_FUNC) &_dynmdl_get_jac_dyn, 4},
+    {"_dynmdl_get_res_back_dyn", (DL_FUNC) &_dynmdl_get_res_back_dyn, 5},
+    {"_dynmdl_get_jac_back_dyn", (DL_FUNC) &_dynmdl_get_jac_back_dyn, 6},
     {"_dynmdl_prepare_internal_stat", (DL_FUNC) &_dynmdl_prepare_internal_stat, 3},
-    {"_dynmdl_get_residuals_stat", (DL_FUNC) &_dynmdl_get_residuals_stat, 2},
-    {"_dynmdl_get_triplet_jac_stat", (DL_FUNC) &_dynmdl_get_triplet_jac_stat, 2},
+    {"_dynmdl_get_residuals_stat", (DL_FUNC) &_dynmdl_get_residuals_stat, 3},
+    {"_dynmdl_get_triplet_jac_stat", (DL_FUNC) &_dynmdl_get_triplet_jac_stat, 3},
     {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 8},
     {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 2},
     {"_dynmdl_get_residuals_", (DL_FUNC) &_dynmdl_get_residuals_, 8},

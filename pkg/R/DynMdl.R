@@ -531,7 +531,7 @@ DynMdl <- R6Class("DynMdl",
         return(ret)
     },
     solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv"),
-                            ...) {
+                            debug_eqs = FALSE, ...) {
     
       solver <- match.arg(solver)
       
@@ -546,15 +546,17 @@ DynMdl <- R6Class("DynMdl",
       
       if (solver == "umfpackr") {
         out <- umf_solve_nl(start, fn = private$get_static_residuals, 
-                            jac = private$get_static_jac, control = control, ...)
+                            jac = private$get_static_jac, control = control, 
+                            debug_eqs = debug_eqs, ...)
         error <- !out$solved
       } else {
-        jacf <- function(endos) {
-          j <- private$get_static_jac(endos)
+        jacf <- function(endos, debug_eqs) {
+          j <- private$get_static_jac(endos, debug_eqs)
           return(as(j, "matrix"))
         }
         out <- nleqslv(start, fn = private$get_static_residuals, jac = jacf, 
-                       method = "Newton", control = control,  ...)
+                       method = "Newton", control = control, 
+                       debug_eqs = debug_eqs, ...)
         error <- out$termcd != 1
       }
       private$clean_static_model()
@@ -563,7 +565,7 @@ DynMdl <- R6Class("DynMdl",
       if (error) {
         if ((is.null(control$silent) || !control$silent) && 
                 grepl("contains non-finite value", out$message)) {
-          res <- private$get_static_residuals(out$x)
+          res <- private$get_static_residuals(out$x, FALSE)
           names(res) <- paste("eq", seq_along(res))
           res <- res[!is.finite(res)]
           cat("Non-finite values in residuals for the following equations:\n")
@@ -576,9 +578,9 @@ DynMdl <- R6Class("DynMdl",
       }
       return (invisible(self))
     },
-    static_residual_check = function(tol) {
+    static_residual_check = function(tol, debug_eqs = FALSE) {
       private$prepare_static_model()
-      residuals <- private$get_static_residuals(private$mdldef$endos)
+      residuals <- private$get_static_residuals(private$mdldef$endos, debug_eqs )
       private$clean_static_model()
       names(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
       if (!missing(tol)) {
@@ -612,11 +614,12 @@ DynMdl <- R6Class("DynMdl",
       private$prepare_dynamic_model(solve_first_order = TRUE)
       private$ss <- solve_first_order(private$ss, private$calc, private$mdldef, 
                                       private$jac_dynamic, 
-                                      check_only = TRUE, debug = FALSE)
+                                      check_only = TRUE, debug = FALSE,
+                                      debug_eqs = FALSE)
       private$clean_dynamic_model()
       return(invisible(self))
     },
-    residual_check = function(tol) {
+    residual_check = function(tol, debug_eqs = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       
       nper <- nperiod(private$model_period)
@@ -625,7 +628,7 @@ DynMdl <- R6Class("DynMdl",
       x <- private$get_solve_endo()
       
       private$prepare_dynamic_model()
-      residuals <- private$get_residuals(x, lags, leads, nper)
+      residuals <- private$get_residuals(x, lags, leads, nper, debug_eqs)
       private$clean_dynamic_model()
       
       dim(residuals) <- c(private$mdldef$endo_count, nper)
@@ -646,9 +649,14 @@ DynMdl <- R6Class("DynMdl",
     },
     solve = function(control = list(), force_stacked_time = FALSE,
                      solver = c("umfpackr", "nleqslv"),  
-                     start = c("current", "previous"), ...) {
+                     start = c("current", "previous"), debug_eqs = FALSE, 
+                     ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
+      
+      # TODO: give warning if debug_eqs = TRUE and calc != "internal",
+      # also for other methods with argument debug_eqs.
+      
       solver <- match.arg(solver)
       start <- match.arg(start)
       
@@ -679,14 +687,15 @@ DynMdl <- R6Class("DynMdl",
           ret <- umf_solve_nl(x, private$get_residuals,
                               private$get_jac, lags = lags,
                               leads = leads, nper = nper,
-                              control = control_, ...)
+                              control = control_, debug_eqs = debug_eqs, ...)
         } else if (solver == "nleqslv") {
           jac_fun <- function(x, lags, leads, nper) {
             return(as(private$get_jac(x, lags, leads, nper), "matrix"))
           }
           ret <- nleqslv(x, fn = private$get_residuals, jac = jac_fun, 
                          method = "Newton", lags = lags, leads = leads, 
-                         nper = nper, control = control_, ...)
+                         nper = nper, control = control_, debug_eqs = debug_eqs,
+                         ...)
           ret$solved <- ret$termcd == 1
         }
         
@@ -696,7 +705,8 @@ DynMdl <- R6Class("DynMdl",
                                     private$endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
                                     control = control_, solver = solver,
-                                    start_option = start, ...)
+                                    start_option = start, debug_eqs = debug_eqs,
+                                    ...)
       }
 
       
@@ -740,7 +750,8 @@ DynMdl <- R6Class("DynMdl",
       
       private$ss <- solve_first_order(private$ss, private$calc, private$mdldef, 
                                       private$jac_dynamic, 
-                                      check_only = FALSE, debug = FALSE)
+                                      check_only = FALSE, debug = FALSE,
+                                      debug_eqs = FALSE)
       
       private$endo_data <- solve_perturbation_(private$ss,
                                                private$mdldef$max_endo_lag,
@@ -761,7 +772,7 @@ DynMdl <- R6Class("DynMdl",
       private$prepare_dynamic_model()
       
       
-      jac <- private$get_jac(x, lags, leads, nper)
+      jac <- private$get_jac(x, lags, leads, nper, debug_eqs = FALSE)
       private$clean_dynamic_model()
       
       if (!sparse) {
@@ -775,7 +786,7 @@ DynMdl <- R6Class("DynMdl",
     },
     get_static_jacob = function(sparse = FALSE) {
       private$prepare_static_model()
-      jac <- private$get_static_jac(private$mdldef$endos)
+      jac <- private$get_static_jac(private$mdldef$endos, debug_eqs = FALSE)
       private$clean_static_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
@@ -817,7 +828,7 @@ DynMdl <- R6Class("DynMdl",
       x    <- data[var_indices$curvars]
       
       private$prepare_dynamic_model()
-      jac <- private$get_back_jac(x, lags, period_index)
+      jac <- private$get_back_jac(x, lags, period_index, debug_eqs = FALSE)
       private$clean_dynamic_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
@@ -1310,14 +1321,14 @@ DynMdl <- R6Class("DynMdl",
     },
     # returns the residual of the stacked-time system
     # x is vector of endogenous variables in the solution period
-    get_residuals = function(x, lags, leads, nper) {
+    get_residuals = function(x, lags, leads, nper, debug_eqs) {
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
       if (private$calc == "internal") {
         return(get_residuals_dyn(private$mdldef$model_index, endos,
                                  which(private$mdldef$lead_lag_incidence != 0) - 1,
                                  private$mdldef$endo_count, nper,
-                                 private$period_shift))
+                                 private$period_shift, debug_eqs))
       } else {
         return(get_residuals_(endos,
                               which(private$mdldef$lead_lag_incidence != 0) - 1,
@@ -1326,22 +1337,23 @@ DynMdl <- R6Class("DynMdl",
                               nper, private$period_shift))
       }
     },
-    get_static_residuals  = function(endos) {
+    get_static_residuals  = function(endos, debug_eqs) {
       if (private$calc == "internal") {
-        return(get_residuals_stat(private$mdldef$model_index, endos))
+        return(get_residuals_stat(private$mdldef$model_index, endos, debug_eqs))
       } else {
         return(private$f_static(endos, private$mdldef$exos, 
                                 private$mdldef$params))
       }
     },
-    get_jac = function(x, lags, leads, nper) {
+    get_jac = function(x, lags, leads, nper, debug_eqs) {
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
       tshift  <- -private$mdldef$max_endo_lag : private$mdldef$max_endo_lead
       if (private$calc == "internal") {
         mat_info <- get_triplet_jac_dyn(private$mdldef$model_index, endos, 
                           private$mdldef$lead_lag_incidence, tshift, 
-                          private$mdldef$endo_count, nper, private$period_shift)
+                          private$mdldef$endo_count, nper, private$period_shift,
+                          debug_eqs)
       } else {
         mat_info <- get_triplet_jac(endos, private$mdldef$lead_lag_incidence,
                                     tshift, private$exo_data,
@@ -1359,10 +1371,11 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values,
                           dims = as.integer(rep(n, 2))))
     },
-    get_static_jac = function(x) {
+    get_static_jac = function(x, debug_eqs) {
       # private function to obtain the jacobian for the static model
       if (private$calc == "internal") {
-        mat_info <- get_triplet_jac_stat(private$mdldef$model_index,  x)
+        mat_info <- get_triplet_jac_stat(private$mdldef$model_index, x, 
+                                         debug_eqs)
       } else {
         mat_info <- private$jac_static(x, private$mdldef$exos, 
                                        private$mdldef$params)
@@ -1371,12 +1384,12 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values, 
                           dims = as.integer(rep(private$mdldef$endo_count, 2))))
     },
-    get_back_jac = function(x, lags, period_index) {
+    get_back_jac = function(x, lags, period_index, debug_eqs) {
       # private function to obtain the backward jacobian at period period_index
       jac_cols <- private$mdldef$lead_lag_incidence[, "0"]
       if (private$calc == "internal") {
         mat_info <- get_jac_back_dyn(private$mdldef$model_index, x, lags, 
-                                     jac_cols, period_index)
+                                     jac_cols, period_index, debug_eqs)
       } else {
         mat_info <- get_jac_backwards(x, lags, jac_cols, private$exo_data, 
                                       private$mdldef$params, 

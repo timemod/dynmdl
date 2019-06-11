@@ -5,36 +5,36 @@ prepare_internal_dyn <- function(model_index, exos, nrow_exo, params) {
     invisible(.Call(`_dynmdl_prepare_internal_dyn`, model_index, exos, nrow_exo, params))
 }
 
-get_residuals_dyn <- function(model_index, endos, icols, n_endo, nper, period_shift) {
-    .Call(`_dynmdl_get_residuals_dyn`, model_index, endos, icols, n_endo, nper, period_shift)
+get_residuals_dyn <- function(model_index, endos, icols, n_endo, nper, period_shift, debug_eqs) {
+    .Call(`_dynmdl_get_residuals_dyn`, model_index, endos, icols, n_endo, nper, period_shift, debug_eqs)
 }
 
-get_triplet_jac_dyn <- function(model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift) {
-    .Call(`_dynmdl_get_triplet_jac_dyn`, model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift)
+get_triplet_jac_dyn <- function(model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift, debug_eqs) {
+    .Call(`_dynmdl_get_triplet_jac_dyn`, model_index, endos, lead_lag_incidence, tshift, n_endo, nper, period_shift, debug_eqs)
 }
 
-get_jac_dyn <- function(model_index, endos, it) {
-    .Call(`_dynmdl_get_jac_dyn`, model_index, endos, it)
+get_jac_dyn <- function(model_index, endos, it, debug_eqs) {
+    .Call(`_dynmdl_get_jac_dyn`, model_index, endos, it, debug_eqs)
 }
 
-get_res_back_dyn <- function(model_index, endos, lags, it) {
-    .Call(`_dynmdl_get_res_back_dyn`, model_index, endos, lags, it)
+get_res_back_dyn <- function(model_index, endos, lags, it, debug_eqs) {
+    .Call(`_dynmdl_get_res_back_dyn`, model_index, endos, lags, it, debug_eqs)
 }
 
-get_jac_back_dyn <- function(model_index, endos, lags, cols, iper) {
-    .Call(`_dynmdl_get_jac_back_dyn`, model_index, endos, lags, cols, iper)
+get_jac_back_dyn <- function(model_index, endos, lags, cols, iper, debug_eqs) {
+    .Call(`_dynmdl_get_jac_back_dyn`, model_index, endos, lags, cols, iper, debug_eqs)
 }
 
 prepare_internal_stat <- function(model_index, exos, params) {
     invisible(.Call(`_dynmdl_prepare_internal_stat`, model_index, exos, params))
 }
 
-get_residuals_stat <- function(model_index, endos) {
-    .Call(`_dynmdl_get_residuals_stat`, model_index, endos)
+get_residuals_stat <- function(model_index, endos, debug_eqs) {
+    .Call(`_dynmdl_get_residuals_stat`, model_index, endos, debug_eqs)
 }
 
-get_triplet_jac_stat <- function(model_index, endos) {
-    .Call(`_dynmdl_get_triplet_jac_stat`, model_index, endos)
+get_triplet_jac_stat <- function(model_index, endos, debug_eqs) {
+    .Call(`_dynmdl_get_triplet_jac_stat`, model_index, endos, debug_eqs)
 }
 
 compile_model_ <- function(modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc, n_fit_derivatives) {

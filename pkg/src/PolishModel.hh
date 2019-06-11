@@ -76,9 +76,8 @@ class PolishModel {
         void set_endo(double const y[]);
         void set_exo(double const x[], int nrow_exo);
         void set_param(double const p[]);
-        void get_residuals(const double y[], double residuals[], int it = 0);
-        void get_jac(const double y[], int rows[], int cols[], double values[], 
-                     int it = 0);
+        void get_residuals(const double y[], double residuals[], int it, bool debug);
+        void get_jac(const double y[], int rows[], int cols[], double values[], int it, bool debug);
 
        // serialization
        template<class Archive>
@@ -145,11 +144,10 @@ class PolishModel {
        double *extfun_args;
        int nrow_exo;
        stack<double> stk;
-       double eval_eq(shared_ptr<vector<int>> eq, int it);
+       double eval_eq(int it, int ieq, bool jac, bool debug);
 
        // private functions
        void allocate_extfun_args();
-       inline double eval_function(int code, double arg) const;
        inline double eval_norm_function(int code, double x, double mu, double sigma) const;
        inline double get_pow_deriv(double x, double p, int k) const;
        inline double linlog(double x, double eps) const;

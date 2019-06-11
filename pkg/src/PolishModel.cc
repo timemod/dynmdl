@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <memory.h>
+#include <Rcpp.h>
 
 using namespace std;
 
@@ -150,7 +151,11 @@ void PolishModel::set_exo(double const x[], int nrow_exo) {
     this->nrow_exo = nrow_exo;
 }
 
-double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
+//double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it, int ieq) {
+double PolishModel::eval_eq(int ieq, int it, bool jac, bool debug) {
+
+
+   shared_ptr<vector<int>> eq = jac ? jac_equations[ieq] : equations[ieq];
 
    unsigned int pos = 0;
 
@@ -193,8 +198,16 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                           case MULT: res = lop * rop; break;
                           case PLUS: res = lop + rop; break;
                           case MINUS: res = lop - rop; break;
-                          case DIV: res = lop / rop; break;
-                          case POW: res = pow(lop, rop); break;
+                          case DIV:  if (debug && rop == 0) {
+                                          Rcpp::Rcerr << "division  by zero in eq. " 
+                                                 << ieq << std::endl;
+                                     }
+                                      res = lop / rop; break;
+                          case POW: if (debug && lop < 0 && std::floor(rop) != rop) {
+                                       Rcpp::Rcerr << "power problem in eq. " << ieq << 
+                                           "rop = " << rop << std::endl;
+                                    }
+                                    res = pow(lop, rop); break;
                       }
                       stk.top() = res;
                       break;
@@ -225,12 +238,20 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
                       }
                       stk.top() = res;
                       break;
-           case EXP:
-           case LOG:
-           case SQRT:
-           case ABS:
-           case SIGN:
-                      stk.top() = eval_function(code, stk.top());
+           case EXP:  stk.top() = exp(stk.top()); break;
+           case LOG:  rop = stk.top();
+                      if (debug && rop < 0) {
+                          Rcpp::Rcerr << "log of negative number in eq. " << ieq << std::endl;
+                      }
+                      stk.top() = log(rop); break;
+           case SQRT: rop = stk.top();
+                      if (debug && rop < 0) {
+                          Rcpp::Rcerr << "square root of negative number in eq. " << ieq << std::endl;
+                      }
+                      stk.top() = sqrt(rop); break;
+           case ABS:  stk.top() = abs(stk.top()); break;
+           case SIGN: rop = stk.top();
+                      stk.top() = (rop > 0) ? 1 : ((rop < 0) ? -1 : 0);
                       break;
            case NORMCDF:
            case NORMPDF:
@@ -292,48 +313,39 @@ double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it) {
    res = stk.top();
    stk.pop();
 
-   // TODO: error if stk.size() != 0
+   if (stk.size() != 0) {
+       Rcpp::stop("Internal error: calculation stack not empy at the end of eval_eq");
+   }
+
    return res;
 }
 
-void PolishModel::get_residuals(const double y[], double residuals[], int it) {
+void PolishModel::get_residuals(const double y[], double residuals[], int it, bool debug) {
     ext_calc->init();
     set_endo(y);
     //cout << "get_residuals, it =  " << it << endl;
     for (int ieq = 0; ieq < neq; ieq++) {
         //cout << "get_residuals, ieq " << ieq << endl;
-        residuals[ieq] = eval_eq(equations[ieq], it);
+        residuals[ieq] = eval_eq(ieq, it, false, debug);
     }
     ext_calc->close();
 }
 
 void PolishModel::get_jac(const double y[], int rows[], int cols[], 
-                          double values[], int it) {
+                          double values[], int it, bool debug) {
     ext_calc->init();
     set_endo(y);
     //cout << "get_jac, it =  " << it << endl;
     for (int ieq = 0; ieq < njac; ieq++) {
         rows[ieq] = jac_rows[ieq];
         cols[ieq] = jac_cols[ieq];
-        values[ieq] = eval_eq(jac_equations[ieq], it);
+        values[ieq] = eval_eq(ieq, it, true, debug);
         //cout << "get_jac, ieq, row, col =  " << ieq << " " << rows[ieq] <<
         //      " " << cols[ieq]  << endl;
         //cout << "get_jac, value = " << values[ieq] << endl;
     }
     ext_calc->close();
 }
-
-double PolishModel::eval_function(int  code, double arg) const {  
-    switch(code) {
-        case EXP: return exp(arg);
-        case LOG: return log(arg);
-        case SQRT: return sqrt(arg);
-        case ABS: return abs(arg);
-        case SIGN: return (arg > 0) ? 1 : ((arg < 0) ? -1 : 0);
-        default: return 0;
-    }
-}
-
 
 // evaluate the (cumulative) normal distribution function
 double PolishModel::eval_norm_function(int  code, double x, double mu, 

@@ -5,21 +5,22 @@
 solve_backward_model <- function(mdldef, calc, solve_period, data_period, 
                                  endo_data, exo_data, f_dynamic, 
                                  get_back_jac, control, solver, 
-                                 start_option, ...) {
+                                 start_option, debug_eqs, ...) {
   
   if (calc == "internal") {
-    f <- function(x, lags, period_index) {
-      return(get_res_back_dyn(mdldef$model_index, x, lags, period_index))
+    f <- function(x, lags, period_index, debug_eqs) {
+      return(get_res_back_dyn(mdldef$model_index, x, lags, period_index, 
+                              debug_eqs))
     }
   } else {
-    f <- function(x, lags, period_index) {
+    f <- function(x, lags, period_index, debug_eqs) {
       return(f_dynamic(c(lags, x), exo_data, mdldef$params, period_index))
     }
   }
   
   if (solver == "nleqslv") {
-    jac_fun <- function(x, lags, period_index) {
-      return(as(get_back_jac(x, lags, period_index), "matrix"))
+    jac_fun <- function(x, lags, period_index, debug_eqs) {
+      return(as(get_back_jac(x, lags, period_index, debug_eqs), "matrix"))
     }
   } else {
     jac_fun <- get_back_jac
@@ -58,12 +59,12 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     if (solver == "nleqslv") {
       out <- nleqslv(start, fn = f, jac = jac_fun, method = "Newton",
                      lags = lags, period_index = period_index, 
-                     control = control_, ...)
+                     debug_eqs = debug_eqs, control = control_, ...)
       error <- out$termcd != 1
     } else {
       out <- umf_solve_nl(start, fn = f, jac = jac_fun, lags = lags,
-                          period_index = period_index, control = control_,
-                          ...)
+                          period_index = period_index, debug_eqs = debug_eqs, 
+                          control = control_, ...)
       error <- !out$solved
     }
     

@@ -257,7 +257,7 @@ FitMdl <- R6Class("FitMdl",
 
       return(super$solve(...))
     },
-    residual_check = function(tol, include_fit_eqs = FALSE) {
+    residual_check = function(tol, include_fit_eqs = FALSE, ...) {
       
       # set old_instruments, these will be used for deactivated 
       # fit instruments (instruments with sigma < 0), so that the
@@ -265,7 +265,7 @@ FitMdl <- R6Class("FitMdl",
       private$exo_data[ , private$fit_info$old_instruments] <-
         private$endo_data[ , private$fit_info$instruments] 
       
-      residuals <- super$residual_check()
+      residuals <- super$residual_check(...)
       if (!include_fit_eqs) {
         residuals <- residuals[ , seq_along(private$fit_info$orig_endos), 
                               drop = FALSE]
@@ -285,17 +285,17 @@ FitMdl <- R6Class("FitMdl",
       }
       return(residuals)
     },
-    solve_steady = function(control = list(), ...) {
+    solve_steady = function(control = list(), debug_eqs = FALSE, ...) {
 
-      super$solve_steady(control, ...)
-    
+      super$solve_steady(control, debug_eqs = debug_eqs, ...)
+
       if (private$solve_status == "OK") {
         # For the steady state model, the fit instruments and lagrange 
         # multipliers should be exactly 0. However, they are sometimes small
         # because of numerical inaccuracies. Therefore set then to zero and 
         # check the maximum static residual
         names <- c(private$fit_info$instruments, private$fit_info$l_vars)
-        fmax <- max(abs(super$static_residual_check()))
+        fmax <- max(abs(super$static_residual_check(debug_eqs = debug_eqs)))
         ftol <- if (is.null(control$ftol)) {
                   1e-8 
                 } else { 

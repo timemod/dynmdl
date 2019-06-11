@@ -16,19 +16,21 @@ void prepare_internal_stat(int model_index, NumericVector exos,
 }
 
 // [[Rcpp::export]]
-NumericVector get_residuals_stat(int model_index, NumericVector endos) {
+NumericVector get_residuals_stat(int model_index, NumericVector endos, 
+                                 bool debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_static_model(model_index);
 
     NumericVector res(endos.size());
 
-    mdl->get_residuals(REAL(endos), REAL(res));
+    mdl->get_residuals(REAL(endos), REAL(res), 0, debug_eqs);
 
     return res;
 }
 
 // [[Rcpp::export]]
-List get_triplet_jac_stat(int model_index, NumericVector endos) {
+List get_triplet_jac_stat(int model_index, NumericVector endos, 
+                          bool debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_static_model(model_index);
         
@@ -37,7 +39,8 @@ List get_triplet_jac_stat(int model_index, NumericVector endos) {
     IntegerVector rows(njac), cols(njac);
     NumericVector values(njac);
 
-    mdl->get_jac(REAL(endos), INTEGER(rows), INTEGER(cols), REAL(values));
+    mdl->get_jac(REAL(endos), INTEGER(rows), INTEGER(cols), REAL(values), 0, 
+                debug_eqs);
 
     // add 1 because the index origin in R is 1
     rows = rows + 1;

@@ -2,7 +2,7 @@
 # also computes the eigenvalues.
 #' @importFrom regts printobj
 solve_first_order <- function(ss, calc, mdldef, jac_dynamic, 
-                              check_only = FALSE, debug = FALSE) {
+                              check_only = FALSE, debug = FALSE, debug_eqs) {
   
   lead_lag_incidence <- mdldef$lead_lag_incidence
   static_exos <- mdldef$exos
@@ -40,7 +40,7 @@ solve_first_order <- function(ss, calc, mdldef, jac_dynamic,
   it <- max_lag + 1
   
   if (calc == "internal") {
-    jacobia <- get_jac_dyn(mdldef$model_index, y, it - 1)
+    jacobia <- get_jac_dyn(mdldef$model_index, y, it - 1, debug_eqs)
   } else {
     jacobia <- jac_dynamic(y, exos, params, it)
   }
