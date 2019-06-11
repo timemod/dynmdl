@@ -129,10 +129,12 @@ test_that("non_finite values", {
   mdl_2 <- mdl$copy()
   mdl_2$set_exo_values(NA, names = "g", period = "2011q3/2011Q4")
   mdl_2$set_endo_values(NaN, names = "t", period = "2011Q3")
-  expect_known_output(expect_warning(mdl_2$solve(control = list(silent = TRUE)),
+  expect_known_output(expect_warning(mdl_2$solve(control = list(silent = FALSE)),
                  "Model solving not succesful"),
                  file = "expected_output/islm_backwards_non_finite_1.txt")
-  expect_known_output(expect_warning(mdl_2$solve(control = list(silent = TRUE)),
+  expect_known_output(expect_warning(mdl_2$solve(control = list(silent = FALSE)),
                                        "Model solving not succesful"),
                       file = "expected_output/islm_backwards_non_finite_1.txt")
+  expect_silent(expect_warning(mdl_2$solve(control = list(silent = TRUE)),
+                                     "Model solving not succesful"))
 })

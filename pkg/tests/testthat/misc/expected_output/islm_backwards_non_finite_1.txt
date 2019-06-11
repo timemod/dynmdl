@@ -1,0 +1,5 @@
+
+Solving backwards model for period 2011Q3/2015Q4
+Non-finite values in residuals in period 2011Q3 for the following equations:
+eq 1 eq 2 eq 3 
+  NA  NaN  NaN 
