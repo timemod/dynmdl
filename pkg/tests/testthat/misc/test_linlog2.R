@@ -15,7 +15,6 @@ fit_mod_file <- file.path("mod_out", paste0(model, ".mod"))
 #lines(x,  0.5 * ( x - 1), type = "l", col = "red")
 #lines(x,  2   * ( x - 1), type = "l", col = "blue")
 
-# TODO: fit_mod_file controleren
 report <- capture_output({
   mdl <- dyn_mdl(mod_file, period = "2018/2018", calc = "R")
   mdl_internal <-  dyn_mdl(mod_file, period = "2018/2018", calc = "internal",

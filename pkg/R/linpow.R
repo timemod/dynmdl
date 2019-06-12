@@ -1,4 +1,3 @@
-#' @export
 linpow <- function(x, p, eps) {
   if (x > eps) {
     return(x^p)

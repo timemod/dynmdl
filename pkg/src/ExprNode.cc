@@ -3215,7 +3215,7 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
 #ifdef USE_R
         case oLinlog:
           if (IS_R(output_type)) {
-              output << "dynmdl::linlog(";
+              output << "dynmdl:::linlog(";
           } else {
               output << "linlog(";
           }
@@ -4437,7 +4437,7 @@ TrinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       break;
 #ifdef USE_R
     case oLinpow:
-          output << "dynmdl::linpow(";
+          output << "dynmdl:::linpow(";
           arg1->writeOutput(output, output_type, temporary_terms, tef_terms);
           output << ",";
           arg2->writeOutput(output, output_type, temporary_terms, tef_terms);

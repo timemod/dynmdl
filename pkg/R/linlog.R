@@ -1,4 +1,3 @@
-#' @export
 linlog <- function(x, eps) {
   if (x > eps) {
     return(log(x))

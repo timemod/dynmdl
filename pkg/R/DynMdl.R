@@ -22,6 +22,7 @@ setOldClass("regts")
 #' @importFrom compiler compile
 #' @importFrom utils zip
 #' @importFrom utils compareVersion
+#' @importFrom data.table shift
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,

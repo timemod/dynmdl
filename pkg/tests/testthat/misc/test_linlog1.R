@@ -30,9 +30,9 @@ test_that("solve", {
   ed <- mdl$get_endo_data()
 
   exod <- as.numeric(mdl$get_exo_data())
-  y1_exp <- sapply(as.numeric(exod), FUN = linlog, eps = 1e-4)
-  y2_exp <- sapply(as.numeric(exod), FUN = linlog, eps = 1e-3)
-  y3_exp <- sapply(as.numeric(exod), FUN = linlog, eps = 1e-1)
+  y1_exp <- sapply(as.numeric(exod), FUN = dynmdl:::linlog, eps = 1e-4)
+  y2_exp <- sapply(as.numeric(exod), FUN = dynmdl:::linlog, eps = 1e-3)
+  y3_exp <- sapply(as.numeric(exod), FUN = dynmdl:::linlog, eps = 1e-1)
 
   expected_result <- cbind(y1 = y1_exp, y2 = y2_exp, y3 = y3_exp)
   expected_result <- regts(expected_result, period = period)
