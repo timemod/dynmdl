@@ -579,6 +579,7 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     static_residual_check = function(tol, debug_eqs = FALSE) {
+      private$check_debug_eqs(debug_eqs)
       private$prepare_static_model()
       residuals <- private$get_static_residuals(private$mdldef$endos, debug_eqs )
       private$clean_static_model()
@@ -621,6 +622,8 @@ DynMdl <- R6Class("DynMdl",
     },
     residual_check = function(tol, debug_eqs = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
+      private$check_debug_eqs(debug_eqs)
+      
       
       nper <- nperiod(private$model_period)
       lags <- private$get_endo_lags()
@@ -654,9 +657,8 @@ DynMdl <- R6Class("DynMdl",
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       
-      # TODO: give warning if debug_eqs = TRUE and calc != "internal",
-      # also for other methods with argument debug_eqs.
-      
+      private$check_debug_eqs(debug_eqs)
+
       solver <- match.arg(solver)
       start <- match.arg(start)
       
@@ -1423,12 +1425,17 @@ DynMdl <- R6Class("DynMdl",
           max_lead <- as.integer(colnames(lead_lag_incidence)[ncol(lead_lag_incidence)])
           nper <- max_lag + max_lead + 1
           exo_data <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
+          per_freq <- -1
+          first_per_subp_count <- -1
         } else {
           exo_data <- private$exo_data
+          per_freq <- frequency(private$data_period)
+          first_per_subp_count <- as.numeric(start_period(private$data_period))
         }
         
         prepare_internal_dyn(private$mdldef$model_index, exo_data,
-                              nrow(exo_data), private$mdldef$params)
+                              nrow(exo_data), private$mdldef$params,
+                              per_freq, first_per_subp_count)
       }
       
       # prepare the auxiliary variables
@@ -1787,6 +1794,11 @@ DynMdl <- R6Class("DynMdl",
       }  
 
       return(endo_data)
+    },
+    check_debug_eqs = function(debug_eqs) {
+      if (debug_eqs && private$calc != "internal") {
+        warning("Argument debug_eqs is only used if calc = \"internal\"")
+      }
     }
   )
 )

@@ -28,6 +28,11 @@ whose residuals are smaller than \code{tol}}
 \item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).  
 This argument is only used if \code{mdl} is a \code{\link{FitMdl}} object. 
 If \code{TRUE}, then the fit equations are included in the residual check.}
+\item{\code{debug_eqs}}{Debug equations (default \code{FALSE}). Only used
+for the internal calculation mode (\code{calc == "internal"},
+see \code{\link{dyn_mdl}}). If
+\code{TRUE} then numerical problems in evaluation
+of mathematical functions or operators such a \code{log} are reported.}
 }
 }
 

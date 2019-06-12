@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <memory.h>
 #include <Rcpp.h>
+#include <Rcpp.h>
+#include <Rcpp.h>
+#include <boost/format.hpp>
 
 using namespace std;
 
@@ -34,6 +37,8 @@ PolishModel::PolishModel(int neq, int njac, const vector<double> &constants_arg,
     //cout << "nconst = " << nconst << endl;
 
 }
+
+
 
 void PolishModel::allocate_extfun_args() {
     extfun_args = new double[ext_calc->get_narg_max()];
@@ -151,6 +156,38 @@ void PolishModel::set_exo(double const x[], int nrow_exo) {
     this->nrow_exo = nrow_exo;
 }
 
+void PolishModel::set_period_info(int per_freq, int first_per_subp_count) {
+    this->per_freq = per_freq;
+    this->first_per_subp_count = first_per_subp_count;
+}
+
+std::string PolishModel::get_period_string(int it) const {
+    int subp_count = first_per_subp_count + it;
+    if (per_freq == 1) {
+        return std::to_string(subp_count);
+    } else {
+        int year = subp_count / per_freq;
+        int subp = subp_count % per_freq + 1;
+        char freq_char;
+        switch(per_freq) {
+            case 4: freq_char = 'q'; break;
+            case 12: freq_char = 'm'; break;
+            default: freq_char = '/'; break;
+        }
+        return std::to_string(year) + freq_char + std::to_string(subp);
+    }
+}
+
+void PolishModel::report_numerical_problem(int ieq, int it) const {
+     Rcpp::Rcerr << "Numerical problem in eq. " << ieq + 1;
+     if (per_freq != -1) {
+         // per_freq == -1 when solving the steady state
+         Rcpp::Rcerr << " for " <<  get_period_string(it) << ": ";
+     } else {
+         Rcpp::Rcerr << ": "; 
+     }
+}
+
 //double PolishModel::eval_eq(shared_ptr<vector<int>> eq, int it, int ieq) {
 double PolishModel::eval_eq(int ieq, int it, bool jac, bool debug) {
 
@@ -199,13 +236,15 @@ double PolishModel::eval_eq(int ieq, int it, bool jac, bool debug) {
                           case PLUS: res = lop + rop; break;
                           case MINUS: res = lop - rop; break;
                           case DIV:  if (debug && rop == 0) {
-                                          Rcpp::Rcerr << "division  by zero in eq. " 
-                                                 << ieq << std::endl;
+                                         report_numerical_problem(ieq, it);
+                                          Rcpp::Rcerr << "division by 0" <<  std::endl;
                                      }
-                                      res = lop / rop; break;
+                                     res = lop / rop; break;
                           case POW: if (debug && lop < 0 && std::floor(rop) != rop) {
-                                       Rcpp::Rcerr << "power problem in eq. " << ieq << 
-                                           "rop = " << rop << std::endl;
+                                        report_numerical_problem(ieq, it);
+                                        Rcpp::Rcerr << "(" << boost::format("%.2g") % lop << ")^" 
+                                                    << boost::format("%.2g") % rop << std::endl;
+                                                    
                                     }
                                     res = pow(lop, rop); break;
                       }
@@ -240,13 +279,15 @@ double PolishModel::eval_eq(int ieq, int it, bool jac, bool debug) {
                       break;
            case EXP:  stk.top() = exp(stk.top()); break;
            case LOG:  rop = stk.top();
-                      if (debug && rop < 0) {
-                          Rcpp::Rcerr << "log of negative number in eq. " << ieq << std::endl;
+                      if (debug && rop <= 0) {
+                          report_numerical_problem(ieq, it);
+                          Rcpp::Rcerr << "log(" << boost::format("%.2g") % rop << ")" << std::endl;
                       }
                       stk.top() = log(rop); break;
            case SQRT: rop = stk.top();
                       if (debug && rop < 0) {
-                          Rcpp::Rcerr << "square root of negative number in eq. " << ieq << std::endl;
+                          report_numerical_problem(ieq, it);
+                          Rcpp::Rcerr << "sqrt(" << boost::format("%.2g") % rop << ")" << std::endl;
                       }
                       stk.top() = sqrt(rop); break;
            case ABS:  stk.top() = abs(stk.top()); break;

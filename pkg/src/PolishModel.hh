@@ -76,8 +76,13 @@ class PolishModel {
         void set_endo(double const y[]);
         void set_exo(double const x[], int nrow_exo);
         void set_param(double const p[]);
-        void get_residuals(const double y[], double residuals[], int it, bool debug);
-        void get_jac(const double y[], int rows[], int cols[], double values[], int it, bool debug);
+        void get_residuals(const double y[], double residuals[], int it, 
+                          bool debug);
+        void get_jac(const double y[], int rows[], int cols[], double values[], 
+                int it, bool debug);
+
+        // set period information
+        void set_period_info(int per_freq, int first_per_subp_count);
 
        // serialization
        template<class Archive>
@@ -143,11 +148,19 @@ class PolishModel {
        const double *y, *p, *x;
        double *extfun_args;
        int nrow_exo;
+    
+       // for debug messages
+       int per_freq, first_per_subp_count;
+
        stack<double> stk;
        double eval_eq(int it, int ieq, bool jac, bool debug);
 
        // private functions
        void allocate_extfun_args();
+
+       inline std::string get_period_string(int it) const;
+       inline void report_numerical_problem(int ieq, int it) const;
+       
        inline double eval_norm_function(int code, double x, double mu, double sigma) const;
        inline double get_pow_deriv(double x, double p, int k) const;
        inline double linlog(double x, double eps) const;

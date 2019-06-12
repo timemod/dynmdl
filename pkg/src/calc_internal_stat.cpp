@@ -13,6 +13,7 @@ void prepare_internal_stat(int model_index, NumericVector exos,
     PolishModel *mdl = PolishModels::get_static_model(model_index);
     mdl->set_param(REAL(params));
     mdl->set_exo(REAL(exos), 1);
+    mdl->set_period_info(-1, -1);
 }
 
 // [[Rcpp::export]]

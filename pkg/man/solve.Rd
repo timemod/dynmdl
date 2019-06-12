@@ -44,6 +44,11 @@ of the endogenous variables are used as starting values. For
 starting values (except for the first period when the model is solved). 
 This argument is ignored if the model if solved with the stacked time Newton 
 method}
+\item{\code{debug_eqs}}{Debug equations (default \code{FALSE}). Only used
+for the internal calculation mode (\code{calc == "internal"},
+see \code{\link{dyn_mdl}}). If
+\code{TRUE} then numerical problems in evaluation
+of mathematical functions or operators such a \code{log} are reported.}
 \item{\code{...}}{Other arguments passed to the solver}
 }
 }

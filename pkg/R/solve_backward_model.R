@@ -74,7 +74,8 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     
     if (error && !control$silent) {
       if (grepl("contains non-finite value", out$message)) {
-        res <- f(out$x, lags = lags, period_index = period_index)
+        res <- f(out$x, lags = lags, period_index = period_index, 
+                 debug_eqs = FALSE)
         names(res) <- paste("eq", seq_along(res))
         res <- res[!is.finite(res)]
         cat(sprintf(paste("Non-finite values in residuals in period %s",

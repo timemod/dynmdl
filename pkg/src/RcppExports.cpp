@@ -6,15 +6,17 @@
 using namespace Rcpp;
 
 // prepare_internal_dyn
-void prepare_internal_dyn(int model_index, NumericVector exos, int nrow_exo, NumericVector params);
-RcppExport SEXP _dynmdl_prepare_internal_dyn(SEXP model_indexSEXP, SEXP exosSEXP, SEXP nrow_exoSEXP, SEXP paramsSEXP) {
+void prepare_internal_dyn(int model_index, NumericVector exos, int nrow_exo, NumericVector params, int per_freq, int first_per_subp_count);
+RcppExport SEXP _dynmdl_prepare_internal_dyn(SEXP model_indexSEXP, SEXP exosSEXP, SEXP nrow_exoSEXP, SEXP paramsSEXP, SEXP per_freqSEXP, SEXP first_per_subp_countSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type model_index(model_indexSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type exos(exosSEXP);
     Rcpp::traits::input_parameter< int >::type nrow_exo(nrow_exoSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type params(paramsSEXP);
-    prepare_internal_dyn(model_index, exos, nrow_exo, params);
+    Rcpp::traits::input_parameter< int >::type per_freq(per_freqSEXP);
+    Rcpp::traits::input_parameter< int >::type first_per_subp_count(first_per_subp_countSEXP);
+    prepare_internal_dyn(model_index, exos, nrow_exo, params, per_freq, first_per_subp_count);
     return R_NilValue;
 END_RCPP
 }
@@ -255,7 +257,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_dynmdl_prepare_internal_dyn", (DL_FUNC) &_dynmdl_prepare_internal_dyn, 4},
+    {"_dynmdl_prepare_internal_dyn", (DL_FUNC) &_dynmdl_prepare_internal_dyn, 6},
     {"_dynmdl_get_residuals_dyn", (DL_FUNC) &_dynmdl_get_residuals_dyn, 7},
     {"_dynmdl_get_triplet_jac_dyn", (DL_FUNC) &_dynmdl_get_triplet_jac_dyn, 8},
     {"_dynmdl_get_jac_dyn", (DL_FUNC) &_dynmdl_get_jac_dyn, 4},

@@ -8,11 +8,13 @@ using namespace std;
 
 // [[Rcpp::export]]
 void prepare_internal_dyn(int model_index, NumericVector exos, int nrow_exo,
-                          NumericVector params) {
+                          NumericVector params, int per_freq,
+                          int first_per_subp_count) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
     mdl->set_param(REAL(params));
     mdl->set_exo(REAL(exos), nrow_exo);
+    mdl->set_period_info(per_freq, first_per_subp_count);
 }
 
 // [[Rcpp::export]]

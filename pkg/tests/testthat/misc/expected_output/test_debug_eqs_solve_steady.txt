@@ -1,0 +1,2 @@
+[1] "Numerical problem in eq. 1: division by 0"
+[2] "Numerical problem in eq. 2: log(0)"       
