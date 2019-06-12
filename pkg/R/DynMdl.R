@@ -654,7 +654,7 @@ DynMdl <- R6Class("DynMdl",
     solve = function(control = list(), force_stacked_time = FALSE,
                      solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
-                     ...) {
+                     homotopy = FALSE, ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       
@@ -673,6 +673,8 @@ DynMdl <- R6Class("DynMdl",
       }
       control_[names(control)] <- control
       
+      silent <- !is.null(control_$silent) && control_$silent
+      
       private$prepare_dynamic_model()
       
       stacked_time <- private$mdldef$max_endo_lead > 0 || force_stacked_time   
@@ -684,22 +686,92 @@ DynMdl <- R6Class("DynMdl",
         nper <- nperiod(private$model_period)
         lags <- private$get_endo_lags()
         leads <- private$get_endo_leads()
-        x <- private$get_solve_endo()
+        endos <- private$get_solve_endo()
         
-        if (solver == "umfpackr") {
-          ret <- umf_solve_nl(x, private$get_residuals,
-                              private$get_jac, lags = lags,
-                              leads = leads, nper = nper,
-                              control = control_, debug_eqs = debug_eqs, ...)
-        } else if (solver == "nleqslv") {
-          jac_fun <- function(x, lags, leads, nper) {
-            return(as(private$get_jac(x, lags, leads, nper), "matrix"))
+        
+        ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
+                                          leads = leads, solver = solver, 
+                                          control = control_, 
+                                          debug_eqs = debug_eqs, ...)  
+        
+        if (!ret$solved && homotopy) {
+          if (!silent) cat("\n+++++++++++HOMOTOPY++++++++++++++\n") 
+          endo_steady <- matrix(rep(private$mdldef$endos, nper), nrow = nper) 
+          if (!is.null(lags)) {
+            nlag <- ncol(lags)
+            lags_steady <- matrix(rep(private$mdldef$endos, nlag), ncol = nlag)
           }
-          ret <- nleqslv(x, fn = private$get_residuals, jac = jac_fun, 
-                         method = "Newton", lags = lags, leads = leads, 
-                         nper = nper, control = control_, debug_eqs = debug_eqs,
-                         ...)
-          ret$solved <- ret$termcd == 1
+          if (!is.null(leads)) {
+            nlead <- ncol(leads)
+            leads_steady <- matrix(rep(private$mdldef$endos, nlead), 
+                                   ncol = nlead)
+          }
+          exo_sim <- private$exo_data
+          lags_sim <- lags
+          leads_sim <- leads
+          
+          if (private$mdldef$exo_count > 0) {
+            exo_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
+            colnames(exo_mat) <- private$exo_names
+          } else {
+            exo_mat <- matrix(NA_real_, nrow = nper, ncol = 0)
+          }
+          exo_data_steady <- regts(exo_mat, period = private$data_period)
+          
+          if (isTRUE(all.equal(endos, endo_steady))) {
+            step <- 0.5
+          } else {
+            step <- 1 # start with full step, but now with endos at steady state
+          }
+          lambda_prev <- 0
+          iteration <- 0
+          success_counter <- 0
+          while (step > 0.1) {
+            iteration <- iteration + 1
+            lambda <- lambda_prev + step
+            if (lambda >= 1) {
+              lambda <- 1
+              step <- lambda - lambda_prev
+            }
+            
+            private$exo_data <- exo_sim * lambda + exo_data_steady * (1 - lambda)
+            lags <- lags_sim * lambda + lags_steady * (1 - lambda)
+            leads <- leads_sim * lambda + leads_steady * (1 - lambda)
+   
+            if (iteration == 1) {
+              endos <- endo_steady
+            }
+            saved_endo <- endos
+            ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
+                                             leads = leads, solver = solver, 
+                                             control = control_, 
+                                             debug_eqs = debug_eqs, ...)
+            if (ret$solved) {
+              lambda_prev <- lambda
+              succes_counter <- success_counter + 1
+              if (success_counter >= 3) {
+                step <- step * 2
+                success_counter <- 0
+              }
+              if (lambda == 1) {
+                if (!silent) cat("\n+++++++++++ HOMOTOPY SUCCESFULL ++++++++++++++\n") 
+                break
+              }
+              if (!silent) {
+                cat(sprintf("\n\n+++ homotopy step succesfull +++ iteration =  %d lamda =  %g\n\n", iteration, lambda))
+              }
+            } else {
+              # failure, step back
+              endos <- saved_endo
+              success_counter <- 0
+              step <- step / 2
+              if (!silent) {
+                cat(sprintf("\n\n+++ homotopy step failed ++++ iteration = %d lambda = %g\n\n", iteration, lambda))
+              }
+            }
+          }
+          # restore original exo_data
+          private$exo_data <- exo_sim
         }
         
       } else {
@@ -1014,6 +1086,9 @@ DynMdl <- R6Class("DynMdl",
     res = numeric(),
     solve_status = NA_character_,
     
+   
+    
+    
     get_names_ = function(type, names, pattern,
                           name_err = c("stop", "warn", "silent")) {
       
@@ -1290,6 +1365,19 @@ DynMdl <- R6Class("DynMdl",
       } else  { 
         private$exo_data[period, names] <- data
       }
+    },
+    solve_stacked_time = function(endos, solver, ...) {
+      if (solver == "umfpackr") {
+        ret <- umf_solve_nl(endos, private$get_residuals, private$get_jac, ...)
+      } else if (solver == "nleqslv") {
+        jac_fun <- function(endos, lags, leads, nper) {
+          return(as(private$get_jac(endos, lags, leads, nper), "matrix"))
+        }
+        ret <- nleqslv(endos, fn = private$get_residuals, jac = jac_fun, 
+                       method = "Newton",  ...)
+        ret$solved <- ret$termcd == 1
+      }
+      return(ret)
     },
     check_change_growth_exos = function(names) {
       growth_exos <- intersect(names, private$mdldef$trend_info$growth_exos)
