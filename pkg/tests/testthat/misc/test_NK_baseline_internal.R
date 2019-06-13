@@ -155,4 +155,8 @@ test_that("homotopy", {
   report <- gsub("\\d+ iterations", "XXX iterations", report)
   expect_known_value(report, "expected_output/NK_baseline_homotopy_report.rds")
   expect_equal(mdl2$get_solve_status(), "OK")
+  
+  #print(tsdif(mdl$get_endo_data(), mdl2$get_endo_data(), fun = cvgdif, tol = 1e-1))
+  #plot(mdl$get_endo_data(names = "f"))
+  #lines(mdl2$get_endo_data(names = "f"), col = "red")
 })
