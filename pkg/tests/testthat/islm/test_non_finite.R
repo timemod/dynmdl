@@ -15,7 +15,8 @@ test_that("single period", {
               "\\(starting at index=1\\)")
   expect_silent(expect_warning(mdl$solve(control = list(silent = TRUE)), 
                                      msg))
-  expect_known_output(expect_warning(mdl$solve(control = list(silent = FALSE)), 
+  expect_known_output(expect_warning(mdl$solve(control = list(silent = FALSE), 
+                                               homotopy = FALSE), 
                                msg),
                       file = "expected_output/non_finite1.txt")
 })

@@ -654,7 +654,7 @@ DynMdl <- R6Class("DynMdl",
     solve = function(control = list(), force_stacked_time = FALSE,
                      solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
-                     homotopy = FALSE, ...) {
+                     homotopy, ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       
@@ -681,6 +681,8 @@ DynMdl <- R6Class("DynMdl",
       
       if (stacked_time) {
         
+        if (missing(homotopy)) homotopy <- TRUE
+        
         # preparations
      
         nper <- nperiod(private$model_period)
@@ -688,93 +690,140 @@ DynMdl <- R6Class("DynMdl",
         leads <- private$get_endo_leads()
         endos <- private$get_solve_endo()
         
-        
         ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
                                           leads = leads, solver = solver, 
                                           control = control_, 
                                           debug_eqs = debug_eqs, ...)  
+        endos_result <- ret$x
+        solved <- ret$solved
+        message <- ret$message
         
         if (!ret$solved && homotopy) {
-          if (!silent) cat("\n+++++++++++HOMOTOPY++++++++++++++\n") 
-          endo_steady <- matrix(rep(private$mdldef$endos, nper), nrow = nper) 
-          if (!is.null(lags)) {
+          if (!silent) cat("\n+++++++++++ HOMOTOPY++++++++++++++\n")
+          
+          # create endogenous variables in solution period 
+          endos_steady <- matrix(rep(private$mdldef$endos, nper), ncol = nper)
+          
+          # also create steady-state lags and leads
+          has_lags <- !is.null(lags)
+          has_leads <- !is.null(leads)
+          
+          if (has_lags) {
             nlag <- ncol(lags)
             lags_steady <- matrix(rep(private$mdldef$endos, nlag), ncol = nlag)
           }
-          if (!is.null(leads)) {
+          if (has_leads) {
             nlead <- ncol(leads)
             leads_steady <- matrix(rep(private$mdldef$endos, nlead), 
                                    ncol = nlead)
           }
+          
+          # create steady state exogenous variables
+          has_exos <- private$mdldef$exo_count > 0
+          if (has_exos) {
+            exo_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
+            colnames(exo_mat) <- private$exo_names
+            exos_steady <- regts(exo_mat, period = private$data_period)
+          } else {
+            exos_steady <- private$exo_data
+          }
+          
+          # save exos/lags/leads needed in the simulation
           exo_sim <- private$exo_data
           lags_sim <- lags
           leads_sim <- leads
           
-          if (private$mdldef$exo_count > 0) {
-            exo_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
-            colnames(exo_mat) <- private$exo_names
-          } else {
-            exo_mat <- matrix(NA_real_, nrow = nper, ncol = 0)
-          }
-          exo_data_steady <- regts(exo_mat, period = private$data_period)
-          
-          if (isTRUE(all.equal(endos, endo_steady))) {
+          if (isTRUE(all.equal(endos, endos_steady, check.attributes = FALSE,
+                               tolerance = 1e-4))) {
+            # if endogenous variables at steady state, try half the values of
+            # exogenous variables and lags/leads
             step <- 0.5
           } else {
-            step <- 1 # start with full step, but now with endos at steady state
+            step <- 1 # try solving with original exos/lags/leads, but with 
+                      # endos at steady state
+            endos <- endos_steady
           }
           lambda_prev <- 0
           iteration <- 0
           success_counter <- 0
-          while (step > 0.1) {
+          while (TRUE) {
+            if (step < 0.1) {
+              # minimum homotopy step size of 0.1 seems reasonable
+              if (!silent) {
+                cat(paste("\n+++++++++++ HOMOTOPY FAILED (final step size <",
+                            "0.1) ++++++++++++++\n\n"))
+              }
+              break
+            }
             iteration <- iteration + 1
             lambda <- lambda_prev + step
             if (lambda >= 1) {
+              # make sure that lambda does not exceed the target
               lambda <- 1
               step <- lambda - lambda_prev
             }
             
-            private$exo_data <- exo_sim * lambda + exo_data_steady * (1 - lambda)
-            lags <- lags_sim * lambda + lags_steady * (1 - lambda)
-            leads <- leads_sim * lambda + leads_steady * (1 - lambda)
+            if (has_exos) private$exo_data <- exo_sim * lambda + 
+                                                exos_steady * (1 - lambda)
+            if (has_lags) lags <- lags_sim * lambda + 
+                                               lags_steady * (1 - lambda)
+            if (has_leads) leads <- leads_sim * lambda + 
+                                      leads_steady * (1 - lambda)
    
-            if (iteration == 1) {
-              endos <- endo_steady
+            if (private$calc == "internal") {
+              internal_dyn_set_exo(private$mdldef$model_index, private$exo_data,
+                                   nrow(private$exo_data))
             }
-            saved_endo <- endos
+            
             ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
                                              leads = leads, solver = solver, 
                                              control = control_, 
                                              debug_eqs = debug_eqs, ...)
             if (ret$solved) {
+              if (!silent) {
+                cat(sprintf(paste("\n\n---> homotopy step succesfull",
+                                  "iteration =  %d lambda =  %g\n\n"), 
+                            iteration, lambda))
+              }
+              if (lambda == 1) {
+                if (!silent) {
+                  cat("\n+++++++++++ HOMOTOPY SUCCESFULL ++++++++++++++\n") 
+                }
+                endos_result <- ret$x
+                solved <- TRUE
+                message <- "ok"
+                break
+              }
               lambda_prev <- lambda
               succes_counter <- success_counter + 1
               if (success_counter >= 3) {
                 step <- step * 2
                 success_counter <- 0
               }
-              if (lambda == 1) {
-                if (!silent) cat("\n+++++++++++ HOMOTOPY SUCCESFULL ++++++++++++++\n") 
-                break
-              }
-              if (!silent) {
-                cat(sprintf("\n\n+++ homotopy step succesfull +++ iteration =  %d lamda =  %g\n\n", iteration, lambda))
-              }
+              endos <- ret$x
             } else {
               # failure, step back
-              endos <- saved_endo
               success_counter <- 0
               step <- step / 2
               if (!silent) {
-                cat(sprintf("\n\n+++ homotopy step failed ++++ iteration = %d lambda = %g\n\n", iteration, lambda))
+                cat(sprintf(paste("\n\n---> homotopy step failed",
+                                  "iteration = %d lambda = %g\n\n"), 
+                            iteration, lambda))
               }
             }
           }
+          
           # restore original exo_data
           private$exo_data <- exo_sim
         }
         
       } else {
+        
+        # backward looking 
+    
+        if (!missing(homotopy) && homotopy) {
+          warning("homotopy not yet implemented for backward models")
+        }
         ret <- solve_backward_model(private$mdldef, private$calc,
                                     private$model_period, private$data_period,
                                     private$endo_data, private$exo_data, 
@@ -782,25 +831,29 @@ DynMdl <- R6Class("DynMdl",
                                     control = control_, solver = solver,
                                     start_option = start, debug_eqs = debug_eqs,
                                     ...)
+        endos_result <- ret$x
+        solved <- ret$solved
+        message <- ret$message
       }
 
       
       private$clean_dynamic_model()
       
       # update data with new iterate
-      endo_data <- regts(t(matrix(ret$x, nrow = private$mdldef$endo_count)),
-                           period = private$model_period, 
-                         names = private$endo_names)
+      endo_data <- regts(t(matrix(endos_result, 
+                                  nrow = private$mdldef$endo_count)),
+                                  period = private$model_period, 
+                                  names = private$endo_names)
       private$endo_data[private$model_period, ] <- endo_data
       
       if ((is.null(control$silent) || !control$silent) && stacked_time && 
-          grepl("non-finite value", ret$message)) {
+          grepl("non-finite value", message)) {
         report_non_finite_residuals(self)
       }
       
-      if (!ret$solved) {
+      if (!solved) {
         private$solve_status <- "ERROR"
-        warning(paste0("Model solving not succesful.\n", ret$message))
+        warning(paste0("Model solving not succesful.\n", message))
       } else {
         private$solve_status <- "OK"
       }

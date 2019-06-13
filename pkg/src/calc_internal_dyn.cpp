@@ -17,6 +17,14 @@ void prepare_internal_dyn(int model_index, NumericVector exos, int nrow_exo,
     mdl->set_period_info(per_freq, first_per_subp_count);
 }
 
+
+// [[Rcpp::export]]
+void internal_dyn_set_exo(int model_index, NumericVector exos, int nrow_exo) {
+    PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
+    mdl->set_exo(REAL(exos), nrow_exo);
+}
+
+
 // [[Rcpp::export]]
 NumericVector get_residuals_dyn(int model_index, NumericVector endos, 
                                 NumericVector icols, int n_endo, int nper,

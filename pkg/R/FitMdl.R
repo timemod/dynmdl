@@ -223,8 +223,11 @@ FitMdl <- R6Class("FitMdl",
       ser$fit_info <- NULL
       return(super$deserialize(ser, dll_dir))
     },
-    solve = function(...) {
+    solve = function(homotopy = FALSE, ...) {
       
+      if (homotopy) {
+        stop("homotopy not yet implemented for FitMdl")
+      }
       mp <- private$model_period
       
       fit_switches <- private$exo_data[mp, private$fit_info$fit_vars, 
@@ -255,7 +258,7 @@ FitMdl <- R6Class("FitMdl",
          private$endo_data[ , private$fit_info$instruments] 
       
 
-      return(super$solve(...))
+      return(super$solve(homotopy = homotopy, ...))
     },
     residual_check = function(tol, include_fit_eqs = FALSE, ...) {
       
