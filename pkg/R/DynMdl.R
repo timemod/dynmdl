@@ -699,7 +699,7 @@ DynMdl <- R6Class("DynMdl",
         message <- ret$message
         
         if (!ret$solved && homotopy) {
-          if (!silent) cat("\n+++++++++++ HOMOTOPY++++++++++++++\n")
+          if (!silent) cat("\n+++++++++++ HOMOTOPY++++++++++++++\n\n")
           
           # create endogenous variables in solution period 
           endos_steady <- matrix(rep(private$mdldef$endos, nper), ncol = nper)
@@ -781,13 +781,13 @@ DynMdl <- R6Class("DynMdl",
                                              debug_eqs = debug_eqs, ...)
             if (ret$solved) {
               if (!silent) {
-                cat(sprintf(paste("\n\n---> homotopy step succesfull",
+                cat(sprintf(paste("\n---> homotopy step succesfull",
                                   "iteration =  %d lambda =  %g\n\n"), 
                             iteration, lambda))
               }
               if (lambda == 1) {
                 if (!silent) {
-                  cat("\n+++++++++++ HOMOTOPY SUCCESFULL ++++++++++++++\n") 
+                  cat("+++++++++++ HOMOTOPY SUCCESFULL ++++++++++++++\n") 
                 }
                 endos_result <- ret$x
                 solved <- TRUE
@@ -806,7 +806,7 @@ DynMdl <- R6Class("DynMdl",
               success_counter <- 0
               step <- step / 2
               if (!silent) {
-                cat(sprintf(paste("\n\n---> homotopy step failed",
+                cat(sprintf(paste("\n---> homotopy step failed",
                                   "iteration = %d lambda = %g\n\n"), 
                             iteration, lambda))
               }

@@ -1,23 +1,20 @@
 Initial value of function contains non-finite values (starting at index=1)
 
 +++++++++++ HOMOTOPY++++++++++++++
-Initial value of function contains non-finite values (starting at index=1)
 
+Initial value of function contains non-finite values (starting at index=1)
 
 ---> homotopy step failed iteration = 1 lambda = 1
 
 Initial value of function contains non-finite values (starting at index=1)
 
-
 ---> homotopy step failed iteration = 2 lambda = 0.5
 
 Initial value of function contains non-finite values (starting at index=1)
 
-
 ---> homotopy step failed iteration = 3 lambda = 0.25
 
 Initial value of function contains non-finite values (starting at index=1)
-
 
 ---> homotopy step failed iteration = 4 lambda = 0.125
 

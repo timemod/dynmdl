@@ -136,3 +136,23 @@ test_that("get_names", {
                       "expected_output/NK_baseline_par_names.rds")
 })
 
+
+test_that("homotopy", {
+  mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
+  p <- start_period(model_period)
+  mdl2$set_exo_values(7, names = "epsd", period = p);
+  expect_warning(mdl2$solve(control = list(silent = TRUE, trace = FALSE), 
+                            homotopy = FALSE))
+  expect_equal(mdl2$get_solve_status(), "ERROR")
+  expect_silent(mdl2$solve(control = list(silent = TRUE, trace = FALSE)))
+  expect_equal(mdl2$get_solve_status(), "OK")
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
+  
+  mdl2$put_static_endos()
+  report <- capture_output(mdl2$solve(control = list(silent = FALSE, 
+                                                     trace = FALSE)))
+  report <- gsub("\\d+ iterations", "XXX iterations", report)
+  expect_known_value(report, "expected_output/NK_baseline_homotopy_report.rds")
+  expect_equal(mdl2$get_solve_status(), "OK")
+})
