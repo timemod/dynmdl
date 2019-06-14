@@ -780,19 +780,21 @@ DynMdl <- R6Class("DynMdl",
                                              control = control_, 
                                              debug_eqs = debug_eqs, ...)
             if (ret$solved) {
-              if (!silent) {
-                cat(sprintf(paste("\n---> homotopy step succesfull",
-                                  "iteration =  %d lambda =  %g\n\n"), 
-                            iteration, lambda))
-              }
               if (lambda == 1) {
                 if (!silent) {
-                  cat("+++++++++++ HOMOTOPY SUCCESFULL ++++++++++++++\n") 
+                  cat(sprintf(paste("\n+++++++++++ HOMOTOPY SUCCESFUL after %d",
+                                    "iterations++++++++++++++\n"), iteration))
                 }
                 endos_result <- ret$x
                 solved <- TRUE
                 message <- "ok"
                 break
+              }
+              if (!silent) {
+                cat(sprintf(paste0("\n---> homotopy step succesfull",
+                                  " iteration = %d, lambda = %g",
+                                  ", next step = %g\n\n"), 
+                            iteration, lambda, step))
               }
               lambda_prev <- lambda
               succes_counter <- success_counter + 1
@@ -806,9 +808,10 @@ DynMdl <- R6Class("DynMdl",
               success_counter <- 0
               step <- step / 2
               if (!silent) {
-                cat(sprintf(paste("\n---> homotopy step failed",
-                                  "iteration = %d lambda = %g\n\n"), 
-                            iteration, lambda))
+                cat(sprintf(paste0("\n---> homotopy step failed",
+                                  " iteration = %d, lambda = %g",
+                                  ", next step = %g\n\n"), 
+                            iteration, lambda, step))
               }
             }
           }

@@ -249,6 +249,8 @@ FitMdl <- R6Class("FitMdl",
                        n_fit_targets, n_sigmas))
         }
         
+        # make endo data equal to fit result
+        # TODO: is this necessary? mayb not
         private$endo_data[mp, private$fit_info$orig_endos][fit_sel] <-
           private$exo_data[mp, private$fit_info$exo_vars][fit_sel]
       }
@@ -374,37 +376,27 @@ FitMdl <- R6Class("FitMdl",
                                    nrow(private$exo_data))
             }
             
-            # make the endogenous variablkes equal to current exo_data
-            sel <-private$exo_data[mp , private$fit_info$fit_vars[is_fit_var], 
-                                   drop = FALSE] > 0
-            #printobj(sel)
-            #printobj(t(sel))
-            #printobj(as.numeric(sel))
-            #endos[private$fit_info$orig_endos[is_fit_var], ][t(sel)] <- 
-            #    private$exo_data[mp , private$fit_info$exo_vars[is_fit_var]]
-            
-            printobj(private$exo_data[ , var_exo_names])
-            printobj(endos[private$fit_info$orig_endos[is_fit_var], ])
-      
-      
             ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
                                               leads = leads, solver = solver, 
                                               control = control_, 
                                               debug_eqs = debug_eqs, ...)
             if (ret$solved) {
-              if (!silent) {
-                cat(sprintf(paste("\n---> homotopy step succesfull",
-                                  "iteration =  %d lambda =  %g\n\n"), 
-                            iteration, lambda))
-              }
+            
               if (lambda == 1) {
                 if (!silent) {
-                  cat("+++++++++++ HOMOTOPY SUCCESFULL ++++++++++++++\n") 
+                  cat(sprintf(paste("\n+++++++++++ HOMOTOPY SUCCESFUL after %d",
+                              "iterations++++++++++++++\n"), iteration)) 
                 }
                 endos_result <- ret$x
                 solved <- TRUE
                 message <- "ok"
                 break
+              }
+              if (!silent) {
+                cat(sprintf(paste0("\n---> homotopy step succesfull",
+                                  " iteration = %d, lambda = %g",
+                                  ", next step = %g\n\n"), 
+                            iteration, lambda, step))
               }
               lambda_prev <- lambda
               succes_counter <- success_counter + 1
@@ -418,9 +410,10 @@ FitMdl <- R6Class("FitMdl",
               success_counter <- 0
               step <- step / 2
               if (!silent) {
-                cat(sprintf(paste("\n---> homotopy step failed",
-                                  "iteration = %d lambda = %g\n\n"), 
-                            iteration, lambda))
+                cat(sprintf(paste0("\n---> homotopy step failed",
+                                  " iteration = %d, lambda = %g",
+                                  ", next step = %g\n\n"), 
+                            iteration, lambda, step))
               }
             }
           }

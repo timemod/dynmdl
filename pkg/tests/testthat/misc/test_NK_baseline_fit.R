@@ -23,12 +23,12 @@ report <- capture_output({
 })
 mdl$set_period(model_period)
 
-#dynare_result <- read_dynare_result(model_name, mdl)
+dynare_result <- read_dynare_result(model_name, mdl)
 
 test_that("solve_steady", {
   mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
   mdl$put_static_endos()
-  #expect_equal(mdl$get_static_endos(), dynare_result$steady)
+  expect_equal(mdl$get_static_endos(), dynare_result$steady)
 })
 
 
@@ -45,7 +45,7 @@ test_that("solve with disabled fit procedure", {
   })
   mdl2$solve(control = list(silent = TRUE, trace = FALSE))
   
-  #expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
+  expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })
 
 test_that("solve with fit procedure but without fit targets", {
@@ -64,18 +64,50 @@ test_that("solve with fit procedure but without fit targets", {
 })
 
 
-test_that("solve with fit procedure and fit targets", {
-  mdl2 <- mdl$clone()
-  mdl2$set_fit_values(2, names = "f", period = "2015/2018")
-  mdl2$set_fit_values(0.98, names = "R", period = "2015")
-  mdl2$serialize()$mdldef$exos
-  mdl2$solve(control = list(silent = FALSE, trace = TRUE), homotopy = TRUE)
-  #mdl2$solve(control = list(silent = FALSE, trace = TRUE), homotopy = FALSE)
-  # the model should converge back to the steady state result
-  plot(mdl2$get_fit_instruments())
-  plot(mdl2$get_endo_data(names = "f"))
+test_that("solve with fit procedure (1 target)", {
+  mdl2 <- mdl$copy()
+  fit_per <- period_range("2015/2018")
+  mdl2$set_fit_values(5, names = "f", period = fit_per)
 
-  print(mdl2$get_endo_data(names = "R"))
+  report <- capture_output(mdl2$solve(control = list(silent = FALSE, 
+                                                     trace = FALSE)))
+  report <- gsub("\\d+ iterations", "XXX iterations", report)
+  expect_known_value(report, 
+                     "expected_output/NK_baseline_fit_homotopy_report.rds")
+  expect_equal(mdl2$get_solve_status(), "OK")
+ 
   
-  # TODO: compare with DYnare result?
+  expect_equal(mdl2$get_endo_data(names = "f", period = fit_per),
+               regts(matrix(5, nrow = 4), period = fit_per, names = "f"),
+               check.attributes = FALSE)
 })
+
+
+test_that("solve with fit procedure (2 targets)", {
+  
+  mdl2 <- mdl$clone()
+  
+  fit_per1 <- period_range("2015/2018")
+  fit_per2 <- period_range(2015, 2015)
+  mdl2$set_fit_values(5, names = "f", period = fit_per1)
+  mdl2$set_fit_values(0.91234, names = "u", period = fit_per2)
+  
+  # first solve without homotopy -> should fail
+  expect_warning(mdl2$solve(control = list(silent = TRUE, trace = FALSE), 
+                            homotopy = FALSE))
+  expect_equal(mdl2$get_solve_status(), "ERROR")
+ 
+
+  expect_silent(mdl2$solve(control = list(silent = TRUE)))
+  expect_equal(mdl2$get_solve_status(), "OK")
+  expect_output(mdl$solve(), "Convergence after 0 iterations")
+  
+  
+  expect_equal(mdl2$get_endo_data(names = "f", period = fit_per1),
+               regts(matrix(5, nrow = 4), period = fit_per1, names = "f"),
+               check.attributes = FALSE)
+  expect_equal(mdl2$get_endo_data(names = "u", period = fit_per2),
+               regts(matrix(0.91234, nrow = 1), period = fit_per2, names = "u"),
+               check.attributes = FALSE)
+})
+
