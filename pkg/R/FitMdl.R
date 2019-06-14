@@ -244,8 +244,7 @@ FitMdl <- R6Class("FitMdl",
                        n_fit_targets, n_sigmas))
         }
         
-        # make endo data equal to fit result
-        # TODO: is this necessary? mayb not
+        # make endo data equal to fit result.
         private$endo_data[mp, private$fit_info$orig_endos][fit_sel] <-
           private$exo_data[mp, private$fit_info$exo_vars][fit_sel]
       }
@@ -254,7 +253,7 @@ FitMdl <- R6Class("FitMdl",
       # fit instruments (instruments with sigma < 0), so that the
       # sigmas do not change.
       private$exo_data[ , private$fit_info$old_instruments] <-
-         private$endo_data[ , private$fit_info$instruments] 
+                 private$endo_data[ , private$fit_info$instruments] 
       
       
       return(super$solve(...))
