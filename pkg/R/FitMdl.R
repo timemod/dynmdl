@@ -223,13 +223,8 @@ FitMdl <- R6Class("FitMdl",
       ser$fit_info <- NULL
       return(super$deserialize(ser, dll_dir))
     },
-    solve = function(control = list(), force_stacked_time = FALSE,
-                     solver = c("umfpackr", "nleqslv"),  
-                     start = c("current", "previous"), debug_eqs = FALSE, 
-                     homotopy, ...) {
-      if (is.null(private$model_period)) stop(private$period_error_msg)
-      private$check_debug_eqs(debug_eqs)
-      
+    solve = function(...) {
+ 
       mp <- private$model_period
       
       fit_switches <- private$exo_data[mp, private$fit_info$fit_vars, 
@@ -262,207 +257,7 @@ FitMdl <- R6Class("FitMdl",
          private$endo_data[ , private$fit_info$instruments] 
       
       
-      # TODO: there is a lot of duplicate code in solve for DynMdl.
-      # The separate code is needed for a special treatment of the 
-      # homotopy for fit models. Check if it is possible to
-      # reorganize the code.
-      solver <- match.arg(solver)
-      start <- match.arg(start)
-      
-      control_ <- list(ftol = 1e-8, trace = FALSE, cndtol = 1e-12, 
-                       silent = FALSE)
-      if (solver == "umfpackr")  {
-        control_$maxiter <- 20
-      } else {
-        control_$maxit <- 20
-        control_$silent <- NULL
-      }
-      control_[names(control)] <- control
-      
-      silent <- !is.null(control_$silent) && control_$silent
-      
-      private$prepare_dynamic_model()
-      
-      stacked_time <- private$mdldef$max_endo_lead > 0 || force_stacked_time   
-      
-      if (stacked_time) {
-        
-        if (missing(homotopy)) homotopy <- TRUE
-        
-        # preparations
-        
-        nper <- nperiod(private$model_period)
-        lags <- private$get_endo_lags()
-        leads <- private$get_endo_leads()
-        endos <- private$get_solve_endo()
-        
-        ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
-                                          leads = leads, solver = solver, 
-                                          control = control_, 
-                                          debug_eqs = debug_eqs, ...)  
-        endos_result <- ret$x
-        solved <- ret$solved
-        message <- ret$message
-        
-        if (!ret$solved && homotopy) {
-          if (!silent) cat("\n+++++++++++ HOMOTOPY (fit version) +++++++++\n\n")
-          
-          # create endogenous variables in solution period 
-          endos_steady <- matrix(rep(private$mdldef$endos, nper), ncol = nper)
-          
-          # also create steady-state lags and leads
-          has_lags <- !is.null(lags)
-          has_leads <- !is.null(leads)
-          
-          if (has_lags) {
-            nlag <- ncol(lags)
-            lags_steady <- matrix(rep(private$mdldef$endos, nlag), ncol = nlag)
-          }
-          if (has_leads) {
-            nlead <- ncol(leads)
-            leads_steady <- matrix(rep(private$mdldef$endos, nlead), 
-                                   ncol = nlead)
-          }
-          
-          # create steady state values for exogenous variables that will be
-          # tuned
-          var_exo_names <- c(private$fit_info$orig_exos, 
-                             private$fit_info$exo_vars[is_fit_var])
-          exo_mat <- matrix(rep(private$mdldef$exos[var_exo_names], 
-                                each = nper), nrow = nper)
-          colnames(exo_mat) <- var_exo_names
-          var_exos_steady <- regts(exo_mat, period = private$data_period)
-
-          # save exos/lags/leads needed in the simulation
-          exo_sim <- private$exo_data[ , var_exo_names, drop = FALSE]
-          lags_sim <- lags
-          leads_sim <- leads
-          
-          # if endogenous variables are at the steady state, try half the 
-          # values of the exogenous variables and lags/leads
-          step <- 0.5
-          endos <- endos_steady
-          rownames(endos) <- private$endo_names
-          
-          lambda_prev <- 0
-          iteration <- 0
-          success_counter <- 0
-          while (TRUE) {
-            if (step < 0.1) {
-              # minimum homotopy step size of 0.1 seems reasonable
-              if (!silent) {
-                cat(paste("\n+++++++++++ HOMOTOPY FAILED (final step size <",
-                          "0.1) ++++++++++++++\n\n"))
-              }
-              break
-            }
-            iteration <- iteration + 1
-            lambda <- lambda_prev + step
-            if (lambda >= 1) {
-              # make sure that lambda does not exceed the target
-              lambda <- 1
-              step <- lambda - lambda_prev
-            }
-            
-            private$exo_data[, var_exo_names] <- exo_sim * lambda + 
-                                            var_exos_steady * (1 - lambda)
-            if (has_lags) lags <- lags_sim * lambda + 
-               lags_steady * (1 - lambda)
-            if (has_leads) leads <- leads_sim * lambda + 
-              leads_steady * (1 - lambda)
-            
-            if (private$calc == "internal") {
-              internal_dyn_set_exo(private$mdldef$model_index, private$exo_data,
-                                   nrow(private$exo_data))
-            }
-            
-            ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
-                                              leads = leads, solver = solver, 
-                                              control = control_, 
-                                              debug_eqs = debug_eqs, ...)
-            if (ret$solved) {
-            
-              if (lambda == 1) {
-                if (!silent) {
-                  cat(sprintf(paste("\n+++++++++++ HOMOTOPY SUCCESFUL after %d",
-                              "iterations++++++++++++++\n"), iteration)) 
-                }
-                endos_result <- ret$x
-                solved <- TRUE
-                message <- "ok"
-                break
-              }
-              if (!silent) {
-                cat(sprintf(paste0("\n---> homotopy step succesfull",
-                                  " iteration = %d, lambda = %g",
-                                  ", next step = %g\n\n"), 
-                            iteration, lambda, step))
-              }
-              lambda_prev <- lambda
-              succes_counter <- success_counter + 1
-              if (success_counter >= 3) {
-                step <- step * 2
-                success_counter <- 0
-              }
-              endos <- ret$x
-            } else {
-              # failure, step back
-              success_counter <- 0
-              step <- step / 2
-              if (!silent) {
-                cat(sprintf(paste0("\n---> homotopy step failed",
-                                  " iteration = %d, lambda = %g",
-                                  ", next step = %g\n\n"), 
-                            iteration, lambda, step))
-              }
-            }
-          }
-          
-          # restore original exo_data
-          private$exo_data[, var_exo_names] <- exo_sim
-        }
-        
-      } else {
-        
-        # backward looking 
-        
-        if (!missing(homotopy) && homotopy) {
-          warning("homotopy not yet implemented for backward models")
-        }
-        ret <- solve_backward_model(private$mdldef, private$calc,
-                                    private$model_period, private$data_period,
-                                    private$endo_data, private$exo_data, 
-                                    private$f_dynamic, private$get_back_jac,
-                                    control = control_, solver = solver,
-                                    start_option = start, debug_eqs = debug_eqs,
-                                    ...)
-        endos_result <- ret$x
-        solved <- ret$solved
-        message <- ret$message
-      }
-      
-      
-      private$clean_dynamic_model()
-      
-      # update data with new iterate
-      endo_data <- regts(t(matrix(endos_result, 
-                                  nrow = private$mdldef$endo_count)),
-                         period = private$model_period, 
-                         names = private$endo_names)
-      private$endo_data[private$model_period, ] <- endo_data
-      
-      if ((is.null(control$silent) || !control$silent) && stacked_time && 
-          grepl("non-finite value", message)) {
-        report_non_finite_residuals(self)
-      }
-      
-      if (!solved) {
-        private$solve_status <- "ERROR"
-        warning(paste0("Model solving not succesful.\n", message))
-      } else {
-        private$solve_status <- "OK"
-      }
-      return(invisible(self))
+      return(super$solve(...))
     },
     residual_check = function(tol, include_fit_eqs = FALSE, ...) {
       
@@ -605,6 +400,32 @@ FitMdl <- R6Class("FitMdl",
       private$exo_data[period, exo_names] <- data
       
       return(invisible(self))
+    },
+    get_exo_info_homotopy = function(nper) {
+      # Returns a list with information about the exogenous variables needed 
+      # for solving the model with a homotopy approach.
+      
+      # For FitMdl objects, not all exogenous variables should be modified
+      # in the homotopy approach: the fit switches and _old (old fit instruments)
+      # should not be modified.
+      
+     
+      fit_sel <- private$exo_data[private$model_period, 
+                                  private$fit_info$fit_vars, drop = FALSE] == 1
+      is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
+      
+      exo_names <- c(private$fit_info$orig_exos, 
+                     private$fit_info$exo_vars[is_fit_var])
+      exo_indices <- match(exo_names, private$exo_names)
+      
+      np <- nrow(private$exo_data)
+      data_mat <- matrix(rep(private$mdldef$exos[exo_indices], each = np), 
+                         nrow = np)
+      steady_exos <- regts(data_mat, period = private$data_period, 
+                           names = exo_names)
+      
+      return(list(has_exos = TRUE, steady_exos = steady_exos, fitmdl = TRUE,
+                  exo_indices = exo_indices))
     }
   )
 )

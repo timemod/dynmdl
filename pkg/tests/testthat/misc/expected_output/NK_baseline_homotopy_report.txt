@@ -1,0 +1,31 @@
+Function value contains non-finite values (starting at index=381) at iteration 7
+
++++++++++++ HOMOTOPY ++++++++++++++
+
+Convergence after XXX iterations
+
+---> homotopy step succesfull iteration = 1, lambda = 0.5
+
+Function value contains non-finite values (starting at index=493) at iteration 4
+
+---> homotopy step failed iteration = 2, lambda = 1
+
+Function value contains non-finite values (starting at index=287) at iteration 9
+
+---> homotopy step failed iteration = 3, lambda = 0.75
+
+Convergence after XXX iterations
+
+---> homotopy step succesfull iteration = 4, lambda = 0.625
+
+Convergence after XXX iterations
+
+---> homotopy step succesfull iteration = 5, lambda = 0.75
+
+Convergence after XXX iterations
+
+---> homotopy step succesfull iteration = 6, lambda = 0.875
+
+Convergence after XXX iterations
+
++++++++++++ HOMOTOPY SUCCESFUL after 7 iterations++++++++++++++

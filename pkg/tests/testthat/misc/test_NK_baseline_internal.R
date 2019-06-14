@@ -152,8 +152,10 @@ test_that("homotopy", {
   mdl2$put_static_endos()
   report <- capture_output(mdl2$solve(control = list(silent = FALSE, 
                                                      trace = FALSE)))
-  report <- gsub("\\d+ iterations", "XXX iterations", report)
-  expect_known_value(report, "expected_output/NK_baseline_homotopy_report.rds")
+  report <- gsub("Convergence after \\d+ iterations", 
+                 "Convergence after XXX iterations", report)
+  expect_known_output(cat(report), 
+                      "expected_output/NK_baseline_homotopy_report.txt")
   expect_equal(mdl2$get_solve_status(), "OK")
   
   #print(tsdif(mdl$get_endo_data(), mdl2$get_endo_data(), fun = cvgdif, tol = 1e-1))

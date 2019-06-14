@@ -699,7 +699,7 @@ DynMdl <- R6Class("DynMdl",
         message <- ret$message
         
         if (!ret$solved && homotopy) {
-          if (!silent) cat("\n+++++++++++ HOMOTOPY++++++++++++++\n\n")
+          if (!silent) cat("\n+++++++++++ HOMOTOPY ++++++++++++++\n\n")
           
           # create endogenous variables in solution period 
           endos_steady <- matrix(rep(private$mdldef$endos, nper), ncol = nper)
@@ -719,30 +719,31 @@ DynMdl <- R6Class("DynMdl",
           }
           
           # create steady state exogenous variables
-          has_exos <- private$mdldef$exo_count > 0
-          if (has_exos) {
-            exo_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
-            colnames(exo_mat) <- private$exo_names
-            exos_steady <- regts(exo_mat, period = private$data_period)
-          } else {
-            exos_steady <- private$exo_data
-          }
+          exo_info <- private$get_exo_info_homotopy(nper)
           
           # save exos/lags/leads needed in the simulation
-          exo_sim <- private$exo_data
+          if (exo_info$has_exos) {
+            if (!exo_info$fitmdl) {
+              exo_sim <- private$exo_data
+            } else {
+              exo_sim <- private$exo_data[ , exo_info$exo_indices, drop = FALSE]
+            }
+          }
           lags_sim <- lags
           leads_sim <- leads
+          endos <- endos_steady
           
-          if (isTRUE(all.equal(endos, endos_steady, check.attributes = FALSE,
-                               tolerance = 1e-4))) {
+          if (exo_info$fitmdl || isTRUE(all.equal(endos, endos_steady, 
+                                                    check.attributes = FALSE,
+                                    tolerance = 1e-4))) {
             # if endogenous variables at steady state, try half the values of
             # exogenous variables and lags/leads
             step <- 0.5
           } else {
             step <- 1 # try solving with original exos/lags/leads, but with 
                       # endos at steady state
-            endos <- endos_steady
           }
+         
           lambda_prev <- 0
           iteration <- 0
           success_counter <- 0
@@ -763,12 +764,21 @@ DynMdl <- R6Class("DynMdl",
               step <- lambda - lambda_prev
             }
             
-            if (has_exos) private$exo_data <- exo_sim * lambda + 
-                                                exos_steady * (1 - lambda)
+            if (exo_info$has_exos) {
+              if (!exo_info$fitmdl) {
+                private$exo_data <- exo_sim * lambda + 
+                                      exo_info$steady_exos * (1 - lambda)
+              } else {
+                private$exo_data[ , exo_info$exo_indices] <- exo_sim * lambda + 
+                                           exo_info$steady_exos * (1 - lambda)
+              }
+            }
+            
             if (has_lags) lags <- lags_sim * lambda + 
                                                lags_steady * (1 - lambda)
+            
             if (has_leads) leads <- leads_sim * lambda + 
-                                      leads_steady * (1 - lambda)
+                                              leads_steady * (1 - lambda)
    
             if (private$calc == "internal") {
               internal_dyn_set_exo(private$mdldef$model_index, private$exo_data,
@@ -776,9 +786,9 @@ DynMdl <- R6Class("DynMdl",
             }
             
             ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
-                                             leads = leads, solver = solver, 
-                                             control = control_, 
-                                             debug_eqs = debug_eqs, ...)
+                                              leads = leads, solver = solver, 
+                                              control = control_, 
+                                              debug_eqs = debug_eqs, ...)
             if (ret$solved) {
               if (lambda == 1) {
                 if (!silent) {
@@ -792,9 +802,8 @@ DynMdl <- R6Class("DynMdl",
               }
               if (!silent) {
                 cat(sprintf(paste0("\n---> homotopy step succesfull",
-                                  " iteration = %d, lambda = %g",
-                                  ", next step = %g\n\n"), 
-                            iteration, lambda, step))
+                                  " iteration = %d, lambda = %g\n\n"),
+                            iteration, lambda))
               }
               lambda_prev <- lambda
               succes_counter <- success_counter + 1
@@ -809,15 +818,20 @@ DynMdl <- R6Class("DynMdl",
               step <- step / 2
               if (!silent) {
                 cat(sprintf(paste0("\n---> homotopy step failed",
-                                  " iteration = %d, lambda = %g",
-                                  ", next step = %g\n\n"), 
-                            iteration, lambda, step))
+                                  " iteration = %d, lambda = %g\n\n"), 
+                            iteration, lambda))
               }
             }
           }
           
           # restore original exo_data
-          private$exo_data <- exo_sim
+          if (exo_info$has_exos) {
+            if (!exo_info$fitmdl) {
+              private$exo_data <- exo_sim
+            } else {
+              private$exo_data[ , exo_info$exo_indices] <- exo_sim
+            }
+          }
         }
         
       } else {
@@ -1434,6 +1448,21 @@ DynMdl <- R6Class("DynMdl",
         ret$solved <- ret$termcd == 1
       }
       return(ret)
+    },
+    get_exo_info_homotopy = function(nper) {
+      # Returns a list with information about the exogenous variables needed 
+      # for solving the model with a homotopy approach.
+      has_exos <- private$mdldef$exo_count > 0
+      if (has_exos) {
+        nper <- nrow(private$exo_data)
+        data_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
+        colnames(data_mat) <- private$exo_names
+        steady_exos <- regts(data_mat, period = private$data_period)
+      } else {
+        steady_exos <- NULL
+      }
+      return(list(has_exos = has_exos, fitmdl = FALSE, 
+                  steady_exos = steady_exos))
     },
     check_change_growth_exos = function(names) {
       growth_exos <- intersect(names, private$mdldef$trend_info$growth_exos)

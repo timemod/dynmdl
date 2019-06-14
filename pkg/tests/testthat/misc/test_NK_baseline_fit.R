@@ -71,9 +71,13 @@ test_that("solve with fit procedure (1 target)", {
 
   report <- capture_output(mdl2$solve(control = list(silent = FALSE, 
                                                      trace = FALSE)))
-  report <- gsub("\\d+ iterations", "XXX iterations", report)
-  expect_known_value(report, 
-                     "expected_output/NK_baseline_fit_homotopy_report.rds")
+  
+  report <- gsub("Convergence after \\d+ iterations", 
+                 "Convergence after XXX iterations", report)
+  expect_known_output(cat(report), 
+                     "expected_output/NK_baseline_fit_homotopy_report.txt")
+  
+  
   expect_equal(mdl2$get_solve_status(), "OK")
  
   
