@@ -115,7 +115,7 @@ document: install_deps
 	$(MAKE) -f Makedeps
 	-@rm -f $(PKGDIR).pdf
 	R -e "devtools::document('"$(PKGDIR)"')"
-	R CMD Rd2pdf --batch $(PKGDIR) 2>$(PKGDIR).log
+	R CMD Rd2pdf --batch $(PKGDIR) -o dynmdl.pdf 2>$(PKGDIR).log
 
 install: install_deps
 	$(MAKE) -f Makedeps
