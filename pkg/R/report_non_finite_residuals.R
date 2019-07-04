@@ -21,14 +21,24 @@ report_non_finite_residuals <- function(mdl) {
   res <- res[rowsel, , drop = FALSE]
   rownames(res) <- periods[rowsel]  
 
-  
-  na_sel <- is.na(res) & !is.nan(res)
-  res[is.finite(res)] <- NA_character_
-  res[na_sel] <- "NA"
+  is_fin <- is.finite(res)
+  is_na <- is.na(res) & !is.nan(res)
+  res[] <- as.character(res)
+  res[is_na] <- "NA"
+  res[is_fin] <- NA_character_  # do not print elements with finite values
 
   cat(paste("Non-finite values in residuals for the following equations and", 
             "periods:\n"))
-  print(res, quote = FALSE, na.print = "")
+  nr_max <- 10
+  nc_max <- 10
+  nr <- min(nrow(res), nr_max)
+  nc <- min(ncol(res), nc_max)
+  print(res[1:nr, 1:nc, drop = FALSE], quote = FALSE, na.print = "")
+  if (ncol(res) > nc_max) cat("[ -- omitted", ncol(res) - nc_max, 
+                              "columns -- ]\n")
+  if (nrow(res) > nr_max) cat("[ -- omitted", nrow(res) - nr_max, 
+                              "periods -- ]\n")
+  cat("\n")
   
   return()
 }

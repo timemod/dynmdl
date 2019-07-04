@@ -565,7 +565,7 @@ DynMdl <- R6Class("DynMdl",
       
       if (error) {
         if ((is.null(control$silent) || !control$silent) && 
-                grepl("contains non-finite value", out$message)) {
+                grepl("[Ff]unction.*contains non-finite value", out$message)) {
           res <- private$get_static_residuals(out$x, FALSE)
           names(res) <- paste("eq", seq_along(res))
           res <- res[!is.finite(res)]
@@ -864,7 +864,7 @@ DynMdl <- R6Class("DynMdl",
       private$endo_data[private$model_period, ] <- endo_data
       
       if ((is.null(control$silent) || !control$silent) && stacked_time && 
-          grepl("non-finite value", message)) {
+          grepl("[Ff]unction.*contains non-finite value", ret$message)) {
         report_non_finite_residuals(self)
       }
       
