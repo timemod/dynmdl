@@ -14,6 +14,10 @@ using std::vector;
 using std::stack;
 using std::shared_ptr;
 
+// WARNING: because of the serialization of PolishModel objects,
+// the order of the enumerations should not be modified and new 
+// ecodes should be added to the end of the list. It is also not 
+// allowed to remove an ecode from the list.
 enum ecode {
     CONST,
     ENDO,
@@ -35,7 +39,6 @@ enum ecode {
     LE,
     MAX,
     MIN,
-    LINLOG,
     EXP,
     LOG,
     SQRT,
@@ -43,10 +46,11 @@ enum ecode {
     SIGN,
     NORMCDF,
     NORMPDF,
-    LINPOW,
     EXTFUN,    // external function
     EXTFUN_DERIV, // external function with analytical numerical derivative
-    EXTFUN_NUMDERIV // external function numerical derivative
+    EXTFUN_NUMDERIV, // external function numerical derivative
+    LINLOG,
+    LINPOW
 };
 
 
