@@ -224,7 +224,7 @@ FitMdl <- R6Class("FitMdl",
       return(super$deserialize(ser, dll_dir))
     },
     solve = function(...) {
-      
+ 
       mp <- private$model_period
       
       fit_switches <- private$exo_data[mp, private$fit_info$fit_vars, 
@@ -244,6 +244,7 @@ FitMdl <- R6Class("FitMdl",
                        n_fit_targets, n_sigmas))
         }
         
+        # make endo data equal to fit result.
         private$endo_data[mp, private$fit_info$orig_endos][fit_sel] <-
           private$exo_data[mp, private$fit_info$exo_vars][fit_sel]
       }
@@ -252,9 +253,9 @@ FitMdl <- R6Class("FitMdl",
       # fit instruments (instruments with sigma < 0), so that the
       # sigmas do not change.
       private$exo_data[ , private$fit_info$old_instruments] <-
-         private$endo_data[ , private$fit_info$instruments] 
+                 private$endo_data[ , private$fit_info$instruments] 
       
-
+      
       return(super$solve(...))
     },
     residual_check = function(tol, include_fit_eqs = FALSE, ...) {
@@ -306,6 +307,12 @@ FitMdl <- R6Class("FitMdl",
                      "and lagrange multipliers are significantly different",
                      "from 0."))
         }
+        
+        # make static _exo variables equal to the corresponding static 
+        # endogenous variables
+        exo_names <- private$fit_info$exo_vars
+        endo_names <- private$fit_info$orig_endos
+        private$mdldef$exos[exo_names] <- private$mdldef$endos[endo_names]
       }
       
       return(invisible(self)) 
@@ -392,6 +399,32 @@ FitMdl <- R6Class("FitMdl",
       private$exo_data[period, exo_names] <- data
       
       return(invisible(self))
+    },
+    get_exo_info_homotopy = function(nper) {
+      # Returns a list with information about the exogenous variables needed 
+      # for solving the model with a homotopy approach.
+      
+      # For FitMdl objects, not all exogenous variables should be modified
+      # in the homotopy approach: the fit switches and _old (old fit instruments)
+      # should not be modified.
+      
+     
+      fit_sel <- private$exo_data[private$model_period, 
+                                  private$fit_info$fit_vars, drop = FALSE] == 1
+      is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
+      
+      exo_names <- c(private$fit_info$orig_exos, 
+                     private$fit_info$exo_vars[is_fit_var])
+      exo_indices <- match(exo_names, private$exo_names)
+      
+      np <- nrow(private$exo_data)
+      data_mat <- matrix(rep(private$mdldef$exos[exo_indices], each = np), 
+                         nrow = np)
+      steady_exos <- regts(data_mat, period = private$data_period, 
+                           names = exo_names)
+      
+      return(list(has_exos = TRUE, steady_exos = steady_exos, fitmdl = TRUE,
+                  exo_indices = exo_indices))
     }
   )
 )

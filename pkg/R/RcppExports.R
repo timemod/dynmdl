@@ -5,6 +5,10 @@ prepare_internal_dyn <- function(model_index, exos, nrow_exo, params, per_freq, 
     invisible(.Call(`_dynmdl_prepare_internal_dyn`, model_index, exos, nrow_exo, params, per_freq, first_per_subp_count))
 }
 
+internal_dyn_set_exo <- function(model_index, exos, nrow_exo) {
+    invisible(.Call(`_dynmdl_internal_dyn_set_exo`, model_index, exos, nrow_exo))
+}
+
 get_residuals_dyn <- function(model_index, endos, icols, n_endo, nper, period_shift, debug_eqs) {
     .Call(`_dynmdl_get_residuals_dyn`, model_index, endos, icols, n_endo, nper, period_shift, debug_eqs)
 }
