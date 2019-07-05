@@ -43,7 +43,8 @@ test_that("solve_perturb", {
   mdl2 <- mdl$clone()
   mdl2$set_data(regts(1200, period = lag_per), names = "y")
   mdl2$set_data(regts(245, period = start_period(model_period)), names = "g")
-  mdl2$solve(control = list(silent = TRUE))
+  report <- capture_output(mdl2$solve(control = list(trace = FALSE), 
+                                      solver = "nleqslv"))
   mdl3 <- mdl2$clone()
   mdl3$solve_perturbation()
   # note that the results are not exactly equal because of nonlinear terms

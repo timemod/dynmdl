@@ -66,7 +66,7 @@ FitMdl <- R6Class("FitMdl",
       private$fit_info <- fit_info
     }, 
     print = function(short = TRUE) {
-      cat("FitMdl object\n")
+      cat(paste(class(self)[1], "object\n"))
       cat("Information about the original model:\n")
       exo_count_orig  <- length(private$fit_info$orig_exos)
       endo_count_orig <- length(private$fit_info$orig_endos)

@@ -162,7 +162,7 @@ DynMdl <- R6Class("DynMdl",
       private$make_functions()
     },
     print = function(short = TRUE) {
-      cat("DynMdl object\n")
+      cat(paste(class(self)[1], "object\n"))
       private$print_info(short)
       return (invisible(NULL))
     },
@@ -1070,7 +1070,7 @@ DynMdl <- R6Class("DynMdl",
         stop(paste("It is not possible to read model files",
                    "created with dynmdl versions prior to",
                   minimal_version, "\nPlease regenerate the model with function",
-                  "dynmdl"))
+                  "dyn_mdl"))
       } 
       
       private$calc <- ser$calc
@@ -1440,8 +1440,8 @@ DynMdl <- R6Class("DynMdl",
       if (solver == "umfpackr") {
         ret <- umf_solve_nl(endos, private$get_residuals, private$get_jac, ...)
       } else if (solver == "nleqslv") {
-        jac_fun <- function(endos, lags, leads, nper) {
-          return(as(private$get_jac(endos, lags, leads, nper), "matrix"))
+        jac_fun <- function(endos, lags, leads, nper, debug_eqs) {
+          return(as(private$get_jac(endos, lags, leads, nper, debug_eqs), "matrix"))
         }
         ret <- nleqslv(endos, fn = private$get_residuals, jac = jac_fun, 
                        method = "Newton",  ...)
