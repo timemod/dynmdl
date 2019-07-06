@@ -31,9 +31,10 @@ whether the solve was successfully terminated or not.
 \item{\code{control}}{A named list of control parameters passed to function
 \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
 depending on argument \code{solver}}
-\item{\code{force_stacked_time}}{a logical. If \code{TRUE}, the the 
-model is solved using the stacked time Newton method, also for 
-purely backward looking models.}
+\item{\code{mode}}{A character specifying the solve mode. Possible values
+are \code{"stacked_time"} and \code{"backwards"}. By default, models
+with leads are solved with the stacked time method and models without leads
+are solved backwards.}
 \item{\code{solver}}{Specifies the solver employed to solve the model:
 \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
 For large model, the \code{umfpackr} solve can be much faster.}

@@ -651,7 +651,7 @@ DynMdl <- R6Class("DynMdl",
       return(residuals)
      
     },
-    solve = function(control = list(), force_stacked_time = FALSE,
+    solve = function(control = list(), mode, 
                      solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
                      homotopy, ...) {
@@ -676,9 +676,13 @@ DynMdl <- R6Class("DynMdl",
       silent <- !is.null(control_$silent) && control_$silent
       
       private$prepare_dynamic_model()
-      
-      stacked_time <- private$mdldef$max_endo_lead > 0 || force_stacked_time   
-      
+
+      if (!missing(mode)) {
+        mode <- match.arg(mode, c("stacked_time", "backwards"))
+        stacked_time <- mode == "stacked_time"
+      } else {
+        stacked_time <- private$mdldef$max_endo_lead > 0
+      }
       if (stacked_time) {
         
         if (missing(homotopy)) homotopy <- TRUE
@@ -941,9 +945,6 @@ DynMdl <- R6Class("DynMdl",
     },
     get_back_jacob = function(period, sparse = FALSE) {
       # returns the Jacobian for the backward looking model
-      if (private$mdldef$max_endo_lead > 0) {
-        stop("Method get_back_jacob can only be used for backward looking models")
-      }
       if (is.null(private$model_period)) {
         stop(private$period_error_msg)
       }
@@ -970,10 +971,12 @@ DynMdl <- R6Class("DynMdl",
       
       data <- t(endo_data)
       lags <- data[var_indices$lags]
+      leads <- data[var_indices$leads]
       x    <- data[var_indices$curvars]
       
       private$prepare_dynamic_model()
-      jac <- private$get_back_jac(x, lags, period_index, debug_eqs = FALSE)
+      jac <- private$get_back_jac(x, lags, leads, period_index, 
+                                  debug_eqs = FALSE)
       private$clean_dynamic_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
@@ -1560,15 +1563,15 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values, 
                           dims = as.integer(rep(private$mdldef$endo_count, 2))))
     },
-    get_back_jac = function(x, lags, period_index, debug_eqs) {
+    get_back_jac = function(x, lags, leads, period_index, debug_eqs) {
       # private function to obtain the backward jacobian at period period_index
       jac_cols <- private$mdldef$lead_lag_incidence[, "0"]
       if (private$calc == "internal") {
         mat_info <- get_jac_back_dyn(private$mdldef$model_index, x, lags, 
-                                     jac_cols, period_index, debug_eqs)
+                                     leads, jac_cols, period_index, debug_eqs)
       } else {
-        mat_info <- get_jac_backwards(x, lags, jac_cols, private$exo_data, 
-                                      private$mdldef$params, 
+        mat_info <- get_jac_backwards(x, lags, leads, jac_cols, 
+                                      private$exo_data, private$mdldef$params, 
                                       private$jac_dynamic, period_index)
       }
       return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,

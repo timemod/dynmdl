@@ -98,19 +98,24 @@ List get_triplet_jac(NumericVector endos, IntegerMatrix lead_lag_incidence,
 
 // [[Rcpp::export]]
 List get_jac_backwards(NumericVector endos, NumericVector lags,
-                       NumericVector cols, 
+                       NumericVector leads, NumericVector cols, 
                        SEXP exo_data, SEXP params, Function jac_dynamic,
                        int iper) {
 
     int nlags = lags.size();
+    int nleads = leads.size();
     int nendo = endos.size();
-    int nx = nlags + nendo;
+    int nx = nlags + nendo + nleads;
     NumericVector x(nx);
     for (int i = 0; i < nlags; i++) {
         x[i] = lags[i];
     }
     for (int i = 0; i < nendo; i++) {
         x[i + nlags] = endos[i];
+    }
+    int offset = nlags + nendo;
+    for (int i = 0; i < nleads; i++) {
+        x[i + offset] = leads[i];
     }
 
     List jac_data = jac_dynamic(x, exo_data, params, iper);

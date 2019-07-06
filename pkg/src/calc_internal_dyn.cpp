@@ -155,13 +155,15 @@ List get_jac_dyn(int model_index, NumericVector endos, int it, bool debug_eqs) {
 
 // [[Rcpp::export]]
 NumericVector get_res_back_dyn(int model_index, NumericVector endos,
-                               NumericVector lags, int it, bool  debug_eqs) {
+                               NumericVector lags, NumericVector leads, 
+                               int it, bool  debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
     int nlags = lags.size();
+    int nleads = leads.size();
     int nendo = endos.size();
-    int nx = nlags + nendo;
+    int nx = nlags + nendo + nleads;
 
     double *x = new double[nx];
     for (int i = 0; i < nlags; i++) {
@@ -169,6 +171,10 @@ NumericVector get_res_back_dyn(int model_index, NumericVector endos,
     }
     for (int i = 0; i < nendo; i++) {
         x[i + nlags] = endos[i];
+    }
+    int offset = nlags + nendo;
+    for (int i = 0; i < nleads; i++) {
+        x[i + offset] = leads[i];
     }
     
     NumericVector res(nendo);
@@ -181,13 +187,15 @@ NumericVector get_res_back_dyn(int model_index, NumericVector endos,
 
 // [[Rcpp::export]]
 List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags,
-                      NumericVector cols, int iper, bool debug_eqs) {
+                      NumericVector leads, NumericVector cols, int iper, 
+                      bool debug_eqs) {
 
     PolishModel *mdl = PolishModels::get_dynamic_model(model_index);
 
     int nlags = lags.size();
+    int nleads = leads.size();
     int nendo = endos.size();
-    int nx = nlags + nendo;
+    int nx = nlags + nendo + nleads;
 
     double *x = new double[nx];
     for (int i = 0; i < nlags; i++) {
@@ -195,6 +203,10 @@ List get_jac_back_dyn(int model_index, NumericVector endos, NumericVector lags,
     }
     for (int i = 0; i < nendo; i++) {
         x[i + nlags] = endos[i];
+    }
+    int offset = nlags + nendo;
+    for (int i = 0; i < nleads; i++) {
+        x[i + offset] = leads[i];
     }
 
     int njac = mdl->get_jac_count();

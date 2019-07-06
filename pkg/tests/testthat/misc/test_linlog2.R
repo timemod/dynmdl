@@ -136,7 +136,8 @@ test_that("fit procedure", {
   mdl$set_endo_values(2, names = "y1")
    
   mdl$solve(control = list(silent = TRUE, trace = TRUE,
-                            allow_singular = TRUE), force_stacked_time = TRUE)
+                            allow_singular = TRUE), 
+                      mode = "stacked_time")
   
   expect_equal(mdl$get_solve_status(), "OK")
   #print(mdl$get_endo_data())

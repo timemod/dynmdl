@@ -1,0 +1,20 @@
+
+Solving backwards for period 2015/2032
+Convergence for 2015 in 0 iterations
+Convergence for 2016 in 0 iterations
+Convergence for 2017 in 0 iterations
+Convergence for 2018 in 0 iterations
+Convergence for 2019 in 0 iterations
+Convergence for 2020 in 0 iterations
+Convergence for 2021 in 0 iterations
+Convergence for 2022 in 0 iterations
+Convergence for 2023 in 0 iterations
+Convergence for 2024 in 0 iterations
+Convergence for 2025 in 0 iterations
+Convergence for 2026 in 0 iterations
+Convergence for 2027 in 0 iterations
+Convergence for 2028 in 0 iterations
+Convergence for 2029 in 0 iterations
+Convergence for 2030 in 0 iterations
+Convergence for 2031 in 0 iterations
+Convergence for 2032 in 0 iterations

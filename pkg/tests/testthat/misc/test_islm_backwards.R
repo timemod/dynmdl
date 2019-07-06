@@ -66,7 +66,7 @@ test_that("solve with the stacked time method", {
   mdl2 <- mdl$clone()
   mdl2$set_data(dynare_endo[lag_per])
   mdl2$set_data(dynare_exo)
-  mdl2$solve(control = list(silent = TRUE), force_stacked_time = TRUE)
+  mdl2$solve(control = list(silent = TRUE), mode = "stacked_time")
   expect_equal(dynare_endo, mdl2$get_endo_data())
 })
 

@@ -17,7 +17,7 @@ test_that("solve and residual check", {
   expect_warning(
     messages <- capture.output(mdl$solve(control = list(silent = TRUE), 
                                          debug_eqs = TRUE, 
-                                         force_stacked_time = TRUE,
+                                         mode = "stacked_time",
                                          homotopy = FALSE),
                         type = "message"))
   

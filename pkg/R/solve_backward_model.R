@@ -8,26 +8,27 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
                                  start_option, debug_eqs, ...) {
   
   if (calc == "internal") {
-    f <- function(x, lags, period_index, debug_eqs) {
-      return(get_res_back_dyn(mdldef$model_index, x, lags, period_index, 
+    f <- function(x, lags, leads, period_index, debug_eqs) {
+      return(get_res_back_dyn(mdldef$model_index, x, lags, leads, period_index, 
                               debug_eqs))
     }
   } else {
-    f <- function(x, lags, period_index, debug_eqs) {
-      return(f_dynamic(c(lags, x), exo_data, mdldef$params, period_index))
+    f <- function(x, lags, leads, period_index, debug_eqs) {
+      return(f_dynamic(c(lags, x, leads), exo_data, mdldef$params, period_index))
     }
   }
   
   if (solver == "nleqslv") {
-    jac_fun <- function(x, lags, period_index, debug_eqs) {
-      return(as(get_back_jac(x, lags, period_index, debug_eqs), "matrix"))
+    jac_fun <- function(x, lags, leads, period_index, debug_eqs) {
+      return(as(get_back_jac(x, lags, leads, period_index, debug_eqs), 
+                "matrix"))
     }
   } else {
     jac_fun <- get_back_jac
   }
 
   if (!control$silent) {
-    cat(sprintf("\nSolving backwards model for period %s\n",
+    cat(sprintf("\nSolving backwards for period %s\n",
                 as.character(solve_period)))
   }
   
@@ -51,20 +52,22 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
   for (iper in 1:nper) {
     period_index <- start_per_index + iper - 1
     per_txt <- as.character(start_per + (iper - 1))
-    lags <- data[var_indices$lags + (iper - 1) * nendo]
-    curvar_indices <- var_indices$curvars + (iper - 1) * nendo
+    shift <- (iper - 1) * nendo
+    lags <- data[var_indices$lags + shift]
+    leads <- data[var_indices$leads + shift]
+    curvar_indices <- var_indices$curvars + shift
     if (start_option == "current" || iper == 1) {
       start <- data[curvar_indices]
     }
     if (solver == "nleqslv") {
       out <- nleqslv(start, fn = f, jac = jac_fun, method = "Newton",
-                     lags = lags, period_index = period_index, 
+                     lags = lags, leads = leads, period_index = period_index, 
                      debug_eqs = debug_eqs, control = control_, ...)
       error <- out$termcd != 1
     } else {
       out <- umf_solve_nl(start, fn = f, jac = jac_fun, lags = lags,
-                          period_index = period_index, debug_eqs = debug_eqs, 
-                          control = control_, ...)
+                          leads = leads, period_index = period_index, 
+                          debug_eqs = debug_eqs, control = control_, ...)
       error <- !out$solved
     }
     
@@ -74,8 +77,8 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     
     if (error && !control$silent) {
       if (grepl("contains non-finite value", out$message)) {
-        res <- f(out$x, lags = lags, period_index = period_index, 
-                 debug_eqs = FALSE)
+        res <- f(out$x, lags = lags, leads = leads, 
+                 period_index = period_index, debug_eqs = FALSE)
         names(res) <- paste("eq", seq_along(res))
         res <- res[!is.finite(res)]
         cat(sprintf(paste("Non-finite values in residuals in period %s",
@@ -94,7 +97,7 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     
     # update data
     data[curvar_indices] <- out$x
-    
+
     if (start_option == "previous") start <- out$x
     
     itr_tot <- itr_tot + out$iter
@@ -104,14 +107,14 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
     }
   }
 
-  # update data
+  # extract solution
   x <- data[(1 : (nper * nendo)) + (start_per_index - 1) * nendo]
   return(list(solved = !error, itr_tot = itr_tot, x = x))
 }
 
-# Returns the indices of the lags and current variables in t(endo_data)
-# for a specific period. Used for solving the backward model and for DynMdl
-# method get_back_jacob.
+# Returns the indices of the lags, leads and current variables in t(endo_data)
+# for a specific period. Used to solve the model backwards,
+# and in method get_back_jacob.
 #
 # INPUT:
 #  mdldef       : a list with the model definitions as used in the DynMdl object.
@@ -119,17 +122,26 @@ solve_backward_model <- function(mdldef, calc, solve_period, data_period,
 #                 Thus a period_index of 1 corresponds to the first period
 #                 in the data period
 # RETURN:
-#   a list with the indices of the lags and current variables
+#   a list with the indices of the lags, leads and current variables
 
 get_var_indices_back <- function(mdldef, period_index) {
   
   nendo <- mdldef$endo_count
   max_lag <- mdldef$max_endo_lag
+  max_lead <- mdldef$max_endo_lead
+
+  lags <- which(mdldef$lead_lag_incidence[ , seq_len(max_lag)] != 0) + 
+          (period_index - 1 - max_lag) * nendo
   
-  lags <- which(mdldef$lead_lag_incidence[, seq_len(max_lag)] != 0) + 
-                           (period_index - 1 - max_lag) * nendo
-  
+  if (max_lead > 0) {
+      lead_cols <- seq_len(max_lead) + max_lag + 1
+      leads <- which(mdldef$lead_lag_incidence[ , lead_cols] != 0) + 
+               period_index * nendo
+  } else {
+    leads <- integer(0)
+  }
+
   curvars <- seq_len(nendo) + (period_index - 1) * nendo
-  
-  return(list(lags = lags, curvars = curvars))
+
+  return(list(lags = lags, leads = leads, curvars = curvars))
 }

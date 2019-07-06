@@ -29,10 +29,10 @@ test_that("get_jacob works correctly", {
   expect_s4_class(jac_sparse, "dgCMatrix")
 })
 
-test_that("get_back_jacob gives an error", {
+test_that("get_back_jacob", {
   
-  expect_error(mdl$get_back_jacob(), 
-    "Method get_back_jacob can only be used for backward looking models")
+  jac <- mdl$get_back_jacob("2015q3")
+  expect_known_value(jac,  "expected_output/islm_back_jac.rds")
 })
 
 

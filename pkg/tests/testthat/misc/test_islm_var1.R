@@ -56,6 +56,20 @@ test_that("solve", {
                "max_lag > 1 or max_lead > 1.\n Tip: call function dyn_mdl",
                "with option max_laglead_1 = TRUE.")
   expect_error(mdl2$write_initval_file(initval_file), msg)
+  
+  expect_known_output(
+    mdl2$solve(mode = "backwards"),
+    "expected_output/islm_var1_back_report1.txt")
+})
+
+test_that("solve with Fair-Taylor", {
+    mdl2 <- create_solve_mdl(mdl)
+    for (i in 1:80) {
+      mdl2$solve(control = list(silent = TRUE, 
+                              trace = TRUE), mode = "backwards")
+    }
+    expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
+                 dynare_result$endo)
 })
 
 test_that("check", {
