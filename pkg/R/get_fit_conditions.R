@@ -5,19 +5,17 @@
 #' @importFrom gsubfn gsubfn
 # @return a list with information about the derivatives
 get_fit_conditions <- function(mod_file,  instruments, latex_basename, 
-                               fixed_time = TRUE) {
+                               fixed_period = TRUE) {
   
   # regular expressions:
   lag_pattern <- "\\[(-?\\d+)\\]"
   
   model_info <- compute_derivatives(mod_file, latex_basename)
   
-  print(model_info)
-  
   max_endo_lag <- model_info$dynamic_model$max_endo_lag
   lli <- model_info$dynamic_model$lead_lag_incidence
   
-  if (fixed_time) {
+  if (fixed_period) {
     cols <- lli[ , max_endo_lag + 1]
     endo_deriv <- model_info$dynamic_model$derivatives[ , cols, drop = FALSE]
     colnames(endo_deriv) <- model_info$endo_names
@@ -101,7 +99,7 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   }
   
   l_names <- l_vars
-  if (!fixed_time) l_names <- paste0(l_vars, "[0]")
+  if (!fixed_period) l_names <- paste0(l_vars, "[0]")
   endo_deriv <- apply(endo_deriv, MARGIN = 2, FUN = mult_lagrange,
                       l_names = l_names)
   
@@ -153,7 +151,7 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   nendo <- nrow(lli)
   endo_equations <- character(nendo)
   for (ivar in seq_len(nendo)) {
-    if (!fixed_time) {
+    if (!fixed_period) {
       row <- lli[ivar, ]
       i <- row[row > 0]
     } else {

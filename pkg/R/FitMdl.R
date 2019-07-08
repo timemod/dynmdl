@@ -75,6 +75,8 @@ FitMdl <- R6Class("FitMdl",
       cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
                   exo_count_orig))
       cat("Information about the fit procedure:\n")
+      cat(sprintf("%-60s%s\n", "Fixed period:", 
+                  as.logical(private$fit_info$fixed_period)))
       cat(sprintf("%-60s%d\n", "Number of potential fit instruments:",
                   length(private$fit_info$sigmas)))
       cat("Information about the expanded model for the fit procedure:\n")

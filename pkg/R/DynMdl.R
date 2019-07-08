@@ -1074,6 +1074,10 @@ DynMdl <- R6Class("DynMdl",
                    "created with dynmdl versions prior to",
                   minimal_version, "\nPlease regenerate the model with function",
                   "dyn_mdl"))
+      }
+      
+      if (compareVersion(as.character(ser$version), "0.9") < 0) {
+        ser$fit_info$fixed_period <- FALSE
       } 
       
       private$calc <- ser$calc

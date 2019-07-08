@@ -12,7 +12,7 @@
 # @return a list with the names of the auxiliary variables
 #' @importFrom stringi stri_split_fixed
 create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename, 
-                           fixed_time) {
+                           fixed_period) {
   
   if (file.exists(fit_mod)) {
     unlink(fit_mod)
@@ -21,14 +21,15 @@ create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename,
   # run the Dynare parser to obtain the first order 
   # conditions for the fit procedure
   fit_cond <- get_fit_conditions(mod_file, instruments, latex_basename, 
-                                 fixed_time)
+                                 fixed_period)
 
   # finally, create the mod file for the fit procedure
   convert_mod(mod_file, fit_mod, fit_cond = fit_cond)
   
   # return information about the fit variables
   with (fit_cond, {
-    return(list(orig_endos = vars, orig_exos = orig_exos, 
+    return(list(fixed_period = fixed_period, orig_endos = vars, 
+                orig_exos = orig_exos, 
                 l_vars = l_vars, fit_vars = fit_vars,
                 exo_vars = exo_vars, instruments = instruments, 
                 old_instruments = old_instruments, sigmas = sigmas))

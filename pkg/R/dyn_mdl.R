@@ -43,8 +43,10 @@
 #' @param fit a logical. If \code{TRUE}, then the function returns
 #' a  \code{FitMdl} object if a fit block has been found in the mod file.
 #' If \code{FALSE} then this function does not return a \code{FitMdl} object.
-#' @param fit_fixed_time a logical. If \code{TRUE}, then the fit conditions are
-#' derived for a fixed time, treating lags and leads as exogenous variables.
+#' @param fit_fixed_period a logical. If \code{TRUE}, then the fit conditions are
+#' derived for a fixed period, treating lags and leads as exogenous variables.
+#' If \code{FALSE} (the default), the fit conditions are derived from the
+#' stacked-time equations.
 #' @return an \code{DynMdl} object or, if the mod file contains a
 #' fit block, a \code{\link{FitMdl}} object.
 #' @export
@@ -57,7 +59,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, nostrict = FALSE,
-                    fit = TRUE, fit_fixed_time = FALSE) {
+                    fit = TRUE, fit_fixed_period = FALSE) {
   
   calc <- match.arg(calc)
   
@@ -131,7 +133,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                instruments, latex_basename, 
-                               fixed_time = fit_fixed_time)
+                               fixed_period = fit_fixed_period)
    
     n_fit_derivatives <- length(fit_info$orig_endos) + length(fit_info$sigmas)
  
