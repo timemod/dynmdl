@@ -539,14 +539,23 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output, int params_deri
               || mod_file_struct.calib_smoother_present)
             static_model.set_cutoff_to_zero();
 
+#ifdef USE_R
+          const bool static_hessian = false;
+#else
           const bool static_hessian = mod_file_struct.identification_present
             || mod_file_struct.estimation_analytic_derivation;
+#endif
           int paramsDerivsOrder = 0;
           if (mod_file_struct.identification_present || mod_file_struct.estimation_analytic_derivation)
             paramsDerivsOrder = params_derivs_order;
           static_model.computingPass(global_eval_context, no_tmp_terms, static_hessian,
                                      false, paramsDerivsOrder, block, byte_code);
         }
+
+#ifdef USE_R
+       dynamic_model.computingPass(true, false, false, none, global_eval_context, 
+                                  no_tmp_terms, block, use_dll, byte_code);
+#else
       // Set things to compute for dynamic model
       if (mod_file_struct.perfect_foresight_solver_present || mod_file_struct.check_present
           || mod_file_struct.stoch_simul_present
@@ -586,6 +595,7 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output, int params_deri
         }
       else // No computing task requested, compute derivatives up to 2nd order by default
         dynamic_model.computingPass(true, true, false, none, global_eval_context, no_tmp_terms, block, use_dll, byte_code);
+#endif
 
       if ((linear && !mod_file_struct.ramsey_model_present && !dynamic_model.checkHessianZero())
           || (linear && mod_file_struct.ramsey_model_present && !orig_ramsey_dynamic_model.checkHessianZero()))
