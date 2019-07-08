@@ -322,11 +322,13 @@ ModFile::checkPass(bool nostrict)
         unused_exos << symbol_table.getName(*it) << " ";
 
       if (nostrict)
-        warnings << "WARNING: " << unused_exos.str()
-                 << "not used in model block, removed by nostrict command-line option" << endl;
+        warnings << "WARNING: the following variables in model block are not used: " 
+                 << unused_exos.str() << "." << endl;
       else
         {
-          dyn_error("ERROR: " + unused_exos.str() + "not used in model block. To bypass this error, use the `nostrict` option. This may lead to crashes or unexpected behavior.\n");
+          dyn_error("ERROR: the following variables are not used in model block"
+                   "\n(to bypass this error, use the `nostrict` option in dyn_mdl):\n" + 
+                   unused_exos.str() + ".\n");
         }
     }
 }

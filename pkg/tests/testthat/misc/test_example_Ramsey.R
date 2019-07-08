@@ -24,7 +24,7 @@ expect_warning(
   , "1 warnings encountered in the preprocessor. Check the output")
 
 expect_identical(msg,
-"WARNING: gx not used in model block, removed by nostrict command-line option")
+"WARNING: the following variables in model block are not used: gx .")
 
 dynare_result <- read_dynare_result(model_name, mdl)
 
