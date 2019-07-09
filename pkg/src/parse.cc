@@ -37,7 +37,7 @@
 #include "dyn_error.hh"
 
 ModFile* parse(char * modfile, char *latex_basename, bool max_laglead_1, bool nostrict,
-               bool no_tmp_terms, int n_fit_derivatives) {
+               bool no_tmp_terms, int n_fit_derivatives, bool warn_uninit_param) {
   bool clear_all = true;
   bool clear_global = false;
   bool save_macro = false;
@@ -99,7 +99,7 @@ ModFile* parse(char * modfile, char *latex_basename, bool max_laglead_1, bool no
   // Do the rest
   string latex_basename_string = latex_basename;
   ModFile *mod_file = parse_post_macro(macro_output, latex_basename_string, debug, clear_all, clear_global,
-        no_tmp_terms, no_log, no_warn, warn_uninit, console, nograph, nointeractive,
+        no_tmp_terms, no_log, no_warn, warn_uninit, warn_uninit_param, console, nograph, nointeractive,
         parallel, config_file, warnings, nostrict, check_model_changes, minimal_workspace,
         compute_xrefs, output_mode, language, params_derivs_order, max_laglead_1,
         n_fit_derivatives

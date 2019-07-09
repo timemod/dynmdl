@@ -125,7 +125,11 @@ public:
   void addStatementAtFront(Statement *st);
   //! Evaluate all the statements
   /*! \param warn_uninit Should a warning be displayed for uninitialized endogenous/exogenous/parameters ? */
+#ifdef USE_R
+  void evalAllExpressions(bool warn_uninit, bool warn_uninit_param);
+#else
   void evalAllExpressions(bool warn_uninit);
+#endif
   //! Do some checking and fills mod_file_struct
   /*! \todo add check for number of equations and endogenous if ramsey_policy is present */
   void checkPass(bool nostrict);

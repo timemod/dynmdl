@@ -6,8 +6,8 @@
 \usage{
 dyn_mdl(mod_file, period, data, base_period = NULL, calc = c("R",
   "bytecode", "dll", "internal"), fit_mod_file, debug = FALSE, dll_dir,
-  max_laglead_1 = FALSE, nostrict = FALSE, fit = TRUE,
-  fit_fixed_period = FALSE)
+  max_laglead_1 = FALSE, nostrict = FALSE, warn_uninit_param = TRUE,
+  fit = TRUE, fit_fixed_period = FALSE)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -55,6 +55,10 @@ method \code{\link{check}} for models with a maximum lag or lead larger than 1.}
 there are more endogenous variables than equations,
 an undeclared symbol is assigned in initval or endval,
 or exogenous variables were declared but not used in the model block.}
+
+\item{warn_uninit_param}{A logical. If \code{TRUE} (the default) then
+a warning is given for each parameter that has not been initialized in the
+mod file. Uninitialized parameters are always set to zero.}
 
 \item{fit}{a logical. If \code{TRUE}, then the function returns
 a  \code{FitMdl} object if a fit block has been found in the mod file.

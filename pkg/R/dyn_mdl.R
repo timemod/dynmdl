@@ -40,6 +40,9 @@
 #' there are more endogenous variables than equations,
 #' an undeclared symbol is assigned in initval or endval,
 #' or exogenous variables were declared but not used in the model block.
+#' @param warn_uninit_param A logical. If \code{TRUE} (the default) then
+#' a warning is given for each parameter that has not been initialized in the
+#' mod file. Uninitialized parameters are always set to zero.
 #' @param fit a logical. If \code{TRUE}, then the function returns
 #' a  \code{FitMdl} object if a fit block has been found in the mod file.
 #' If \code{FALSE} then this function does not return a \code{FitMdl} object.
@@ -59,7 +62,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, nostrict = FALSE,
-                    fit = TRUE, fit_fixed_period = FALSE) {
+                    warn_uninit_param = TRUE, fit = TRUE, 
+                    fit_fixed_period = FALSE) {
   
   calc <- match.arg(calc)
   
@@ -139,7 +143,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
  
     mdldef <- compile_model(fit_mod_file, latex_basename, use_dll, dll_dir, 
                             max_laglead_1, nostrict, internal_calc,
-                            n_fit_derivatives)
+                            n_fit_derivatives, warn_uninit_param)
     
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
@@ -161,7 +165,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
     mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, 
-                            max_laglead_1, nostrict, internal_calc, 0L)
+                            max_laglead_1, nostrict, internal_calc, 0L,
+                            warn_uninit_param)
     
     if (calc == "dll") {
       dll_file <- compile_c_functions(dll_dir)

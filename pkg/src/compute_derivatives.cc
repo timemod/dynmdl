@@ -11,7 +11,7 @@ Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename) 
     // price
     ModFile *mod_file = parse((char *) modfile.c_str(), 
                               (char *) latex_basename.c_str(),
-                              false, true, true, 0);
+                              false, true, true, 0, false);
     
     Rcpp::List retval;
     retval =  mod_file->getDerivativeInfo();

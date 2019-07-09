@@ -71,7 +71,12 @@ ModFile::~ModFile()
 }
 
 void
+#ifdef USE_R
+ModFile::evalAllExpressions(bool warn_uninit, bool warn_uninit_param)
+#else
 ModFile::evalAllExpressions(bool warn_uninit)
+#endif
+
 {
   DynOut << "Evaluating expressions...";
 
@@ -104,9 +109,18 @@ ModFile::evalAllExpressions(bool warn_uninit)
            || type == eParameter || type == eModelLocalVariable)
           && global_eval_context.find(id) == global_eval_context.end())
         {
+#ifdef USE_R
+          if (warn_uninit_param && type == eParameter) {
+            warnings << "WARNING: Can't find a numeric initial value for "
+                     << "parameter "  << symbol_table.getName(id) << ", using zero" << endl;
+          }
+          // At the moment the R version only gives warnings for
+          // not-initialized parameters
+#else
           if (warn_uninit)
             warnings << "WARNING: Can't find a numeric initial value for "
                      << symbol_table.getName(id) << ", using zero" << endl;
+#endif
           global_eval_context[id] = 0;
         }
     }

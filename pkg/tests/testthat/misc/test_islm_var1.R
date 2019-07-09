@@ -14,7 +14,21 @@ expected_equations_file <- "expected_output/expected_equations_islm_var1.rds"
 solve_period <- period_range("2015/2032")
 
 # compile the model 
-report <- capture_output(mdl <- dyn_mdl(mod_file, period = solve_period))
+
+test_that("model compilation", {
+  expect_warning(
+    messages <- capture.output(
+      report <- capture_output(mdl <<- dyn_mdl(mod_file, period = solve_period)),
+      type = "message"
+    ), "2 warnings encountered in the preprocessor. Check the output"
+  )
+  
+  expected_messages <- paste("WARNIN: Can't find a numeric initial value",
+                             "for parameter t" , 1:2, ", using zero")
+  
+  mdl$set_param(c(t0 = -15, t1 = 0.22))
+})
+
 
 dynare_result <- read_dynare_result("islm_var1", mdl)
 dynare_result_with_aux <- read_dynare_result("islm_var1", mdl, all_vars = TRUE)
@@ -82,8 +96,13 @@ test_that("check", {
 
 
 # now compile the model with option max_laglead_1
-report <- capture_output(mdl_new <- dyn_mdl(mod_file, period = "2015/2032",
-                                            max_laglead_1 = TRUE))
+test_that("compilation with max_laglead_1 = TRUE", {
+expect_warning(
+  report <- capture_output(mdl_new <<- dyn_mdl(mod_file, period = "2015/2032",
+                                            max_laglead_1 = TRUE, 
+                                            warn_uninit = FALSE)), NA)
+  mdl_new$set_param(c(t0 = -15, t1 = 0.22))
+})
 
 test_that("get_period-methods with max_laglead_1", {
   expect_equal(mdl_new$get_period() , as.period_range("2015/2032"))
@@ -98,7 +117,6 @@ test_that("solve_steady with max_laglead_1", {
   mdl_new$put_static_endos()
   mdl_new$set_static_endos(c(yd = 4800))
   expect_equal(mdl_new$get_static_endos(), dynare_result$steady)
-
 })
 
 test_that("solve with max_laglead_1", {
@@ -160,7 +178,9 @@ test_that("get_equations", {
 
 report <- capture_output(mdl_dll <- dyn_mdl(mod_file, period = "2015/2032",
                                             max_laglead_1 = TRUE, 
-                                            calc = "dll"))
+                                            calc = "dll", 
+                                            warn_uninit_param = FALSE))
+mdl_dll$set_param(c(t0 = -15, t1 = 0.22))
 
 test_that("solve_steady with max_laglead_1, dll", {
   mdl_dll$solve_steady(control = list(trace = FALSE, silent = TRUE))
@@ -235,7 +255,10 @@ test_that("get_data also works with aux vars", {
 test_that("lag eand lead shocks", {
   
   outp <- capture.output(mdl2 <- dyn_mdl(mod_file, period = "2015/2032",
-                    max_laglead_1 = TRUE, calc = "internal"))
+                    max_laglead_1 = TRUE, calc = "internal", 
+                    warn_uninit_param = FALSE))
+  
+  mdl2$set_param(c(t0 = -15, t1 = 0.22))
   
   mdl3 <- mdl2$copy()
   mdl3$set_endo_values(c(4750, 4755, 4760), names = "y", 
