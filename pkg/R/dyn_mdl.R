@@ -114,14 +114,14 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
 
   mod_text <- read_file(preprocessed_mod_file)
   
-  instruments <- get_fit_instruments(mod_text)
+  if (fit) instruments <- get_fit_instruments(mod_text)
   
   if (!missing(fit) && fit && is.null(instruments)) {
     stop("No fit block in model file, fit procedure not possible")
   }
   
   
-  if (!is.null(instruments) && fit)  {
+  if (fit && !is.null(instruments))  {
     
     # FIT PROCEDURE
     
@@ -210,7 +210,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
 
 get_fit_instruments <- function(mod_text) {
   # analyse expanded file line to find a list of instruments
-  
+
   # remove C-style comments, regexpr cannot handle this
   mod_text <- gsub("/\\*[\\s\\S]*?\\*/", "", mod_text, perl = TRUE, 
                    useBytes = TRUE)
