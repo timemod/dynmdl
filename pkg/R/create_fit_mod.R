@@ -100,7 +100,7 @@ convert_mod <- function(input_file, output_file, fit_cond) {
       model_found <- TRUE
     } else if (in_model && endsWith(trimws(line, "right"), "end;")) {
       writeLines(gsub("end;", "", line), con = output)
-      writeLines(c("% First order condition the resisuals:", ""),
+      writeLines(c("% First order conditions residuals:", ""),
                  con = output)
       writeLines(strwrap(fit_cond$res_equations, width = 80),
                  con = output)

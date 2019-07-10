@@ -24,7 +24,7 @@
 [24] "0.5 * (y1 - 1) = linlog(y1, eps) + uy1;"                                       
 [25] "2 * (y2 - 1) = linlog(y2);"                                                    
 [26] ""                                                                              
-[27] "% First order condition the resisuals:"                                        
+[27] "% First order conditions residuals:"                                           
 [28] ""                                                                              
 [29] "(sigma_uy1 >= 0) * (uy1 / sigma_uy1^2 + l_1 * ((-1))) + (sigma_uy1 < 0) * (uy1"
 [30] "- uy1_old) = 0;"                                                               
