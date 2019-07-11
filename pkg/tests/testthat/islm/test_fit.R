@@ -103,12 +103,13 @@ test_that("get_data", {
   
   # errors
   expect_error(mdl$get_fit_instruments(names = "uii"), 
-               "\"uii\" is not a fit instrument")
-  expect_error(mdl$get_fit_instruments(names = c("uc", "uii", "aap")), 
-               "\"uii\", \"aap\" are no fit instruments")
-  expect_error(mdl$get_data(names = "uii"), "\"uii\" is not a model variable")
-  expect_error(mdl$get_exo_data(names = c("ui", "aap")),
-               "\"ui\", \"aap\" are no exogenous model variables")
+               "\"uii\" is not a fit instrument\\.")
+  msg <- "The following names are no fit instruments: \"uii\", \"aap\"\\."
+  expect_error(mdl$get_fit_instruments(names = c("uc", "uii", "aap")),  msg)
+  expect_error(mdl$get_data(names = "uii"), "\"uii\" is not a model variable\\.")
+  
+  msg <- "The following names are no exogenous model variables: \"ui\", \"aap\"\\."
+  expect_error(mdl$get_exo_data(names = c("ui", "aap")), msg)
   
   expect_warning(expect_null(mdl$get_endo_data(pattern = "^u")),
                  "No endogenous variables match pattern \"\\^u\".")
@@ -131,9 +132,9 @@ test_that("set_exo_values", {
   expect_identical(mdl2$get_static_exos(), c(g = 3, ms = 2))
   
   expect_error(mdl2$set_static_exo_values(0, names = "ui"), 
-               "\\ui\" is not an exogenous model variable")
-  expect_error(mdl2$set_static_exo_values(0, names = c("ui", "l_1")), 
-               "\"ui\", \"l_1\" are no exogenous model variables")
+               "\\ui\" is not an exogenous model variable\\.")
+  msg <- "The following names are no exogenous model variables: \"ui\", \"l_1\"\\."
+  expect_error(mdl2$set_static_exo_values(0, names = c("ui", "l_1")),  msg)
 })
 
 
@@ -180,15 +181,14 @@ test_that("miscellaneous set functions", {
   
   # errors
   expect_error(mdl2$set_static_endos(c(l_2 = 2)),
-               "\"l_2\" is not an endogenous model variable")
+               "\"l_2\" is not an endogenous model variable\\.")
   
-  expect_error(mdl2$set_fit_values(2, names = c("g", "l_2")),
-               "\"g\", \"l_2\" are no endogenous model variables")
-  
+  msg <- "The following names are no endogenous model variables: \"g\", \"l_2\"\\."
+  expect_error(mdl2$set_fit_values(2, names = c("g", "l_2")), msg)
   
   x <- regts(matrix(1, nrow = 2, ncol = 3), names = c("g", "l_2", "y"),
              period = "2016Q1")
-  expect_error(mdl2$set_fit(x), "\"g\", \"l_2\" are no endogenous model variables")
+  expect_error(mdl2$set_fit(x), msg)
 })
 
 test_that("get_vars_pars", {

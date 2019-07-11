@@ -349,26 +349,24 @@ FitMdl <- R6Class("FitMdl",
         if (length(error_vars) > 0) {
           if (name_err != "silent") {
             error_vars <- paste0("\"", error_vars, "\"")
-            error_var_txt <- paste(error_vars, collapse = ", ")
-            error_fun <- if (name_err == "warn") warning else stop
-            if (type == "inst") {
-              if (length(error_vars) == 1) {
-                msg <- "is not a fit instrument" 
-              } else {
-                msg <-  "are no fit instruments"
-              }
-            } else {
-              type_texts <- c(all = "", endo = "endogenous ", 
-                              exo = "exogenous ")
-              type_text <- type_texts[[type]]
-              if (length(error_vars) == 1) {
-                a_word <- if (type == "all") "a " else "an "
-                msg <- paste0("is not ", a_word, type_text, "model variable")
-              } else {
-                msg <- paste0("are no ", type_text, "model variables")
-              }
+            type_texts <- c(all = "model variable", 
+                            endo = "endogenous model variable", 
+                            exo = "exogenous model variable", 
+                            inst = "fit instrument")
+            type_text <- type_texts[[type]]
+            if (length(error_vars) == 1) {
+              a_word <- if (type_text %in% c("model variable", "fit instrument")) 
+                         "a " else "an "
+              msg <- paste0(error_vars, " is not ", a_word, type_text, ".")
+            } else { 
+              msg <- paste0("The following names are no ", type_text, "s: ",
+                            paste(error_vars, collapse = ", "), ".")
             }
-            error_fun(paste(error_var_txt, msg)) 
+            if (name_err == "warn") {
+              warning(msg)
+            } else {
+              stop(msg)
+            }
           }
           names <- intersect(names, vnames)
         }

@@ -27,9 +27,9 @@ test_that("multivariate timeseries", {
 
   mdl2 <- mdl$copy()
   expect_error(mdl2$set_data(shock, fun = `/`),
-               "\"x\" is not an model variable")
+               "\"x\" is not a model variable")
   expect_warning(mdl2$set_data(shock, fun = `/`, name_err = "warn"),
-               "\"x\" is not an model variable")
+               "\"x\" is not a model variable")
   expected_data <- old_exo_data
   expected_data["2015Q2/2015Q3", c("g", "ms")] <-
     expected_data["2015Q2/2015Q3", c("g", "ms")] / shock[, c("g", "ms")]
@@ -48,10 +48,9 @@ test_that("name error", {
   MS <-  regts(1.2, period = "2015Q2")
   shock <- cbind(G, MS)
   mdl2 <- mdl$copy()
-  expect_error(mdl2$set_data(shock),
-               "\"G\", \"MS\" are no model variables")
-  expect_warning(mdl2$set_data(shock, name_err = "warn"),
-               "\"G\", \"MS\" are no model variables")
+  msg <- "The following names are no model variables: \"G\", \"MS\"\\."
+  expect_error(mdl2$set_data(shock), msg)
+  expect_warning(mdl2$set_data(shock, name_err = "warn"), msg)
   expect_silent(mdl2$set_data(shock, name_err = "silent"))
   expect_equal(mdl$get_exo_data(), mdl2$get_exo_data())
 })

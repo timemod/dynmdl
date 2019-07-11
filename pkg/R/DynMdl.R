@@ -1203,19 +1203,23 @@ DynMdl <- R6Class("DynMdl",
         if (length(error_vars) > 0) {
           if (name_err != "silent") {
             error_vars <- paste0("\"", error_vars, "\"")
-            error_var_txt <- paste(error_vars, collapse = ", ")
-            error_fun <- if (name_err == "warn") warning else stop
             type_texts <- c(all = "model", endo = "endogenous model", 
                             exo = "exogenous model", trend = "trend",
                             endo_exo = "model")
             type_text <- type_texts[[type]]
             if (length(error_vars) == 1) {
-              a_word <- if (type %in% c("trend", "all")) "a" else "an"
-              msg <- paste("is not", a_word, type_text, "variable")
-            } else {
-              msg <- paste("are no", type_text, "variables")
+              a_word <- if (type_text %in% c("model", "trend")) "a" else "an"
+              msg <- paste(error_vars, "is not", a_word, type_text, "variable.")
+            } else { 
+              msg <- paste0("The following names are no ", type_text, 
+                           " variables: ", 
+                           paste(error_vars, collapse = ", "), ".")
             }
-            error_fun(paste(error_var_txt, msg))
+            if (name_err == "warn") {
+              warning(msg)
+            } else {
+              stop(msg)
+            }
           }
           names <- intersect(names, vnames)
         }

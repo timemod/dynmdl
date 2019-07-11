@@ -89,9 +89,9 @@ test_that("non-finite values", {
 
 test_that("errors", {
   expect_error(mdl$set_static_endos(c(c = 12, xxx = 3)),
-               "\"xxx\" is not an endogenous model variable")
-  expect_error(mdl$set_static_exos(c(c = 12, xxx = 3, g = 12)),
-               "\"c\", \"xxx\" are no exogenous model variables")
+               "\"xxx\" is not an endogenous model variable\\.")
+  msg <- "The following names are no exogenous model variables: \"c\", \"xxx\"\\."
+  expect_error(mdl$set_static_exos(c(c = 12, xxx = 3, g = 12)), msg)
 })
 
 
