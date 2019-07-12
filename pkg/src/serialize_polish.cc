@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 
+
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/vector.hpp>
 #include <cereal/types/memory.hpp>
@@ -13,21 +14,24 @@
 using namespace Rcpp;
 using namespace std;
 
-RawVector serialize_polish_model(int model_index, bool dynamic);
-RawVector serialize_ext_calc(int model_index);
+SEXP serialize_polish_model(int model_index, bool dynamic);
+SEXP serialize_ext_calc(int model_index);
 void deserialize_polish_model(PolishModel *mdl, RawVector src);
 void deserialize_ext_calc(ExternalFunctionCalc *ext_calc, RawVector src);
 
 // [[Rcpp::export]]
 List serialize_polish_models(int model_index) {
 
-    RawVector stat_bin = serialize_polish_model(model_index, false);
-    RawVector dyn_bin = serialize_polish_model(model_index, true);
-    RawVector ext_calc_bin = serialize_ext_calc(model_index);
+    SEXP stat_bin = serialize_polish_model(model_index, false);
+    SEXP dyn_bin = serialize_polish_model(model_index, true);
+    SEXP ext_calc_bin = serialize_ext_calc(model_index);
 
-    return List::create(Rcpp::Named("stat") = stat_bin, 
-                        Rcpp::Named("dyn")  = dyn_bin,
-                        Rcpp::Named("ext_calc") = ext_calc_bin);
+    List ret = List::create(Rcpp::Named("stat") = stat_bin, 
+                            Rcpp::Named("dyn")  = dyn_bin,
+                            Rcpp::Named("ext_calc") = ext_calc_bin);
+
+    UNPROTECT(3);
+    return ret;
 }
 
 // [[Rcpp::export]]
@@ -45,7 +49,7 @@ int deserialize_polish_models(List bin_data) {
     return model_index;
 }
 
-RawVector serialize_polish_model(int model_index, bool dynamic) {
+SEXP serialize_polish_model(int model_index, bool dynamic) {
 
     PolishModel *mdl;
     if (dynamic) {
@@ -59,15 +63,23 @@ RawVector serialize_polish_model(int model_index, bool dynamic) {
     cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
     oarchive(*mdl);
     }
+
     ss.seekg(0, ss.end);
-    RawVector retval(ss.tellg());
+    R_xlen_t len = ss.tellg();
     ss.seekg(0, ss.beg);
-    ss.read(reinterpret_cast<char*>(&retval[0]), retval.size());
-    
+
+    // We do not use Rcpp:RawVector because it cannot handle long vectors.
+    // The constructor of RawVector expects the size of the vector as an integer.
+    // Therefore the maximum size of a RawVector would be 2^31-1. By using 
+    // Rf_allocVector and R_xlen_t we do not suffer from this problem.
+    SEXP retval = PROTECT(Rf_allocVector(RAWSXP, len));
+
+    ss.read((char *) RAW(retval), len);
+
     return(retval);
 }
 
-RawVector serialize_ext_calc(int model_index) {
+SEXP serialize_ext_calc(int model_index) {
 
     ExternalFunctionCalc *ext_calc = PolishModels::get_ext_calc(model_index);
 
@@ -76,10 +88,18 @@ RawVector serialize_ext_calc(int model_index) {
     cereal::BinaryOutputArchive oarchive(ss); // Create an output archive
     oarchive(*ext_calc);
     }
+    
     ss.seekg(0, ss.end);
-    RawVector retval(ss.tellg());
+    R_xlen_t len = ss.tellg();
     ss.seekg(0, ss.beg);
-    ss.read(reinterpret_cast<char*>(&retval[0]), retval.size());
+    
+    // We do not use Rcpp:RawVector because it cannot handle long vectors.
+    // The constructor of RawVector expects the size of the vector as an integer.
+    // Therefore the maximum size of a RawVector would be 2^31-1. By using 
+    // Rf_allocVector and R_xlen_t we do not suffer from this problem.
+    SEXP retval = PROTECT(Rf_allocVector(RAWSXP, len));
+    
+    ss.read((char *) RAW(retval), len);
     
     return(retval);
 }
