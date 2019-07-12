@@ -52,8 +52,8 @@ test_that("set_values works correctly (2)", {
 
 test_that("set_values handles errors correctly", {
   mdl2 <- mdl$copy()
-  msg <- "\"xxx\" is not an endogenous model variable"
+  msg <- "\"xxx\" is not an endogenous model variable\\."
   expect_error(mdl2$set_endo_values(1, names = c("y", "xxx")), msg)
-  msg <- "\"p\", \"xxx\" are no exogenous model variables"
+  msg <- "The following names are no exogenous model variables: \"p\", \"xxx\"\\."
   expect_error(mdl2$set_exo_values(1, names = c("p", "xxx")), msg)
 })
