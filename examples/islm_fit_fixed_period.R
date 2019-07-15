@@ -12,8 +12,8 @@ period <- period_range("2017Q1", "2022Q4")
 fit_target_csv <- "input/islm_fit_targets.csv"
 
 mdl <- dyn_mdl("mod/islm_fit.mod", 
-               fit_mod_file = "fmod/islm_fit_fixed_time.fmod", 
-               calc = "internal", fit_fixed_time = TRUE)
+               fit_mod_file = "fmod/islm_fit_fixed_period.fmod", 
+               calc = "internal", fit_fixed_period = TRUE)
 print(mdl)
 
 mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 21))

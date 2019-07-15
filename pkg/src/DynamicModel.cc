@@ -5683,17 +5683,30 @@ Rcpp::List DynamicModel::getDerivativeInfoR() const {
     temporary_terms_t temp_term_union = temporary_terms_res;
     deriv_node_temp_terms_t tef_terms;
 
-    Rcpp::CharacterMatrix derivatives(equations.size(), dynJacobianColsNbr);
-    std::fill(derivatives.begin(), derivatives.end(), Rcpp::CharacterVector::get_na());
+    int nnz = first_derivatives.size();
+    Rcpp::CharacterVector expressions(nnz);
+    Rcpp::IntegerVector rows(nnz), cols(nnz);
+
+    int i = 0;
     for (first_derivatives_t::const_iterator it = first_derivatives.begin();
          it != first_derivatives.end(); it++) {
+
         int eq = it->first.first;
         int col = getDynJacobianCol(it->first.second);
-        expr_t d1 = it->second;
+
         ostringstream txt;
+        expr_t d1 = it->second;
         d1->writeOutput(txt, oRDerivatives, temp_term_union, tef_terms);
-        derivatives(eq, col) = Rcpp::String(txt.str());
+
+        rows[i] = eq + 1;
+        cols[i] = col + 1;
+        expressions[i++] = Rcpp::String(txt.str());
     }
+
+    Rcpp::List derivatives = Rcpp::List::create(Rcpp::Named("rows") = rows,
+                                                Rcpp::Named("cols") = cols,
+                                                Rcpp::Named("expressions") = expressions);
+
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
                               Rcpp::Named("exo_has_lag") = exo_has_lag,
                               Rcpp::Named("derivatives")   = derivatives,

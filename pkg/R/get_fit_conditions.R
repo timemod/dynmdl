@@ -9,30 +9,41 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   
   # regular expressions:
   lag_pattern <- "\\[(-?\\d+)\\]"
+  pow_pattern <- "\\*\\*" 
   
   model_info <- compute_derivatives(mod_file, latex_basename)
   
   max_endo_lag <- model_info$dynamic_model$max_endo_lag
   lli <- model_info$dynamic_model$lead_lag_incidence
   
+  # printobj(lli)
+  
+  derivatives <- as.data.frame(model_info$dynamic_model$derivatives)
+ 
+  #printobj(derivatives)
+  
+  # n_endo_deriv is the number of derivatives with respect to endogenous
+  # variables and lags/leads of endogenous model variables.
+  n_endo_deriv <- max(lli)
+  n_endo <- nrow(lli)
+  
+  rownames(lli) <- model_info$endo_names
+ # printobj(lli)
+  
   if (fixed_period) {
-    cols <- lli[ , max_endo_lag + 1]
-    endo_deriv <- model_info$dynamic_model$derivatives[ , cols, drop = FALSE]
-    colnames(endo_deriv) <- model_info$endo_names
-    endo_lags <- rep(0, length(model_info$endo_names))
+    endo_cols_no_lag <- lli[ , max_endo_lag + 1]
+    endo_deriv <- subset(derivatives, cols %in% endo_cols_no_lag)
+    endo_deriv$endo_index <- match(endo_deriv$cols, lli[ , max_endo_lag + 1])
   } else {
     sel <- lli != 0
-    rows <- row(lli)[sel]
-    cols <- col(lli)[sel]
-    endo_lags <- cols - model_info$dynamic_model$max_endo_lag - 1
-    endo_names <- model_info$endo_names[rows]
-    endo_deriv <- model_info$dynamic_model$derivatives[, 1:length(endo_names),
-                                                       drop = FALSE]
-    colnames(endo_deriv) <- paste0(endo_names, paste0("(", endo_lags, ")"))
+    lli_endo_index <- row(lli)[sel]
+    lli_lags <- col(lli)[sel] - model_info$dynamic_model$max_endo_lag - 1
+    endo_deriv <- subset(derivatives, cols <= n_endo_deriv)
+    endo_deriv$endo_index <- lli_endo_index[endo_deriv$cols]
+    endo_deriv$endo_lag <- lli_lags[endo_deriv$cols]
   }
   
-
-  # Check if there are lags/leads on instruments. Dynare ignores lags and 
+# Check if there are lags/leads on instruments. Dynare ignores lags and 
   # leads on exogeneous variables when computing the derivative, therefore
   # the fit procedure cannot handle this situation.
   exo_has_lag <- model_info$dynamic_model$exo_has_lag
@@ -44,20 +55,33 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
                 "."))
   }
   
-  exo_deriv <- model_info$dynamic_model$derivatives[, -(1:max(lli)), 
-                                                    drop = FALSE]
-  colnames(exo_deriv) <- model_info$exo_names
-  res_deriv <- exo_deriv[, instruments, drop = FALSE]
   
-  nres <- length(instruments)
-  # handle **
-  fpow <- function(x) {
-    return (gsub("\\*\\*", "^", x))
+  endo_deriv$expressions <- gsub(pow_pattern, "^", endo_deriv$expressions)
+  
+  n_res <- length(instruments)
+  
+  convert_lags <- function(x) {
+    # this function converts lags specified with [] to lags with ().
+    # lag zero ([0]is  removed 
+    repl_fun <- function(x) {
+      i <- as.integer(x)
+      if (i == 0) {
+        return ("")
+      } else {
+        return (paste0("(", i, ")"))
+      }
+    }
+    x$expressions <- gsubfn(lag_pattern, repl_fun, x$expressions)
+    return(x)
   }
-  if (nres > 0) {
-    res_deriv  <- apply(res_deriv,  MARGIN = c(1,2), FUN = fpow)
+  
+  if (n_res > 0) {
+    exo_deriv <- subset(derivatives, cols > n_endo_deriv)
+    instrument_index <- match(instruments, model_info$exo_names)
+    res_deriv <- subset(exo_deriv, cols %in% (instrument_index + n_endo_deriv))
+    res_deriv$expressions <- gsub(pow_pattern, "^", res_deriv$expressions)
+    res_deriv <- convert_lags(res_deriv)
   }
-  endo_deriv <- apply(endo_deriv, MARGIN = c(1,2), FUN = fpow)
   
   vars <- model_info$endo_names
   # names of lagrange multipliers:
@@ -69,46 +93,25 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   # TODO: check that the intersection of fit_vars, exo_vars,
   # l_vars and sigmas with vars is zero
   
+  
   mult_lagrange <- function(x, l_names) {
-    # multiply a column of derivatives with the
-    # lagrange multipliers
-    return (ifelse(nchar(x) > 0, paste(l_names, paste0("(", x, ")"),
-                                       sep = " * "), x))
+    # multiply the derivatives with the lagrange multiplier for each row
+    expr <- paste0("(", x$expressions, ")")
+    x$expressions <- paste(l_names[x$rows], expr, sep = " * ")
+    return(x)
   }
-  
-  # replace [d] with () in exo_deriv
-  handle_lags_res <- function(x) {
-    if (is.na(x)) {
-      return(x)
-    }
-    repl <- function(x) {
-      i <- as.integer(x)
-      if (i == 0) {
-        return ("")
-      } else {
-        return (paste0("(", i, ")"))
-      }
-    }
-    return(gsubfn(lag_pattern, repl, x))
-  }
-  
-  if (nres > 0) {
-    res_deriv <- apply(res_deriv, MARGIN = c(1,2), FUN = handle_lags_res)
-    res_deriv <- apply(res_deriv, MARGIN = 2, FUN = mult_lagrange,
-                       l_names = l_vars)
-  }
-  
-  l_names <- l_vars
-  if (!fixed_period) l_names <- paste0(l_vars, "[0]")
-  endo_deriv <- apply(endo_deriv, MARGIN = 2, FUN = mult_lagrange,
-                      l_names = l_names)
   
   # derivatives with respect to fit instruments:
-  sum_derivatives <- function(x) {
-    return (paste(x[!is.na(x)], collapse = " + "))
-  }
-  if (nres > 0) {
-    deriv1 <- apply(res_deriv, MARGIN = 2, FUN = sum_derivatives)
+  if (n_res > 0) {
+ 
+    # multiply all derivatives with the Lagrange multipliers   
+    res_deriv <- mult_lagrange(res_deriv, l_vars)
+    
+    # for each equation, sum derivaties with respect to all fit instruments
+    deriv1 <- aggregate(res_deriv$expressions, by = list(cols = res_deriv$cols),
+                        FUN = function(x) {paste(x, collapse = " + ")})
+    deriv1 <- deriv1$x
+    
     if (any(deriv1 == "")) {
       problem_instruments <- colnames(res_deriv)[deriv1 == ""]
       stop(paste0("The following fit instruments do not occur in the model",
@@ -123,48 +126,42 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   } else {
     res_equations <- character(0)
   }
-  handle_lags <- function(x, endo_lags) {
-    repl <- function(x) {
-      i <- as.integer(x) - shift
-      if (i == 0) {
-        return ("")
-      } else {
-        return (paste0("(", i, ")"))
-      }
-    }
-    for (i in seq_along(x)) {
-      shift <- endo_lags[i]
-      if (!is.na(x[i])) {
-        x[i] <- gsubfn(lag_pattern, repl, x[i])
-      }
-    }
-    return (x)
-  }
   
-  # endogenous variables
-  dshift <- apply(endo_deriv, MARGIN = 1, FUN = handle_lags,
-                  endo_lags = endo_lags)
+  l_names <- l_vars
+  if (!fixed_period) l_names <- paste0(l_vars, "[0]")
+  endo_deriv <- mult_lagrange(endo_deriv, l_names)
+  
+  if (fixed_period) {
+    endo_deriv <- convert_lags(endo_deriv)
+  } else {
+    f <- function(expression, shift) {
+      repl <- function(x) {
+        i <- as.integer(x) - shift
+        if (i == 0) {
+          return ("")
+        } else {
+          return (paste0("(", i, ")"))
+        }
+      }
+      return(gsubfn(lag_pattern, repl, expression))
+    }
+    shifts <- endo_deriv$endo_lag
+    endo_deriv$expressions <- mapply(FUN = f, endo_deriv$expressions, shifts)
+  }
+  #regts::printobj(endo_deriv)
+  
+  deriv <- aggregate(endo_deriv$expressions, 
+                     by = list(cols = endo_deriv$endo_index),
+                     FUN = function(x) {paste(x, collapse = " + ")})
+  deriv <- deriv$x
+  
+  #regts::printobj(deriv)
+                     
 
+  endo_equations <- paste(fit_vars, "* (", vars, "-", exo_vars, ") + (1 - ", 
+                          fit_vars, ") * (", deriv, ")", " = 0;")
   
-  dshift <- t(dshift)
-  
-  nendo <- nrow(lli)
-  endo_equations <- character(nendo)
-  for (ivar in seq_len(nendo)) {
-    if (!fixed_period) {
-      row <- lli[ivar, ]
-      i <- row[row > 0]
-    } else {
-      i <- ivar
-    }
-    dat <- as.character(dshift[, i])
-    dat <- dat[!is.na(dat)]
-    first_order <- paste(dat,  collapse = " + ")
-    equation <- paste(fit_vars[ivar], "* (", vars[ivar], "-",
-                      exo_vars[ivar], ") + (1 - ", fit_vars[ivar], ") * (",
-                      first_order, ")", " = 0;")
-    endo_equations[ivar] <- equation
-  }
+  #regts::printobj(endo_equations)
   
   initialized_sigmas <- intersect(sigmas, model_info$param_names)
   fit_cond <- list(vars = vars, l_vars = l_vars, fit_vars = fit_vars,
