@@ -234,6 +234,8 @@ get_fit_instruments <- function(mod_text) {
   ma <- regmatches(fit_block, m)
   instruments <- strsplit(ma[[1]], split = "\\s+")
   instruments <- setdiff(unlist(instruments), "varexo")
+
+  if (length(instruments) == 0) return(NULL)
   return(instruments)
 }
 
