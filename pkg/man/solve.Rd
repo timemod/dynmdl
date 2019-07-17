@@ -16,8 +16,7 @@ whether the solve was successfully terminated or not.
 
 \code{DynMdl} method:
 \preformatted{
- md$solve(control = list(), force_stacked_time = FALSE,
-          solver = c("umfpackr", "nleqslv"), 
+ md$solve(control = list(), mode, solver = c("umfpackr", "nleqslv"), 
           start = c("current", "previous"), ...)
 }
 

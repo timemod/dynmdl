@@ -1075,8 +1075,8 @@ DynMdl <- R6Class("DynMdl",
                   minimal_version, "\nPlease regenerate the model with function",
                   "dyn_mdl"))
       }
-      
-      if (compareVersion(as.character(ser$version), "0.9") < 0) {
+      if (compareVersion(as.character(ser$version), "0.9") < 0
+          && !is.null(ser$fit_info)) {
         ser$fit_info$fixed_period <- FALSE
       } 
       
