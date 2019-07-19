@@ -160,7 +160,7 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
     dat <- as.character(dshift[, i])
     dat <- dat[!is.na(dat)]
     first_order <- paste(dat,  collapse = " + ")
-    equation <- paste(fit_vars[ivar], "* (", vars[ivar], "-",
+    equation <- paste0(fit_vars[ivar], " * (", vars[ivar], " - ",
                       exo_vars[ivar], ") + (1 - ", fit_vars[ivar], ") * (",
                       first_order, ")", " = 0;")
     endo_equations[ivar] <- equation
