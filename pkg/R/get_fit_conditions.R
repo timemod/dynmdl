@@ -172,12 +172,19 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   }
   #regts::printobj(endo_deriv)
   
+  
+  # first sum for each equation and endogenous variable over derivatives with respect
+  # to different periods
   deriv <- aggregate(endo_deriv$expressions, 
-                     by = list(cols = endo_deriv$endo_index),
-                     FUN = function(x) {paste(x, collapse = " + ")})
+                     by = list(eq = endo_deriv$eq, endo_index = endo_deriv$endo_index),
+                     FUN = function(x) {paste(rev(x), collapse = " + ")})
+  
+  # now sum all equations with derivatives to the same variable
+  deriv <- aggregate(deriv$x, by = list(endo_index = deriv$endo_index),
+                    FUN = function(x) {paste(x, collapse = " + ")})
   deriv <- deriv$x
   
-  endo_equations <- paste(fit_vars, "* (", vars, "-", exo_vars, ") + (1 - ", 
+  endo_equations <- paste0(fit_vars, " * (", vars, " - ", exo_vars, ") + (1 - ", 
                           fit_vars, ") * (", deriv, ")", " = 0;")
   
   #regts::printobj(endo_equations)
