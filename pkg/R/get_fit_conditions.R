@@ -187,9 +187,8 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   endo_equations <- paste0(fit_vars, " * (", vars, " - ", exo_vars, ") + (1 - ", 
                           fit_vars, ") * (", deriv, ")", " = 0;")
   
-  #regts::printobj(endo_equations)
-  
   initialized_sigmas <- intersect(sigmas, model_info$param_names)
+
   fit_cond <- list(vars = vars, l_vars = l_vars, fit_vars = fit_vars,
                    exo_vars = exo_vars, instruments = instruments, 
                    old_instruments = old_instruments, sigmas = sigmas,

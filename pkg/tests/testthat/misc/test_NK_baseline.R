@@ -15,7 +15,7 @@ param_value_file <-  file.path(dynare_dir, "NK_baseline_param_values.txt")
 steady_data_file <- file.path(dynare_dir, "NK_baseline_steady.csv")
 eigval_file <- file.path(dynare_dir, "NK_baseline_eigval.csv")
 start_period <- period("2015")
-expected_equations_file <- "expected_output/expected_equations.rds"
+expected_equations_file <- "expected_output/expected_equations.txt"
 
 # compile the model
 model_period <- period_range("2015/2033")
@@ -87,8 +87,9 @@ test_that("get_equations", {
   } else {
     eqs_tmp <- eqs
   }
+  eqs_tmp <- paste(eqs_tmp, collapse = "\n")
+  expect_known_output(cat(eqs_tmp), file = expected_equations_file)
   #print(eqs)
-  expect_equal_to_reference(eqs_tmp, expected_equations_file)
 })
 
 test_that("solve_perturbation (1) compare with dynare result", {

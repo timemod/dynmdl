@@ -1,18 +1,25 @@
- [1] "y = c + i + g"                                                                                                                                                 
- [2] "yd = y - t"                                                                                                                                                    
- [3] "t = t0 + t1 * y + ut"                                                                                                                                          
- [4] "c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * r^2 + uc"                                                                                         
- [5] "i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + i5 * r^2 + ui"                                                                                            
- [6] "md = m0 + m1 * y + m2 * r + m3 * r^2 + umd"                                                                                                                    
- [7] "md = ms"                                                                                                                                                       
- [8] "(sigma_ut >= 0) * (ut / sigma_ut^2 + l_3 * ((-1))) + (sigma_ut < 0) * (ut -\nut_old) = 0"                                                                      
- [9] "(sigma_uc >= 0) * (uc / sigma_uc^2 + l_4 * ((-1))) + (sigma_uc < 0) * (uc -\nuc_old) = 0"                                                                      
-[10] "(sigma_umd >= 0) * (umd / sigma_umd^2 + l_6 * ((-1))) + (sigma_umd < 0) * (umd\n- umd_old) = 0"                                                                
-[11] "(sigma_ui >= 0) * (ui / sigma_ui^2 + l_5 * ((-1))) + (sigma_ui < 0) * (ui -\nui_old) = 0"                                                                      
-[12] "fit_y * (y - y_exo) + (1 - fit_y) * (l_1 * (1) + l_2 * ((-1)) + l_3 * ((-t1)) +\n    l_5(-1) * ((-i3)) + l_5 * ((-i2)) + l_5(1) * ((-i1)) + l_6 * ((-m1))) = 0"
-[13] "fit_yd * (yd - yd_exo) + (1 - fit_yd) * (l_2 * (1) + l_4(-1) * ((-c3)) + l_4 *\n    ((-c2)) + l_4(1) * ((-c1))) = 0"                                           
-[14] "fit_t * (t - t_exo) + (1 - fit_t) * (l_2 * (1) + l_3 * (1)) = 0"                                                                                               
-[15] "fit_c * (c - c_exo) + (1 - fit_c) * (l_1 * ((-1)) + l_4 * (1)) = 0"                                                                                            
-[16] "fit_i * (i - i_exo) + (1 - fit_i) * (l_1 * ((-1)) + l_5 * (1)) = 0"                                                                                            
-[17] "fit_md * (md - md_exo) + (1 - fit_md) * (l_6 * (1) + l_7 * (1)) = 0"                                                                                           
-[18] "fit_r * (r - r_exo) + (1 - fit_r) * (l_4 * ((-(c4+c5*2*r))) + l_5 *\n    ((-(i4+i5*2*r))) + l_6 * ((-(m2+m3*2*r)))) = 0"                                       
+y = c + i + g
+yd = y - t
+t = t0 + t1 * y + ut
+c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * r^2 + uc
+i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + i5 * r^2 + ui
+md = m0 + m1 * y + m2 * r + m3 * r^2 + umd
+md = ms
+(sigma_ut >= 0) * (ut / sigma_ut^2 + l_3 * ((-1))) + (sigma_ut < 0) * (ut -
+ut_old) = 0
+(sigma_uc >= 0) * (uc / sigma_uc^2 + l_4 * ((-1))) + (sigma_uc < 0) * (uc -
+uc_old) = 0
+(sigma_umd >= 0) * (umd / sigma_umd^2 + l_6 * ((-1))) + (sigma_umd < 0) * (umd
+- umd_old) = 0
+(sigma_ui >= 0) * (ui / sigma_ui^2 + l_5 * ((-1))) + (sigma_ui < 0) * (ui -
+ui_old) = 0
+fit_y * (y - y_exo) + (1 - fit_y) * (l_1 * (1) + l_2 * ((-1)) + l_3 * ((-t1)) +
+    l_5(-1) * ((-i3)) + l_5 * ((-i2)) + l_5(1) * ((-i1)) + l_6 * ((-m1))) = 0
+fit_yd * (yd - yd_exo) + (1 - fit_yd) * (l_2 * (1) + l_4(-1) * ((-c3)) + l_4 *
+    ((-c2)) + l_4(1) * ((-c1))) = 0
+fit_t * (t - t_exo) + (1 - fit_t) * (l_2 * (1) + l_3 * (1)) = 0
+fit_c * (c - c_exo) + (1 - fit_c) * (l_1 * ((-1)) + l_4 * (1)) = 0
+fit_i * (i - i_exo) + (1 - fit_i) * (l_1 * ((-1)) + l_5 * (1)) = 0
+fit_md * (md - md_exo) + (1 - fit_md) * (l_6 * (1) + l_7 * (1)) = 0
+fit_r * (r - r_exo) + (1 - fit_r) * (l_4 * ((-(c4+c5*2*r))) + l_5 *
+    ((-(i4+i5*2*r))) + l_6 * ((-(m2+m3*2*r)))) = 0

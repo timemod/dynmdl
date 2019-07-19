@@ -5,6 +5,7 @@ rm(list = ls())
 context("ISLM model with year fit")
 
 source("../tools/read_dynare_result.R")
+source("../tools/read_file.R")
 
 model_name <- "islm_yearfit"
 nperiods <- 18
@@ -29,9 +30,8 @@ mdl$solve(control = list(silent = TRUE))
 dynare_result <- read_dynare_result(model_name, mdl)
 
 test_that("generated fit mod file equal to reference ", {
-  new <- readLines(fit_mod_file)
-  old <- readLines(fit_mod_org_file)
-  expect_identical(old, new)
+  txt <- read_file(fit_mod_file)
+  expect_known_output(cat(txt), file = "expected_output/yearfit_fmod_file.txt")
 })
 
 test_that("dynare result equal to dynr result", {
