@@ -15,7 +15,8 @@ test_that("get_equations works correctly", {
   } else {
     eqs_tmp <- eqs
   }
-  expect_equal_to_reference(eqs_tmp, "expected_output/islm_countries_eqs.rds")
+  eqs_txt <- paste(eqs_tmp, collapse = "\n")
+  expect_known_output(cat(eqs_txt), "expected_output/islm_countries_eqs.txt")
 })
 
 # TODO: test solve_steady and solve

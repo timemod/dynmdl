@@ -1,0 +1,35 @@
+y_nl = c_nl + i_nl + g_nl + x_nl - imp_nl
+yd_nl = y_nl - t_nl
+t_nl = t0_nl + t1_nl * y_nl + ut_nl
+c_nl = c0_nl + c1_nl * yd_nl(-1) + c2_nl * yd_nl + 
+          c3_nl * yd_nl(+1) + c4_nl * r_nl + c5_nl * r_nl^2 +
+          uc_nl
+i_nl = i0_nl + i1_nl * y_nl(-1) + i2_nl * y_nl 
+          + i3_nl * y_nl(+1) + i4_nl * r_nl + i5_nl * r_nl^2 +
+          ui_nl
+md_nl = m0_nl + m1_nl * y_nl + m2_nl * r_nl + 
+           m3_nl * r_nl^2 + umd_nl
+md_nl = ms_nl
+x_nl = x0_nl + x1_nl * y_nl
+imp_nl = imp_adj * (imp0_nl + imp1_nl * c_nl)
+y_uk = c_uk + i_uk + g_uk + x_uk - imp_uk
+yd_uk = y_uk - t_uk
+t_uk = t0_uk + t1_uk * y_uk + ut_uk
+c_uk = c0_uk + c1_uk * yd_uk(-1) + c2_uk * yd_uk + 
+          c3_uk * yd_uk(+1) + c4_uk * r_uk + c5_uk * r_uk^2 +
+          uc_uk
+i_uk = i0_uk + i1_uk * y_uk(-1) + i2_uk * y_uk 
+          + i3_uk * y_uk(+1) + i4_uk * r_uk + i5_uk * r_uk^2 +
+          ui_uk
+md_uk = m0_uk + m1_uk * y_uk + m2_uk * r_uk + 
+           m3_uk * r_uk^2 + umd_uk
+md_uk = ms_uk
+x_uk = x0_uk + x1_uk * y_uk
+imp_uk = imp_adj * (imp0_uk + imp1_uk * c_uk)
+tot_imp = 0
+	+ imp_nl
+	+ imp_uk
+tot_x = 0
+	+ x_nl
+	+ x_uk
+tot_imp = tot_x

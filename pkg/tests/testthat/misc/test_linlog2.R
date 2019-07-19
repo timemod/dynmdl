@@ -5,6 +5,8 @@ rm(list = ls())
 
 context("linlog2")
 
+source("../tools/read_file.R")
+
 model <- "linlog2"
 
 mod_file <- file.path("mod", paste0(model, ".mod"))
@@ -24,8 +26,8 @@ report <- capture_output({
 correct_result <- c(y1 = 1, y2 = 1)
 
 test_that("check fit_mod_file", {
-  lines <- readLines(fit_mod_file)
-  expect_known_output(lines, print = TRUE,
+  fit_mod_txt <- read_file(fit_mod_file)
+  expect_known_output(cat(fit_mod_txt), 
                       "expected_output/linlog2_fit_mod_file.txt")
 })
 
