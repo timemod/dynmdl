@@ -9,7 +9,7 @@ model <- "islm_var1"
 
 mod_file <- file.path("mod", paste0(model, ".mod"))
 
-expected_equations_file <- "expected_output/expected_equations_islm_var1.rds"
+expected_equations_file <- "expected_output/expected_equations_islm_var1.txt"
 
 solve_period <- period_range("2015/2032")
 
@@ -168,8 +168,8 @@ test_that("get_equations", {
   } else {
     eqs_tmp <- eqs
   }
-  #print(eqs)
-  expect_equal_to_reference(eqs_tmp, expected_equations_file)
+  eqs_tmp <- paste(eqs_tmp, collapse = "\n")
+  expect_known_output(cat(eqs_tmp), file = expected_equations_file)
 })
 
 #

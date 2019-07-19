@@ -14,7 +14,6 @@ param_value_file <-  file.path(dynare_dir, "NK_baseline_param_values.txt")
 steady_data_file <- file.path(dynare_dir, "NK_baseline_steady.csv")
 eigval_file <- file.path(dynare_dir, "NK_baseline_eigval.csv")
 start_period <- period("2015")
-expected_equations_file <- "expected_output/expected_equations.rds"
 
 # compile the model
 model_period <- period_range("2015/2033")
