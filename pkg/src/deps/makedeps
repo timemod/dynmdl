@@ -20,6 +20,10 @@ DynamicModel.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh \
                 ExternalFunctionCalc.hh ExternalFunctionsTable.hh ModelTree.hh \
                 NumericalConstants.hh PolishModel.hh StaticModel.hh SymbolTable.hh \
                 dyn_error.hh dynout.hh
+DynamicModel.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh \
+                ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
+                ExternalFunctionsTable.hh ModelTree.hh NumericalConstants.hh \
+                PolishModel.hh StaticModel.hh SymbolTable.hh
 DynareBison.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
                ConfigFile.hh DataTree.hh DynamicModel.hh DynareBison.hh ExprNode.hh \
                ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \

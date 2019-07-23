@@ -178,7 +178,8 @@ public:
 #ifdef USE_R
   void writeCFilesForR(const string &basename) const;
   Rcpp::List getModelListR(bool internal_calc);
-  Rcpp::List getDerivativeInfo() const;
+  Rcpp::List getDerivativeInfo(Rcpp::CharacterVector instruments,
+                               bool fixed_period) const;
   int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
   void writeLatexFiles(const string &basename, bool fit);

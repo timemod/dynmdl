@@ -51,10 +51,12 @@ test_that("solve", {
 test_that("error when there are fit instruments with lags and leads", {
   
   mod_file <- "mod/islm_fit_exolag2.mod"
-  msg <- "There are fit instruments with lags or leads: uc."
+  msg <- paste0("Fit instruments with lags or leads are not allowed.\n",
+                "The following fit instruments have lags or leads: uc.")
   dum <- capture_output(expect_error(mdl2 <- dyn_mdl(mod_file), msg))
   
   mod_file <- "mod/islm_fit_exolag3.mod"
-  msg <- "There are fit instruments with lags or leads: ut, umd."
+  msg <- paste0("Fit instruments with lags or leads are not allowed.\n",
+                "The following fit instruments have lags or leads: ut, umd.")
   dum <- capture_output(expect_error(mdl2 <- dyn_mdl(mod_file), msg))
 })

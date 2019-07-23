@@ -1453,7 +1453,12 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
                               Rcpp::Named("trend_info") = trend_info);
 }
 
-Rcpp::List ModFile::getDerivativeInfo() const {
+// Return information about the derivatives of the equations
+// for the fit procedure.
+Rcpp::List ModFile::getDerivativeInfo(Rcpp::CharacterVector instruments,
+                                      bool fixed_period) const {
+
+
     int exo_count = symbol_table.exo_nbr();
     int endo_count =  symbol_table.endo_nbr();
     int param_count = symbol_table.param_nbr();
@@ -1471,7 +1476,10 @@ Rcpp::List ModFile::getDerivativeInfo() const {
         param_names[i] = symbol_table.getName(eParameter, i).c_str();
     }
 
-    Rcpp::List dynmdl = dynamic_model.getDerivativeInfoR();
+    Rcpp::IntegerVector exo_index_instr = Rcpp::match(instruments, exo_names);
+
+    Rcpp::List dynmdl = dynamic_model.getDerivativeInfoR(exo_index_instr,
+                                                         fixed_period);
     
     return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,
                               Rcpp::Named("endo_names") = endo_names,

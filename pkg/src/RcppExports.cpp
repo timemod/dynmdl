@@ -172,14 +172,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // compute_derivatives
-Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename);
-RcppExport SEXP _dynmdl_compute_derivatives(SEXP modfileSEXP, SEXP latex_basenameSEXP) {
+Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename, Rcpp::CharacterVector instruments, bool fixed_period);
+RcppExport SEXP _dynmdl_compute_derivatives(SEXP modfileSEXP, SEXP latex_basenameSEXP, SEXP instrumentsSEXP, SEXP fixed_periodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
     Rcpp::traits::input_parameter< std::string >::type latex_basename(latex_basenameSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_derivatives(modfile, latex_basename));
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type instruments(instrumentsSEXP);
+    Rcpp::traits::input_parameter< bool >::type fixed_period(fixed_periodSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_derivatives(modfile, latex_basename, instruments, fixed_period));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -284,7 +286,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_get_residuals_stat", (DL_FUNC) &_dynmdl_get_residuals_stat, 3},
     {"_dynmdl_get_triplet_jac_stat", (DL_FUNC) &_dynmdl_get_triplet_jac_stat, 3},
     {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 9},
-    {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 2},
+    {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 4},
     {"_dynmdl_get_residuals_", (DL_FUNC) &_dynmdl_get_residuals_, 8},
     {"_dynmdl_get_triplet_jac", (DL_FUNC) &_dynmdl_get_triplet_jac, 9},
     {"_dynmdl_get_jac_backwards", (DL_FUNC) &_dynmdl_get_jac_backwards, 8},
