@@ -49,7 +49,7 @@ md = ms;
 y_year = 0.25 * (y + y(-1) + y(-2) + y(-3));
 
 
-% First order conditions residuals:
+% First order conditions fit instruments:
 
 (sigma_ut >= 0) * (ut / sigma_ut^2 + l_3 * ((-1))) + (sigma_ut < 0) * (ut -
 ut_old) = 0;

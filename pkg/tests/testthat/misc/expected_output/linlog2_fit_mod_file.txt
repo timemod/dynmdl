@@ -24,7 +24,7 @@ model;
 0.5 * (y1 - 1) = linlog(y1, eps) + uy1;
 2 * (y2 - 1) = linlog(y2);
 
-% First order conditions residuals:
+% First order conditions fit instruments:
 
 (sigma_uy1 >= 0) * (uy1 / sigma_uy1^2 + l_1 * ((-1))) + (sigma_uy1 < 0) * (uy1
 - uy1_old) = 0;

@@ -37,7 +37,7 @@ i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + i5 * r^2 + ui;
 md = m0 + m1 * y + m2 * r + m3 * r^2 + umd;
 md = ms;
 
-% First order conditions residuals:
+% First order conditions fit instruments:
 
 (sigma_ut >= 0) * (ut / sigma_ut^2 + l_1 * ((-1))) + (sigma_ut < 0) * (ut -
 ut_old) = 0;
