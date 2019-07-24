@@ -45,8 +45,8 @@ compile_model_ <- function(modfile, latex_basename, use_dll, dll_dir, max_laglea
     .Call(`_dynmdl_compile_model_`, modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc, n_fit_derivatives, warn_uninit_param)
 }
 
-compute_derivatives <- function(modfile, latex_basename) {
-    .Call(`_dynmdl_compute_derivatives`, modfile, latex_basename)
+compute_derivatives <- function(modfile, latex_basename, instruments, fixed_period) {
+    .Call(`_dynmdl_compute_derivatives`, modfile, latex_basename, instruments, fixed_period)
 }
 
 get_residuals_ <- function(endos, icols, exo_data, params, f_dynamic, n_endo, nper, period_shift) {

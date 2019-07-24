@@ -11,7 +11,6 @@ model_name <- "islm_yearfit"
 nperiods <- 18
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 fit_mod_file <- "mod_out/islm_yearfit.mod"
-fit_mod_org_file <- "mod_out_org/islm_yearfit.mod"
 
 p1 <- period("2016Q1")
 model_period <- period_range(p1, p1 + nperiods - 1)

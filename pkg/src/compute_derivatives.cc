@@ -3,7 +3,9 @@
 #include  "parse.hh"
 
 // [[Rcpp::export]]
-Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename) {
+Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename,
+                               Rcpp::CharacterVector instruments,
+                               bool fixed_period) {
 
     // Compute the derivatives for the fit procedure (first order conditions).
    
@@ -14,7 +16,7 @@ Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename) 
                               false, true, true, 0, false);
     
     Rcpp::List retval;
-    retval =  mod_file->getDerivativeInfo();
+    retval =  mod_file->getDerivativeInfo(instruments, fixed_period);
 
     delete mod_file;
 

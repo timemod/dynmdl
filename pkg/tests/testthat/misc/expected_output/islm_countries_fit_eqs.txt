@@ -49,11 +49,11 @@ tot_imp = tot_x
 0) * (uc_uk - uc_uk_old) = 0
 (sigma_umd_uk >= 0) * (umd_uk / sigma_umd_uk^2 + l_15 * ((-1))) + (sigma_umd_uk
 < 0) * (umd_uk - umd_uk_old) = 0
-fit_y_nl * (y_nl - y_nl_exo) + (1 - fit_y_nl) * (l_5(1) * ((-i1_nl)) + l_1 *
-    (1) + l_2 * ((-1)) + l_3 * ((-t1_nl)) + l_5 * ((-i2_nl)) + l_6 * ((-m1_nl))
-    + l_8 * ((-x1_nl)) + l_5(-1) * ((-i3_nl))) = 0
-fit_yd_nl * (yd_nl - yd_nl_exo) + (1 - fit_yd_nl) * (l_4(1) * ((-c1_nl)) + l_2
-    * (1) + l_4 * ((-c2_nl)) + l_4(-1) * ((-c3_nl))) = 0
+fit_y_nl * (y_nl - y_nl_exo) + (1 - fit_y_nl) * (l_1 * (1) + l_2 * ((-1)) + l_3
+    * ((-t1_nl)) + l_5(-1) * ((-i3_nl)) + l_5 * ((-i2_nl)) + l_5(1) *
+    ((-i1_nl)) + l_6 * ((-m1_nl)) + l_8 * ((-x1_nl))) = 0
+fit_yd_nl * (yd_nl - yd_nl_exo) + (1 - fit_yd_nl) * (l_2 * (1) + l_4(-1) *
+    ((-c3_nl)) + l_4 * ((-c2_nl)) + l_4(1) * ((-c1_nl))) = 0
 fit_t_nl * (t_nl - t_nl_exo) + (1 - fit_t_nl) * (l_2 * (1) + l_3 * (1)) = 0
 fit_c_nl * (c_nl - c_nl_exo) + (1 - fit_c_nl) * (l_1 * ((-1)) + l_4 * (1) + l_9
     * ((-(imp_adj*imp1_nl)))) = 0
@@ -67,11 +67,11 @@ fit_x_nl * (x_nl - x_nl_exo) + (1 - fit_x_nl) * (l_1 * ((-1)) + l_8 * (1) +
     l_20 * ((-1))) = 0
 fit_imp_nl * (imp_nl - imp_nl_exo) + (1 - fit_imp_nl) * (l_1 * (1) + l_9 * (1)
     + l_19 * ((-1))) = 0
-fit_y_uk * (y_uk - y_uk_exo) + (1 - fit_y_uk) * (l_14(1) * ((-i1_uk)) + l_10 *
-    (1) + l_11 * ((-1)) + l_12 * ((-t1_uk)) + l_14 * ((-i2_uk)) + l_15 *
-    ((-m1_uk)) + l_17 * ((-x1_uk)) + l_14(-1) * ((-i3_uk))) = 0
-fit_yd_uk * (yd_uk - yd_uk_exo) + (1 - fit_yd_uk) * (l_13(1) * ((-c1_uk)) +
-    l_11 * (1) + l_13 * ((-c2_uk)) + l_13(-1) * ((-c3_uk))) = 0
+fit_y_uk * (y_uk - y_uk_exo) + (1 - fit_y_uk) * (l_10 * (1) + l_11 * ((-1)) +
+    l_12 * ((-t1_uk)) + l_14(-1) * ((-i3_uk)) + l_14 * ((-i2_uk)) + l_14(1) *
+    ((-i1_uk)) + l_15 * ((-m1_uk)) + l_17 * ((-x1_uk))) = 0
+fit_yd_uk * (yd_uk - yd_uk_exo) + (1 - fit_yd_uk) * (l_11 * (1) + l_13(-1) *
+    ((-c3_uk)) + l_13 * ((-c2_uk)) + l_13(1) * ((-c1_uk))) = 0
 fit_t_uk * (t_uk - t_uk_exo) + (1 - fit_t_uk) * (l_11 * (1) + l_12 * (1)) = 0
 fit_c_uk * (c_uk - c_uk_exo) + (1 - fit_c_uk) * (l_10 * ((-1)) + l_13 * (1) +
     l_18 * ((-(imp_adj*imp1_uk)))) = 0

@@ -154,7 +154,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
       dll_file <- NA_character_
     }
     fit_mod_text <- read_file(fit_mod_file)
-    equations <- get_equations(fit_mod_text)
+    equations <- get_equations(fit_mod_text, mdldef)
     mdl <- FitMdl$new(mdldef, fit_info, equations, base_period, calc, 
                       dll_dir, dll_file, debug)
   } else {
@@ -173,7 +173,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     } else {
       dll_file <- NA_character_
     }
-    equations <- get_equations(mod_text)
+    equations <- get_equations(mod_text, mdldef)
     mdl <- DynMdl$new(mdldef, equations, base_period, calc, dll_dir, dll_file)
   }
   
@@ -234,21 +234,44 @@ get_fit_instruments <- function(mod_text) {
   ma <- regmatches(fit_block, m)
   instruments <- strsplit(ma[[1]], split = "\\s+")
   instruments <- setdiff(unlist(instruments), "varexo")
+
+  if (length(instruments) == 0) return(NULL)
   return(instruments)
 }
 
 # this function read the mod file and creates a vector with equations
-get_equations <- function(mod_text) {
+get_equations <- function(mod_text, mdldef) {
+  
+  # the code below may fail when there are model variables named "model" or
+  # "end". Therefore check the names
+  if (any(c("model", "end") %in% c(names(mdldef$endos), names(mdldef$exos),
+                               names(mdldef$params)))) {
+    stop(paste("\"model\" or \"end\" should not be used as names for model",
+               "variables or parameters."))
+  }
   
   # remove C-style comments, regexpr cannot handle this
   mod_text <- gsub("/\\*[\\s\\S]*?\\*/", "", mod_text, perl = TRUE, 
                    useBytes = TRUE)
   
-  m <- regexpr("model.*?;([\\s\\S]+?)end;", mod_text, perl = TRUE, 
-               useBytes = TRUE)
-  startpos <- attr(m, "capture.start")[1]
-  endpos <- startpos + attr(m, "capture.length")[1] - 1
-  model_block <- substr(mod_text, startpos, endpos)
+  # NOTE: do not use the regular expression in the commented code below. 
+  # It works, but there are memory problems for large models.
+  # m <- regexpr("model.*?;([\\s\\S]+?)end;", mod_text, perl = TRUE, 
+  #             useBytes = TRUE)
+  
+
+  m <- regexpr("\\smodel(\\(.+?\\))?;", mod_text)
+  if (is.null(m)) {
+    stop("Could not find the model block")
+  }
+  start_pos <- as.numeric(m) + attr(m, "match.length")
+  model_block <- substring(mod_text, start_pos, nchar(mod_text))
+  m <- regexpr("\\send;", model_block)
+  if (is.null(m)) {
+    stop("Could not find the end of the model block")
+  }
+  end_pos <- as.numeric(m) - 1
+  model_block <- substr(model_block, 1,  end_pos)
   model_block <- trimws(model_block)
   
   # remove comments

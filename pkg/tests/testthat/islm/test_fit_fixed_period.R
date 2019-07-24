@@ -5,16 +5,26 @@ context("ISLM model with fit procedure with fit_fixed_period = TRUE")
 
 rds_file <- "islm_model_fit.rds"
 model_name <- "islm_fit"
+fit_mod_file <- "mod_out/islm_fit_fixed_period.mod"
+
+source("../tools/read_file.R")
 
 # create two version of a FitMDl, one with and one without fit_fixed_period
 report <- capture_output({
   mdl <- read_mdl(rds_file)
   mdl_fixed_per <- dyn_mdl(file.path("mod", paste0(model_name, ".mod")),
                            period = "2016Q1/2020Q2", calc = "internal",
-                           fit_fixed_period = TRUE)
+                           fit_fixed_period = TRUE, fit_mod_file = fit_mod_file)
   mdl_fixed_per$solve_steady()
   mdl_fixed_per$put_static_endos()
 })
+
+test_that("generated fit mod file equal to reference ", {
+  txt <- read_file(fit_mod_file)
+  expect_known_output(cat(txt), 
+                      file = "expected_output/fit_fixed_period_fmod_file.txt")
+})
+
 
 
 test_that("single fit target", {

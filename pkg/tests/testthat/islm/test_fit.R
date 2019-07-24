@@ -275,3 +275,13 @@ test_that("clear_fit", {
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
 })
 
+test_that("error: fit instrument not in model block", {
+    expect_warning(
+      expect_error(
+        msg <- capture.output(
+          rep <- capture_output(mdl <- dyn_mdl("mod/islm_fit_error.mod")),
+          type = "message"),
+        "The following fit instruments do not occur in the model equations: uc.")
+    )
+})
+

@@ -91,7 +91,7 @@ test_that("solve with max_laglead_1", {
                        dynare_result_with_aux$exo)
   
   # When a FitMdl object is solved, the old fit instruments
-  # is made euqal to the current instrument. That does not happen in Dynare 
+  # is made equal to the current instruments. That does not happen in Dynare 
   # (uc_old is not used when sigma_uc > 0
   dynare_data[ , "uc_old"] <- dynare_data[ , "uc"]
   
