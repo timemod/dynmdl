@@ -7,26 +7,21 @@
 get_fit_conditions <- function(mod_file,  instruments, latex_basename, 
                                fixed_period = TRUE) {
   
-  # regular expressions:
-  lag_pattern <- "\\[(-?\\d+)\\]"
-  pow_pattern <- "\\*\\*" 
-  
+  # call C++ function compute_derivatives
   model_info <- compute_derivatives(mod_file, latex_basename, instruments, 
                                     fixed_period)
-  
   list2env(model_info, envir = environment())
   list2env(dynamic_model, envir = environment())
-  
+
   # Check if there are lags/leads on instruments. Dynare ignores lags and 
-  # leads on exogeneous variables when computing the derivative, therefore
+  # leads on exogeneous variables when computing the derivatives, therefore
   # the fit procedure cannot handle this situation (actually it would be fine
-  # if fixed_period = TRUE, but dyn_mdl still does not accept fit targets 
-  # with lags and leads)
+  # if fixed_period = TRUE, but for the moment we still does not accept 
+  # fit instruments with lags and leads).
   if (any(instr_has_lag)) {
-    problem_instruments <- instruments[instr_has_lag]
     stop(paste0("Fit instruments with lags or leads are not allowed.\n",
                 "The following fit instruments have lags or leads: ",
-                paste(problem_instruments, collapse = ", "), 
+                paste(instruments[instr_has_lag], collapse = ", "), 
                 "."))
   }
   
@@ -42,49 +37,29 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   initialized_sigmas <- intersect(sigmas, model_info$param_names)
   
   # TODO: check that the intersection of fit_vars, exo_vars,
-  # l_vars and sigmas with vars is zero
+  # l_vars and sigmas with endo_names and exo_names is zero.
   
-  # replace ** by ^. Dynare employs the ^ 
-  # TODO: it this necessary, why do the equations returned by compute_derivatives
-  # return ** instead of ^ (^ is also the R operator for exponentiation)
-  instr_deriv$expressions <- gsub(pow_pattern, "^", instr_deriv$expressions)
-  endo_deriv$expressions <- gsub(pow_pattern, "^", endo_deriv$expressions)
   
   # 
   # several function definitions
   #
-
-  convert_lags <- function(expressions) {
-    # This function converts lags specified with square brackests ([]) 
-    # in expressions to lags with (). lag zero ([0]) is  removed 
+  
+  convert_lags <- function(expression, shift = 0) {
+    # This function converts lags specified with square brackests (e.g. x[-3]) 
+    # in expressions to lags with () (e.g. x(3)). Lag zero ([0]) is disregarded.
+    # If argument shift has been specified, then the lags are shifted 
+    # with -shift.
     repl_fun <- function(x) {
-      i <- as.integer(x)
+      i <- as.integer(x) - shift
       if (i == 0) {
         return ("")
       } else {
         return (paste0("(", i, ")"))
       }
     }
-    return(gsubfn(lag_pattern, repl_fun, expressions))
+    lag_pattern <- "\\[(-?\\d+)\\]"
+    return(gsubfn(lag_pattern, repl_fun, expression))
   }
-  
-  convert_lags_and_shift <- function(expression, endo_lag) {
-    # Similar to function convert_lags, but with shifting of lags in the 
-    # expressions. Expression is a derivative  of an equation with respect to 
-    # an endogenous variable with lag endo_lag. Thus to obtain the derivative 
-    # of the expression with respect to the current endogenous variable, we have 
-    # to shift the lag with -endo_lag.
-    repl <- function(x) {
-      i <- as.integer(x) - endo_lag
-      if (i == 0) {
-        return ("")
-      } else {
-        return (paste0("(", i, ")"))
-      }
-    }
-    return(gsubfn(lag_pattern, repl, expression))
-  }
-  
  
   mult_lagrange <- function(x, l_names) {
     # multiply the derivatives with the lagrange multiplier for each equation
@@ -98,8 +73,8 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   #
 
   # multiply all derivatives with the Lagrange multipliers   
+
   instr_deriv$expressions <- convert_lags(instr_deriv$expressions)
-  
   instr_deriv <- mult_lagrange(instr_deriv, l_vars)
   
   # sum the expressions of all entries with the same fit instrument
@@ -133,7 +108,7 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   if (fixed_period) {
     endo_deriv$expressions <- convert_lags(endo_deriv$expressions)
   } else {
-    endo_deriv$expressions <- mapply(FUN = convert_lags_and_shift,
+    endo_deriv$expressions <- mapply(FUN = convert_lags, 
                                      endo_deriv$expressions, 
                                      endo_deriv$endo_lag)
   }
@@ -164,7 +139,6 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
                            ") + (1 - ",  fit_vars, ") * (", deriv_eq, ")", 
                            " = 0;")
   
- 
 
   fit_cond <- list(vars = endo_names, l_vars = l_vars, fit_vars = fit_vars,
                    exo_vars = exo_vars, instruments = instruments, 

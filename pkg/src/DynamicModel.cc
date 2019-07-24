@@ -5648,7 +5648,13 @@ Rcpp::List DynamicModel::getDerivativeInfoR(int n_instr, Rcpp::IntegerVector ins
                                             bool fixed_period) const {
     // return the first derivative equations, used to construct the
     // first order condition for the fit procedure.
-    //
+    // ARGUMENTS:
+    //   n_instr          the number of fit instruments
+    //   instr_index_exo  the indices of the fit instruments in the list of
+    //                    exogenous variables (in other words, instr_index_exo[1] is the
+    //                    instrument index of the first exogenous varianble. This is equal to NA 
+    //                    if the exogenous variable is not a fit instrument.
+    //   fixed_period     see argument fit_fixed_period of function dynmdl.                 
     
 
     // get the number of jacobian columns for endogenous variables (including
@@ -5755,12 +5761,15 @@ Rcpp::List DynamicModel::getDerivativeInfoR(int n_instr, Rcpp::IntegerVector ins
         Rcpp::DataFrame::create(Rcpp::Named("eq") = endo_eq,
         Rcpp::Named("endo_index") = endo_index,
         Rcpp::Named("endo_lag") = endo_lag,
-        Rcpp::Named("expressions") = endo_expr);
+        Rcpp::Named("expressions") = endo_expr,
+        Rcpp::Named("stringsAsFactors") = false);
 
     Rcpp::DataFrame instr_deriv = 
         Rcpp::DataFrame::create(Rcpp::Named("eq") = instr_eq,
         Rcpp::Named("instr_index") = instr_index,
-        Rcpp::Named("expressions") = instr_expr);
+        Rcpp::Named("expressions") = instr_expr,
+        Rcpp::Named("stringsAsFactors") = false);
+
 
     return Rcpp::List::create(Rcpp::Named("instr_has_lag") = instr_has_lag,
                               Rcpp::Named("endo_deriv")    = endo_deriv,

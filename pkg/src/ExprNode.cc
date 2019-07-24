@@ -721,6 +721,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
         case oRDerivatives:
+          // Derivatives are calculated for creating the fit mod file. Use square brackets []
+          // for lags/leads instead of parentheses () to make it easier to distinguish lags/leads 
+          // from function calls.
           output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
         case oCDynamic2Model:
