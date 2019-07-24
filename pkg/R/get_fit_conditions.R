@@ -22,10 +22,8 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   # the fit procedure cannot handle this situation (actually it would be fine
   # if fixed_period = TRUE, but dyn_mdl still does not accept fit targets 
   # with lags and leads)
-  # TODO: improve C++ code for this (only instruments!)
-  names(exo_has_lag) <- model_info$exo_names
-  if (any(exo_has_lag[instruments])) {
-    problem_instruments <- instruments[exo_has_lag[instruments]]
+  if (any(instr_has_lag)) {
+    problem_instruments <- instruments[instr_has_lag]
     stop(paste0("Fit instruments with lags or leads are not allowed.\n",
                 "The following fit instruments have lags or leads: ",
                 paste(problem_instruments, collapse = ", "), 
@@ -105,23 +103,22 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   instr_deriv <- mult_lagrange(instr_deriv, l_vars)
   
   # sum the expressions of all entries with the same fit instrument
-  deriv1 <- aggregate(instr_deriv$expressions, 
+  deriv_eq <- aggregate(instr_deriv$expressions, 
                       by = list(instr_index = instr_deriv$instr_index),
                       FUN = function(x) {paste(x, collapse = " + ")})
   
-  if (nrow(deriv1) < length(instruments)) {
+  if (nrow(deriv_eq) < length(instruments)) {
     problem_instruments <- instruments[setdiff(seq_along(instruments), 
-                                               deriv1$instr_index)]
+                                               deriv_eq$instr_index)]
     stop(paste0("The following fit instruments do not occur in the model",
                 " equations: ", paste(problem_instruments, collapse = ", "), 
                 "."))
   }
+  deriv_eq <- deriv_eq$x
   
-  deriv1 <- deriv1$x
-  
-  deriv0 <- paste(instruments, paste0(sigmas, "^2"), sep = " / ")
+  deriv_pnorm <- paste(instruments, paste0(sigmas, "^2"), sep = " / ")
   instr_equations <- paste0("(", sigmas, " >= 0) * (", 
-                          paste(deriv0, deriv1, sep = " + "), 
+                          paste(deriv_pnorm, deriv_eq, sep = " + "), 
                           ") + (", sigmas, " < 0) * (", instruments, 
                           " - ", old_instruments, ") = 0;")
 
@@ -145,25 +142,26 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   
   # first sum for each equation and endogenous variable over derivatives with respect
   # to different periods
-  deriv <- aggregate(endo_deriv$expressions, 
-                     by = list(eq = endo_deriv$eq, endo_index = endo_deriv$endo_index),
-                     FUN = function(x) {paste(rev(x), collapse = " + ")})
+  deriv_eq <- aggregate(endo_deriv$expressions, 
+                         by = list(eq = endo_deriv$eq, 
+                                   endo_index = endo_deriv$endo_index),
+                         FUN = function(x) {paste(rev(x), collapse = " + ")})
   
   # now sum all equations with derivatives to the same variable
-  deriv <- aggregate(deriv$x, by = list(endo_index = deriv$endo_index),
+  deriv_eq <- aggregate(deriv_eq$x, by = list(endo_index = deriv_eq$endo_index),
                     FUN = function(x) {paste(x, collapse = " + ")})
-  
   n_endo <- length(endo_names)
-  if (nrow(deriv) < n_endo) {
-    problem_endos <- endo_names[setdiff(1:n_endo, deriv1$endo_index)]
+  if (nrow(deriv_eq) < n_endo) {
+    problem_endos <- endo_names[setdiff(1:n_endo, deriv_eq$endo_index)]
     stop(paste0("The following endogenous variables do not occur in the model",
                 " equations: ", paste(problem_endos, collapse = ", "), 
                 "."))
   }
-  deriv <- deriv$x
+  deriv_eq <- deriv_eq$x
+
   
   endo_equations <- paste0(fit_vars, " * (", endo_names, " - ", exo_vars, 
-                           ") + (1 - ",  fit_vars, ") * (", deriv, ")", 
+                           ") + (1 - ",  fit_vars, ") * (", deriv_eq, ")", 
                            " = 0;")
   
  

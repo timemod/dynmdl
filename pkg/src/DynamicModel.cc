@@ -5644,49 +5644,21 @@ PolishModel* DynamicModel::makePolishModel(ExternalFunctionCalc *ext_calc) const
     return mdl;
 }
 
-// use a binary search to locate an exogenous variable with index exo_index
-// in the list of fit instrument indices. Returns -1 is the search was
-// unsuccesful.
-int find_instrument(int exo_index, Rcpp::IntegerVector exo_index_instr) {
-    int n = exo_index_instr.size();
-    int i = 0, j = n - 1;
-    while (i <= j) {
-        int k = (i + j) / 2;
-        if (exo_index_instr[k] == exo_index) {
-            return k;
-        } else if (exo_index_instr[k] < exo_index) {
-            i = k + 1;
-        } else {
-            j = k - 1;
-       }
-    }
-    return -1;
-}
-
-Rcpp::List DynamicModel::getDerivativeInfoR(Rcpp::IntegerVector exo_index_instr,
+Rcpp::List DynamicModel::getDerivativeInfoR(int n_instr, Rcpp::IntegerVector instr_index_exo,
                                             bool fixed_period) const {
     // return the first derivative equations, used to construct the
     // first order condition for the fit procedure.
+    //
+    
 
+    // get the number of jacobian columns for endogenous variables (including
+    // lags/leads).
+    int n_jac_col_endo = dynJacobianColsNbr - instr_index_exo.size();
 
-    // first count the number of columns of the jacobian (including derivatives with
-    // lags and leads)
-    int n_jac_col = 0;
-    for (int endoID = 0; endoID < symbol_table.endo_nbr(); endoID++) {
-        // Loop over lags and leads
-        for (int lag = -max_endo_lag; lag <= max_endo_lead; lag++) {
-            try {
-                int varID = getDerivID(symbol_table.getID(eEndogenous, endoID), lag);
-                int col = getDynJacobianCol(varID);
-                n_jac_col = max(n_jac_col, col + 1);
-            } catch (UnknownDerivIDException &e) {
-            }
-        }
-    }
-
-    int *jac_col_endo_index = new int[n_jac_col];
-    int *jac_col_lag = new int[n_jac_col];
-
+    // get for each jacobian column for endogenous variables the index of the
+    // corresponding variable and the lag.
+    int *jac_col_endo_index = new int[n_jac_col_endo];
+    int *jac_col_lag = new int[n_jac_col_endo];
     for (int endoID = 0; endoID < symbol_table.endo_nbr(); endoID++) {
         // Loop over lags and leads
         for (int lag = -max_endo_lag; lag <= max_endo_lead; lag++) {
@@ -5702,10 +5674,11 @@ Rcpp::List DynamicModel::getDerivativeInfoR(Rcpp::IntegerVector exo_index_instr,
 
 
     // create a logical vector with elements true if the corresponding
-    // exogenous variable occurs with a lag or lead
-    // TODO: create a vector with the same length as the number of instruments
-    Rcpp::LogicalVector exo_has_lag(symbol_table.exo_nbr());
+    // fit instrument occurs with a lag or lead
+    Rcpp::LogicalVector instr_has_lag(n_instr);
     for (int exoID = 0; exoID < symbol_table.exo_nbr(); exoID++) {
+        int instr_index = instr_index_exo[exoID];
+        if (instr_index == NA_INTEGER) continue;
         bool has_lag = false;
         // Loop on periods
         for (int lag = -max_exo_lag; lag <= max_exo_lead; lag++) {
@@ -5716,41 +5689,33 @@ Rcpp::List DynamicModel::getDerivativeInfoR(Rcpp::IntegerVector exo_index_instr,
             } catch (UnknownDerivIDException &e) {
             }
         }
-        exo_has_lag[exoID] = has_lag;
+        instr_has_lag[instr_index - 1] = has_lag;
     }
 
     // derivative matrix
     temporary_terms_t temp_term_union = temporary_terms_res;
     deriv_node_temp_terms_t tef_terms;
 
-
-    int i = 0;
-    int nnz_endo = 0, nnz_instr = 0;
-
     // first count the number of non-zero entries for the derivatives of
     // endogenous variables and fit instruments
-    int *info = new int[first_derivatives.size()];
-    int ideriv = 0;
+    int nnz_endo = 0, nnz_instr = 0;
+    bool *skip = new bool[first_derivatives.size()];
+    int i = 0;
     for (first_derivatives_t::const_iterator it = first_derivatives.begin();
          it != first_derivatives.end(); it++) {
         int col = getDynJacobianCol(it->first.second);
-        if (col < n_jac_col) {
+        if (col < n_jac_col_endo) {
             if (!fixed_period || jac_col_lag[col] == 0) {
+                skip[i++] = false;
                 nnz_endo++;
-                info[ideriv++] = 0;
             } else {
-                info[ideriv++] = -1;
+                skip[i++] = true;
             }
+        } else if (instr_index_exo[col - n_jac_col_endo] != NA_INTEGER) {
+            skip[i++] = false;
+            nnz_instr++;
         } else {
-            // derivative with respect to exogenous variable, check if this
-            // is a fit instrument.
-            int i = find_instrument(col + 1 - n_jac_col, exo_index_instr);
-            if (i != -1) {
-                nnz_instr++;
-                info[ideriv++] = i + 1;
-            } else {
-                info[ideriv++] = -1;
-            }
+            skip[i++] = true;
         }
     }
 
@@ -5761,12 +5726,11 @@ Rcpp::List DynamicModel::getDerivativeInfoR(Rcpp::IntegerVector exo_index_instr,
     Rcpp::IntegerVector instr_eq(nnz_instr), instr_index(nnz_instr);
 
     int i_endo = 0, i_instr = 0;
-    ideriv = 0;
+    i = 0;
     for (first_derivatives_t::const_iterator it = first_derivatives.begin();
          it != first_derivatives.end(); it++) {
 
-        i = info[ideriv++];
-        if (i < 0) continue;
+        if (skip[i++]) continue;
 
         int eq = it->first.first + 1;
         int col = getDynJacobianCol(it->first.second);
@@ -5775,14 +5739,14 @@ Rcpp::List DynamicModel::getDerivativeInfoR(Rcpp::IntegerVector exo_index_instr,
         expr_t d1 = it->second;
         d1->writeOutput(txt, oRDerivatives, temp_term_union, tef_terms);
 
-        if (i == 0) {
+        if (col < n_jac_col_endo) {
             endo_eq[i_endo] = eq;
             endo_index[i_endo] = jac_col_endo_index[col];
             endo_lag[i_endo] = jac_col_lag[col];
             endo_expr[i_endo++] = Rcpp::String(txt.str());
         } else {
             instr_eq[i_instr] = eq;
-            instr_index[i_instr]  = i;
+            instr_index[i_instr]  = instr_index_exo[col - n_jac_col_endo];
             instr_expr[i_instr++] = Rcpp::String(txt.str());
         }
     }
@@ -5798,8 +5762,8 @@ Rcpp::List DynamicModel::getDerivativeInfoR(Rcpp::IntegerVector exo_index_instr,
         Rcpp::Named("instr_index") = instr_index,
         Rcpp::Named("expressions") = instr_expr);
 
-    return Rcpp::List::create( Rcpp::Named("exo_has_lag") = exo_has_lag,
-                              Rcpp::Named("endo_deriv")   = endo_deriv,
+    return Rcpp::List::create(Rcpp::Named("instr_has_lag") = instr_has_lag,
+                              Rcpp::Named("endo_deriv")    = endo_deriv,
                               Rcpp::Named("instr_deriv")   = instr_deriv,
                               Rcpp::Named("max_endo_lag")  = max_endo_lag,
                               Rcpp::Named("max_endo_lead") = max_endo_lead,

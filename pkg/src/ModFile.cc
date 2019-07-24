@@ -1476,9 +1476,10 @@ Rcpp::List ModFile::getDerivativeInfo(Rcpp::CharacterVector instruments,
         param_names[i] = symbol_table.getName(eParameter, i).c_str();
     }
 
-    Rcpp::IntegerVector exo_index_instr = Rcpp::match(instruments, exo_names);
+    Rcpp::IntegerVector instr_index_exo = Rcpp::match(exo_names, instruments);
 
-    Rcpp::List dynmdl = dynamic_model.getDerivativeInfoR(exo_index_instr,
+    Rcpp::List dynmdl = dynamic_model.getDerivativeInfoR(instruments.size(), 
+                                                         instr_index_exo,
                                                          fixed_period);
     
     return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,

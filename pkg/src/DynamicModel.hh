@@ -549,7 +549,8 @@ public:
 
 #ifdef USE_R
    Rcpp::List getDynamicModelR(bool internal_calc) const;
-   Rcpp::List getDerivativeInfoR(Rcpp::IntegerVector, bool fixed_period) const;
+   Rcpp::List getDerivativeInfoR(int n_instr, Rcpp::IntegerVector instr_index_exo, 
+                                 bool fixed_period) const;
    Rcpp::List get_trend_info() const;
 #endif
 
