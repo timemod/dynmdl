@@ -56,7 +56,7 @@ test_that("problematic starting values", {
 
   mdl$set_static_endos(c(y1 = 2, y2 = 1.1))
   msg <- paste0("Solving the steady state not succesful.\n",
-                 "The Jacobian is \\(nearly\\) singular at iteration 1.",
+                 "The Jacobian is singular at iteration 1.",
                  " The inverse condition is 0.")
   expect_warning({
     mdl$solve_steady(control = list(silent = TRUE, trace = TRUE))

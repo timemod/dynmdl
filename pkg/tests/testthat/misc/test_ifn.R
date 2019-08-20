@@ -53,11 +53,10 @@ test_that("solve", {
 test_that("solve_steady, check and solve_perturb give an error", {
   # for the ifn model the steady state cannot be computed  
 
-  omsg <- paste("The Jacobian is \\(nearly\\)",
-                "singular at iteration 1. The inverse condition is 0.")
-  wmsg <- paste("Solving the steady state not succesful.\nThe Jacobian is",
-                "\\(nearly\\) singular at iteration 1.",
+  omsg <- paste("The Jacobian is singular at iteration 1.",
                 "The inverse condition is 0.")
+  wmsg <- paste("Solving the steady state not succesful.\nThe Jacobian is",
+                "singular at iteration 1. The inverse condition is 0.")
   expect_warning(
     expect_output(mdl$solve_steady(), omsg),
    wmsg)
