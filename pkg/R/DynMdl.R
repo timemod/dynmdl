@@ -531,7 +531,7 @@ DynMdl <- R6Class("DynMdl",
         ret <- ret[order(names(ret))]
         return(ret)
     },
-    solve_steady = function(control = NULL, solver = c("umfpackr", "nleqslv"),
+    solve_steady = function(control = list(), solver = c("umfpackr", "nleqslv"),
                             debug_eqs = FALSE, ...) {
     
       solver <- match.arg(solver)
@@ -651,8 +651,7 @@ DynMdl <- R6Class("DynMdl",
       return(residuals)
      
     },
-    solve = function(control = list(), mode, 
-                     solver = c("umfpackr", "nleqslv"),  
+    solve = function(control = list(), mode , solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
                      homotopy, ...) {
       
@@ -672,7 +671,6 @@ DynMdl <- R6Class("DynMdl",
         control_$silent <- NULL
       }
       control_[names(control)] <- control
-      
       silent <- !is.null(control_$silent) && control_$silent
       
       private$prepare_dynamic_model()
@@ -867,8 +865,9 @@ DynMdl <- R6Class("DynMdl",
                                   names = private$endo_names)
       private$endo_data[private$model_period, ] <- endo_data
       
-      if ((is.null(control$silent) || !control$silent) && stacked_time && 
-          grepl("[Ff]unction.*contains non-finite value", message)) {
+      if ((is.null(control$silent) || !control$silent) && 
+          stacked_time && grepl("[Ff]unction.*contains non-finite value", 
+                                message)) {
         report_non_finite_residuals(self)
       }
       

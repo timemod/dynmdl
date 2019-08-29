@@ -611,7 +611,7 @@ NULL
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
-#' mdl$solve_steady(control, solver = c("umfpackr", "nleqslv"), ...)
+#' mdl$solve_steady(control = list(), solver = c("umfpackr", "nleqslv"), ...)
 #'
 #' }
 #'
