@@ -157,7 +157,7 @@ test_that("eigenvalues", {
   # the last eigenvalues is Inf or almost infinite
   expect_equal(Re(eigval)[1:10], dynare_result$eigval[1:10, 1], 
                tolerance = 1e-7)
-  expect_equal(Im(eigval)[1:10], dynare_result$eigval[1:10, 2],
+  expect_equal(abs(Im(eigval)[1:10]), abs(dynare_result$eigval[1:10, 2]),
                tolerance = 1e-7)
 })
 
@@ -214,7 +214,7 @@ test_that("eigenvalues with dll", {
   # the last eigenvalues is Inf or almost infinite
   expect_equal(Re(eigval)[1:10], dynare_result$eigval[1:10, 1], 
                tolerance = 1e-7)
-  expect_equal(Im(eigval)[1:10], dynare_result$eigval[1:10, 2],
+  expect_equal(abs(Im(eigval)[1:10]), abs(dynare_result$eigval[1:10, 2]),
                tolerance = 1e-7)
 })
 
