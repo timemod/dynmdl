@@ -51,4 +51,4 @@ DynareFlex.cc FlexLexer.h : $(LEX_YACC_DIR)/DynareFlex.ll
 	touch FlexLexer.h
 
 DynareBison.cc DynareBison.hh location.hh stack.hh position.hh: $(LEX_YACC_DIR)/DynareBison.yy
-	$(YACC) -o DynareBison.cc $<
+	-$(YACC) -o DynareBison.cc $<

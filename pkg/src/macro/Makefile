@@ -20,10 +20,10 @@ MacroValue.o : MacroDriver.hh
 
 # rules for flex and bison
 MacroFlex.cc: MacroFlex.ll ../FlexLexer.h
-	$(LEX) -o MacroFlex.cc MacroFlex.ll
+	-$(LEX) -o MacroFlex.cc MacroFlex.ll
 
 MacroBison.cc MacroBison.hh location.hh stack.hh position.hh: MacroBison.yy
-	$(YACC) -o MacroBison.cc MacroBison.yy
+	-$(YACC) -o MacroBison.cc MacroBison.yy
 
 clean:
 	-rm -r *.o
