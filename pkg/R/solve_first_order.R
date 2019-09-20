@@ -30,18 +30,21 @@ solve_first_order <- function(ss, calc, mdldef, jac_dynamic,
   if (is.null(ss)) {
     ss <- init_state_space(length(static_exos), lead_lag_incidence, debug)
   }
-  
- 
+
+  #
   # calculate the Jacobian
+  #
   nper <- max_lag + max_lead + 1
-  exos <- matrix(rep(static_exos, each = nper), nrow = nper)
   endos <- rep(static_endos, nper)
   y <- endos[which(lead_lag_incidence != 0)]
-  it <- max_lag + 1
   
+  it <- mdldef$max_exo_lag + 1 # time index for exogenous variables
   if (calc == "internal") {
-    jacobia <- get_jac_dyn(mdldef$model_index, y, it - 1, debug_eqs)
+    # exogenous variables are prepared in DynMdl method prepare_dynamic_model
+    jacobia <- get_jac_dyn(mdldef$model_index, y, it, debug_eqs)
   } else {
+    nper_exo <- mdldef$max_exo_lag + mdldef$max_exo_lead + 1 
+    exos <- matrix(rep(static_exos, each = nper_exo), nrow = nper_exo)
     jacobia <- jac_dynamic(y, exos, params, it)
   }
   jacobia <- sparseMatrix(i = jacobia$rows, j = jacobia$cols,
@@ -68,11 +71,9 @@ solve_first_order <- function(ss, calc, mdldef, jac_dynamic,
   n <- ss$nboth + ss$ndynamic
   D <- matrix(0, nrow = n, ncol = n)
   E <- matrix(0, nrow = n, ncol = n)
-  D[ss$row_indx_de_1, ss$index_d1] <- aa[ss$row_indx,
-                                         ss$index_d]
+  D[ss$row_indx_de_1, ss$index_d1] <- aa[ss$row_indx, ss$index_d]
   D[ss$row_indx_de_2, ss$index_d2] <- diag(ss$nboth)
-  E[ss$row_indx_de_1, ss$index_e1] <- -aa[ss$row_indx,
-                                          ss$index_e]
+  E[ss$row_indx_de_1, ss$index_e1] <- -aa[ss$row_indx, ss$index_e]
   E[ss$row_indx_de_2, ss$index_e2] <- diag(ss$nboth)
   if (check_only) {
     ss$eigval <- geigen::geigen(E, D, only.values = TRUE)$values

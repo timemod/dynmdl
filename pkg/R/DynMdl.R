@@ -1601,14 +1601,10 @@ DynMdl <- R6Class("DynMdl",
         if (solve_first_order) {
           # for method check or solve_perturbation, we should use the static 
           # exos for computing the Jacobian
-          
-          # max_lag and max_lead computed in the following way are not the same
-          # as mdldef$max_lag or mdldef$max_lead when max_laglead_1 = TRUE:
-          lead_lag_incidence <- private$mdldef$lead_lag_incidence
-          max_lag <- -as.integer(colnames(lead_lag_incidence)[1])
-          max_lead <- as.integer(colnames(lead_lag_incidence)[ncol(lead_lag_incidence)])
-          nper <- max_lag + max_lead + 1
-          exo_data <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
+          nper_exo <- private$mdldef$max_exo_lag + 
+                      private$mdldef$max_exo_lead + 1 
+          exo_data <- matrix(rep(private$mdldef$exos, each = nper_exo), 
+                             nrow = nper_exo)
           per_freq <- -1
           first_per_subp_count <- -1
         } else {
