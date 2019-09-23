@@ -369,17 +369,18 @@ NULL
 #' \code{\link{DynMdl}} methods: changes the endogenous or exogenous
 #' model data by applying a function.
 #' @name change_data-methods
-#' @aliases change_endo_data change_exo_data
+#' @aliases change_data change_endo_data change_exo_data
 #' @description
-#' These methods of R6 class \code{\link{DynMdl}}
-#' changes the endogenous or exogenous
-#' model data by applying a function.
+#' These methods of R6 class \code{\link{DynMdl}} changes endogenous and/or 
+#' exogenous model data by applying a function.
 #'
 #' @section Usage:
 #' \preformatted{
 #' mdl$change_endo_data(fun, names, pattern, period = mdl$get_data_period(), ...)
 #'
 #' mdl$change_exo_data(fun names, pattern, period = mdl$get_data_period(), ...)
+#' 
+#' mdl$change_data(fun, names, pattern, period = mdl$get_data_period(), ...)
 #' }
 #'
 #' \code{mdl} is an \code{\link{DynMdl}} object
@@ -400,8 +401,9 @@ NULL
 #' 
 #' @section Methods:
 #' \describe{
-#' \item{\code{changes_endo_data}}{Changes the endogenous model variables}
-#' \item{\code{change_exo_data}}{Changes the exogenous model variables}
+#' \item{\code{changes_endo_data}}{Changes endogenous model variables}
+#' \item{\code{change_exo_data}}{Changes exogenous model variables}
+#' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables}
 #' }
 #' @examples
 #' mdl <- islm_mdl(period = "2017Q1/2017Q3")

@@ -60,7 +60,16 @@ test_that("change_data handles errors correctly", {
   msg <-  "The following names are no endogenous model variables: \"p\", \"xxx\"."
   expect_error(mdl2$change_endo_data(identity, names = c("p", "xxx")), msg)
   msg <- "argument fun is not a function"
-  expect_error(mdl2$change_endo_data(2, names), msg)
+  expect_error(mdl2$change_endo_data(2, names = "y"), msg)
 })
 
-
+test_that("change_data works correctly (with endo and exo)", {
+  names <-  c("c", "ms", "g")
+  mdl2 <- mdl$copy()
+  mdl2$change_data(function(x, fac) {x * fac}, names = names, 
+                             fac = c_multipliers)
+  new_data <- mdl$get_data()
+  new_data[ , names] <- new_data[ ,  names] * c_multipliers
+  
+  expect_equal(mdl2$get_data(), new_data)
+})

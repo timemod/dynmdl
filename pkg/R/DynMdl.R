@@ -423,13 +423,11 @@ DynMdl <- R6Class("DynMdl",
     },
     set_endo_values = function(value, names, pattern,
                                period = private$data_period) {
-      private$set_values_(value, names, pattern, period, type = "endo")
-      return(invisible(self))
+      return(private$set_values_(value, names, pattern, period, type = "endo"))
     },
     set_exo_values = function(value, names, pattern,
                               period = private$data_period) {
-      private$set_values_(value, names, pattern, period, type = "exo")
-      return(invisible(self))
+      return(private$set_values_(value, names, pattern, period, type = "exo"))
     },
     set_data = function(data, names, upd_mode = c("upd", "updval"), fun,
                         name_err = "stop") {
@@ -504,11 +502,26 @@ DynMdl <- R6Class("DynMdl",
     },
     change_endo_data = function(fun, names, pattern, 
                                 period = private$data_period, ...) {
-      return(private$change_data_(fun, names, pattern, period, "endo", ...))
+      names <- private$get_names_("endo", names, pattern)
+      return(private$change_data_(fun, names, period, "endo", ...))
     },
     change_exo_data = function(fun, names, pattern, 
                                period = private$data_period , ...) {
-      return(private$change_data_(fun, names, pattern, period, "exo", ...))
+      names <- private$get_names_("exo", names, pattern)
+      return(private$change_data_(fun, names, period, "exo", ...))
+    },
+    change_data = function(fun, names, pattern, period = private$data_period, 
+                           ...) {
+      names <- private$get_names_("all", names, pattern)
+      exo_names <- intersect(names, private$exo_names)
+      if (length(exo_names) > 0) {
+        private$change_data_(fun, exo_names, period, "exo", ...)
+      }
+      endo_names <- intersect(names, private$endo_names)
+      if (length(endo_names) > 0) {
+        private$change_data_(fun, endo_names, period, "endo", ...)
+      }
+      return(invisible(self))
     },
     get_trend_data = function(names, pattern, period = private$data_period) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
@@ -1378,9 +1391,8 @@ DynMdl <- R6Class("DynMdl",
       } else {
         private$exo_data[per, names] <- new_data
       }
-      return (invisible(self))
+      return(invisible(self))
     },
-    
     set_values_ = function(value, names, pattern, period, type) {
       value <- as.numeric(value)
       period <- private$convert_period_arg(period)
@@ -1414,18 +1426,17 @@ DynMdl <- R6Class("DynMdl",
       } else {
         private$exo_data[upd_per, names]  <- value_ts
       }
-      return(invisible(NULL))
+      return(invisible(self))
     },
-    change_data_ = function(fun, names, pattern, period, type, ...) {
+    change_data_ = function(fun, names, period, type, ...) {
       period <- private$convert_period_arg(period)
       period <- range_intersect(period, private$data_period)
-      if (is.null(period)) return(invisible(NULL))
+      if (is.null(period)) return(invisible(self))
       if (!is.function(fun)) {
         stop("argument fun is not a function")
       }
       nper <- nperiod(period)
-      names <- private$get_names_(type, names, pattern)
-      if (length(names) == 0) return(invisible(NULL))
+      if (length(names) == 0) return(invisible(self))
       if (type == "endo") {
         data <- private$get_endo_data_internal(names, period, trend = TRUE)
       } else  { 
@@ -1445,6 +1456,7 @@ DynMdl <- R6Class("DynMdl",
       } else  { 
         private$exo_data[period, names] <- data
       }
+      return(invisible(self))
     },
     solve_stacked_time = function(endos, solver, ...) {
       if (solver == "umfpackr") {
