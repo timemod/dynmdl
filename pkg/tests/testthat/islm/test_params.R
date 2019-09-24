@@ -15,12 +15,16 @@ test_that("set_param", {
   expect_identical(mdl$get_param(names = "i3"), par)
   
   # errors
-  expect_error(mdl$set_param(c(aap = 9999)),
-               "\"aap\" is/are no model parameter\\(s\\)")
+  expect_error(mdl$set_param(c(aap = 9999)), "\"aap\" is not a parameter.")
   
-  expect_error(mdl$set_param(c(i3 = 999, aap = 999, jan = 999)),
-               "\"aap\", \"jan\" is/are no model parameter\\(s\\)")
-  
+  msg <-  "The following names are no parameters: \"aap\", \"jan\"."
+  expect_error(mdl$set_param(c(i3 = 999, aap = 999, jan = 999)), msg)
+  expect_warning(mdl$set_param(c(i3 = 9999, aap = 999, jan = 999), 
+                               name_err = "warn"), msg)
+  expect_equal(mdl$get_param(names = "i3"), c(i3 = 9999))
+ 
+  expect_silent(mdl$set_param(c(i3 = 9999, aap = 999, jan = 999), 
+                               name_err = "silent"))
   expect_error(mdl$set_param(2), "params is not a named numeric vector")
 })
 
@@ -35,11 +39,11 @@ test_that("get_param", {
   expect_identical(unname(mdl$get_param(pattern = "jan")), numeric(0))
   
   # error
-  expect_error(mdl$get_param(names = "aap"),
-               "\"aap\" is/are no model parameter\\(s\\)")
+  msg <- "\"aap\" is not a parameter."
+  expect_error(mdl$get_param(names = "aap"), msg)
   
-  expect_error(mdl$get_param(names = "aap", pattern = "^i"),
-               "\"aap\" is/are no model parameter\\(s\\)")
+  expect_error(mdl$get_param(names = "aap", pattern = "^i"),  msg)
+
 })
 
 test_that("set_param_values", {

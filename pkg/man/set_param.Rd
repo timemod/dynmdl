@@ -10,7 +10,7 @@ sets the model parameters
 \section{Usage}{
 
 \preformatted{
-mdl$set_param(p)
+mdl$set_param(p, name_err = c("stop", "warn", "silent"))
 
 }
 \code{mdl} is an \code{\link{DynMdl}} object
@@ -21,7 +21,12 @@ mdl$set_param(p)
 
 \describe{
 \item{\code{p}}{a named numeric vector with parameter values.
-The names are the names of the parameter}
+The names are the names of the parameters}
+\item{\code{name_err}}{this option specifies the action that should be taken 
+when a variable name is not a model variable.
+For \code{"stop"} (the default), the execution of this function is stopped.
+For \code{"warn"} and \code{"silent"} the names imeseries that are no model
+parameters are skipped. \code{"warn"} does however give a warning.}
 }
 }
 

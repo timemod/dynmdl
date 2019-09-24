@@ -285,3 +285,49 @@ test_that("error: fit instrument not in model block", {
     )
 })
 
+test_that("set_static_endos/set_static_exos", {
+  mdl2 <- mdl$copy()
+  
+  msg <- "\"ut\" is not an endogenous model variable\\." 
+  expect_error(mdl2$set_static_endos(c(c = 12, ut = 3)), msg)
+  expect_warning(mdl2$set_static_endos(c(c = 13, ut = 3), name_err = "warn"), 
+                 msg)
+  expect_equal(mdl2$get_static_endos()["c"], c(c= 13))
+  expect_silent(mdl2$set_static_endos(c(c = 14, ut = 3), name_err = "silent"))
+  expect_equal(mdl2$get_static_endos()["c"], c(c = 14))
+  
+  msg <- "The following names are no exogenous model variables: \"c\", \"uc\"\\."
+  expect_error(mdl$set_static_exos(c(c = 12, uc = 3, g = 12)), msg)
+  expect_warning(mdl2$set_static_exos(c(c = 12, uc = 3, g = 12), 
+                                      name_err = "warn"), msg)
+  expect_equal(mdl2$get_static_exos()["g"], c(g = 12))
+  expect_silent(mdl2$set_static_exos(c(c = 12, uc = 3, g = 122), 
+                                     name_err = "silent"))
+  expect_equal(mdl2$get_static_exos()["g"], c(g = 122))
+})
+
+test_that("set_static_data / get_static_data", {
+  
+  mdl2 <- mdl$copy()
+  
+  model_names <- c(mdl$get_endo_names(), mdl$get_exo_names())
+  
+  expect_error(mdl2$set_static_data(c(ut  = 2)),
+               '"ut" is not an endogenous or exogenous model variable.')  
+  expect_silent(mdl2$set_static_data(c(ut  = 2), name_err = "silent"))
+  mdl2$set_static_data(mdl2$get_static_data())
+  expect_equal(mdl2$get_static_data()[model_names],
+               c(mdl$get_static_endos(), mdl$get_static_exos())[model_names])
+  
+  msg <- paste('The following names are no endogenous or exogenous model',
+               'variables: "xxx", "ut".')
+  expect_warning(
+    mdl2$set_static_data(c(c = 222, g = 333, xxx = 5, ut = 2), 
+                         name_err = "warn"),
+    msg)
+  
+  expected_result <- mdl$get_static_data()
+  expected_result[c("c", "g")] <- c(222, 333)
+  
+  expect_equal(mdl2$get_static_data(), expected_result)
+})

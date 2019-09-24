@@ -69,6 +69,12 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{get_static_endos}}}{Returns the static values of
 #' the endogenous variables.} 
+#' 
+#'  \item{\code{\link{set_static_data}}}{Sets the static values of
+#' the model variables.}
+#'
+#' \item{\code{\link{get_static_data}}}{Returns the static values of
+#' the model variables.} 
 #'
 #' \item{\code{\link{init_data}}}{Initializes the model data}
 #'
@@ -95,6 +101,9 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{change_exo_data}}}{Changes the values of exogenous model 
 #' variables by applying a function}
+#' 
+#' \item{\code{\link{change_data}}}{Changes the values of endogenous and 
+#' exogenous model variables by applying a function}
 #' 
 #' \item{\code{\link{get_data}}}{Returns the model data}
 #'
@@ -215,13 +224,13 @@ DynMdl <- R6Class("DynMdl",
       }
       return(names)
     },
-    set_param = function(params) {
+    set_param = function(params, name_err = "stop") {
       names <- names(params)
       if (is.null(names) || !is.numeric(params)) {
         stop("params is not a named numeric vector")
       }
-      private$check_param_names(names)
-      private$mdldef$params[names] <- params
+      names <- private$check_param_names(names, name_err = name_err)
+      private$mdldef$params[names] <- params[names]
       return(invisible(self))
     },
     set_param_values = function(value, names, pattern) {
@@ -236,8 +245,9 @@ DynMdl <- R6Class("DynMdl",
       names <- private$get_param_names_(pattern, names)
       return(private$mdldef$params[names])
     },
-    set_static_exos = function(exos) {
-      exo_names <- private$get_names_("exo", names = names(exos))
+    set_static_exos = function(exos, name_err = "stop") {
+      exo_names <- private$get_names_("exo", names = names(exos), 
+                                      name_err = name_err)
       private$mdldef$exos[exo_names] <- exos[exo_names]
       return(invisible(self))
     },
@@ -252,8 +262,9 @@ DynMdl <- R6Class("DynMdl",
     get_static_exos = function() {
       return(private$mdldef$exos)
     },
-    set_static_endos = function(endos) {
-      endo_names <- private$get_names_("endo", names = names(endos))
+    set_static_endos = function(endos, name_err = "stop") {
+      endo_names <- private$get_names_("endo", names = names(endos), 
+                                       name_err = name_err)
       private$mdldef$endos[endo_names] <- endos[endo_names]
       return(invisible(self))
     },
@@ -263,6 +274,26 @@ DynMdl <- R6Class("DynMdl",
       } else {
         return(private$mdldef$endos)
       }
+    },
+    get_static_data = function() {
+      static_endos <- self$get_static_endos()
+      static_exos <- self$get_static_exos()
+      ret <- c(static_endos, static_exos)
+      ret <- ret[order(names(ret))]
+      return(ret)
+    },
+    set_static_data = function(data, name_err = "stop") {
+      names <- private$get_names_("endo_exo", names = names(data), 
+                                  name_err = name_err)
+      endo_names <- intersect(names, private$endo_names)
+      exo_names <- intersect(names, private$exo_names)
+      if (length(endo_names) > 0) {
+        private$mdldef$endos[endo_names] <- data[endo_names]
+      }
+      if (length(exo_names) > 0) {
+        private$mdldef$exos[exo_names] <- data[exo_names]
+      }
+      return(invisible(self))
     },
     init_data = function(data_period, data, upd_mode = c("upd", "updval"))  {
       
@@ -1871,18 +1902,31 @@ DynMdl <- R6Class("DynMdl",
       }
       return(period_range(startp, endp))
     },
-    check_param_names = function(names) {
+    check_param_names = function(names, 
+                                 name_err = c("stop", "warn", "silent")) {
+      name_err <- match.arg(name_err)
       # check if names are parameter names
       no_params <- setdiff(names, private$param_names)
       if (length(no_params) > 0) {
-        no_params <- paste0("\"", no_params, "\"")
-        stop(paste(paste(no_params, collapse = ", "), 
-                  "is/are no model parameter(s)"))
+        if (name_err != "silent") {
+          no_params <- paste0("\"", no_params, "\"")
+          if (length(no_params) == 1) {
+            msg <- paste0(no_params, " is not a parameter.")
+          } else { 
+            msg <- paste0("The following names are no parameters: ",
+                          paste(no_params, collapse = ", "), ".")
+          }
+          fun <- if (name_err == "stop") stop else warning
+          fun(msg)
+        }
+        return(intersect(names, private$param_names))
+      } else {
+        return(names)
       }
     },
     get_param_names_ = function(pattern, names) {
       if (!missing(names)) {
-        private$check_param_names(names)
+        names <- private$check_param_names(names)
       }
       if (missing(pattern) && missing(names)) {
         return(private$param_names)

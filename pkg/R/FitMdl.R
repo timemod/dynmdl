@@ -195,16 +195,18 @@ FitMdl <- R6Class("FitMdl",
       ret <- self$get_param(names = private$fit_info$sigmas)
       return(ret[ret >= 0])
     },
-    set_static_endos = function(endos) {
-      endo_names <- private$get_names_fitmdl_("endo", names = names(endos))
+    set_static_endos = function(endos, name_err = "stop") {
+      endo_names <- private$get_names_fitmdl_("endo", names = names(endos),
+                                              name_err = name_err)
       private$mdldef$endos[endo_names] <- endos[endo_names]
       return(invisible(self))
     },
     get_static_endos = function() {
       return(super$get_static_endos()[private$fit_info$orig_endos])
     },
-    set_static_exos = function(exos) {
-      exo_names <- private$get_names_fitmdl_("exo", names = names(exos))
+    set_static_exos = function(exos, name_err = "stop") {
+      exo_names <- private$get_names_fitmdl_("exo", names = names(exos),
+                                             name_err = name_err)
       private$mdldef$exos[exo_names] <- exos[exo_names]
       return(invisible(self))
     },
@@ -214,6 +216,19 @@ FitMdl <- R6Class("FitMdl",
     },
     get_static_exos = function() {
       return(super$get_static_exos()[private$fit_info$orig_exos])
+    },
+    set_static_data = function(data, name_err = "stop") {
+      names <- private$get_names_fitmdl_("endo_exo", names = names(data), 
+                                  name_err = name_err)
+      endo_names <- intersect(names, private$endo_names)
+      exo_names <- intersect(names, private$exo_names)
+      if (length(endo_names) > 0) {
+        private$mdldef$endos[endo_names] <- data[endo_names]
+      }
+      if (length(exo_names) > 0) {
+        private$mdldef$exos[exo_names] <- data[exo_names]
+      }
+      return(invisible(self))
     },
     serialize = function() {
       ser <- as.list(super$serialize())
@@ -336,6 +351,8 @@ FitMdl <- R6Class("FitMdl",
         vnames <- union(union(endo_names, exo_names), inst_names)
         trend_names <- private$mdldef$trend_info$trend_vars$names
         vnames <- union(vnames, trend_names)
+      } else if (type == "endo_exo") {
+        vnames <- union(endo_names, exo_names)
       } else if (type == "endo") {
         vnames <- endo_names
       } else if (type == "inst") {
@@ -352,7 +369,8 @@ FitMdl <- R6Class("FitMdl",
             type_texts <- c(all = "model variable", 
                             endo = "endogenous model variable", 
                             exo = "exogenous model variable", 
-                            inst = "fit instrument")
+                            inst = "fit instrument",
+                            endo_exo = "endogenous or exogenous model variable")
             type_text <- type_texts[[type]]
             if (length(error_vars) == 1) {
               a_word <- if (type_text %in% c("model variable", "fit instrument")) 

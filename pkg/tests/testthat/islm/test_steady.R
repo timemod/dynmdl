@@ -87,11 +87,25 @@ test_that("non-finite values", {
                       file = "expected_output/steady_non_finite_1.txt")
 })
 
-test_that("errors", {
-  expect_error(mdl$set_static_endos(c(c = 12, xxx = 3)),
-               "\"xxx\" is not an endogenous model variable\\.")
+test_that("set_static_endos/set_static_exos", {
+  mdl2 <- mdl$copy()
+  
+  msg <- "\"xxx\" is not an endogenous model variable\\." 
+  expect_error(mdl2$set_static_endos(c(c = 12, xxx = 3)), msg)
+  expect_warning(mdl2$set_static_endos(c(c = 13, xxx = 3), name_err = "warn"), 
+                 msg)
+  expect_equal(mdl2$get_static_endos()["c"], c(c= 13))
+  expect_silent(mdl2$set_static_endos(c(c = 14, xxx = 3), name_err = "silent"))
+  expect_equal(mdl2$get_static_endos()["c"], c(c = 14))
+  
   msg <- "The following names are no exogenous model variables: \"c\", \"xxx\"\\."
   expect_error(mdl$set_static_exos(c(c = 12, xxx = 3, g = 12)), msg)
+  expect_warning(mdl2$set_static_exos(c(c = 12, xxx = 3, g = 12), 
+                                     name_err = "warn"), msg)
+  expect_equal(mdl2$get_static_exos()["g"], c(g = 12))
+  expect_silent(mdl2$set_static_exos(c(c = 12, xxx = 3, g = 122), 
+                         name_err = "silent"))
+  expect_equal(mdl2$get_static_exos()["g"], c(g = 122))
 })
 
 
@@ -106,4 +120,29 @@ test_that("set_static_exo_values", {
   
   expect_error(mdl2$set_static_exo_values(0, names = "xxx"), 
                "\"xxx\" is not an exogenous model variable")
+})
+
+test_that("set_static_data / get_static_data", {
+  
+  mdl2 <- mdl$copy()
+  
+  model_names <- c(mdl$get_endo_names(), mdl$get_exo_names())
+  
+  expect_error(mdl2$set_static_data(c(z  = 2)),
+                                    '"z" is not a model variable.')  
+  expect_silent(mdl2$set_static_data(c(z  = 2), name_err = "silent"))
+  mdl2$set_static_data(mdl2$get_static_data())
+  expect_equal(mdl2$get_static_data()[model_names],
+               c(mdl$get_static_endos(), mdl$get_static_exos())[model_names])
+  
+  msg <- 'The following names are no model variables: "xxx", "yyy".'
+  expect_warning(
+    mdl2$set_static_data(c(c = 222, g = 333, xxx = 5, yyy = 2), 
+                         name_err = "warn"),
+    msg)
+    
+  expected_result <- mdl$get_static_data()
+  expected_result[c("c", "g")] <- c(222, 333)
+  
+  expect_equal(mdl2$get_static_data(), expected_result)
 })

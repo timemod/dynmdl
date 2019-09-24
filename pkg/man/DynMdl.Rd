@@ -57,6 +57,12 @@ the endogenous variables.}
 \item{\code{\link{get_static_endos}}}{Returns the static values of
 the endogenous variables.} 
 
+ \item{\code{\link{set_static_data}}}{Sets the static values of
+the model variables.}
+
+\item{\code{\link{get_static_data}}}{Returns the static values of
+the model variables.} 
+
 \item{\code{\link{init_data}}}{Initializes the model data}
 
 \item{\code{\link{set_period}}}{Sets the model period}
@@ -82,6 +88,9 @@ variables by applying a function}
 
 \item{\code{\link{change_exo_data}}}{Changes the values of exogenous model 
 variables by applying a function}
+
+\item{\code{\link{change_data}}}{Changes the values of endogenous and 
+exogenous model variables by applying a function}
 
 \item{\code{\link{get_data}}}{Returns the model data}
 

@@ -221,7 +221,9 @@ NULL
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
 #' transfers data from a timeseries object to the model data
-#' (both endogenous and exogenous)
+#' (both endogenous and exogenous). For \code{\link{FitMdl}} objects,
+#' \code{set_data} can also be used to modify fit instruments and the  
+#' Lagrange multipliers used in the fit method.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -403,7 +405,10 @@ NULL
 #' \describe{
 #' \item{\code{changes_endo_data}}{Changes endogenous model variables}
 #' \item{\code{change_exo_data}}{Changes exogenous model variables}
-#' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables}
+#' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables.
+#' For \code{\link{FitMdl}} objects,
+#' \code{change_data} can also be used to modify fit instruments and the  
+#' Lagrange multipliers used in the fit method.}
 #' }
 #' @examples
 #' mdl <- islm_mdl(period = "2017Q1/2017Q3")
@@ -845,16 +850,17 @@ NULL
 #' \code{\link{DynMdl}} methods: set and get the static values of the
 #' model variables
 #' @name set/get_static_endos/exos
-#' @aliases set_static_exos set_static_endos get_static_endos get_static_exos
-#'          set_static_exo_values
+#' @aliases set_static_exos set_static_exo_values, set_static_endos 
+#'          set_static_data 
+#'          get_static_endos get_static_exos
+#'          set_static_exo_values get_static_data
 #'
 #' @description
 #' 
-#' \code{\link{set_static_exos}},   \code{\link{set_static_exo_values}}
-#' and \code{\link{set_static_endos}} can be used to set one or 
-#' more static values of the endogenous or exogenous model variables, 
-#' respectively. The correspondig \code{get} methods can be used to retrieve 
-#' them.
+#' \code{set_static_exos}, \code{set_static_exo_values}, 
+#' \code{set_static_endos} and  \code{set_static_data} can be used to set one or 
+#' more static values of the endogenous and/or exogenous model variables.
+#' The correspondig \code{get} methods can be used to retrieve them.
 #' 
 #' Each \code{\link{DynMdl}} object contains a set of static values
 #' for the exogenous and endogenous model variables.
@@ -872,12 +878,13 @@ NULL
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
-#' mdl$set_static_endos(endos)
-#' mdl$set_static_exos(exos)
+#' mdl$set_static_endos(endos, name_err = c("stop", "warn", "silent"))
+#' mdl$set_static_exos(exos, name_err = c("stop", "warn", "silent"))
 #' mdl$set_static_exo_values(value, names, pattern)
+#' mdl$set_static_data(data, name_err = c("stop", "warn", "silent"))
 #' mdl$get_static_endos()
 #' mdl$get_static_endos()
-#' mdl$get_static_endos()
+#' mdl$get_static_data()
 #' }
 #'
 #' \code{mdl} is an \code{\link{DynMdl}} object
@@ -888,9 +895,35 @@ NULL
 #' endogenous variables}
 #' \item{\code{exos}}{A named numerical vector with new static values of the
 #' exogenous variables}
+#'  \item{\code{data}}{A named numerical vector with new static values of 
+#'  both endogenous and exogenous variables}
 #' \item{\code{value}}{a numeric vector of length 1}
-#' \item{\code{names}}{a character vector with names of model variables}
+#' \item{\code{names}}{a character vector with names of exogenous model variables}
 #' \item{\code{pattern}}{a regular expression}
+#' \item{\code{name_err}}{this option specifies the action that should be taken 
+#' when a variable name is not a model variable.
+#' For \code{"stop"} (the default), the execution of this function is stopped.
+#' For \code{"warn"} and \code{"silent"} the names that are no model
+#' variables are skipped. \code{"warn"} does however give a warning.}
+#' }
+#' @section Methods:
+#' \itemize{
+#' \item \code{set_static_endos}: Set the static values of one or more 
+#' endogenous variables (excluding fit instruments for \code{\link{FitMDl}} objects).
+#' \item \code{set_static_exos}: Set the static values of one or more 
+#' exogenous variables.
+#' \item \code{set_static_exo_values}: Give more than one exogenous variable 
+#' the same static value.
+#' \item \code{set_static_data}: Set the static values of one or more 
+#' endogenous or exogenous variable  
+#' (excluding fit instruments for \code{\link{FitMDl}} objects).
+#' \item \code{get_static_endos}: Returns the static values of one or more 
+#' endogenous variables. For \code{\link{FitMDl}} objects the static values
+#' of the fit instruments are not included (they are always zero). 
+#' \item \code{get_static_exos}: Returns the static values of one or more 
+#' exogenous variables.
+#' \item \code{get_static_data}: Returns the static values of the model 
+#' variables  (excluding fit instruments for code{\link{FitMDl}} objects).
 #' }
 #' @examples
 #' mdl <- islm_mdl()
@@ -958,7 +991,7 @@ NULL
 #' sets the model parameters
 #' @section Usage:
 #' \preformatted{
-#' mdl$set_param(p)
+#' mdl$set_param(p, name_err = c("stop", "warn", "silent"))
 #'
 #' }
 #' \code{mdl} is an \code{\link{DynMdl}} object
@@ -966,7 +999,12 @@ NULL
 #'
 #' \describe{
 #' \item{\code{p}}{a named numeric vector with parameter values.
-#' The names are the names of the parameter}
+#' The names are the names of the parameters}
+#' \item{\code{name_err}}{this option specifies the action that should be taken 
+#' when a variable name is not a model variable.
+#' For \code{"stop"} (the default), the execution of this function is stopped.
+#' For \code{"warn"} and \code{"silent"} the names imeseries that are no model
+#' parameters are skipped. \code{"warn"} does however give a warning.}
 #' }
 #' @examples
 #' mdl <- islm_mdl()
