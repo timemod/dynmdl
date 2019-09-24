@@ -220,15 +220,7 @@ FitMdl <- R6Class("FitMdl",
     set_static_data = function(data, name_err = "stop") {
       names <- private$get_names_fitmdl_("endo_exo", names = names(data), 
                                   name_err = name_err)
-      endo_names <- intersect(names, private$endo_names)
-      exo_names <- intersect(names, private$exo_names)
-      if (length(endo_names) > 0) {
-        private$mdldef$endos[endo_names] <- data[endo_names]
-      }
-      if (length(exo_names) > 0) {
-        private$mdldef$exos[exo_names] <- data[exo_names]
-      }
-      return(invisible(self))
+      return(super$set_static_data(data[names]))
     },
     serialize = function() {
       ser <- as.list(super$serialize())
