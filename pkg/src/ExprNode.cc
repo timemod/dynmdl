@@ -2052,7 +2052,7 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       if (IS_LATEX(output_type))
         output << "\\sqrt";
       else
-        output << "log";
+        output << "sqrt";
       break;
     case oAbs:
       output << "abs";
