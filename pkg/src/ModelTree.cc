@@ -1590,7 +1590,7 @@ void createSingleEqDir(const string &dirname) {
 #else
     int r = mkdir(dirname.c_str(), 0777);
 #endif
-    if (r < 0 && errno != EEXIST) {
+    if (r < -1 && errno != EEXIST) {
         dyn_error("ERROR: " + string(std::strerror(errno)));
     }
 }
@@ -1606,6 +1606,7 @@ string space2underscore(string text) {
 
 void ModelTree::writeLatexModelFile(const string &dirname, const string &model_basename, 
                                     const string &model_type, ExprNodeOutputType output_type, 
+                                    const eval_context_t &eval_context,
                                     const bool write_equation_tags) const
 #else
 void
@@ -1658,7 +1659,7 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
       content_output << "\\begin{dmath*}" << endl
                      << symbol_table.getTeXName(id) << " = ";
       // Use an empty set for the temporary terms
-      value->writeOutput(content_output, output_type);
+      value->writeOutput(content_output, output_type, eval_context);
       content_output << endl << "\\end{dmath*}" << endl;
     }
 
@@ -1722,14 +1723,18 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
              }
              single_eq_output << "\\label{" << eq_name << "_" 
                             << model_type << "_single}" << endl;
-             dynamic_cast<ExprNode *>(equations[eq])->writeOutput(single_eq_output, output_type);
+             dynamic_cast<ExprNode *>(equations[eq])->writeOutput(single_eq_output, output_type, eval_context);
              single_eq_output.close();
              break;
           }
       }
 #endif
       // Here it is necessary to cast to superclass ExprNode, otherwise the overloaded writeOutput() method is not found
+#ifdef USE_R
+      dynamic_cast<ExprNode *>(equations[eq])->writeOutput(content_output, output_type, eval_context);
+#else
       dynamic_cast<ExprNode *>(equations[eq])->writeOutput(content_output, output_type);
+#endif
       content_output << endl << "\\end{dmath}" << endl;
 #ifdef USE_R
       content_output << endl;

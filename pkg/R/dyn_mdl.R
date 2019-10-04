@@ -50,6 +50,9 @@
 #' derived for a fixed period, treating lags and leads as exogenous variables.
 #' If \code{FALSE} (the default), the fit conditions are derived from the
 #' stacked-time equations.
+#' @param par_const a logical. If \code{TRUE}, then in the LaTeX files parameters
+#' are replaced with the corresponding numerical values in the mode file.
+#' The default is \code{FALSE}.
 #' @return an \code{DynMdl} object or, if the mod file contains a
 #' fit block, a \code{\link{FitMdl}} object.
 #' @export
@@ -63,7 +66,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, nostrict = FALSE,
                     warn_uninit_param = TRUE, fit = TRUE, 
-                    fit_fixed_period = FALSE) {
+                    fit_fixed_period = FALSE, par_const = FALSE) {
   
   calc <- match.arg(calc)
   
@@ -143,7 +146,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
  
     mdldef <- compile_model(fit_mod_file, latex_basename, use_dll, dll_dir, 
                             max_laglead_1, nostrict, internal_calc,
-                            n_fit_derivatives, warn_uninit_param)
+                            n_fit_derivatives, warn_uninit_param, par_const)
     
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
@@ -166,7 +169,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     }
     mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, 
                             max_laglead_1, nostrict, internal_calc, 0L,
-                            warn_uninit_param)
+                            warn_uninit_param, par_const)
     
     if (calc == "dll") {
       dll_file <- compile_c_functions(dll_dir)

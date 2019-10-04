@@ -41,8 +41,8 @@ get_triplet_jac_stat <- function(model_index, endos, debug_eqs) {
     .Call(`_dynmdl_get_triplet_jac_stat`, model_index, endos, debug_eqs)
 }
 
-compile_model_ <- function(modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc, n_fit_derivatives, warn_uninit_param) {
-    .Call(`_dynmdl_compile_model_`, modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc, n_fit_derivatives, warn_uninit_param)
+compile_model_ <- function(modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc, n_fit_derivatives, warn_uninit_param, par_const) {
+    .Call(`_dynmdl_compile_model_`, modfile, latex_basename, use_dll, dll_dir, max_laglead_1, nostrict, internal_calc, n_fit_derivatives, warn_uninit_param, par_const)
 }
 
 compute_derivatives <- function(modfile, latex_basename, instruments, fixed_period) {

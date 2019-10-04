@@ -37,7 +37,7 @@ ModFile *parse_post_macro(stringstream &in, string &latex_basename, bool debug, 
       WarningConsolidation &warnings, bool nostrict, bool check_model_changes,
       bool minimal_workspace, bool compute_xrefs, FileOutputType output_mode,
       LanguageOutputType language, int params_derivs_order, bool max_laglead_1,
-      int n_fit_derivatives
+      int n_fit_derivatives, bool par_const
 #if defined(_WIN32) || defined(__CYGWIN32__)
       , bool cygwin, bool msvc
 #endif
@@ -60,7 +60,7 @@ ModFile *parse_post_macro(stringstream &in, string &latex_basename, bool debug, 
   mod_file->computingPass(no_tmp_terms, output_mode,  params_derivs_order);
 
   // Write LaTeX files
-  mod_file->writeLatexFiles(latex_basename, n_fit_derivatives > 0);
+  mod_file->writeLatexFiles(latex_basename, n_fit_derivatives > 0, par_const);
 
   return mod_file;
 }

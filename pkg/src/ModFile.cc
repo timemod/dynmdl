@@ -1506,7 +1506,7 @@ void createLatexDir(const string &dirname) {
     }
 }
 
-void ModFile::writeLatexFiles(const string &basename, bool fit) {
+void ModFile::writeLatexFiles(const string &basename, bool fit, bool par_const) {
 
 // create directory LaTeX if it does not exist
 
@@ -1523,7 +1523,8 @@ void ModFile::writeLatexFiles(const string &basename, bool fit) {
            dir_created = true;
            bool write_eq_tags = wldms->get_write_equation_tags();
            dynamic_model.writeLatexFile(dirname, basename, 
-                                        write_eq_tags, fit);
+                                        write_eq_tags, fit, par_const,
+                                        global_eval_context);
            continue;
         }
 
@@ -1532,7 +1533,8 @@ void ModFile::writeLatexFiles(const string &basename, bool fit) {
         if (wlsms != NULL) {
            if (!dir_created) createLatexDir(dirname);
            dir_created = true;
-           static_model.writeLatexFile(dirname, basename, fit);
+           static_model.writeLatexFile(dirname, basename, fit, par_const,
+                                      global_eval_context);
            continue;
         }
 
@@ -1545,7 +1547,8 @@ void ModFile::writeLatexFiles(const string &basename, bool fit) {
             if (wloms != NULL) {
                if (!dir_created) createLatexDir(dirname);
                dir_created = true;
-               original_model.writeLatexOriginalFile(dirname, basename);
+               original_model.writeLatexOriginalFile(dirname, basename, par_const,
+                                                     global_eval_context);
             }
         }
     }

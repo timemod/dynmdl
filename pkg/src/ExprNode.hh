@@ -72,6 +72,9 @@ enum ExprNodeOutputType
     oLatexStaticModel,                            //!< LaTeX code, static model
     oLatexDynamicModel,                           //!< LaTeX code, dynamic model
     oLatexDynamicSteadyStateOperator,             //!< LaTeX code, dynamic model, inside a steady state operator
+    oLatexStaticModelParConst,                    //!< LaTeX code, static model, parameters written as constants
+    oLatexDynamicModelParConst,                   //!< LaTeX code, dynamic model, parameters written as constants
+    oLatexDynamicSteadyStateOperatorParConst,     //!< LaTeX code, dynamic model, inside a steady state operator, paramters written as constats
     oMatlabDynamicSteadyStateOperator,            //!< Matlab code, dynamic model, inside a steady state operator
     oMatlabDynamicSparseSteadyStateOperator,      //!< Matlab code, dynamic block decomposed model, inside a steady state operator
     oCDynamicSteadyStateOperator,                 //!< C code, dynamic model, inside a steady state operator
@@ -120,13 +123,38 @@ enum ExprNodeOutputType
                            || (output_type) == oCDynamicSteadyStateOperator \
                            || (output_type) == oCSteadyStateFile)
 
+#ifdef USE_R
+#define IS_LATEX(output_type) ((output_type) == oLatexStaticModel       \
+                               || (output_type) == oLatexDynamicModel   \
+                               || (output_type) == oLatexStaticModelParConst   \
+                               || (output_type) == oLatexDynamicModelParConst   \
+                               || (output_type) == oLatexDynamicSteadyStateOperator \
+                               || (output_type) == oLatexDynamicSteadyStateOperatorParConst)
+
+#define IS_LATEX_PAR_CONST(output_type) ((output_type) == oLatexStaticModelParConst   \
+                                         || (output_type) == oLatexDynamicModelParConst   \
+                                         || (output_type) == oLatexDynamicSteadyStateOperator \
+                                         || (output_type) == oLatexDynamicSteadyStateOperatorParConst)
+
+#else
 #define IS_LATEX(output_type) ((output_type) == oLatexStaticModel       \
                                || (output_type) == oLatexDynamicModel   \
                                || (output_type) == oLatexDynamicSteadyStateOperator)
+#endif
 
+#ifdef USE_R
+#define USE__LATEX(output_type) ((output_type) == oLatexStaticModel       \
+                               || (output_type) == oLatexDynamicModel   \
+                               || (output_type) == oLatexStaticModelParConst   \
+                               || (output_type) == oLatexDynamicModelParConst   \
+                               || (output_type) == oLatexDynamicSteadyStateOperator \
+                               || (output_type) == oLatexDynamicSteadyStateOperatorParConst)
+
+#else 
 #define USE__LATEX(output_type) ((output_type) == oLatexStaticModel       \
                                || (output_type) == oLatexDynamicModel   \
                                || (output_type) == oLatexDynamicSteadyStateOperator)
+#endif
 
 /* Equal to 1 for Matlab langage or Julia, or to 0 for C language. Not defined for LaTeX.
    In Matlab and Julia, array indexes begin at 1, while they begin at 0 in C */
@@ -236,7 +264,14 @@ enum ExprNodeOutputType
         \param[in] temporary_terms the nodes that are marked as temporary terms
         \param[in,out] tef_terms the set of already written external function nodes
       */
+#ifdef USE_R
+      virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                               const temporary_terms_t &temporary_terms, 
+                               deriv_node_temp_terms_t &tef_terms, 
+                               const eval_context_t &eval_context) const = 0;
+#else
       virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const = 0;
+#endif
 
       //! returns true if the expr node contains an external function
       virtual bool containsExternalFunction() const = 0;
@@ -249,6 +284,15 @@ enum ExprNodeOutputType
 
       //! Writes output of node, using a Txxx notation for nodes in temporary_terms
       void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms) const;
+
+#ifdef USE_R
+      //  Write output without eval_context (only needed when writing Latex files)
+      void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, 
+                      deriv_node_temp_terms_t &tef_terms) const;
+
+      //  Write output without temporary terms but with eval_context (needed when writing Latex files)
+      void writeOutput(ostream &output, ExprNodeOutputType output_type,  const eval_context_t &eval_context) const;
+#endif
 
       virtual void genPolishCode(PolishModel &mdl, bool dynamic) const = 0;
 
@@ -509,7 +553,14 @@ public:
     return id;
   };
   virtual void prepareForDerivation();
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void collectDynamicVariables(SymbolType type_arg, set<pair<int, int> > &result) const;
@@ -559,7 +610,14 @@ private:
 public:
   VariableNode(DataTree &datatree_arg, int symb_id_arg, int lag_arg);
   virtual void prepareForDerivation();
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void collectDynamicVariables(SymbolType type_arg, set<pair<int, int> > &result) const;
@@ -639,7 +697,14 @@ public:
   virtual void computeTemporaryTerms(map<expr_t, pair<int, NodeTreeReference> > &reference_count,
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const;
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
@@ -727,7 +792,14 @@ public:
   virtual void computeTemporaryTerms(map<expr_t, pair<int, NodeTreeReference> > &reference_count,
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const;
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
@@ -833,7 +905,14 @@ public:
   virtual void computeTemporaryTerms(map<expr_t, pair<int, NodeTreeReference> > &reference_count,
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const;
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual bool containsExternalFunction() const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
@@ -912,7 +991,14 @@ public:
   virtual void computeTemporaryTerms(map<expr_t, pair<int, NodeTreeReference> > &reference_count,
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const = 0;
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const = 0;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const = 0;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const = 0;
   virtual bool containsExternalFunction() const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
@@ -979,7 +1065,14 @@ public:
   virtual void computeTemporaryTerms(map<expr_t, pair<int, NodeTreeReference> > &reference_count,
                                      map<NodeTreeReference, temporary_terms_t> &temp_terms_map,
                                      bool is_matlab, NodeTreeReference tr) const;
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual void writeExternalFunctionOutput(ostream &output, ExprNodeOutputType output_type,
                                            const temporary_terms_t &temporary_terms,
@@ -1020,7 +1113,14 @@ public:
                                      int Curr_block,
                                      vector< vector<temporary_terms_t> > &v_temporary_terms,
                                      int equation) const;
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual void compile(ostream &CompileCode, unsigned int &instruction_number,
                        bool lhs_rhs, const temporary_terms_t &temporary_terms,
@@ -1060,7 +1160,14 @@ public:
                                      int Curr_block,
                                      vector< vector<temporary_terms_t> > &v_temporary_terms,
                                      int equation) const;
+#ifdef USE_R
+  virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
+                           const temporary_terms_t &temporary_terms, 
+                           deriv_node_temp_terms_t &tef_terms,
+                           const eval_context_t &eval_context) const;
+#else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
+#endif
   virtual void genPolishCode(PolishModel &mdl, bool dynamic) const;
   virtual void compile(ostream &CompileCode, unsigned int &instruction_number,
                        bool lhs_rhs, const temporary_terms_t &temporary_terms,

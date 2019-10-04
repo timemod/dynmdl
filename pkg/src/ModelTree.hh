@@ -198,6 +198,7 @@ protected:
   //! Writes LaTeX model file
   void writeLatexModelFile(const string &dirname, const string &basename, 
                            const string &model_type, ExprNodeOutputType output_type, 
+                           const eval_context_t &eval_context,
                            const bool write_equation_tags = false) const;
 #else
   //! Writes LaTeX model file

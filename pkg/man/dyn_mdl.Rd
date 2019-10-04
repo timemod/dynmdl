@@ -7,7 +7,7 @@
 dyn_mdl(mod_file, period, data, base_period = NULL, calc = c("R",
   "bytecode", "dll", "internal"), fit_mod_file, debug = FALSE, dll_dir,
   max_laglead_1 = FALSE, nostrict = FALSE, warn_uninit_param = TRUE,
-  fit = TRUE, fit_fixed_period = FALSE)
+  fit = TRUE, fit_fixed_period = FALSE, par_const = FALSE)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -68,6 +68,10 @@ If \code{FALSE} then this function does not return a \code{FitMdl} object.}
 derived for a fixed period, treating lags and leads as exogenous variables.
 If \code{FALSE} (the default), the fit conditions are derived from the
 stacked-time equations.}
+
+\item{par_const}{a logical. If \code{TRUE}, then in the LaTeX files parameters
+are replaced with the corresponding numerical values in the mode file.
+The default is \code{FALSE}.}
 }
 \value{
 an \code{DynMdl} object or, if the mod file contains a
