@@ -20,6 +20,9 @@
 #include <iostream>
 #include <iterator>
 #include <algorithm>
+#ifdef USE_R
+#include <stdio.h>
+#endif
 
 #include <cassert>
 #include <cmath>
@@ -669,7 +672,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
               dyn_error("Unable to find value for parameter " + 
                       datatree.symbol_table.getName(symb_id) + ".");
           }
-          output << value;
+          char s[20];
+          sprintf(s, "%g", value);
+          output << s;
           return;
       }
 #endif
@@ -1988,10 +1993,18 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       output << "-";
       break;
     case oExp:
-      output << "exp";
+#ifdef USE_R
+      if (IS_LATEX(output_type))
+        output << "\\exp";
+      else
+        output << "exp";
       break;
+#endif
     case oLog:
-      output << "log";
+      if (IS_LATEX(output_type))
+        output << "\\log";
+      else
+        output << "log";
       break;
     case oLog10:
       if (IS_LATEX(output_type))
@@ -2036,7 +2049,10 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       output << "atanh";
       break;
     case oSqrt:
-      output << "sqrt";
+      if (IS_LATEX(output_type))
+        output << "\\sqrt";
+      else
+        output << "log";
       break;
     case oAbs:
       output << "abs";
