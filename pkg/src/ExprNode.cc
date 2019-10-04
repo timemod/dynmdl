@@ -667,7 +667,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
               value = eval(eval_context);
           } catch (ExprNode::EvalException &e) {
               dyn_error("Unable to find value for parameter " + 
-                      datatree.symbol_table.getTeXName(symb_id) + ".");
+                      datatree.symbol_table.getName(symb_id) + ".");
           }
           output << value;
           return;
@@ -2076,7 +2076,7 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           break;
         }
       output << "(";
-      arg->writeOutput(output, new_output_type, temporary_terms, tef_terms);
+      arg->writeOutput(output, new_output_type, temporary_terms, tef_terms, eval_context);
       output << ")";
       return;
     case oSteadyStateParamDeriv:
@@ -2143,7 +2143,7 @@ UnaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     }
 
   // Write argument
-  arg->writeOutput(output, output_type, temporary_terms, tef_terms);
+  arg->writeOutput(output, output_type, temporary_terms, tef_terms, eval_context);
 
   if (close_parenthesis)
     output << RIGHT_PAR(output_type);
