@@ -81,11 +81,11 @@ enum ExprNodeOutputType
     oJuliaDynamicSteadyStateOperator,             //!< Julia code, dynamic model, inside a steady state operator
     oSteadyStateFile,                             //!< Matlab code, in the generated steady state file
     oCSteadyStateFile,                            //!< C code, in the generated steady state file
-    oJuliaSteadyStateFile,                         //!< Julia code, in the generated steady state file
+    oJuliaSteadyStateFile,                        //!< Julia code, in the generated steady state file
     oRStaticModel,                                //!< R code, static model
     oRDynamicModel,                               //!< R code, dynamic model
-    oRDerivatives,                                //!< code for the analytical derivatives
-    oRExpression                                  //!< R expressions for the original model, for example for trend_vars and deflators.
+    oModFile,                                     //!< create a new mod file (for example with substituted trend expressions) >
+    oModDerivatives                               //!< same as oModFile, but use [] for lags/leads
   };
 
 #define IS_MATLAB(output_type) ((output_type) == oMatlabStaticModel     \
@@ -105,8 +105,11 @@ enum ExprNodeOutputType
 
 #ifdef USE_R
 #define IS_R(output_type) ((output_type) == oRStaticModel     \
-                          || (output_type) == oRDynamicModel \
-                          || (output_type) == oRExpression)
+                          || (output_type) == oRDynamicModel)
+
+#define IS_MOD(output_type) ((output_type) == oModFile     \
+                            || (output_type) == oModDerivatives)
+
 #define IS_RELOP(opcode)  (  (opcode) == oEqual \
                           || (opcode) == oEqualEqual \
                           || (opcode) == oDifferent \

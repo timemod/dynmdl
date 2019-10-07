@@ -717,17 +717,6 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       return;
     }
 
-#ifdef USE_R
-  if (output_type == oRExpression) {
-      if (lag) {
-          output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
-      }  else {
-          output <<  datatree.symbol_table.getName(symb_id);
-      }
-      return;
-  }
-#endif
-
   int i;
   int tsid = datatree.symbol_table.getTypeSpecificID(symb_id);
   switch (type)
@@ -735,8 +724,10 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case eParameter:
       if (output_type == oMatlabOutsideModel) {
         output << "M_.params" << "(" << tsid + 1 << ")";
-      } else if (output_type == oRDerivatives) {
-        output <<  datatree.symbol_table.getName(symb_id);
+#ifdef USE_R
+      } else if (IS_MOD(output_type)) {
+         output <<  datatree.symbol_table.getName(symb_id);
+#endif
       } else {
         output << "params" << LEFT_ARRAY_SUBSCRIPT(output_type) << tsid + ARRAY_SUBSCRIPT_OFFSET(output_type) << RIGHT_ARRAY_SUBSCRIPT(output_type);
       }
@@ -751,15 +742,25 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           datatree.local_variables_table[symb_id]->writeOutput(output, output_type, temporary_terms, tef_terms);
           output << ")";
         }
-      else if (output_type == oRDerivatives) {
-        output << datatree.symbol_table.getName(symb_id);
-      } else
+#ifdef USE_R
+      else if (output_type == oModFile) {
+         output <<  datatree.symbol_table.getName(symb_id);
+       } else if (output_type == oModDerivatives) {
+          dyn_error("VariableNode::writeOutput: fit models cannot handle local variables yet.\n");
+       }
+#endif
+      else
         /* We append underscores to avoid name clashes with "g1" or "oo_" (see
            also ModelTree::writeModelLocalVariables) */
         output << datatree.symbol_table.getName(symb_id) << "__";
       break;
 
     case eModFileLocalVariable:
+#ifdef USE_R
+       if (output_type == oModDerivatives) {
+          dyn_error("VariableNode::writeOutput: fit models cannot handle local variables yet.\n");
+        }
+#endif
       output << datatree.symbol_table.getName(symb_id);
       break;
 
@@ -769,16 +770,27 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaDynamicModel:
         case oMatlabDynamicModel:
         case oCDynamicModel:
+#ifdef USE_R
         case oRDynamicModel:
+#endif
           i = datatree.getDynJacobianCol(datatree.getDerivID(symb_id, lag)) + ARRAY_SUBSCRIPT_OFFSET(output_type);
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
-        case oRDerivatives:
+#ifdef USE_R
+        case oModFile:
+          if (lag) {
+              output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
+          }  else {
+              output <<  datatree.symbol_table.getName(symb_id);
+          }
+          break;
+        case oModDerivatives:
           // Derivatives are calculated for creating the fit mod file. Use square brackets []
-          // for lags/leads instead of parentheses () to make it easier to distinguish lags/leads 
+          // for lags/leads instead of parentheses () to make it easier to distinguish lags/leads
           // from function calls.
           output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
+#endif
         case oCDynamic2Model:
           i = tsid + (lag+1)*datatree.symbol_table.endo_nbr() + ARRAY_SUBSCRIPT_OFFSET(output_type);
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
@@ -787,7 +799,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaStaticModel:
         case oMatlabStaticModel:
         case oMatlabStaticModelSparse:
+#ifdef USE_R
         case oRStaticModel:
+#endif
           i = tsid + ARRAY_SUBSCRIPT_OFFSET(output_type);
           output <<  "y" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
@@ -830,7 +844,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaDynamicModel:
         case oMatlabDynamicModel:
         case oMatlabDynamicModelSparse:
+#ifdef USE_R
         case oRDynamicModel:
+#endif
           if (lag > 0)
             output <<  "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << "it_+" << lag << ", " << i
                    << RIGHT_ARRAY_SUBSCRIPT(output_type);
@@ -841,9 +857,21 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
             output <<  "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << "it_, " << i
                    << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
-        case oRDerivatives:
+#ifdef USE_R
+        case oModFile:
+          if (lag) {
+              output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
+          }  else {
+              output <<  datatree.symbol_table.getName(symb_id);
+          }
+          break;
+        case oModDerivatives:
+          // Derivatives are calculated for creating the fit mod file. Use square brackets []
+          // for lags/leads instead of parentheses () to make it easier to distinguish lags/leads
+          // from function calls.
           output <<  datatree.symbol_table.getName(symb_id) << "[" << lag << "]";
           break;
+#endif
         case oCDynamicModel:
         case oCDynamic2Model:
           if (lag == 0)
@@ -857,7 +885,9 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oJuliaStaticModel:
         case oMatlabStaticModel:
         case oMatlabStaticModelSparse:
+#ifdef USE_R
         case oRStaticModel:
+#endif
           output << "x" << LEFT_ARRAY_SUBSCRIPT(output_type) << i << RIGHT_ARRAY_SUBSCRIPT(output_type);
           break;
         case oMatlabOutsideModel:
@@ -930,6 +960,25 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         }
       break;
 
+#ifdef USE_R
+    case eTrend:
+      if (output_type == oModFile) {
+          if (lag) {
+              output <<  datatree.symbol_table.getName(symb_id) << "(" << lag << ")";
+          }  else {
+              output <<  datatree.symbol_table.getName(symb_id);
+          }
+      } else {
+          dyn_error("Impossible case\n");
+      }
+      break;
+    case eExternalFunction:
+    case eLogTrend:
+    case eStatementDeclaredVariable:
+    case eUnusedEndogenous:
+      dyn_error("Impossible case\n");
+    }
+#else
     case eExternalFunction:
     case eTrend:
     case eLogTrend:
@@ -937,6 +986,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     case eUnusedEndogenous:
       dyn_error("Impossible case\n");
     }
+#endif
 }
 
 expr_t
@@ -3256,7 +3306,7 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
 #ifdef USE_R
   // special treament of multiplication parameter with an expression for
   // latex: print the parameter first and then the expression
-  if (op_code == oTimes && IS_LATEX(output_type)) {
+  if (op_code == oTimes && (IS_LATEX(output_type) || IS_MOD(output_type))) {
       VariableNode *varg2 = dynamic_cast<VariableNode *>(arg2);
       if (varg2 != NULL && varg2->get_type() == eParameter) {
         // arg2 is a parameter
@@ -3264,7 +3314,11 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         if (varg1 == NULL || varg1->get_type() != eParameter) {
            // arg1 is not a parameter: print arg2 first
           arg2->writeOutput(output, output_type, temporary_terms, tef_terms, eval_context);
-          output << "\\, ";
+          if (IS_LATEX(output_type)) {
+              output << "\\, ";
+          } else if (IS_MOD(output_type)) {
+              output << " * ";
+          }
           int prec = precedence(output_type, temporary_terms);
           bool close_parenthesis = false;
           BinaryOpNode *barg1 = dynamic_cast<BinaryOpNode *>(arg1);
@@ -3285,7 +3339,7 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
   // Treat derivative of Power
   if (op_code == oPowerDeriv)
     {
-      if (IS_LATEX(output_type) || output_type == oRDerivatives) {
+      if (IS_LATEX(output_type) || IS_MOD(output_type)) {
         unpackPowerDeriv()->writeOutput(output, output_type, temporary_terms, tef_terms, eval_context);
       } else
         {
@@ -3335,6 +3389,9 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         }
       arg1->writeOutput(output, output_type, temporary_terms, tef_terms, eval_context);
       output << ",";
+#ifdef USE_R
+      if (IS_MOD(output_type)) output << " ";
+#endif
       arg2->writeOutput(output, output_type, temporary_terms, tef_terms, eval_context);
       output << ")";
       return;
@@ -3375,6 +3432,10 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
 
   if (IS_LATEX(output_type) && op_code == oDivide)
     output << "}";
+
+#ifdef USE_R
+  if (IS_MOD(output_type)) output << " ";
+#endif
 
   // Write current operator symbol
   switch (op_code)
@@ -3438,6 +3499,10 @@ BinaryOpNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
     default:
       ;
     }
+
+#ifdef USE_R
+  if (IS_MOD(output_type)) output << " ";
+#endif
 
   close_parenthesis = false;
 
@@ -5363,7 +5428,7 @@ ExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType output_typ
 {
   if (output_type == oMatlabOutsideModel || output_type == oSteadyStateFile
       || output_type == oCSteadyStateFile || output_type == oJuliaSteadyStateFile
-      || output_type == oRDerivatives     || IS_LATEX(output_type)) {
+      || IS_MOD(output_type) || IS_LATEX(output_type)) {
       string name = IS_LATEX(output_type) ? datatree.symbol_table.getTeXName(symb_id)
         : datatree.symbol_table.getName(symb_id);
       output << name << "(";
@@ -5609,7 +5674,7 @@ FirstDerivExternalFunctionNode::writeOutput(ostream &output, ExprNodeOutputType 
 {
   assert(output_type != oMatlabOutsideModel);
 
-  if (output_type == oRDerivatives || IS_LATEX(output_type)) {
+  if (IS_MOD(output_type) || IS_LATEX(output_type)) {
     if (IS_LATEX(output_type)) {
         output << "\\frac{\\partial " << datatree.symbol_table.getTeXName(symb_id)
                  << "}{\\partial " << inputIndex << "}";

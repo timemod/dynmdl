@@ -1436,6 +1436,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
 
     Rcpp::List trend_info = dynamic_model.get_trend_info();
 
+    //Rcpp::CharacterVector eqns = dynamic_model.get_equations();
+
 
     return Rcpp::List::create(Rcpp::Named("exos") = exos,
                               Rcpp::Named("endos") = endos,
@@ -1451,6 +1453,7 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
                               Rcpp::Named("dynamic_model") = dynmdl,
                               Rcpp::Named("static_model") = statmdl,
                               Rcpp::Named("trend_info") = trend_info);
+     //                         Rcpp::Named("equations") = eqns);
 }
 
 // Return information about the derivatives of the equations

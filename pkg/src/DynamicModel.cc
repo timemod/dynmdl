@@ -5743,7 +5743,7 @@ Rcpp::List DynamicModel::getDerivativeInfoR(int n_instr, Rcpp::IntegerVector ins
 
         ostringstream txt;
         expr_t d1 = it->second;
-        d1->writeOutput(txt, oRDerivatives, temp_term_union, tef_terms);
+        d1->writeOutput(txt, oModDerivatives, temp_term_union, tef_terms);
 
         if (col < n_jac_col_endo) {
             endo_eq[i_endo] = eq;
@@ -5813,7 +5813,7 @@ Rcpp::List DynamicModel::get_deflated_endos() const {
   for (it = nonstationary_symbols_map.begin(); it != nonstationary_symbols_map.end(); 
        ++it) {
     ostringstream txt;
-    it->second.second->writeOutput(txt, oRExpression, temp_terms, tef_terms);
+    it->second.second->writeOutput(txt, oModFile, temp_terms, tef_terms);
     names(i) = symbol_table.getName(it->first);
     deflators(i++) = Rcpp::String(txt.str());
   }
@@ -5835,7 +5835,7 @@ Rcpp::List DynamicModel::get_trend_vars() const {
   for (it = trend_symbols_map.begin(); it != trend_symbols_map.end(); 
        ++it) {
     ostringstream txt;
-    it->second->writeOutput(txt, oRExpression, temp_terms, tef_terms);
+    it->second->writeOutput(txt, oModFile, temp_terms, tef_terms);
     names(i) = symbol_table.getName(it->first);
     growth_factors(i++) = Rcpp::String(txt.str());
   }
@@ -5849,5 +5849,16 @@ Rcpp::List DynamicModel::get_trend_info() const {
   return Rcpp::List::create(
           Rcpp::Named("deflated_endos") = get_deflated_endos(),
           Rcpp::Named("trend_vars") = get_trend_vars());
+}
+
+Rcpp::CharacterVector DynamicModel::get_equations() const {
+    int neq = equations.size();
+    Rcpp::CharacterVector eqns(neq);
+    for (int eq = 0; eq < neq; eq++) {
+        ostringstream txt;
+        dynamic_cast<ExprNode *>(equations[eq])->writeOutput(txt, oModFile);
+        eqns[eq] = Rcpp::String(txt.str());
+    }
+    return(eqns);
 }
 #endif
