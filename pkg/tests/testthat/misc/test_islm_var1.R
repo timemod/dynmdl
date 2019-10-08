@@ -10,6 +10,7 @@ model <- "islm_var1"
 mod_file <- file.path("mod", paste0(model, ".mod"))
 
 expected_equations_file <- "expected_output/expected_equations_islm_var1.txt"
+expected_orig_equations_file <- "expected_output/expected_orig_equations_islm_var1.txt"
 
 solve_period <- period_range("2015/2032")
 
@@ -170,6 +171,17 @@ test_that("get_equations", {
   }
   eqs_tmp <- paste(eqs_tmp, collapse = "\n")
   expect_known_output(cat(eqs_tmp), file = expected_equations_file)
+})
+
+test_that("get_original_equations", {
+  eqs <- mdl_new$get_original_equations()
+  if (.Platform$OS.type == "windows") {
+    eqs_tmp <- gsub("\r\n", "\n", eqs)
+  } else {
+    eqs_tmp <- eqs
+  }
+  eqs_tmp <- paste(eqs_tmp, collapse = "\n")
+  expect_known_output(cat(eqs_tmp), file = expected_orig_equations_file)
 })
 
 #

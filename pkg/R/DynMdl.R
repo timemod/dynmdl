@@ -143,7 +143,10 @@ setOldClass("regts")
 #' method \code{\link{check}} or \code{solve_perturbation}}
 #' 
 #' \item{\code{\link{get_equations}}}{Returns a character vector with the 
-#' equations of the model.}
+#' parsed equations of the model.}
+
+#' \item{\code{\link{get_original_equations}}}{Returns a character vector with the 
+#' equations of the original model.}
 #' 
 #' \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} 
 #' object}
@@ -153,13 +156,14 @@ setOldClass("regts")
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(
-    initialize = function(mdldef, equations, base_period, calc, dll_dir, 
+    initialize = function(mdldef, orig_equations, base_period, calc, dll_dir, 
                           dll_file) {
 
       # no arguments supplied
       if (nargs() == 0) return()
       
-      private$equations <- equations
+      private$equations <- mdldef$equations
+      private$orig_equations <- orig_equations
       private$base_period <- base_period
       private$calc <- calc
       private$dll_dir <- dll_dir
@@ -1027,11 +1031,25 @@ DynMdl <- R6Class("DynMdl",
       colnames(jac) <- private$endo_names
       return(jac)
     },
-    get_equations = function(i = 1:private$mdldef$endo_count) {
-      if (!is.numeric(i)) {
-        stop("Argument i should be a numeric")
+    get_equations = function(i) {
+      if (missing(i)) {
+        return(private$equations)
+      } else {
+        if (!is.numeric(i)) {
+          stop("Argument i should be a numeric")
+        }
+        return(private$equations[i])
       }
-      return(private$equations[i])
+    },
+    get_original_equations = function(i) {
+      if (missing(i)) {
+        return(private$orig_equations)
+      } else {
+        if (!is.numeric(i)) {
+          stop("Argument i should be a numeric")
+        }
+        return(private$orig_equations[i])
+      }
     },
     get_eigval = function() {
       if (!is.null(private$ss) && !is.null(private$ss$eigval)) {
@@ -1098,6 +1116,7 @@ DynMdl <- R6Class("DynMdl",
       serialized_mdl <- list(version = packageVersion("dynmdl"),
                              mdldef = private$mdldef,
                              equations = private$equations,
+                             orig_equations = private$orig_equations,
                              calc = private$calc,
                              bin_data = bin_data,
                              dll_basename = basename(private$dll_file),
@@ -1180,6 +1199,7 @@ DynMdl <- R6Class("DynMdl",
     mdldef = NULL,
     model_index = NA_integer_,
     equations = NULL,
+    orig_equations = NULL,
     exo_names = NULL,
     endo_names = NULL,
     param_names = NULL,
@@ -2038,3 +2058,5 @@ DynMdl <- R6Class("DynMdl",
     }
   )
 )
+#' \item{\code{\link{get_equations}}}{Returns a character vector with the 
+#' equations of the model.}

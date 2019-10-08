@@ -1,0 +1,48 @@
+d * (c - h * c(-1) * mu_z ^ (-1)) ^ (-1) - h * betta * d(1) * (c(1) * mu_z(1) -
+    h * c) ^ (-1) = lambda
+lambda = betta * lambda(1) * mu_z(1) ^ (-1) / PI(1) * R
+r = gammma1 + gammma2 * (u - 1)
+q = mu_z(1) ^ (-1) * betta * lambda(1) / lambda * mu_I(1) ^ (-1) * ((1 - delta)
+    * q(1) + r(1) * u(1) - (gammma1 * (u(1) - 1) + gammma2 / 2 * (u(1) - 1) ^
+    2))
+1 = q * (1 - kappa / 2 * (mu_z * x / x(-1) - Lambdax) ^ 2 - mu_z * x * kappa *
+    (mu_z * x / x(-1) - Lambdax) / x(-1)) + kappa * mu_z(1) ^ (-1) * lambda(1)
+    * betta * q(1) / lambda * (mu_z(1) * x(1) / x - Lambdax) * (mu_z(1) * x(1)
+    / x) ^ 2
+f = lambda * (eta - 1) / eta * wstar ^ (1 - eta) * w ^ eta * ld + betta *
+    thetaw * (PI ^ chiw / PI(1)) ^ (1 - eta) * (mu_z(1) * wstar(1) / wstar) ^
+    (eta - 1) * f(1)
+f = varpsi * d * phi * PIstarw ^ ((-eta) * (1 + gammma)) * ld ^ (1 + gammma) +
+    f(1) * betta * thetaw * (PI ^ chiw / PI(1)) ^ ((-eta) * (1 + gammma)) *
+    (mu_z(1) * wstar(1) / wstar) ^ (eta * (1 + gammma))
+g1 = lambda * mc * yd + betta * thetap * (PI ^ chi / PI(1)) ^ (-epsilon) *
+    g1(1)
+g2 = yd * lambda * PIstar + PIstar * betta * thetap * (PI ^ chi / PI(1)) ^ (1 -
+    epsilon) / PIstar(1) * g2(1)
+epsilon * g1 = g2 * (epsilon - 1)
+u * k(-1) / ld = mu_z * w * alppha / (1 - alppha) / r * mu_I
+mc = (1 / (1 - alppha)) ^ (1 - alppha) * (1 / alppha) ^ alppha * w ^ (1 -
+    alppha) * r ^ alppha
+1 = thetaw * (PI(-1) ^ chiw / PI) ^ (1 - eta) * (mu_z ^ (-1) * w(-1) / w) ^ (1
+    - eta) + (1 - thetaw) * PIstarw ^ (1 - eta)
+1 = thetap * (PI(-1) ^ chi / PI) ^ (1 - epsilon) + (1 - thetap) * PIstar ^ (1 -
+    epsilon)
+R / Rbar = (R(-1) / Rbar) ^ gammmaR * ((PI / PIbar) ^ gammmaPI * (mu_z * yd /
+    yd(-1) / exp(LambdaYd)) ^ gammmay) ^ (1 - gammmaR) * exp(epsm)
+yd = c + x + mu_z ^ (-1) * mu_I ^ (-1) * (gammma1 * (u - 1) + gammma2 / 2 * (u
+    - 1) ^ 2) * k(-1)
+yd = (ld ^ (1 - alppha) * mu_z ^ (-1) * mu_A * (u * k(-1)) ^ alppha - Phi) / vp
+l = ld * vw
+vp = thetap * (PI(-1) ^ chi / PI) ^ (-epsilon) * vp(-1) + (1 - thetap) * PIstar
+    ^ (-epsilon)
+vw = thetaw * (PI(-1) ^ chiw * mu_z ^ (-1) * w(-1) / w / PI) ^ (-eta) * vw(-1)
+    + (1 - thetaw) * PIstarw ^ (-eta)
+mu_I * mu_z * k - (1 - delta) * k(-1) - x * (1 - kappa / 2 * (mu_z * x / x(-1)
+    - Lambdax) ^ 2) * mu_z * mu_I = 0
+F = yd - ld * w * 1 / (1 - alppha)
+PIstarw = wstar / w
+log(d) = rhod * log(d(-1)) + epsd
+log(phi) = rhophi * log(phi(-1)) + epsphi
+log(mu_I) = Lambdamu + epsmu_I
+log(mu_A) = LambdaA + epsA
+mu_z = mu_A ^ (1 / (1 - alppha)) * mu_I ^ (alppha / (1 - alppha))

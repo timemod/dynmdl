@@ -1,36 +1,37 @@
 y = c + i + g
 yd = y - t
 t = t0 + t1 * y
-c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * r^2 + 0.1 * yd(-2) 
-+ 0.25 * yd(3) + 0.1 * yd(-3) + uc
-i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + 0.01 * y(-4) + i4 * r + i5 * r^2
-md = m0 + m1 * y + m2 * r + m3 * r^2
+c = uc + 0.1 * yd_lag_2(-1) + 0.25 * yd_lead_2(1) + c0 + c1 * yd(-1) + c2 * yd
+    + c3 * yd(1) + c4 * r + c5 * r ^ 2 + 0.1 * yd_lag_1(-1)
+i = i5 * r ^ 2 + i4 * r + i0 + i1 * y(-1) + i2 * y + i3 * y(1) + 0.01 *
+    y_lag_3(-1)
+md = m0 + m1 * y + m2 * r + m3 * r ^ 2
 md = ms
-(sigma_uc >= 0) * (uc / sigma_uc^2 + l_4 * ((-1))) + (sigma_uc < 0) * (uc -
-uc_old) = 0
-fit_y * (y - y_exo) + (1 - fit_y) * (l_1 * (1) + l_2 * ((-1)) + l_3 * ((-t1)) +
-    l_5(-1) * ((-i3)) + l_5 * ((-i2)) + l_5(1) * ((-i1)) + l_5(4) * ((-0.01)) +
-    l_6 * ((-m1))) = 0
-fit_yd * (yd - yd_exo) + (1 - fit_yd) * (l_2 * (1) + l_4(-3) * ((-0.25)) +
-    l_4(-1) * ((-c3)) + l_4 * ((-c2)) + l_4(1) * ((-c1)) + l_4(2) * ((-0.1)) +
-    l_4(3) * ((-0.1))) = 0
-fit_t * (t - t_exo) + (1 - fit_t) * (l_2 * (1) + l_3 * (1)) = 0
-fit_c * (c - c_exo) + (1 - fit_c) * (l_1 * ((-1)) + l_4 * (1)) = 0
-fit_i * (i - i_exo) + (1 - fit_i) * (l_1 * ((-1)) + l_5 * (1)) = 0
-fit_md * (md - md_exo) + (1 - fit_md) * (l_6 * (1) + l_7 * (1)) = 0
-fit_r * (r - r_exo) + (1 - fit_r) * (l_4 * ((-(c4 + c5 * 2 * r))) + l_5 *
-    ((-(i4 + i5 * 2 * r))) + l_6 * ((-(m2 + m3 * 2 * r)))) = 0
-NA
-NA
-NA
-NA
-NA
-NA
-NA
-NA
-NA
-NA
-NA
-NA
-NA
-NA
+(sigma_uc >= 0) * (uc / sigma_uc ^ 2 - l_4) + (sigma_uc < 0) * (uc - uc_old) =
+    0
+fit_y * (y - y_exo) + (1 - fit_y) * (l_6 * (-m1) + l_1 - l_2 + l_3 * (-t1) +
+    l_5(-1) * (-i3) + l_5 * (-i2) + l_5(1) * (-i1) + (-0.01) * l_5_lead_3(1)) =
+    0
+fit_yd * (yd - yd_exo) + (1 - fit_yd) * ((-0.1) * l_4_lead_2(1) + (-0.1) *
+    l_4_lead_1(1) + l_4(1) * (-c1) + l_4 * (-c2) + l_4(-1) * (-c3) + l_2 +
+    (-0.25) * l_4_lag_2(-1)) = 0
+fit_t * (t - t_exo) + (1 - fit_t) * (l_2 + l_3) = 0
+fit_c * (c - c_exo) + (1 - fit_c) * (l_4 - l_1) = 0
+fit_i * (i - i_exo) + (1 - fit_i) * (l_5 - l_1) = 0
+fit_md * (md - md_exo) + (1 - fit_md) * (l_6 + l_7) = 0
+fit_r * (r - r_exo) + (1 - fit_r) * (l_4 * (-(c4 + r * c5 * 2)) + l_5 * (-(i4 +
+    r * i5 * 2)) + l_6 * (-(m2 + r * m3 * 2))) = 0
+yd_lead_1 = yd(1)
+yd_lead_2 = yd_lead_1(1)
+l_5_lead_1 = l_5(1)
+l_5_lead_2 = l_5_lead_1(1)
+l_5_lead_3 = l_5_lead_2(1)
+l_4_lead_1 = l_4(1)
+l_4_lead_2 = l_4_lead_1(1)
+yd_lag_1 = yd(-1)
+yd_lag_2 = yd_lag_1(-1)
+y_lag_1 = y(-1)
+y_lag_2 = y_lag_1(-1)
+y_lag_3 = y_lag_2(-1)
+l_4_lag_1 = l_4(-1)
+l_4_lag_2 = l_4_lag_1(-1)

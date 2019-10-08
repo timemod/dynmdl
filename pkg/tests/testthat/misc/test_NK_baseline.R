@@ -15,7 +15,8 @@ param_value_file <-  file.path(dynare_dir, "NK_baseline_param_values.txt")
 steady_data_file <- file.path(dynare_dir, "NK_baseline_steady.csv")
 eigval_file <- file.path(dynare_dir, "NK_baseline_eigval.csv")
 start_period <- period("2015")
-expected_equations_file <- "expected_output/expected_equations.txt"
+expected_orig_equations_file <- "expected_output/expected_orig_equations_NK_baseline.txt"
+expected_equations_file <- "expected_output/expected_equations_NK_baseline.txt"
 
 # compile the model
 model_period <- period_range("2015/2033")
@@ -78,6 +79,18 @@ test_that("solve linlogpow", {
   mdl2$solve(control = list(silent = TRUE, trace = FALSE))
   
   expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
+})
+
+test_that("get_orig_equations", {
+  eqs <- mdl$get_original_equations()
+  if (.Platform$OS.type == "windows") {
+    eqs_tmp <- gsub("\r\n", "\n", eqs)
+  } else {
+    eqs_tmp <- eqs
+  }
+  eqs_tmp <- paste(eqs_tmp, collapse = "\n")
+  expect_known_output(cat(eqs_tmp), file = expected_orig_equations_file)
+  #print(eqs)
 })
 
 test_that("get_equations", {

@@ -2,18 +2,22 @@
 % Please edit documentation in R/DynMdl_doc.R
 \name{get_equations}
 \alias{get_equations}
+\alias{get_original_equations}
 \title{\code{\link{DynMdl}} method: Returns a character vector with the model 
 equations.}
 \description{
-This method of R6 class \code{\link{DynMdl}} returns a character vector 
-with the model equations (excluding local equations).
+These method of R6 class \code{\link{DynMdl}} returns a character vector 
+with the model equations (excluding local equations). \code{get_equations}
+returned the parsed equations, where trends (if present) have been removed.
+\code{get_original_equations} returns the equations as defined in the mod 
+file.
 }
 \section{Usage}{
 
 \code{DynMdl} method:
 \preformatted{
- md$get_equations(i = NULL)
- 
+ md$get_equations(i)
+ mdl$get_original_equations(i)
 }
 
 \code{mdl} is an \code{\link{DynMdl}} object

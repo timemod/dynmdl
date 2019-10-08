@@ -130,7 +130,9 @@ backward looking model at a specific period}
 method \code{\link{check}} or \code{solve_perturbation}}
 
 \item{\code{\link{get_equations}}}{Returns a character vector with the 
-equations of the model.}
+parsed equations of the model.}
+\item{\code{\link{get_original_equations}}}{Returns a character vector with the 
+equations of the original model.}
 
 \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} 
 object}

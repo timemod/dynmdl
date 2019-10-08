@@ -157,8 +157,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
       dll_file <- NA_character_
     }
     fit_mod_text <- read_file(fit_mod_file)
-    equations <- get_equations(fit_mod_text, mdldef)
-    mdl <- FitMdl$new(mdldef, fit_info, equations, base_period, calc, 
+    orig_equations <- get_orig_equations(fit_mod_text, mdldef)
+    mdl <- FitMdl$new(mdldef, fit_info, orig_equations, base_period, calc, 
                       dll_dir, dll_file, debug)
   } else {
     
@@ -176,8 +176,9 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     } else {
       dll_file <- NA_character_
     }
-    equations <- get_equations(mod_text, mdldef)
-    mdl <- DynMdl$new(mdldef, equations, base_period, calc, dll_dir, dll_file)
+    orig_equations <- get_orig_equations(mod_text, mdldef)
+    mdl <- DynMdl$new(mdldef, orig_equations, base_period, calc, dll_dir, 
+                      dll_file)
   }
   
   if (!debug) {
@@ -243,7 +244,7 @@ get_fit_instruments <- function(mod_text) {
 }
 
 # this function read the mod file and creates a vector with equations
-get_equations <- function(mod_text, mdldef) {
+get_orig_equations <- function(mod_text, mdldef) {
   
   # the code below may fail when there are model variables named "model" or
   # "end". Therefore check the names
@@ -292,7 +293,7 @@ get_equations <- function(mod_text, mdldef) {
 compile_model <- function(...) {
   
   model_info <- compile_model_(...)
-  
+ 
   retval <- list()
   with(model_info, {
     retval$endos              <<- endos
@@ -360,6 +361,12 @@ compile_model <- function(...) {
                                           names(retval$exos), 
                                           names(retval$endos))
   
+  # splite equations over multiple lines if necessary
+  split_lines <- function(eq) {
+      paste(strwrap(eq, width = 80, exdent = 4), collapse = "\n")}
+  retval$equations <- sapply(model_info$equations, 
+                                    FUN = split_lines, USE.NAMES = FALSE)
+    
   return(retval)
 }
 
