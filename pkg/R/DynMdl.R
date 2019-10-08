@@ -1079,6 +1079,25 @@ DynMdl <- R6Class("DynMdl",
                                   private$exo_data)
       return(invisible(self))
     },
+    write_mod_file = function(file) {
+      write_mod_file_internal(file, private$mdldef, private$equations)
+      return(invisible(self))
+    },
+    solve_dynare = function(scratch_dir) {
+      if (!dir.exists(scratch_dir)) dir.create(scratch_dir)
+      z <- sys.call()[[1]]
+      if (z[[1]] == "$") {
+        model_name <- as.character(z[[2]])
+      } else {
+        model_name <- "mdl"
+      }
+      mod_file <- file.path(scratch_dir, paste0(model_name, ".mod"))
+      initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.xlsx"))
+      self$write_mod_file(mod_file)
+      self$write_initval_file(initval_file)
+      solve_dynare_internal(scratch_dir, model_name, private$model_period)
+      return(invisible(self))
+    },
     copy = function() {
       ret <- self$clone(deep = TRUE)
       # We no longer create a new PolishModel object. This is not necessary.
