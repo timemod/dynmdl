@@ -1606,6 +1606,7 @@ string space2underscore(string text) {
 
 void ModelTree::writeLatexModelFile(const string &dirname, const string &model_basename, 
                                     const string &model_type, ExprNodeOutputType output_type, 
+                                    const OutputParameters &output_params,
                                     const eval_context_t &eval_context,
                                     const bool write_equation_tags) const
 #else
@@ -1659,7 +1660,7 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
       content_output << "\\begin{dmath*}" << endl
                      << symbol_table.getTeXName(id) << " = ";
       // Use an empty set for the temporary terms
-      value->writeOutput(content_output, output_type, eval_context);
+      value->writeOutput(content_output, output_type, eval_context, output_params);
       content_output << endl << "\\end{dmath*}" << endl;
     }
 
@@ -1723,7 +1724,8 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
              }
              single_eq_output << "\\label{" << eq_name << "_" 
                             << model_type << "_single}" << endl;
-             dynamic_cast<ExprNode *>(equations[eq])->writeOutput(single_eq_output, output_type, eval_context);
+             dynamic_cast<ExprNode *>(equations[eq])->writeOutput(single_eq_output, output_type, eval_context,
+                                                                  output_params);
              single_eq_output.close();
              break;
           }
@@ -1731,7 +1733,8 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
 #endif
       // Here it is necessary to cast to superclass ExprNode, otherwise the overloaded writeOutput() method is not found
 #ifdef USE_R
-      dynamic_cast<ExprNode *>(equations[eq])->writeOutput(content_output, output_type, eval_context);
+      dynamic_cast<ExprNode *>(equations[eq])->writeOutput(content_output, output_type, eval_context,
+                                                           output_params);
 #else
       dynamic_cast<ExprNode *>(equations[eq])->writeOutput(content_output, output_type);
 #endif

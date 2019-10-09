@@ -38,7 +38,7 @@
 
 ModFile* parse(char * modfile, char *latex_basename, bool max_laglead_1, bool nostrict,
                bool no_tmp_terms, int n_fit_derivatives, bool warn_uninit_param,
-               bool par_const) {
+               const OutputParameters &output_params) {
   bool clear_all = true;
   bool clear_global = false;
   bool save_macro = false;
@@ -103,7 +103,7 @@ ModFile* parse(char * modfile, char *latex_basename, bool max_laglead_1, bool no
         no_tmp_terms, no_log, no_warn, warn_uninit, warn_uninit_param, console, nograph, nointeractive,
         parallel, config_file, warnings, nostrict, check_model_changes, minimal_workspace,
         compute_xrefs, output_mode, language, params_derivs_order, max_laglead_1,
-        n_fit_derivatives, par_const
+        n_fit_derivatives, output_params
 #if defined(_WIN32) || defined(__CYGWIN32__)
         , cygwin, msvc
 #endif

@@ -302,9 +302,11 @@ public:
 #ifdef USE_R
   void writeLatexFile(const string &dirname, const string &basename, 
                       const bool write_equation_tags, const bool fit,
-                      const bool par_const, const eval_context_t &eval_context) const;
+                      const OutputParameters &output_params,
+                      const eval_context_t &eval_context) const;
   void writeLatexOriginalFile(const string &dirname, const string &basename,
-                              const bool par_const, const eval_context_t &eval_context) const;
+                              const OutputParameters &output_params, 
+                              const eval_context_t &eval_context) const;
 #endif
 
   virtual int getDerivID(int symb_id, int lag) const throw (UnknownDerivIDException);

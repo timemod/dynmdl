@@ -7,7 +7,7 @@
 dyn_mdl(mod_file, period, data, base_period = NULL, calc = c("R",
   "bytecode", "dll", "internal"), fit_mod_file, debug = FALSE, dll_dir,
   max_laglead_1 = FALSE, nostrict = FALSE, warn_uninit_param = TRUE,
-  fit = TRUE, fit_fixed_period = FALSE, par_const = FALSE)
+  fit = TRUE, fit_fixed_period = FALSE, latex_options)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -69,16 +69,36 @@ derived for a fixed period, treating lags and leads as exogenous variables.
 If \code{FALSE} (the default), the fit conditions are derived from the
 stacked-time equations.}
 
-\item{par_const}{a logical. If \code{TRUE}, then in the LaTeX files parameters
-are replaced with the corresponding numerical values in the mode file.
-The default is \code{FALSE}.}
+\item{latex_options}{a list with options for writing LaTeX files.
+See Details.}
 }
 \value{
-an \code{DynMdl} object or, if the mod file contains a
+A \code{DynMdl} object or, if the mod file contains a
 fit block, a \code{\link{FitMdl}} object.
 }
 \description{
 Creates a \code{\link{DynMdl}} object from a mod file. If the mod file
 contains a fit block, then this function returns a \code{\link{FitMdl}} 
 object, which is an extension of a \code{DynMdl} object.
+}
+\details{
+\subsection{Latex options}{
+When the mod file contains a \code{write_latex_static_model},
+\code{write_latex_dynamic_model} or \code{write_latex_oiriginal_model} 
+statement, then the Dynare parser of package \code{dynmdl} generates
+LaTeX files in directory \code{latex}. Argument \code{latex_options} can be
+used to change the format of the LaTeX files.
+It should be a named list containing one or more of
+the following components:
+\describe{
+\item{\code{par_as_num}}{A logical. If \code{TRUE}, then the parameters
+are written as numerical constants to the LaTeX file, using the numerical
+values as specified in the mod file. The default is \code{FALSE}.}
+\item{\code{ndigits}}{The number of significant digits used when parameters
+as written as numerical values (default 4). This argument is only used 
+if \code{par_as_num} is \code{TRUE}. For example, if \code{ndigits} is 4,
+then the number \eqn{\pi} is printed as \code{3.142},
+and the number \eqn{e^{10}} as \code{2.303e+04}.}
+}
+}
 }

@@ -11,9 +11,10 @@ Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename,
    
     // The treatement of char in the next statement does not deserve a beauty
     // price
+    OutputParameters dum_output_params;
     ModFile *mod_file = parse((char *) modfile.c_str(), 
                               (char *) latex_basename.c_str(),
-                              false, true, true, 0, false, false);
+                              false, true, true, 0, false, dum_output_params);
     
     Rcpp::List retval;
     retval =  mod_file->getDerivativeInfo(instruments, fixed_period);

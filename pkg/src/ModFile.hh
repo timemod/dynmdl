@@ -182,7 +182,7 @@ public:
                                bool fixed_period) const;
   int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
-  void writeLatexFiles(const string &basename, bool fit, bool par_const);
+  void writeLatexFiles(const string &basename, const bool fit, const OutputParameters &output_params);
 #endif
 
 };

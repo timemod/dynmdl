@@ -5784,18 +5784,17 @@ Rcpp::List DynamicModel::getDerivativeInfoR(int n_instr, Rcpp::IntegerVector ins
 
 void DynamicModel::writeLatexFile(const string &dirname, const string &basename, 
                                   const bool write_equation_tags, const bool fit,
-                                  const bool par_const, 
+                                  const OutputParameters &output_params,
                                   const eval_context_t &eval_context) const {
   string model_type = fit ? "dynamic_fit" : "dynamic";
-  ExprNodeOutputType output_type = par_const ? oLatexDynamicModelParConst : oLatexDynamicModel;
-  writeLatexModelFile(dirname, basename, model_type, output_type, eval_context,
-                      write_equation_tags);
+  writeLatexModelFile(dirname, basename, model_type, oLatexDynamicModel, output_params,
+                      eval_context, write_equation_tags);
 }
 
 void DynamicModel::writeLatexOriginalFile(const string &dirname, const string &basename,
-                                          const bool par_const, const eval_context_t &eval_context) const {
-  ExprNodeOutputType output_type = par_const ? oLatexDynamicModelParConst : oLatexDynamicModel;
-  writeLatexModelFile(dirname, basename, "original", output_type, eval_context);
+                                          const OutputParameters &output_params,
+                                          const eval_context_t &eval_context) const {
+  writeLatexModelFile(dirname, basename, "original", oLatexDynamicModel, output_params, eval_context);
 }
 
 

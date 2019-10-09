@@ -3,6 +3,26 @@
 #' Creates a \code{\link{DynMdl}} object from a mod file. If the mod file
 #' contains a fit block, then this function returns a \code{\link{FitMdl}} 
 #' object, which is an extension of a \code{DynMdl} object.
+#' 
+#' \subsection{Latex options}{
+#' When the mod file contains a \code{write_latex_static_model},
+#' \code{write_latex_dynamic_model} or \code{write_latex_oiriginal_model} 
+#' statement, then the Dynare parser of package \code{dynmdl} generates
+#' LaTeX files in directory \code{latex}. Argument \code{latex_options} can be
+#' used to change the format of the LaTeX files.
+#' It should be a named list containing one or more of
+#' the following components:
+#' \describe{
+#' \item{\code{par_as_num}}{A logical. If \code{TRUE}, then the parameters
+#' are written as numerical constants to the LaTeX file, using the numerical
+#' values as specified in the mod file. The default is \code{FALSE}.}
+#' \item{\code{ndigits}}{The number of significant digits used when parameters
+#' as written as numerical values (default 4). This argument is only used 
+#' if \code{par_as_num} is \code{TRUE}. For example, if \code{ndigits} is 4,
+#' then the number \eqn{\pi} is printed as \code{3.142},
+#' and the number \eqn{e^{10}} as \code{2.303e+04}.}
+#' }
+#' }
 #'
 #' @param mod_file the name of the model file (including extension .mod)
 #' @param period a \code{\link[regts]{period_range}} object specifying the
@@ -50,10 +70,9 @@
 #' derived for a fixed period, treating lags and leads as exogenous variables.
 #' If \code{FALSE} (the default), the fit conditions are derived from the
 #' stacked-time equations.
-#' @param par_const a logical. If \code{TRUE}, then in the LaTeX files parameters
-#' are replaced with the corresponding numerical values in the mode file.
-#' The default is \code{FALSE}.
-#' @return an \code{DynMdl} object or, if the mod file contains a
+#' @param latex_options a list with options for writing LaTeX files.
+#' See Details.
+#' @return A \code{DynMdl} object or, if the mod file contains a
 #' fit block, a \code{\link{FitMdl}} object.
 #' @export
 #' @importFrom Rcpp sourceCpp
@@ -66,9 +85,25 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, nostrict = FALSE,
                     warn_uninit_param = TRUE, fit = TRUE, 
-                    fit_fixed_period = FALSE, par_const = FALSE) {
+                    fit_fixed_period = FALSE,
+                    latex_options) {
   
   calc <- match.arg(calc)
+  
+  latex_options_ <- list(par_as_num = FALSE, ndigits = 4)
+  
+  if (!missing(latex_options)) {
+    if (!is.list(latex_options) || is.null(names(latex_options))) {
+      stop("Argument latex_options should be named list.")
+    }
+    if (length(invalid_options <- setdiff(names(latex_options), 
+                                    names(latex_options_))) > 0) {
+      stop(paste("Invalid latex option(s)", 
+                 paste(paste0("\"", invalid_options, "\""), collapse = ", "), 
+                 "specified."))
+    }
+    latex_options_[names(latex_options)] <- latex_options
+  }
   
   use_dll <- calc == "dll"
   internal_calc <- calc == "internal"
@@ -146,7 +181,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
  
     mdldef <- compile_model(fit_mod_file, latex_basename, use_dll, dll_dir, 
                             max_laglead_1, nostrict, internal_calc,
-                            n_fit_derivatives, warn_uninit_param, par_const)
+                            n_fit_derivatives, warn_uninit_param, 
+                            latex_options_)
     
     if (missing(fit_mod_file)) {
       unlink(fit_mod_file)
@@ -169,7 +205,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     }
     mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, 
                             max_laglead_1, nostrict, internal_calc, 0L,
-                            warn_uninit_param, par_const)
+                            warn_uninit_param, latex_options_)
     
     if (calc == "dll") {
       dll_file <- compile_c_functions(dll_dir)

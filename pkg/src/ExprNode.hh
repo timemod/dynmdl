@@ -35,6 +35,9 @@ using namespace std;
 class DataTree;
 class VariableNode;
 class BinaryOpNode;
+#ifdef USE_R
+class OutputParameters;
+#endif
 
 typedef class ExprNode *expr_t;
 
@@ -72,9 +75,6 @@ enum ExprNodeOutputType
     oLatexStaticModel,                            //!< LaTeX code, static model
     oLatexDynamicModel,                           //!< LaTeX code, dynamic model
     oLatexDynamicSteadyStateOperator,             //!< LaTeX code, dynamic model, inside a steady state operator
-    oLatexStaticModelParConst,                    //!< LaTeX code, static model, parameters written as constants
-    oLatexDynamicModelParConst,                   //!< LaTeX code, dynamic model, parameters written as constants
-    oLatexDynamicSteadyStateOperatorParConst,     //!< LaTeX code, dynamic model, inside a steady state operator, paramters written as constats
     oMatlabDynamicSteadyStateOperator,            //!< Matlab code, dynamic model, inside a steady state operator
     oMatlabDynamicSparseSteadyStateOperator,      //!< Matlab code, dynamic block decomposed model, inside a steady state operator
     oCDynamicSteadyStateOperator,                 //!< C code, dynamic model, inside a steady state operator
@@ -129,15 +129,7 @@ enum ExprNodeOutputType
 #ifdef USE_R
 #define IS_LATEX(output_type) ((output_type) == oLatexStaticModel       \
                                || (output_type) == oLatexDynamicModel   \
-                               || (output_type) == oLatexStaticModelParConst   \
-                               || (output_type) == oLatexDynamicModelParConst   \
-                               || (output_type) == oLatexDynamicSteadyStateOperator \
-                               || (output_type) == oLatexDynamicSteadyStateOperatorParConst)
-
-#define IS_LATEX_PAR_CONST(output_type) ((output_type) == oLatexStaticModelParConst   \
-                                         || (output_type) == oLatexDynamicModelParConst   \
-                                         || (output_type) == oLatexDynamicSteadyStateOperator \
-                                         || (output_type) == oLatexDynamicSteadyStateOperatorParConst)
+                               || (output_type) == oLatexDynamicSteadyStateOperator)
 
 #else
 #define IS_LATEX(output_type) ((output_type) == oLatexStaticModel       \
@@ -148,11 +140,7 @@ enum ExprNodeOutputType
 #ifdef USE_R
 #define USE__LATEX(output_type) ((output_type) == oLatexStaticModel       \
                                || (output_type) == oLatexDynamicModel   \
-                               || (output_type) == oLatexStaticModelParConst   \
-                               || (output_type) == oLatexDynamicModelParConst   \
-                               || (output_type) == oLatexDynamicSteadyStateOperator \
-                               || (output_type) == oLatexDynamicSteadyStateOperatorParConst)
-
+                               || (output_type) == oLatexDynamicSteadyStateOperator)
 #else 
 #define USE__LATEX(output_type) ((output_type) == oLatexStaticModel       \
                                || (output_type) == oLatexDynamicModel   \
@@ -271,7 +259,8 @@ enum ExprNodeOutputType
       virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                                const temporary_terms_t &temporary_terms, 
                                deriv_node_temp_terms_t &tef_terms, 
-                               const eval_context_t &eval_context) const = 0;
+                               const eval_context_t &eval_context,
+                               const OutputParameters &output_params) const = 0;
 #else
       virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const = 0;
 #endif
@@ -294,7 +283,8 @@ enum ExprNodeOutputType
                       deriv_node_temp_terms_t &tef_terms) const;
 
       //  Write output without temporary terms but with eval_context (needed when writing Latex files)
-      void writeOutput(ostream &output, ExprNodeOutputType output_type,  const eval_context_t &eval_context) const;
+      void writeOutput(ostream &output, ExprNodeOutputType output_type,  const eval_context_t &eval_context,
+                       const OutputParameters &output_params) const;
 #endif
 
       virtual void genPolishCode(PolishModel &mdl, bool dynamic) const = 0;
@@ -560,7 +550,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
 #endif
@@ -617,7 +608,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
 #endif
@@ -704,7 +696,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
 #endif
@@ -799,7 +792,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
 #endif
@@ -912,7 +906,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
 #endif
@@ -998,7 +993,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const = 0;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const = 0;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const = 0;
 #endif
@@ -1072,7 +1068,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
 #endif
@@ -1120,7 +1117,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
 #endif
@@ -1167,7 +1165,8 @@ public:
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, 
                            const temporary_terms_t &temporary_terms, 
                            deriv_node_temp_terms_t &tef_terms,
-                           const eval_context_t &eval_context) const;
+                           const eval_context_t &eval_context,
+                           const OutputParameters &output_params) const;
 #else
   virtual void writeOutput(ostream &output, ExprNodeOutputType output_type, const temporary_terms_t &temporary_terms, deriv_node_temp_terms_t &tef_terms) const;
 #endif
