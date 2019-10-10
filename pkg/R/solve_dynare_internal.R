@@ -1,4 +1,8 @@
-solve_dynare_internal <- function(scratch_dir, model_name, model_period) {
+solve_dynare_internal <- function(scratch_dir, model_name, model_period,
+                                  use_octave, dynare_path) {
+  
+  
+  regts::printobj(dynare_path)
   
   #
   # create main mod file
@@ -20,6 +24,9 @@ solve_dynare_internal <- function(scratch_dir, model_name, model_period) {
   matlab_file <- file.path(scratch_dir, paste0("run_simul_", model_name, ".m"))
   output <-  file(matlab_file, open = "w")
   writeLines(c("if is_octave", "    pkg load io", "end", ""), con = output)
+  if (!missing(dynare_path)) {
+    writeLines(paste("addpath", dynare_path), con = output)
+  }
   writeLines(sprintf("dynare simul_%s", model_name), con = output)
   writeLines("")
   writeLines(sprintf("dlmwrite('output/simul_%s_endo_names.txt', M_.endo_names, 'delimiter', '')",
@@ -35,10 +42,27 @@ solve_dynare_internal <- function(scratch_dir, model_name, model_period) {
   cwd <- getwd()
   setwd(scratch_dir)
   dir.create("output", showWarnings = FALSE)
-  cat("======================================================================")
-  cat("\n\nRunning Octave\n\n")
-  cat("======================================================================\n")
-  system2("octave", args =  sprintf("run_simul_%s.m", model_name))
+  
+  if (use_octave) {
+    
+    
+    cat("======================================================================")
+    cat("\n\nRunning Octave\n\n")
+    cat("======================================================================\n")
+     
+    system2("octave", args =  sprintf("run_simul_%s.m", model_name))
+    
+  } else {
+    
+    cat("======================================================================")
+    cat("\n\nRunning Matlab\n\n")
+    cat("======================================================================\n")
+    
+    system2("matlab", args =  c("-r", sprintf("\"run('run_simul_%s.m');exit;\"", 
+                                              model_name)))
+    
+  }
+    
   setwd(cwd)
   return()
 }

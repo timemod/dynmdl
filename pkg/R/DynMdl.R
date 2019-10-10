@@ -1083,7 +1083,7 @@ DynMdl <- R6Class("DynMdl",
       write_mod_file_internal(file, private$mdldef, private$equations)
       return(invisible(self))
     },
-    solve_dynare = function(scratch_dir) {
+    solve_dynare = function(scratch_dir, use_octave = FALSE, dynare_path) {
       if (!dir.exists(scratch_dir)) dir.create(scratch_dir)
       z <- sys.call()[[1]]
       if (z[[1]] == "$") {
@@ -1095,7 +1095,8 @@ DynMdl <- R6Class("DynMdl",
       initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.xlsx"))
       self$write_mod_file(mod_file)
       self$write_initval_file(initval_file)
-      solve_dynare_internal(scratch_dir, model_name, private$model_period)
+      solve_dynare_internal(scratch_dir, model_name, private$model_period,
+                            use_octave, dynare_path)
       return(invisible(self))
     },
     copy = function() {
