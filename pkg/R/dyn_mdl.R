@@ -20,9 +20,9 @@
 #' as written as numerical values (default 4). This argument is only used 
 #' if \code{par_as_num} is \code{TRUE}. For example, if \code{ndigits} is 4,
 #' then the number \eqn{\pi} is printed as \code{3.142},
-#' and the number \eqn{e^{10}} as \code{2.303e+04}.}
-#' }
-#' }
+#' the number 120.25 as \code{120.2}, and the number
+#' 10.1234 as \code{1.012e+05}}
+#' }}
 #'
 #' @param mod_file the name of the model file (including extension .mod)
 #' @param period a \code{\link[regts]{period_range}} object specifying the
