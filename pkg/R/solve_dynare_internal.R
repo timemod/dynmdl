@@ -3,19 +3,55 @@ solve_dynare_internal <- function(scratch_dir, model_name, equations, mdldef,
                                   model_period, endo_data, exo_data, 
                                   use_octave, dynare_path) {
   
-  # TODO: can we not simply use mdldef$max_endo_lead and mdldef$max_endo_lag here?
-  #  check this!
-  lead_lag_incidence <- mdldef$lead_lag_incidence
-  # max_lag and max_lead computed in the following way are not the same
-  # as mdldef$max_lag or mdldef$max_lead when max_laglead_1 = TRUE:
-  max_endo_lag <- -as.integer(colnames(lead_lag_incidence)[1])
-  max_endo_lead <- as.integer(colnames(lead_lag_incidence)[
-                                                   ncol(lead_lag_incidence)])
-  if (max_endo_lag > 1 || max_endo_lead > 1) {
-    stop(paste("Method solve_dynare does not work for models",
-               "with max_endo_lag > 1 or max_endo_lead > 1.\n",
-               "Tip: call function dyn_mdl with option",
-               "max_laglead_1 = TRUE."))
+  
+  # if (mdldef$max_endo_lag > 1 || mdldef$max_endo_lead > 1) {
+  #   stop(paste("Method solve_dynare does not work for models",
+  #              "with max_endo_lag > 1 or max_endo_lead > 1.\n",
+  #              "Tip: call function dyn_mdl with option",
+  #              "max_laglead_1 = TRUE."))
+  # }
+  # 
+  
+  # write mod file
+  mod_file <- file.path(scratch_dir, paste0(model_name, ".mod"))
+  write_mod_file_internal(mod_file, mdldef, equations)
+
+  #
+  # Create auxiliary varibales for Dynare
+  #
+  if (mdldef$max_endo_lag > 1 || mdldef$max_endo_lead > 1) {
+    
+    cat("======================================================================")
+    cat("\n\nParsing model to obtain names auxiliary variables for Dynare\n\n")
+    cat("======================================================================\n")
+    mdl <- dyn_mdl(mod_file, max_laglead_1 = TRUE)
+    aux_vars <- mdl$get_aux_vars()
+    
+    aux_vars$names_dyn <- ifelse(aux_vars$orig_lead > 0,
+                                 paste0("AUX_ENDO_LEAD_", aux_vars$orig_expr_index),
+                                 paste("AUX_ENDO_LAG", aux_vars$orig_symb_ids - 1,
+                                       -aux_vars$orig_leads, sep = "_"))
+   
+    per <- get_period_range(endo_data)
+    nper <- nperiod(per)
+    # TODO: can this be programmed more efficiently (check also
+    # DynMdl:;prepareAuxvars): create a function for this
+    f <- function(orig_endo_index, orig_lead) {
+      ret <- regts(rep(mdldef$endos[orig_endo_index], nper), period = per)
+      tmp <- lag(endo_data[ , orig_endo_index], orig_lead)[per]
+      sel <-  if (orig_lead > 0) {
+                   1 : (nper - orig_lead)
+              } else {
+                  (-orig_lead + 1) : nper
+              }
+      ret[sel] <- tmp[sel]
+      return(ret)
+    }
+    aux_ts_list <- mapply(FUN = f, aux_vars$orig_endos, aux_vars$orig_leads,
+                           SIMPLIFY = FALSE)
+    names(aux_ts_list) <- aux_vars$names_dyn
+    aux_ts <- do.call(cbind, aux_ts_list)
+    endo_data <- cbind(aux_ts, endo_data)
   }
   
 
@@ -34,10 +70,6 @@ solve_dynare_internal <- function(scratch_dir, model_name, equations, mdldef,
              con = output)
   close(output)
   
-  # write mod file
-  mod_file <- file.path(scratch_dir, paste0(model_name, ".mod"))
-  write_mod_file_internal(mod_file, mdldef, equations)
-  
   #
   # write initval file
   #
@@ -45,8 +77,10 @@ solve_dynare_internal <- function(scratch_dir, model_name, equations, mdldef,
   # NOTE: in Dynare, max_endo_lag and max_endo_lead are always <= 1.
   # Currently we assume that DynMdl is called with max_lagleead_1 = TRUE.
   # so this should also be the case for Dynare.
-  max_lag <- max(mdldef$max_endo_lag, mdldef$max_exo_lag)
-  max_lead <- max(mdldef$max_endo_lead, mdldef$max_exo_lead)
+  max_endo_lag_dyn <- min(mdldef$max_endo_lag, 1)
+  max_endo_lead_dyn <- min(mdldef$max_endo_lead, 1)
+  max_lag <- max(max_endo_lag_dyn, mdldef$max_exo_lag)
+  max_lead <- max(max_endo_lead_dyn, mdldef$max_exo_lead)
   dyn_data_period <- period_range(start_period(model_period) - max_lag,
                                   end_period(model_period) + max_lead)
   

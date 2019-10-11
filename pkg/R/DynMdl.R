@@ -1075,8 +1075,8 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     write_initval_file = function(file) {
-      write_initval_file_internal(file, private$mdldef, private$model_period, 
-                                  private$endo_data, private$exo_data)
+      write_initval_file_internal(file, private$mdldef, private$endo_data, 
+                                  private$exo_data)
       return(invisible(self))
     },
     solve_dynare = function(scratch_dir, use_octave = FALSE, dynare_path) {
@@ -1092,6 +1092,8 @@ DynMdl <- R6Class("DynMdl",
       } else {
         model_name <- "mdl"
       }
+      
+      private$prepare_aux_vars()
       
       solution <- solve_dynare_internal(scratch_dir, model_name,
                                         private$equations,
@@ -1218,6 +1220,9 @@ DynMdl <- R6Class("DynMdl",
   },
   get_solve_status = function() {
     return(private$solve_status)
+  },
+  get_aux_vars = function() {
+    return(private$mdldef$aux_vars)
   }
   ),
   private = list(
@@ -1740,14 +1745,29 @@ DynMdl <- R6Class("DynMdl",
         return()
       }
       
+      aux_vars <- private$mdldef$aux_vars
+      orig_endo_data <- private$endo_data[ , aux_vars$orig_endos, drop = FALSE]
+      
+      f <- function(i, type, nval) {
+        return(orig_endo_data[ , i],)
+      }
+      
+      nper <- nrow(private$endo_data)
+  
+      # TODO: can this be programmed more efficiently?    
       with(private$mdldef$aux_vars, {
         types <- ifelse(orig_leads < 0, "lag", "lead")
         nvals <- abs(orig_leads)
         orig_endo_data <- private$endo_data[ , orig_endos, drop = FALSE]
         for (i in seq_len(aux_count)) {
-          private$endo_data[ , endos[i]] <- 
-                   data.table::shift(orig_endo_data[ , i], n = nvals[i], 
-                                     type = types[i])
+          sel <-  if (orig_leads[i] > 0) {
+            1 : (nper - orig_leads[i])
+          } else {
+            (-orig_leads[i] + 1) : nper
+          }
+          private$endo_data[sel , endos[i]] <-
+                   data.table::shift(orig_endo_data[ , i], n = nvals[i],
+                                     type = types[i])[sel]
         }
       })
       return()
