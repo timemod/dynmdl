@@ -1075,28 +1075,33 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     write_initval_file = function(file) {
-      write_initval_file_internal(file, private$mdldef, private$endo_data,
-                                  private$exo_data)
-      return(invisible(self))
-    },
-    write_mod_file = function(file) {
-      write_mod_file_internal(file, private$mdldef, private$equations)
+      write_initval_file_internal(file, private$mdldef, private$model_period, 
+                                  private$endo_data, private$exo_data)
       return(invisible(self))
     },
     solve_dynare = function(scratch_dir, use_octave = FALSE, dynare_path) {
-      if (!dir.exists(scratch_dir)) dir.create(scratch_dir)
+      if (dir.exists(scratch_dir)) {
+        if (unlink(scratch_dir, recursive = TRUE, force = TRUE)  == 1) {
+          stop(sprintf("Not possible to delete directory %s.", scratch_dir))
+        }
+      }
+      dir.create(scratch_dir)
       z <- sys.call()[[1]]
       if (z[[1]] == "$") {
         model_name <- as.character(z[[2]])
       } else {
         model_name <- "mdl"
       }
-      mod_file <- file.path(scratch_dir, paste0(model_name, ".mod"))
-      initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.xlsx"))
-      self$write_mod_file(mod_file)
-      self$write_initval_file(initval_file)
-      solve_dynare_internal(scratch_dir, model_name, private$model_period,
-                            use_octave, dynare_path)
+      
+      solution <- solve_dynare_internal(scratch_dir, model_name,
+                                        private$equations,
+                                        private$mdldef,
+                                        private$model_period,
+                                        private$endo_data, private$exo_data,
+                                        use_octave, dynare_path)
+      
+      private$endo_data[private$model_period, colnames(solution)] <- solution
+      
       return(invisible(self))
     },
     copy = function() {
