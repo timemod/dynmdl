@@ -84,6 +84,7 @@ NumericalInitialization.o : CallRFunction.hh CodeInterpreter.hh \
                            NumericalInitialization.hh PolishModel.hh Statement.hh SymbolList.hh \
                            SymbolTable.hh WarningConsolidation.hh dyn_error.hh dynout.hh \
                            location.hh
+OutputParameters.o : dyn_error.hh
 ParsingDriver.o : CallRFunction.hh CodeInterpreter.hh \
                  ComputingTasks.hh ConfigFile.hh DataTree.hh DynamicModel.hh \
                  DynareBison.hh ExprNode.hh ExtendedPreprocessorTypes.hh \

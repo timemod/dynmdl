@@ -680,7 +680,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
                       datatree.symbol_table.getName(symb_id) + ".");
           }
           char s[30];
-          sprintf(s, "%.*g", value, output_params.get_ndigits_latex());
+          sprintf(s, "%.*g", output_params.get_ndigits_latex(), value);
           output << s;
           return;
       }
