@@ -179,11 +179,19 @@ DynMdl <- R6Class("DynMdl",
       private$print_info(short)
       return (invisible(NULL))
     },
-    get_max_lag = function() {
-      return(private$mdldef$max_lag)
+    get_max_lag = function(data = TRUE) {
+      if (data) {
+        return(private$mdldef$max_lag)
+      } else {
+        return(max(private$mdldef$max_endo_lag, private$mdldef$max_exo_lag))
+      }
     },
-    get_max_lead = function() {
-      return(private$mdldef$max_lead)
+    get_max_lead = function(data = TRUE) {
+      if (data) {
+        return(private$mdldef$max_lead)
+      } else {
+        return(max(private$mdldef$max_endo_lead, private$mdldef$max_exo_lead))
+      }
     },
     get_endo_names = function(type = c("all", "leads", "lags")) {
       type <- match.arg(type)
@@ -516,7 +524,6 @@ DynMdl <- R6Class("DynMdl",
       if (ncol(data) == 0) return(NULL)
       return(update_ts_labels(data, private$mdldef$labels))
     },
-
     get_endo_data = function(pattern, names, period = private$data_period,
                              trend = TRUE) {
       period <- private$convert_period_arg(period)
@@ -1075,33 +1082,28 @@ DynMdl <- R6Class("DynMdl",
       return (invisible(self))
     },
     write_initval_file = function(file) {
-      write_initval_file_internal(file, private$mdldef, private$endo_data, 
-                                  private$exo_data)
+      private$prepare_aux_vars()
+      write_initval_file_internal(file, private$mdldef, private$model_period, 
+                                  private$endo_data, private$exo_data)
       return(invisible(self))
     },
     solve_dynare = function(scratch_dir, use_octave = FALSE, dynare_path) {
-      if (dir.exists(scratch_dir)) {
-        if (unlink(scratch_dir, recursive = TRUE, force = TRUE)  == 1) {
-          stop(sprintf("Not possible to delete directory %s.", scratch_dir))
-        }
-      }
-      dir.create(scratch_dir)
+      
+      #
+      # create mode name based on the name of the DynMdl object
+      #
       z <- sys.call()[[1]]
       if (z[[1]] == "$") {
         model_name <- as.character(z[[2]])
       } else {
         model_name <- "mdl"
       }
-      
+    
       private$prepare_aux_vars()
       
-      solution <- solve_dynare_internal(scratch_dir, model_name,
-                                        private$equations,
-                                        private$mdldef,
-                                        private$model_period,
-                                        private$endo_data, private$exo_data,
+      solution <- solve_dynare_internal(model_name, self, scratch_dir,
                                         use_octave, dynare_path)
-      
+  
       private$endo_data[private$model_period, colnames(solution)] <- solution
       
       return(invisible(self))
@@ -1223,6 +1225,15 @@ DynMdl <- R6Class("DynMdl",
   },
   get_aux_vars = function() {
     return(private$mdldef$aux_vars)
+  },
+  get_endo_data_raw = function() {
+    return(private$endo_data)
+  },
+  get_exo_data_raw = function() {
+    return(private$exo_data)
+  },
+  get_mdldef = function() {
+    return(private$mdldef)
   }
   ),
   private = list(
@@ -2103,5 +2114,3 @@ DynMdl <- R6Class("DynMdl",
     }
   )
 )
-#' \item{\code{\link{get_equations}}}{Returns a character vector with the 
-#' equations of the model.}

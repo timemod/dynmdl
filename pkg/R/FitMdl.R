@@ -233,42 +233,14 @@ FitMdl <- R6Class("FitMdl",
       return(super$deserialize(ser, dll_dir))
     },
     solve = function(...) {
- 
-      mp <- private$model_period
-      
-      fit_switches <- private$exo_data[mp, private$fit_info$fit_vars, 
-                                       drop = FALSE]
-      fit_sel <- fit_switches == 1
-     
-      is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
-      n_fit_targets <- sum(is_fit_var)
-      
-      if (n_fit_targets > 0) {
-        
-        # check if there are sufficient fit instruments
-        n_sigmas <- length(self$get_sigmas())
-        if (n_sigmas < n_fit_targets) {
-          stop(sprintf(paste("The number of fit targets (%d) exceeds the",
-                             "number of fit instruments (%d)\n."),
-                       n_fit_targets, n_sigmas))
-        }
-        
-        # make endo data equal to fit result.
-        private$endo_data[mp, private$fit_info$orig_endos][fit_sel] <-
-          private$exo_data[mp, private$fit_info$exo_vars][fit_sel]
-      }
-      
-      # set old_instruments, these will be used for deactivated 
-      # fit instruments (instruments with sigma < 0), so that the
-      # sigmas do not change.
-      private$exo_data[ , private$fit_info$old_instruments] <-
-                 private$endo_data[ , private$fit_info$instruments] 
-      
-      
+      private$prepare_fit()
       return(super$solve(...))
     },
+    solve_dynare = function(...) {
+      private$prepare_fit()
+      return(super$solve_dynare(...))
+    },
     residual_check = function(tol, include_fit_eqs = FALSE, ...) {
-      
       # set old_instruments, these will be used for deactivated 
       # fit instruments (instruments with sigma < 0), so that the
       # sigmas do not change.
@@ -435,6 +407,40 @@ FitMdl <- R6Class("FitMdl",
       
       return(list(has_exos = TRUE, steady_exos = steady_exos, fitmdl = TRUE,
                   exo_indices = exo_indices))
+    },
+    prepare_fit = function() {
+      #
+      # prepare model for the fit procedure
+      #
+      mp <- private$model_period
+      
+      fit_switches <- private$exo_data[mp, private$fit_info$fit_vars, 
+                                       drop = FALSE]
+      fit_sel <- fit_switches == 1
+      
+      is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
+      n_fit_targets <- sum(is_fit_var)
+      
+      if (n_fit_targets > 0) {
+        
+        # check if there are sufficient fit instruments
+        n_sigmas <- length(self$get_sigmas())
+        if (n_sigmas < n_fit_targets) {
+          stop(sprintf(paste("The number of fit targets (%d) exceeds the",
+                             "number of fit instruments (%d)\n."),
+                       n_fit_targets, n_sigmas))
+        }
+        
+        # make endo data equal to fit result.
+        private$endo_data[mp, private$fit_info$orig_endos][fit_sel] <-
+          private$exo_data[mp, private$fit_info$exo_vars][fit_sel]
+      }
+      
+      # set old_instruments, these will be used for deactivated 
+      # fit instruments (instruments with sigma < 0), so that the
+      # sigmas do not change.
+      private$exo_data[ , private$fit_info$old_instruments] <-
+        private$endo_data[ , private$fit_info$instruments]
     }
   )
 )

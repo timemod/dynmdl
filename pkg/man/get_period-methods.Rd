@@ -6,10 +6,11 @@
 \alias{get_data_period}
 \alias{get_lag_period}
 \alias{get_lead_period}
+\alias{get_base_period}
 \title{\code{\link{DynMdl}} method: return the model, data, lead or lag period}
 \description{
 These methods of R6 class \code{\link{DynMdl}} return the model period,
-data period, lag period and lead period, respectively.
+data period, lag period, lead period, or base period respectively.
 
 The \emph{model period} is the default period for which the model will be 
 solved. The \emph{data period} is the period for which the model contains
@@ -20,6 +21,9 @@ model period are stored. For a model with leads the model
 data period also includes a \emph{lead_period}. Thus, the data period
 always contains the lag period, model period and lead period, but it may
 also be longer. See the example below.
+
+The \emph{base_period} is used when the model has trend variables.
+All trend variables will be equal to 1 at the base period.
 }
 \section{Usage}{
 
@@ -33,6 +37,8 @@ mdl$get_lag_period()
 
 mdl$get_lead_period()
 
+mdl$get_base_period()
+
 }
 
 \code{mdl} is a \code{DynMdl} object
@@ -43,10 +49,11 @@ mdl$get_lead_period()
 \itemize{
 \item \code{get_period}: Returns the model period
 \item \code{get_data_period}: Returns the data period
-\item \code{get_lag_period}: Returns the lag period, or \code{NULL} is the
+\item \code{get_lag_period}: Returns the lag period, or \code{NULL} if the
 model has no lags
-\item \code{get_lead_period}: Returns the lead period or \code{NULL} is the
+\item \code{get_lead_period}: Returns the lead period or \code{NULL} if the
 model has no leads
+\item \code{get_base_period}: Returns the base period.
 }
 }
 
