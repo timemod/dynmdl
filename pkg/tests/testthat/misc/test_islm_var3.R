@@ -63,7 +63,12 @@ test_that("solve", {
   initval_file <- tempfile()
   expect_silent(mdl2$write_initval_file(initval_file))
   initval_data <- readxl::read_excel(initval_file)
-  initval_data <- regts(initval_data, period = mdl2$get_data_period())
+  period <- mdl2$get_period()
+  initval_period <- period_range(start_period(period) -
+                                   mdl2$get_max_lag(data = FALSE),
+                                 end_period(period) +
+                                   mdl2$get_max_lag(data = FALSE))
+  initval_data <- regts(initval_data, period = initval_period)
   initval_data <- initval_data[solve_period]
   
   dynare_data <- cbind(dynare_result_with_aux$endo,
