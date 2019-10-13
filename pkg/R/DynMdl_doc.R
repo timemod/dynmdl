@@ -1254,9 +1254,14 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{file}}{the name of the xlsx file}
+#' \item{\code{file}}{the name of the initval file}
 #' }
 #' @examples
 #' mdl <- islm_mdl("2017Q1/2019Q2")
+#' 
+#' # write initval file as matlab file
+#' mdl$write_initval_file("dynare_input/islm_initval.xlsx")
+#' 
+#' # write initval file in xlsx format
 #' mdl$write_initval_file("dynare_input/islm_initval.xlsx")
 NULL

@@ -1,5 +1,7 @@
 # Internal function: Run Dynare with Matkab or Octave
 #' @importFrom tools file_path_as_absolute
+#' @importFrom tictoc tic
+#' @importFrom tictoc toc
 run_dynare  <- function(model_name, mod_file, scratch_dir, 
                         mdl, period, data, rename_aux_vars = TRUE,
                         mod_file_in_scratch_dir = FALSE,
@@ -9,9 +11,9 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   # create a model object, needed to obtain information about the model.
   #
   if (missing(mdl)) {
-    cat("======================================================================\n")
+    cat("\n======================================================================\n")
     cat("Parsing model with dynmdl to obtain information about the model\n")
-    cat("======================================================================\n")
+    cat("======================================================================\n\n")
     mdl <- dyn_mdl(mod_file, period = period, max_laglead_1 = TRUE, 
                    nostrict = TRUE, fit = FALSE)
     if (!missing(data)) {
@@ -32,13 +34,15 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   #
   # write initval file (only when eiter mdl or data have  been specified)
   #
+  tic("writing initval")
   use_initval_file <- !missing(data) || !missing(mdl)
   if (use_initval_file) {
-    initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.xlsx"))
+    initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.m"))
     write_initval_file_internal(initval_file, mdl$get_mdldef(), period, 
                                 mdl$get_endo_data_raw(), mdl$get_exo_data_raw(),
                                 rename_aux_vars = rename_aux_vars)
   }
+  toc()
   
   #
   # create main mod file
@@ -88,17 +92,17 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   if (use_octave) {
     
     
-    cat("======================================================================\n")
+    cat("\n====================================================================\n")
     cat("Running Octave\n")
-    cat("======================================================================\n")
+    cat("====================================================================\n")
     
     system2("octave", args =  sprintf("run_simul_%s.m", model_name))
     
   } else {
     
-    cat("======================================================================\n")
+    cat("=====================================================================\n")
     cat("Running Matlab\n")
-    cat("======================================================================\n")
+    cat("=====================================================================\n")
     
     system2("matlab", args =  c("-r", sprintf("\"run('run_simul_%s.m');exit;\"", 
                                               model_name)))

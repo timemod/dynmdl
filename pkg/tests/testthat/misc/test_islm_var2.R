@@ -80,8 +80,7 @@ test_that("solve with max_laglead_1", {
   expect_equal(res_check, expected_res_check)
   
   # check write_initval_file
-
-  initval_file <- tempfile()
+  initval_file <- tempfile(fileext = ".xlsx")
   expect_silent(mdl2$write_initval_file(initval_file))
   initval_data <- readxl::read_excel(initval_file)
   period <- mdl2$get_period()

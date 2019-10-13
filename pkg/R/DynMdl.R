@@ -23,6 +23,8 @@ setOldClass("regts")
 #' @importFrom utils zip
 #' @importFrom utils compareVersion
 #' @importFrom data.table shift
+#' @importFrom tictoc tic
+#' @importFrom tictoc toc
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -401,7 +403,7 @@ DynMdl <- R6Class("DynMdl",
       # call prepare_aux_vars, this is actually only needed when 
       # init_data is called in function solve_dynare.
       private$prepare_aux_vars()
-      
+    
       return(invisible(self))
     },
     set_period = function(period) {
@@ -1090,19 +1092,23 @@ DynMdl <- R6Class("DynMdl",
                                   private$endo_data, private$exo_data)
       return(invisible(self))
     },
-    solve_dynare = function(scratch_dir, use_octave = FALSE, dynare_path) {
+    solve_dynare = function(model_name, scratch_dir, use_octave = FALSE, dynare_path) {
       
       #
       # create mode name based on the name of the DynMdl object
       #
-      z <- sys.call()[[1]]
-      if (z[[1]] == "$") {
-        model_name <- as.character(z[[2]])
-      } else {
-        model_name <- "mdl"
+      if (missing(model_name)) {
+        z <- sys.call()[[1]]
+        if (z[[1]] == "$") {
+          model_name <- as.character(z[[2]])
+        } else {
+          model_name <- "mdl"
+        }
       }
     
+      tic("DynMdl::solve_dynare prepare_aux_vars")
       private$prepare_aux_vars()
+      toc()
       
       solution <- solve_dynare_internal(model_name, self, scratch_dir,
                                         use_octave, dynare_path)

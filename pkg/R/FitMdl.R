@@ -236,9 +236,20 @@ FitMdl <- R6Class("FitMdl",
       private$prepare_fit()
       return(super$solve(...))
     },
-    solve_dynare = function(...) {
+    solve_dynare = function(model_name, ...) {
+      #
+      # create mode name based on the name of the DynMdl object
+      #
+      if (missing(model_name)) {
+        z <- sys.call()[[1]]
+        if (z[[1]] == "$") {
+          model_name <- as.character(z[[2]])
+        } else {
+          model_name <- "mdl"
+        }
+      }
       private$prepare_fit()
-      return(super$solve_dynare(...))
+      return(super$solve_dynare(model_name = model_name, ...))
     },
     residual_check = function(tol, include_fit_eqs = FALSE, ...) {
       # set old_instruments, these will be used for deactivated 

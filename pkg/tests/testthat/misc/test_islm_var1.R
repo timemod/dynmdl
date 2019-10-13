@@ -66,7 +66,7 @@ test_that("solve", {
                dynare_result$endo)
   
   # initval_file
-  initval_file <- tempfile()
+  initval_file <- tempfile(fileext = ".xlsx")
   msg <- paste("Method write_initval_file does not work for models with",
                "max_lag > 1 or max_lead > 1.\n Tip: call function dyn_mdl",
                "with option max_laglead_1 = TRUE.")
@@ -137,8 +137,7 @@ test_that("solve with max_laglead_1", {
   expect_equal(res_check, expected_res_check)
   
   # check write_initval_file
-  
-  initval_file <- tempfile()
+  initval_file <- tempfile(fileext = ".xlsx")
   mdl2$write_initval_file(initval_file)
   initval_data <- readxl::read_excel(initval_file)
   period <- mdl2$get_period()
