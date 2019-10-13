@@ -4,7 +4,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
                         mdl, period, data, rename_aux_vars = TRUE,
                         mod_file_in_scratch_dir = FALSE,
                         tasks, use_octave, dynare_path) {
-
+  
   #
   # create a model object, needed to obtain information about the model.
   #
@@ -24,7 +24,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
     }  
     if (!missing(data)) {
       stop(paste("Internal error: in run_dynare only one of arguments mdl and",
-               "exo_data should be specified."))
+                 "exo_data should be specified."))
     }
     period <- mdl$get_period()
   }
@@ -35,24 +35,16 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   use_initval_file <- !missing(data) || !missing(mdl)
   if (use_initval_file) {
     initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.xlsx"))
-    if (rename_aux_vars) {
-      # run_dynare is called from function solve_dynare (not the DynMdl method): 
-      # in this case call mdl$write_initval_file, so that mdl#prepare_aux_vars is called
-      mdl$write_initval_file(initval_file)
-    } else {
-      # run_dynare is called from mdl$solve_dynare: mdl$prepare_aux_vars() has
-      # already  been called
-      write_initval_file_internal(initval_file, mdl$get_mdldef(), period, 
-                                 mdl$get_endo_data_raw(), mdl$get_exo_data_raw(),
+    write_initval_file_internal(initval_file, mdl$get_mdldef(), period, 
+                                mdl$get_endo_data_raw(), mdl$get_exo_data_raw(),
                                 rename_aux_vars = rename_aux_vars)
-    }
   }
   
   #
   # create main mod file
   #
   main_mod_file <- file.path(scratch_dir, paste0("simul_", model_name, ".mod"))
-   
+  
   output <-  file(main_mod_file, open = "w")
   
   if (!mod_file_in_scratch_dir) {
@@ -67,7 +59,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
                      nperiod(period)),
              con = output)
   close(output)
-
+  
   #
   # create main matlab/octave file
   #
@@ -82,7 +74,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   writeLines(sprintf("dlmwrite('output/simul_%s_endo_names.txt', M_.endo_names, 'delimiter', '')",
                      model_name), con = output)
   writeLines(sprintf("dlmwrite('output/simul_%s_endo.csv', oo_.endo_simul, 'precision', 16)",
-             model_name), con = output)
+                     model_name), con = output)
   
   close(output)
   
@@ -96,15 +88,15 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   if (use_octave) {
     
     
-    cat("======================================================================")
+    cat("======================================================================\n")
     cat("Running Octave\n")
     cat("======================================================================\n")
-     
+    
     system2("octave", args =  sprintf("run_simul_%s.m", model_name))
     
   } else {
     
-    cat("======================================================================")
+    cat("======================================================================\n")
     cat("Running Matlab\n")
     cat("======================================================================\n")
     
@@ -112,7 +104,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
                                               model_name)))
     
   }
-    
+  
   setwd(cwd)
   
   #
@@ -126,7 +118,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   
   endo_names_dynare  <- read.csv(endo_name_file, stringsAsFactors = FALSE,
                                  header = FALSE, sep = "")[[1]]
-
+  
   endo_data <- t(as.matrix(read.csv(endo_data_file, header = FALSE)))
   
   
@@ -143,7 +135,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   if (nperiod(dyn_data_period) != nrow(endo_data)) {
     stop("Error: length endo_data is not equal to the number of periods")
   }
-
+  
   endo <- regts(endo_data, period = dyn_data_period, names = endo_names_dynare,
                 labels = endo_names_dynare)
   

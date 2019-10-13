@@ -309,7 +309,6 @@ DynMdl <- R6Class("DynMdl",
     },
     init_data = function(data_period, data, upd_mode = c("upd", "updval"))  {
       
-      
       upd_mode <- match.arg(upd_mode)
 
       if (missing(data_period)) {
@@ -349,7 +348,6 @@ DynMdl <- R6Class("DynMdl",
         }
       }
     
-      
       if (is.null(private$model_period)) {
         startp <- start_period(data_period) + private$mdldef$max_lag
         endp <- end_period(data_period) - private$mdldef$max_lead
@@ -399,6 +397,11 @@ DynMdl <- R6Class("DynMdl",
         private$set_data_(data, type = "endo", upd_mode = upd_mode,
                           init_data = TRUE)
       }
+      
+      # call prepare_aux_vars, this is actually only needed when 
+      # init_data is called in function solve_dynare.
+      private$prepare_aux_vars()
+      
       return(invisible(self))
     },
     set_period = function(period) {

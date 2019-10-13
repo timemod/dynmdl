@@ -18,7 +18,6 @@ solve_dynare_internal <- function(model_name, mdl, scratch_dir, use_octave,
   mod_file <- file.path(scratch_dir, paste0(model_name, ".mod"))
   write_mod_file_internal(mod_file, mdldef, mdl$get_equations())
   
-  
   if (mdldef$max_endo_lag > 1 || mdldef$max_endo_lead > 1) {
     # NOTE: to data we pass all endogenous and exogenous variables.
     # This we do because of fit procedure.
