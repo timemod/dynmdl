@@ -71,7 +71,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
   output <-  file(matlab_file, open = "w")
   writeLines(c("if is_octave", "    pkg load io", "end", ""), con = output)
   if (!missing(dynare_path)) {
-    writeLines(paste("addpath", dynare_path), con = output)
+    writeLines(paste("addpath", file.path(dynare_path, "matlab")), con = output)
   }
   writeLines(sprintf("dynare simul_%s", model_name), con = output)
   writeLines("")
@@ -96,6 +96,7 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
     cat("Running Octave\n")
     cat("====================================================================\n")
     
+    
     system2("octave", args =  sprintf("run_simul_%s.m", model_name))
     
   } else {
@@ -104,7 +105,8 @@ run_dynare  <- function(model_name, mod_file, scratch_dir,
     cat("Running Matlab\n")
     cat("=====================================================================\n")
     
-    system2("matlab", args =  c("-r", sprintf("\"run('run_simul_%s.m');exit;\"", 
+    system2("matlab", args =  c("-r", "-nosplash", "-nodesktop", "-wait",
+                                sprintf("\"run('run_simul_%s.m');exit;\"", 
                                               model_name)))
     
   }
