@@ -120,6 +120,11 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{solve}}}{Solves the model}
 #' 
+#' \item{\code{\link{solve_steady_dynare}}}{Solves the steady state and eigenvalues with
+#' Dynare (emplpying Matlab or Octave)}
+#'
+#' \item{\code{\link{solve_dynare}}}{Solves the model with Dynare (employing Octave or Matlab)}
+#' 
 #' \item{\code{\link{check}}}{Compute the eigenvalues of the linear
 #' system and check if the Blachard and Kahn conditions are satisfied.}
 #'
@@ -1092,30 +1097,37 @@ DynMdl <- R6Class("DynMdl",
                                   private$endo_data, private$exo_data)
       return(invisible(self))
     },
-    solve_dynare = function(model_name, scratch_dir, use_octave = FALSE, dynare_path) {
+    solve_steady_dynare = function(scratch_dir = tempfile(), 
+                                   use_octave = Sys.which("matlab") == "", 
+                                   dynare_path, 
+                                   model_options, solve_options) {
       
-      #
       # create mode name based on the name of the DynMdl object
-      #
-      if (missing(model_name)) {
-        z <- sys.call()[[1]]
-        if (z[[1]] == "$") {
-          model_name <- as.character(z[[2]])
-        } else {
-          model_name <- "mdl"
-        }
+      z <- sys.call()[[1]]
+      if (z[[1]] == "$") {
+        model_name <- as.character(z[[2]])
+      } else {
+        model_name <- "mdl"
       }
-    
-      tic("DynMdl::solve_dynare prepare_aux_vars")
-      private$prepare_aux_vars()
-      toc()
       
-      solution <- solve_dynare_internal(model_name, self, scratch_dir,
-                                        use_octave, dynare_path)
-  
-      private$endo_data[private$model_period, colnames(solution)] <- solution
+      return(private$solve_steady_dynare_internal(model_name, scratch_dir,
+                                                  use_octave, dynare_path,
+                                                  model_options, solve_options))
+    },
+    solve_dynare = function(scratch_dir = tempfile(), 
+                            use_octave = Sys.which("matlab") == "", 
+                            dynare_path, model_options, solve_options) {
+
+      # create mode name based on the name of the DynMdl object
+      z <- sys.call()[[1]]
+      if (z[[1]] == "$") {
+        model_name <- as.character(z[[2]])
+      } else {
+        model_name <- "mdl"
+      }
       
-      return(invisible(self))
+      return(private$solve_dynare_internal(model_name, scratch_dir, use_octave,
+                                    dynare_path, model_options, solve_options))
     },
     copy = function() {
       ret <- self$clone(deep = TRUE)
@@ -2120,6 +2132,41 @@ DynMdl <- R6Class("DynMdl",
       if (debug_eqs && private$calc != "internal") {
         warning("Argument debug_eqs is only used if calc = \"internal\"")
       }
+    },
+    solve_steady_dynare_internal = function(model_name, scratch_dir = tempfile(), 
+                                            use_octave = FALSE, dynare_path, 
+                                            model_options, solve_options) {
+      
+      solve_options_ = list(tolf = 1e-8)
+      if (!missing(solve_options)) {
+        solve_options_[names(solve_options)] <- solve_options
+      }
+      
+      ret <- solve_steady_dynare_internal(model_name, self, scratch_dir,
+                                          use_octave, dynare_path,
+                                          model_options, solve_options_)
+      
+      private$mdldef$endos[names(ret$steady_endos)] <- ret$steady_endos
+      return(ret$eigval)
+    },
+    solve_dynare_internal = function(model_name, scratch_dir = tempfile(), 
+                                     use_octave = FALSE, dynare_path, 
+                                     model_options, solve_options) {
+      
+      solve_options_ = list(tolf = 1e-8, tolx = 1e-8)
+      if (!missing(solve_options)) {
+        solve_options_[names(solve_options)] <- solve_options
+      }
+      
+      private$prepare_aux_vars()
+  
+      solution <- solve_dynare_internal(model_name, self, scratch_dir,
+                                        use_octave, dynare_path,
+                                        model_options, solve_options_)
+      
+      private$endo_data[private$model_period, colnames(solution)] <- solution
+      
+      return(invisible(self))
     }
   )
 )

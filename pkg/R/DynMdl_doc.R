@@ -624,7 +624,8 @@ NULL
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
-#' mdl$solve_steady(control = list(), solver = c("umfpackr", "nleqslv"), ...)
+#' mdl$solve_steady(control = list(), solver = c("umfpackr", "nleqslv"), 
+#'                 debug_eqs = FALSE, ...)
 #'
 #' }
 #'
@@ -705,7 +706,7 @@ NULL
 #' This method of R6 class \code{\link{DynMdl}} solves
 #' the model.
 #' 
-#' \code{solve_steady} does \emph{not} raise an error when the solve was
+#' \code{solve} does \emph{not} raise an error when the solve was
 #' not successful. In that case a warning may be issued. 
 #' Method \code{\link{get_solve_status}} can be used to check
 #' whether the solve was successfully terminated or not.
@@ -715,7 +716,8 @@ NULL
 #' \code{DynMdl} method:
 #' \preformatted{
 #'  md$solve(control = list(), mode, solver = c("umfpackr", "nleqslv"), 
-#'           start = c("current", "previous"), ...)
+#'           start = c("current", "previous"), debug_eqs = FALSE,
+#'           homotopy = FALSE, ...)
 #' }
 #'
 #' \code{mdl} is an \code{\link{DynMdl}} object
@@ -745,12 +747,16 @@ NULL
 #' see \code{\link{dyn_mdl}}). If
 #' \code{TRUE} then numerical problems in evaluation
 #' of mathematical functions or operators such a \code{log} are reported.}
+#' \item{\code{homotopy}}{A logical. If \code{TRUE} (the default), then the 
+#' homotopy approach is used when directly solving the model fails.
+#' Consult the documentation of Dynare for more information about the homotopy aproach.}
 #' \item{\code{...}}{Other arguments passed to the solver}
 #' }
 #' @seealso \code{\link{solve_steady}} and \code{\link{get_solve_status}}
 #' @examples
-#' mdl <- islm_mdl(period = "2018Q1/2023Q3")
-#' mdl$solve(control = list(trace = TRUE))
+#' islm <- islm_mdl(period = "2018Q1/2023Q3")
+#' islm$set_exo_values(260, period = "2018q1", names = "g")
+#' islm$solve(control = list(trace = TRUE))
 NULL
 
 #' \code{\link{DynMdl}} method: Returns a character vector with the model 
@@ -1264,4 +1270,111 @@ NULL
 #' 
 #' # write initval file in xlsx format
 #' mdl$write_initval_file("dynare_input/islm_initval.xlsx")
+NULL
+
+#' \code{\link{DynMdl}} method: Solves the steady state with Dynare
+#' @name solve_steady_dynare
+#' 
+#' @description
+#' Solve the steady state and calculate the eigenvalues 
+#' with Dynare using Matlab or Octave.
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$solve_steady_dynare(scratch_dir = tempfile(), 
+#'                         use_octave = Sys.which("matlab") == "", 
+#'                         dynare_path = NULL,
+#'                         model_options = list(), 
+#'                         solve_options = list(tolf = 1e-8)) 
+#' }
+#' 
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#' 
+#' @section Arguments:
+#' \describe{
+#' \item{\code{scratch_dir}}{Directory where the Matlablab and Dynare scripts are 
+#' created.  By default this is a temporary directory that is automatically
+#' deleted when the R session terminates.}
+#' \item{\code{use_octave}}{A logical. If \code{TRUE}, then
+#' Dynare is envoked with Octave, otherwise Matlab is used. By default 
+#' Matlab is used if available.}
+#' \item{\code{dynare_path}}{Character string specifying the name of the 
+#' directory of the Dynare installation. On Linux it is not necessary the specify
+#' the path. On Windows it may be necessary to specify the path of the Dynare
+#' installation.}
+#' \item{\code{model_options}}{Options passed to the \code{model} command of
+#' Dynare. This should be a named list, which names corresponding to the Dynare
+#' options. Specify a \code{NULL} value if the option has no value.
+#' Consult the documentation of  Dynare for a list of available options.
+#' Example: \code{model_options = list(block = NULL, mfs = 2)}}
+#' \item{\code{solve_options}}{Options passed to the 
+#' \code{steady} command of Dynare. This should be a named list, which names 
+#' corresponding to the Dynare options. Specify a \code{NULL} value if the 
+#' option has no value. Consult the documentation of  Dynare for a list of 
+#' available options.
+#' Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.
+#' The default is \code{list(tolf = 1e-8)}}.
+#' }
+#' 
+#' @section Value:
+#'  The eigenvalues of the steady state.
+#' @importFrom tools file_path_sans_ext
+#' @examples
+#' \dontrun{
+#' islm <- islm_mdl()
+#' islm$solve_steady_dynare(solve_options = list(tolf = 1e-8))
+#' }
+NULL
+
+#' \code{\link{DynMdl}} method: Solves the model with Dynare
+#' @name solve_dynare
+#' 
+#' @description
+#' Solve the model with Dynare using Matlab or Octave.
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$solve_dynare(scratch_dir = tempfile(), 
+#'                  use_octave = Sys.which("matlab") == "", 
+#'                  dynare_path = NULL,
+#'                  model_options, 
+#'                  solve_options = list(tolf = 1e-8, tolx = 1e-8)) 
+#' }
+#' 
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#' 
+#' @section Arguments:
+#' \describe{
+#' \item{\code{scratch_dir}}{Directory where the Matlablab and Dynare scripts are 
+#' created.  By default this is a temporary directory that is automatically
+#' deleted when the R session terminates.}
+#' \item{\code{use_octave}}{A logical. If \code{TRUE}, then
+#' Dynare is envoked with Octave, otherwise Matlab is used. By default 
+#' Matlab is used if available.}
+#' \item{\code{dynare_path}}{Character string specifying the name of the 
+#' directory of the Dynare installation. On Linux it is not necessary the specify
+#' the path. On Windows it may be necessary to specify the path of the Dynare
+#' installation.}
+#' \item{\code{model_options}}{Options passed to the \code{model} command of
+#' Dynare. This should be a named list, which names corresponding to the Dynare
+#' options. Specify a \code{NULL} value if the option has no value.
+#' Consult the documentation of  Dynare for a list of available options.
+#' Example: \code{model_options = list(block = NULL, mfs = 2)}}
+#' \item{\code{solve_options}}{Options passed to the 
+#' \code{perfect_foresight_solver} command of
+#' Dynare. This should be a named list, which names corresponding to the Dynare
+#' options. Specify a \code{NULL} value if the option has no value.
+#' Consult the documentation of  Dynare for a list of available options.
+#' Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.
+#' The default options are list(tolf = 1e-8, tolx = 1e-8)}.
+#' }
+#' @importFrom tools file_path_sans_ext
+#' @examples
+#' \dontrun{
+#'  islm <- islm_mdl(period = "2018Q1/2023Q3")
+#'  islm$set_exo_values(260, period = "2018q1", names = "g")
+#'  islm$solve_dynare()
+#' }
 NULL

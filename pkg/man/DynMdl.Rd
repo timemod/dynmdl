@@ -105,6 +105,11 @@ exogenous model variables by applying a function}
 
 \item{\code{\link{solve}}}{Solves the model}
 
+\item{\code{\link{solve_steady_dynare}}}{Solves the steady state and eigenvalues with
+Dynare (emplpying Matlab or Octave)}
+
+\item{\code{\link{solve_dynare}}}{Solves the model with Dynare (employing Octave or Matlab)}
+
 \item{\code{\link{check}}}{Compute the eigenvalues of the linear
 system and check if the Blachard and Kahn conditions are satisfied.}
 

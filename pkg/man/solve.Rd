@@ -7,7 +7,7 @@
 This method of R6 class \code{\link{DynMdl}} solves
 the model.
 
-\code{solve_steady} does \emph{not} raise an error when the solve was
+\code{solve} does \emph{not} raise an error when the solve was
 not successful. In that case a warning may be issued. 
 Method \code{\link{get_solve_status}} can be used to check
 whether the solve was successfully terminated or not.
@@ -17,7 +17,8 @@ whether the solve was successfully terminated or not.
 \code{DynMdl} method:
 \preformatted{
  md$solve(control = list(), mode, solver = c("umfpackr", "nleqslv"), 
-          start = c("current", "previous"), ...)
+          start = c("current", "previous"), debug_eqs = FALSE,
+          homotopy = FALSE, ...)
 }
 
 \code{mdl} is an \code{\link{DynMdl}} object
@@ -49,13 +50,17 @@ for the internal calculation mode (\code{calc == "internal"},
 see \code{\link{dyn_mdl}}). If
 \code{TRUE} then numerical problems in evaluation
 of mathematical functions or operators such a \code{log} are reported.}
+\item{\code{homotopy}}{A logical. If \code{TRUE} (the default), then the 
+homotopy approach is used when directly solving the model fails.
+Consult the documentation of Dynare for more information about the homotopy aproach.}
 \item{\code{...}}{Other arguments passed to the solver}
 }
 }
 
 \examples{
-mdl <- islm_mdl(period = "2018Q1/2023Q3")
-mdl$solve(control = list(trace = TRUE))
+islm <- islm_mdl(period = "2018Q1/2023Q3")
+islm$set_exo_values(260, period = "2018q1", names = "g")
+islm$solve(control = list(trace = TRUE))
 }
 \seealso{
 \code{\link{solve_steady}} and \code{\link{get_solve_status}}

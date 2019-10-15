@@ -1,149 +1,97 @@
-# Internal function: Run Dynare with Matkab or Octave
-#' @importFrom tools file_path_as_absolute
-#' @importFrom tictoc tic
-#' @importFrom tictoc toc
-run_dynare  <- function(model_name, mod_file, scratch_dir, 
-                        mdl, period, data, rename_aux_vars = TRUE,
-                        mod_file_in_scratch_dir = FALSE,
-                        tasks, use_octave, dynare_path) {
+#' Run a mod file Dynare with Matlab or Octave.
+#' 
+#' This function runs a mod file with Dynare using either Matlab or Octave.
+#' The input files for Dynare and Octave/Matlab are generated automatically.
+#' The command \code{octave} or \code{matlab} should be in the search path.
+#' @param mod_file The name of a Dynare mod file. For models with trends,
+#' this can also be a fit mod file created with function \code{dyn_mdl}
+#' when argument \code{fit_mod_file} was specified. However, for model
+#' with trends the fit mod file is not a correct Dynare mod file, because
+#' the fit equations are already detrended while the original equations
+#' still contain trends.
+#' @param steady A logical, indicating wether the steady state should be 
+#' calculated (default is \code{TRUE}). If the steady state is calculated
+#' then also the eigenvalues are calculated.
+#' @param perfect_foresight A logical, indicating wether the perfect foresight
+#' solver should be called.  The default is \code{TRUE} if argument 
+#' \code{period} or \code{data} have been specified and false otherwise.
+#' @param period A \code{\link[regts]{period_range}} object or object that
+#' can be coerced to a \code{period_range}. This argument must be specified
+#' when the perfect foresight solver is called.
+#' @param data a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
+#' object with values for endogogenous and exogenous model variables used in
+#' the perfect foresight solver.
+#' @param scratch_dir Directory where the Matlablab and Dynare scripts are 
+#' created.  By default this is a temporary directory that is automatically
+#' deleted when the R session terminates.
+#' @param use_octave A logical. If \code{TRUE}, then
+#' Dynare is envoked with Octave, otherwise Matlab is used. By default 
+#' Matlab is used if available.
+#' @param dynare_path Character string specifying the name of the 
+#' directory of the Dynare installation. On Linux it is not necessary the specify
+#' the path. On Windows it may be necessary to specify the path of the Dynare
+#' installation.
+#' @param steady_options Options passed to the \code{steady} command of
+#' Dynare. This should be a named list, which names corresponding to the Dynare
+#' options. Specify a \code{NULL} value if the option has no value.
+#' Consult the documentation of  Dynare for a list of available options.
+#' Example: \code{steady_options = list(tolf = 1e-7, nocheck = NULL)}
+#' @param pefect_foresight_solver_optios Options passed to the 
+#' \code{perfect_foresight_solver} command of
+#' Dynare. This should be a named list, which names corresponding to the Dynare
+#' options. Specify a \code{NULL} value if the option has no value.
+#' Consult the documentation of  Dynare for a list of available options.
+#' Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.
+#' @return A list with the following components
+#' \item{steady_endos}{(only if \code{steady == TRUE}): a steady state 
+#' endogenous variables} 
+#' \item{eigval}{(only if \code{steady == TRUE}): the eigenvalues of  the steady 
+#' state} 
+#' \item{endo_data}{(only if \code{perfect_foresight_solver == TRUE}): the 
+#' endogenous variables for the solution of the perfect foresight solver}
+#' @importFrom tools file_path_sans_ext
+#' @examples
+#' \dontrun{
+#' data <- regts(matrix(280, nrow = 1, ncol = 1), names = "g", period = "2017Q1")
+#'
+#' result <- run_dynare("mod/islm.mod", period = "2017q1/2019q3", data = data,
+#'                       use_octave = TRUE, steady_options = list(tolf = 1e-8),
+#'                       perfect_foresight_solver_options = list(tolf = 1e-8, 
+#'                                                               tolx = 1e-8,
+#'                                                          no_homotopy = NULL))
+#'
+#' }
+#' @export
+run_dynare <- function(mod_file,  steady = TRUE,  
+                       perfect_foresight = !missing(period) || !missing(data),
+                       period, data,
+                       scratch_dir = tempfile(), 
+                       use_octave = Sys.which("matlab") == "", 
+                       perfect_foresight_solver_options) {
   
+  if (!steady && !perfect_foresight) {
+    warning("run_dynare has nothing to do ...")
+    return(NULL)
+  }
+  
+  model_name <- file_path_sans_ext(basename(mod_file))
   #
-  # create a model object, needed to obtain information about the model.
+  # create scratch directory
   #
-  if (missing(mdl)) {
-    cat("\n======================================================================\n")
-    cat("Parsing model with dynmdl to obtain information about the model\n")
-    cat("======================================================================\n\n")
-    mdl <- dyn_mdl(mod_file, period = period, max_laglead_1 = TRUE, 
-                   nostrict = TRUE, fit = FALSE)
-    if (!missing(data)) {
-      mdl$init_data(data = data)
+  if (dir.exists(scratch_dir)) {
+    if (unlink(scratch_dir, recursive = TRUE, force = TRUE)  == 1) {
+      stop(sprintf("Not possible to delete directory %s.", scratch_dir))
     }
-  } else {
-    if (!missing(period)) {
-      stop(paste("Internal error: in run_dynare only one of arguments mdl and",
-                 "period should be specified."))
-    }  
-    if (!missing(data)) {
-      stop(paste("Internal error: in run_dynare only one of arguments mdl and",
-                 "exo_data should be specified."))
-    }
-    period <- mdl$get_period()
   }
+  dir.create(scratch_dir)
   
-  #
-  # write initval file (only when eiter mdl or data have  been specified)
-  #
-  tic("writing initval")
-  use_initval_file <- !missing(data) || !missing(mdl)
-  if (use_initval_file) {
-    initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.m"))
-    write_initval_file_internal(initval_file, mdl$get_mdldef(), period, 
-                                mdl$get_endo_data_raw(), mdl$get_exo_data_raw(),
-                                rename_aux_vars = rename_aux_vars)
-  }
-  toc()
-  
-  #
-  # create main mod file
-  #
-  main_mod_file <- file.path(scratch_dir, paste0("simul_", model_name, ".mod"))
-  
-  output <-  file(main_mod_file, open = "w")
-  
-  if (!mod_file_in_scratch_dir) {
-    writeLines(sprintf("@#include \"%s\"", file_path_as_absolute(mod_file)), 
-               con = output)
-  } else {
-    writeLines(sprintf("@#include \"%s.mod\"", model_name), con = output)
-  }
-  writeLines(sprintf("initval_file(filename = %s_initval);", model_name), 
-             con = output)
-  writeLines(sprintf("simul(periods = %d, tolf = 1e-8, tolx = 1e-8);", 
-                     nperiod(period)),
-             con = output)
-  close(output)
-  
-  #
-  # create main matlab/octave file
-  #
-  matlab_file <- file.path(scratch_dir, paste0("run_simul_", model_name, ".m"))
-  output <-  file(matlab_file, open = "w")
-  writeLines(c("if is_octave", "    pkg load io", "end", ""), con = output)
-  if (!missing(dynare_path)) {
-    writeLines(paste("addpath", file.path(dynare_path, "matlab")), con = output)
-  }
-  writeLines(sprintf("dynare simul_%s", model_name), con = output)
-  writeLines("")
-  writeLines(sprintf("dlmwrite('output/simul_%s_endo_names.txt', M_.endo_names, 'delimiter', '')",
-                     model_name), con = output)
-  writeLines(sprintf("dlmwrite('output/simul_%s_endo.csv', oo_.endo_simul, 'precision', 16)",
-                     model_name), con = output)
-  
-  close(output)
-  
-  file_name <- system.file("dynare_templates", "is_octave.m", package = "dynmdl")
-  file.copy(file_name, file.path(scratch_dir, "is_octave.m"), overwrite = TRUE)
-  
-  cwd <- getwd()
-  setwd(scratch_dir)
-  dir.create("output", showWarnings = FALSE)
-  
-  if (use_octave) {
-    
-    
-    cat("\n====================================================================\n")
-    cat("Running Octave\n")
-    cat("====================================================================\n")
-    
-    
-    system2("octave", args =  sprintf("run_simul_%s.m", model_name))
-    
-  } else {
-    
-    cat("=====================================================================\n")
-    cat("Running Matlab\n")
-    cat("=====================================================================\n")
-    
-    system2("matlab", args =  c("-r", "-nosplash", "-nodesktop", "-wait",
-                                sprintf("\"run('run_simul_%s.m');exit;\"", 
-                                              model_name)))
-    
-  }
-  
-  setwd(cwd)
-  
-  #
-  # read the result
-  #
-  output_dir <- file.path(scratch_dir, "output")
-  endo_name_file <- file.path(output_dir, paste0("simul_", model_name, 
-                                                 "_endo_names.txt"))
-  endo_data_file <- file.path(output_dir, paste0("simul_", model_name, 
-                                                 "_endo.csv"))
-  
-  endo_names_dynare  <- read.csv(endo_name_file, stringsAsFactors = FALSE,
-                                 header = FALSE, sep = "")[[1]]
-  
-  endo_data <- t(as.matrix(read.csv(endo_data_file, header = FALSE)))
-  
-  
-  # NOTE: mdl$get_max_endo_lag() is always <=1 . mdl$get_max_lag() returns
-  # the maximum lag in the original model (without lags/leads > 1 removed)
-  max_lag <- mdl$get_max_lag(data = FALSE)
-  max_lead <- mdl$get_max_lead(data = FALSE)
-  dyn_data_period <- period_range(start_period(period) - max_lag,
-                                  end_period(period)   + max_lead)
-  
-  #
-  # endogenous variables: return dynare result for the model period
-  #
-  if (nperiod(dyn_data_period) != nrow(endo_data)) {
-    stop("Error: length endo_data is not equal to the number of periods")
-  }
-  
-  endo <- regts(endo_data, period = dyn_data_period, names = endo_names_dynare,
-                labels = endo_names_dynare)
-  
-  return(endo[period])
+  return(run_dynare_internal(model_name, mod_file, period = period, data = data, 
+                             steady = steady, 
+                             perfect_foresight = perfect_foresight,
+                             scratch_dir = scratch_dir, 
+                             use_octave = use_octave, 
+                             dynare_path = dynare_path,
+                             steady_options = steady_options,
+                             perfect_foresight_solver_options = 
+                                      perfect_foresight_solver_options))
 }

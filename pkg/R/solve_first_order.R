@@ -82,9 +82,8 @@ solve_first_order <- function(ss, calc, mdldef, jac_dynamic,
     ss$eigval <- geigen::gevalues(qz_result)
   }
   
-  # order eigenvalues with increasing Modulus
-  ss$eigval <- ss$eigval[order(Mod(ss$eigval))]
-  
+  ss$eigval <- order_eigval(ss$eigval)
+
   if (debug) {
     printobj(D)
     printobj(E)

@@ -1,4 +1,4 @@
-write_mod_file_internal <- function(mod_file, mdldef, equations) {
+write_mod_file_internal <- function(mod_file, mdldef, equations, model_options) {
   
   #
   # local functions
@@ -44,7 +44,12 @@ write_mod_file_internal <- function(mod_file, mdldef, equations) {
   #
   # model
   #
-  writeLines("\nmodel;", con = output)
+  if (missing(model_options) || length(model_options) == 0) {
+    writeLines("\nmodel;", con = output)
+  } else {
+    writeLines(paste0("\nmodel(", get_dynare_option_string(model_options), 
+                      ");"), con = out)
+  }
   for (eq in equations) {
     eq <- paste0(eq, ";")
     eq_lines <- strsplit(eq, "(\\\\r)?\\\\n")[[1]]

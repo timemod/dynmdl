@@ -236,21 +236,6 @@ FitMdl <- R6Class("FitMdl",
       private$prepare_fit()
       return(super$solve(...))
     },
-    solve_dynare = function(model_name, ...) {
-      #
-      # create mode name based on the name of the DynMdl object
-      #
-      if (missing(model_name)) {
-        z <- sys.call()[[1]]
-        if (z[[1]] == "$") {
-          model_name <- as.character(z[[2]])
-        } else {
-          model_name <- "mdl"
-        }
-      }
-      private$prepare_fit()
-      return(super$solve_dynare(model_name = model_name, ...))
-    },
     residual_check = function(tol, include_fit_eqs = FALSE, ...) {
       # set old_instruments, these will be used for deactivated 
       # fit instruments (instruments with sigma < 0), so that the
@@ -308,6 +293,33 @@ FitMdl <- R6Class("FitMdl",
       }
       
       return(invisible(self)) 
+    },
+    solve_steady_dynare = function(...) {
+      z <- sys.call()[[1]]
+      if (z[[1]] == "$") {
+        model_name <- as.character(z[[2]])
+      } else {
+        model_name <- "mdl"
+      }
+      retval <- super$solve_steady_dynare_internal(model_name, ...)
+      
+      # make static _exo variables equal to the corresponding static 
+      # endogenous variables
+      exo_names <- private$fit_info$exo_vars
+      endo_names <- private$fit_info$orig_endos
+      private$mdldef$exos[exo_names] <- private$mdldef$endos[endo_names]
+      
+      return(retval)
+    },
+    solve_dynare = function(...) {
+      z <- sys.call()[[1]]
+      if (z[[1]] == "$") {
+        model_name <- as.character(z[[2]])
+      } else {
+        model_name <- "mdl"
+      }
+      private$prepare_fit()
+      return(super$solve_dynare_internal(model_name = model_name, ...))
     }
   ), 
   private = list(
@@ -452,6 +464,8 @@ FitMdl <- R6Class("FitMdl",
       # sigmas do not change.
       private$exo_data[ , private$fit_info$old_instruments] <-
         private$endo_data[ , private$fit_info$instruments]
+      
+      return()
     }
   )
 )
