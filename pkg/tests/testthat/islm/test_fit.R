@@ -295,15 +295,36 @@ test_that("set_static_endos/set_static_exos", {
   expect_equal(mdl2$get_static_endos()["c"], c(c= 13))
   expect_silent(mdl2$set_static_endos(c(c = 14, ut = 3), name_err = "silent"))
   expect_equal(mdl2$get_static_endos()["c"], c(c = 14))
+  expect_equal(mdl2$get_static_endos(names = "c"), c(c = 14))
+  expect_equal(mdl2$get_static_endos(pattern = "c"), c(c = 14))
+  
+  expect_warning(x <- mdl2$get_static_endos(pattern = "^x"), 
+                 "No endogenous variables match pattern \"\\^x\".")
+  expect_equal(length(x), 0)
   
   msg <- "The following names are no exogenous model variables: \"c\", \"uc\"\\."
   expect_error(mdl$set_static_exos(c(c = 12, uc = 3, g = 12)), msg)
   expect_warning(mdl2$set_static_exos(c(c = 12, uc = 3, g = 12), 
                                       name_err = "warn"), msg)
   expect_equal(mdl2$get_static_exos()["g"], c(g = 12))
+  expect_equal(mdl2$get_static_exos(names = "g"), c(g = 12))
+  expect_equal(mdl2$get_static_exos(pattern = "^g"), c(g = 12))
+  
+  expect_warning(x <- mdl2$get_static_exos(pattern = "^x"), 
+                 "No exogenous variables match pattern \"\\^x\".")
+  expect_equal(length(x), 0)
+  
   expect_silent(mdl2$set_static_exos(c(c = 12, uc = 3, g = 122), 
                                      name_err = "silent"))
   expect_equal(mdl2$get_static_exos()["g"], c(g = 122))
+  
+  mdl2$set_static_endos(c(c = 333, y = 444))
+  expect_equal(mdl2$get_static_endos(names = c("y", "c")),
+               c(y = 444, c = 333))
+  
+  mdl2$set_static_exos(c(ms = 555, g = 666))
+  expect_equal(mdl2$get_static_exos(pattern = "^(g|(ms))$"),
+               c(g = 666, ms = 555))
 })
 
 test_that("set_static_data / get_static_data", {
@@ -330,4 +351,19 @@ test_that("set_static_data / get_static_data", {
   expected_result[c("c", "g")] <- c(222, 333)
   
   expect_equal(mdl2$get_static_data(), expected_result)
+  
+  expect_equal(mdl2$get_static_data(pattern = "^[gm]"), 
+               expected_result[c("g", "md", "ms")])
+  
+  expect_warning(x <- mdl2$get_static_data(pattern = "^u"), 
+                 "No endogenous or exogenous variables match pattern \"\\^u\".")
+  expect_equal(length(x), 0)
+  
+  expect_equal(length(mdl2$get_static_data(names = character(0))), 0)
+  expect_equal(length(mdl2$get_static_endos(names = character(0))), 0)
+  expect_equal(length(mdl2$get_static_exos(names = character(0))), 0)
+  
+  mdl2$set_static_data(c(ms = 555, md = 666))
+  expect_equal(mdl2$get_static_data(pattern = "^m"),
+               c(md = 666, ms = 555))
 })

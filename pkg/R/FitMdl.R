@@ -201,8 +201,9 @@ FitMdl <- R6Class("FitMdl",
       private$mdldef$endos[endo_names] <- endos[endo_names]
       return(invisible(self))
     },
-    get_static_endos = function() {
-      return(super$get_static_endos()[private$fit_info$orig_endos])
+    get_static_endos = function(pattern, names) {
+      names <- private$get_names_fitmdl_("endo", names, pattern)
+      return(super$get_static_endos(names = names))
     },
     set_static_exos = function(exos, name_err = "stop") {
       exo_names <- private$get_names_fitmdl_("exo", names = names(exos),
@@ -214,13 +215,24 @@ FitMdl <- R6Class("FitMdl",
       exo_names <- private$get_names_fitmdl_("exo", names, pattern)
       return(super$set_static_exo_values(value, names = exo_names))
     },
-    get_static_exos = function() {
-      return(super$get_static_exos()[private$fit_info$orig_exos])
+    get_static_exos = function(pattern, names) {
+      names <- private$get_names_fitmdl_("exo", names, pattern)
+      return(super$get_static_exos(names = names))
     },
     set_static_data = function(data, name_err = "stop") {
       names <- private$get_names_fitmdl_("endo_exo", names = names(data), 
-                                  name_err = name_err)
+                                         name_err = name_err)
       return(super$set_static_data(data[names]))
+    },
+    get_static_data = function(pattern, names) {
+      names <- private$get_names_fitmdl_("endo_exo", names, pattern)
+      exo_names <- intersect(names, private$exo_names)
+      endo_names <- intersect(names, private$endo_names)
+      static_exos <- self$get_static_endos(names = endo_names)
+      static_endos <- self$get_static_exos(names = exo_names)
+      ret <- c(static_endos, static_exos)
+      if (length(ret) > 0) ret <- ret[order(base::names(ret))]
+      return(ret)
     },
     serialize = function() {
       ser <- as.list(super$serialize())
@@ -333,7 +345,7 @@ FitMdl <- R6Class("FitMdl",
       endo_names <- private$fit_info$orig_endos
       exo_names <- private$fit_info$orig_exos
       inst_names <- private$fit_info$instruments
-
+      
       if (type == "all") {
         vnames <- union(union(endo_names, exo_names), inst_names)
         trend_names <- private$mdldef$trend_info$trend_vars$names
@@ -412,8 +424,6 @@ FitMdl <- R6Class("FitMdl",
       # For FitMdl objects, not all exogenous variables should be modified
       # in the homotopy approach: the fit switches and _old (old fit instruments)
       # should not be modified.
-      
-     
       fit_sel <- private$exo_data[private$model_period, 
                                   private$fit_info$fit_vars, drop = FALSE] == 1
       is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)

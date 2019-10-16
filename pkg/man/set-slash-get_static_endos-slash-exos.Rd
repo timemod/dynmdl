@@ -16,7 +16,7 @@ model variables}
 \code{set_static_exos}, \code{set_static_exo_values}, 
 \code{set_static_endos} and  \code{set_static_data} can be used to set one or 
 more static values of the endogenous and/or exogenous model variables.
-The correspondig \code{get} methods can be used to retrieve them.
+The corresponding \code{get} methods can be used to retrieve them.
 
 Each \code{\link{DynMdl}} object contains a set of static values
 for the exogenous and endogenous model variables.
@@ -39,9 +39,9 @@ mdl$set_static_endos(endos, name_err = c("stop", "warn", "silent"))
 mdl$set_static_exos(exos, name_err = c("stop", "warn", "silent"))
 mdl$set_static_exo_values(value, names, pattern)
 mdl$set_static_data(data, name_err = c("stop", "warn", "silent"))
-mdl$get_static_endos()
-mdl$get_static_endos()
-mdl$get_static_data()
+mdl$get_static_endos(pattern, names)
+mdl$get_static_endos(pattern, names)
+mdl$get_static_data(pattern, names)
 }
 
 \code{mdl} is an \code{\link{DynMdl}} object
@@ -57,7 +57,7 @@ exogenous variables}
  \item{\code{data}}{A named numerical vector with new static values of 
  both endogenous and exogenous variables}
 \item{\code{value}}{a numeric vector of length 1}
-\item{\code{names}}{a character vector with names of exogenous model variables}
+\item{\code{names}}{a character vector with names of model variables}
 \item{\code{pattern}}{a regular expression}
 \item{\code{name_err}}{this option specifies the action that should be taken 
 when a variable name is not a model variable.
@@ -85,7 +85,7 @@ of the fit instruments are not included (they are always zero).
 \item \code{get_static_exos}: Returns the static values of one or more 
 exogenous variables.
 \item \code{get_static_data}: Returns the static values of the model 
-variables  (excluding fit instruments for code{\link{FitMDl}} objects).
+variables  (excluding fit instruments for \code{\link{FitMDl}} objects).
 }
 }
 

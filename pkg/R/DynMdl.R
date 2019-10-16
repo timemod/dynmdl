@@ -277,8 +277,13 @@ DynMdl <- R6Class("DynMdl",
       private$mdldef$exos[names] <- value
       return(invisible(self))
     },
-    get_static_exos = function() {
-      return(private$mdldef$exos)
+    get_static_exos = function(pattern, names) {
+      if (missing(pattern) && missing(names)) {
+        return(private$mdldef$exos)
+      } else {
+        names <- private$get_names_("exo", names, pattern)
+        return(private$mdldef$exos[names])
+      }
     },
     set_static_endos = function(endos, name_err = "stop") {
       endo_names <- private$get_names_("endo", names = names(endos), 
@@ -286,18 +291,31 @@ DynMdl <- R6Class("DynMdl",
       private$mdldef$endos[endo_names] <- endos[endo_names]
       return(invisible(self))
     },
-    get_static_endos = function() {
-      if (private$mdldef$aux_vars$aux_count > 0) {
-        return(private$mdldef$endos[-private$mdldef$aux_vars$endos])
+    get_static_endos = function(pattern, names) {
+      if (missing(pattern) && missing(names)) {
+        if (private$mdldef$aux_vars$aux_count > 0) {
+          return(private$mdldef$endos[-private$mdldef$aux_vars$endos])
+        } else {
+          return(private$mdldef$endos)
+        }
       } else {
-        return(private$mdldef$endos)
+        names <- private$get_names_("endo", names, pattern)
+        return(private$mdldef$endos[names])
       }
     },
-    get_static_data = function() {
-      static_endos <- self$get_static_endos()
-      static_exos <- self$get_static_exos()
+    get_static_data = function(pattern, names) {
+      if (missing(pattern) && missing(names)) {
+        static_endos <- self$get_static_endos()
+        static_exos <- self$get_static_exos()
+      } else {
+        names <- private$get_names_("all", names, pattern)
+        exo_names <- intersect(names, private$exo_names)
+        endo_names <- intersect(names, private$endo_names)
+        static_exos <- self$get_static_endos(names = endo_names)
+        static_endos <- self$get_static_exos(names = exo_names)
+      }
       ret <- c(static_endos, static_exos)
-      ret <- ret[order(names(ret))]
+      if (length(ret) > 0) ret <- ret[order(base::names(ret))]
       return(ret)
     },
     set_static_data = function(data, name_err = "stop") {
@@ -1360,6 +1378,8 @@ DynMdl <- R6Class("DynMdl",
         if (length(pattern_names) == 0) {
           type_texts <- c(all = "model variables", 
                           endo = "endogenous variables", 
+                          inst = "fit instruments",
+                          endo_exo = "endogenous or exogenous variables",
                           exo = "exogenous variables", 
                           trend = "trend variables",
                           inst = "fit instruments")

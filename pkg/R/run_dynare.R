@@ -55,7 +55,7 @@
 #' data <- regts(matrix(280, nrow = 1, ncol = 1), names = "g", period = "2017Q1")
 #'
 #' result <- run_dynare("mod/islm.mod", period = "2017q1/2019q3", data = data,
-#'                       use_octave = TRUE, steady_options = list(tolf = 1e-8),
+#'                       steady_options = list(tolf = 1e-8),
 #'                       perfect_foresight_solver_options = list(tolf = 1e-8, 
 #'                                                               tolx = 1e-8,
 #'                                                          no_homotopy = NULL))
