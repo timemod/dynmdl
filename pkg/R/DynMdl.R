@@ -22,7 +22,6 @@ setOldClass("regts")
 #' @importFrom compiler compile
 #' @importFrom utils zip
 #' @importFrom utils compareVersion
-#' @importFrom data.table shift
 #' @importFrom tictoc tic
 #' @importFrom tictoc toc
 #' @export
@@ -1744,7 +1743,7 @@ DynMdl <- R6Class("DynMdl",
       }
       
       # prepare the auxiliary variables
-      if (private$mdldef$aux_vars$aux_count > 0) {
+      if (!solve_first_order && private$mdldef$aux_vars$aux_count > 0) {
         private$prepare_aux_vars()
       }
       
@@ -1779,29 +1778,21 @@ DynMdl <- R6Class("DynMdl",
       
       aux_vars <- private$mdldef$aux_vars
       orig_endo_data <- private$endo_data[ , aux_vars$orig_endos, drop = FALSE]
-      
-      f <- function(i, type, nval) {
-        return(orig_endo_data[ , i],)
-      }
-      
+
       nper <- nrow(private$endo_data)
-  
-      # TODO: can this be programmed more efficiently?    
-      with(private$mdldef$aux_vars, {
-        types <- ifelse(orig_leads < 0, "lag", "lead")
-        nvals <- abs(orig_leads)
-        orig_endo_data <- private$endo_data[ , orig_endos, drop = FALSE]
-        for (i in seq_len(aux_count)) {
-          sel <-  if (orig_leads[i] > 0) {
-            1 : (nper - orig_leads[i])
-          } else {
-            (-orig_leads[i] + 1) : nper
-          }
-          private$endo_data[sel , endos[i]] <-
-                   data.table::shift(orig_endo_data[ , i], n = nvals[i],
-                                     type = types[i])[sel]
-        }
-      })
+
+      orig_endo_data <- private$endo_data[ , aux_vars$orig_endos, drop = FALSE]
+      orig_leads <- aux_vars$orig_leads
+      endo_index <- aux_vars$endos
+      for (i in seq_len(aux_vars$aux_count)) {
+        sel <- if (orig_leads[i] > 0) {
+                    1 : (nper - orig_leads[i])
+               } else {
+                   (-orig_leads[i] + 1) : nper
+               }
+        sel2 <- sel + orig_leads[i]
+        private$endo_data[sel , endo_index[i]] <- orig_endo_data[sel2 , i] 
+      }
       return()
     },
     check_model_period = function(period) {

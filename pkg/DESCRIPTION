@@ -22,7 +22,6 @@ Imports:
     stringi,
     umfpackr,
     numDeriv,
-    data.table,
     openxlsx
 Depends:
     regts,
