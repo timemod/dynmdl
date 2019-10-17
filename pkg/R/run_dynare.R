@@ -9,28 +9,26 @@
 #' with trends the fit mod file is not a correct Dynare mod file, because
 #' the fit equations are already detrended while the original equations
 #' still contain trends.
-#' @param steady A logical, indicating wether the steady state should be 
-#' calculated (default is \code{TRUE}). If the steady state is calculated
-#' then also the eigenvalues are calculated.
-#' @param perfect_foresight A logical, indicating wether the perfect foresight
-#' solver should be called.  The default is \code{TRUE} if argument 
-#' \code{period} or \code{data} have been specified and false otherwise.
 #' @param period A \code{\link[regts]{period_range}} object or object that
 #' can be coerced to a \code{period_range}. This argument must be specified
 #' when the perfect foresight solver is called.
 #' @param data a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 #' object with values for endogogenous and exogenous model variables used in
 #' the perfect foresight solver.
+
+#' @param steady A logical, indicating wether the steady state should be 
+#' calculated (default is \code{TRUE}). If the steady state is calculated
+#' then also the eigenvalues are calculated.
+#' @param perfect_foresight A logical, indicating wether the perfect foresight
+#' solver should be called.  The default is \code{TRUE} if argument 
+#' \code{period} or \code{data} have been specified and \code{FALSE} otherwise.
 #' @param scratch_dir Directory where the Matlablab and Dynare scripts are 
 #' created.  By default this is a temporary directory that is automatically
 #' deleted when the R session terminates.
-#' @param use_octave A logical. If \code{TRUE}, then
-#' Dynare is envoked with Octave, otherwise Matlab is used. By default 
-#' Matlab is used if available.
 #' @param dynare_path Character string specifying the name of the 
-#' directory of the Dynare installation. On Linux it is not necessary the specify
-#' the path. On Windows it may be necessary to specify the path of the Dynare
-#' installation.
+#' directory of the Dynare installation. On Linux it is usually not necessary 
+#' to the specify this argument. On Windows it is necessary to specify the path 
+#' of the Dynare installation.
 #' @param steady_options Options passed to the \code{steady} command of
 #' Dynare. This should be a named list, which names corresponding to the Dynare
 #' options. Specify a \code{NULL} value if the option has no value.
@@ -42,6 +40,9 @@
 #' options. Specify a \code{NULL} value if the option has no value.
 #' Consult the documentation of  Dynare for a list of available options.
 #' Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.
+#' @param use_octave A logical. If \code{TRUE}, then
+#' Dynare is envoked with Octave, otherwise Matlab is used. By default 
+#' Matlab is used if available.
 #' @return A list with the following components
 #' \item{steady_endos}{(only if \code{steady == TRUE}): a steady state 
 #' endogenous variables} 
@@ -62,12 +63,12 @@
 #'
 #' }
 #' @export
-run_dynare <- function(mod_file,  steady = TRUE,  
+run_dynare <- function(mod_file, period, data, steady = TRUE,  
                        perfect_foresight = !missing(period) || !missing(data),
-                       period, data,
-                       scratch_dir = tempfile(), 
-                       use_octave = Sys.which("matlab") == "", 
-                       perfect_foresight_solver_options) {
+                       scratch_dir = tempfile(), dynare_path = NULL, 
+                       steady_options,
+                       perfect_foresight_solver_options,
+                       use_octave = Sys.which("matlab") == "") {
   
   if (!steady && !perfect_foresight) {
     warning("run_dynare has nothing to do ...")
@@ -89,9 +90,9 @@ run_dynare <- function(mod_file,  steady = TRUE,
                              steady = steady, 
                              perfect_foresight = perfect_foresight,
                              scratch_dir = scratch_dir, 
-                             use_octave = use_octave, 
                              dynare_path = dynare_path,
                              steady_options = steady_options,
                              perfect_foresight_solver_options = 
-                                      perfect_foresight_solver_options))
+                                      perfect_foresight_solver_options,
+                             use_octave = use_octave))
 }

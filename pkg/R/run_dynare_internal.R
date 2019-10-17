@@ -2,15 +2,14 @@
 #' @importFrom tools file_path_as_absolute
 #' @importFrom tictoc tic
 #' @importFrom tictoc toc
-run_dynare_internal  <- function(model_name, mod_file, 
-                                 steady, perfect_foresight,
-                                 scratch_dir, 
-                                 mdl, period, data, rename_aux_vars = TRUE,
-                                 mod_file_in_scratch_dir = FALSE,
-                                 use_octave, dynare_path,
-                                 steady_options,
-                                 perfect_foresight_solver_options) {
- 
+run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data, 
+                                 steady, perfect_foresight, scratch_dir, 
+                                 dynare_path, steady_options,
+                                 perfect_foresight_solver_options,
+                                 use_octave, rename_aux_vars = TRUE,
+                                 mod_file_in_scratch_dir = FALSE) {
+  
+
   if (perfect_foresight) {
     
     if (missing(mdl)) {
@@ -39,9 +38,6 @@ run_dynare_internal  <- function(model_name, mod_file,
       }
       period <- mdl$get_period()
     }
-
-    regts::printobj(period)
-    
 
     #
     # write initval file (only when eiter mdl or data have  been specified)
@@ -104,7 +100,7 @@ run_dynare_internal  <- function(model_name, mod_file,
   matlab_file <- file.path(scratch_dir, paste0("run_", model_name, ".m"))
   output <-  file(matlab_file, open = "w")
   writeLines(c("if is_octave", "    pkg load io", "end", ""), con = output)
-  if (!missing(dynare_path)) {
+  if (!is.null(dynare_path)) {
     writeLines(paste("addpath", file.path(dynare_path, "matlab")), con = output)
   }
   writeLines(sprintf("dynare %s_dynare", model_name), con = output)

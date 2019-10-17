@@ -4,10 +4,11 @@
 \alias{run_dynare}
 \title{Run a mod file Dynare with Matlab or Octave.}
 \usage{
-run_dynare(mod_file, steady = TRUE,
-  perfect_foresight = !missing(period) || !missing(data), period, data,
-  scratch_dir = tempfile(), use_octave = Sys.which("matlab") == "",
-  perfect_foresight_solver_options)
+run_dynare(mod_file, period, data, steady = TRUE,
+  perfect_foresight = !missing(period) || !missing(data),
+  scratch_dir = tempfile(), dynare_path = NULL, steady_options,
+  perfect_foresight_solver_options, use_octave = Sys.which("matlab") ==
+  "")
 }
 \arguments{
 \item{mod_file}{The name of a Dynare mod file. For models with trends,
@@ -17,14 +18,6 @@ with trends the fit mod file is not a correct Dynare mod file, because
 the fit equations are already detrended while the original equations
 still contain trends.}
 
-\item{steady}{A logical, indicating wether the steady state should be 
-calculated (default is \code{TRUE}). If the steady state is calculated
-then also the eigenvalues are calculated.}
-
-\item{perfect_foresight}{A logical, indicating wether the perfect foresight
-solver should be called.  The default is \code{TRUE} if argument 
-\code{period} or \code{data} have been specified and false otherwise.}
-
 \item{period}{A \code{\link[regts]{period_range}} object or object that
 can be coerced to a \code{period_range}. This argument must be specified
 when the perfect foresight solver is called.}
@@ -33,24 +26,32 @@ when the perfect foresight solver is called.}
 object with values for endogogenous and exogenous model variables used in
 the perfect foresight solver.}
 
+\item{steady}{A logical, indicating wether the steady state should be 
+calculated (default is \code{TRUE}). If the steady state is calculated
+then also the eigenvalues are calculated.}
+
+\item{perfect_foresight}{A logical, indicating wether the perfect foresight
+solver should be called.  The default is \code{TRUE} if argument 
+\code{period} or \code{data} have been specified and \code{FALSE} otherwise.}
+
 \item{scratch_dir}{Directory where the Matlablab and Dynare scripts are 
 created.  By default this is a temporary directory that is automatically
 deleted when the R session terminates.}
 
-\item{use_octave}{A logical. If \code{TRUE}, then
-Dynare is envoked with Octave, otherwise Matlab is used. By default 
-Matlab is used if available.}
-
 \item{dynare_path}{Character string specifying the name of the 
-directory of the Dynare installation. On Linux it is not necessary the specify
-the path. On Windows it may be necessary to specify the path of the Dynare
-installation.}
+directory of the Dynare installation. On Linux it is usually not necessary 
+to the specify this argument. On Windows it is necessary to specify the path 
+of the Dynare installation.}
 
 \item{steady_options}{Options passed to the \code{steady} command of
 Dynare. This should be a named list, which names corresponding to the Dynare
 options. Specify a \code{NULL} value if the option has no value.
 Consult the documentation of  Dynare for a list of available options.
 Example: \code{steady_options = list(tolf = 1e-7, nocheck = NULL)}}
+
+\item{use_octave}{A logical. If \code{TRUE}, then
+Dynare is envoked with Octave, otherwise Matlab is used. By default 
+Matlab is used if available.}
 
 \item{pefect_foresight_solver_optios}{Options passed to the 
 \code{perfect_foresight_solver} command of

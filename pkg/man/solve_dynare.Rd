@@ -11,10 +11,9 @@ Solve the model with Dynare using Matlab or Octave.
 \code{DynMdl} method:
 \preformatted{
 mdl$solve_dynare(scratch_dir = tempfile(), 
-                 use_octave = Sys.which("matlab") == "", 
-                 dynare_path = NULL,
-                 model_options, 
-                 solve_options = list(tolf = 1e-8, tolx = 1e-8)) 
+                 dynarere_path = NULL, model_options = list(), 
+                 solve_options = list(tolf = 1e-8, tolx = 1e-8)),
+                 use_octave = Sys.which("matlab") == "") 
 }
 
 \code{mdl} is a \code{\link{DynMdl}} object
@@ -26,13 +25,10 @@ mdl$solve_dynare(scratch_dir = tempfile(),
 \item{\code{scratch_dir}}{Directory where the Matlablab and Dynare scripts are 
 created.  By default this is a temporary directory that is automatically
 deleted when the R session terminates.}
-\item{\code{use_octave}}{A logical. If \code{TRUE}, then
-Dynare is envoked with Octave, otherwise Matlab is used. By default 
-Matlab is used if available.}
 \item{\code{dynare_path}}{Character string specifying the name of the 
-directory of the Dynare installation. On Linux it is not necessary the specify
-the path. On Windows it may be necessary to specify the path of the Dynare
-installation.}
+directory of the Dynare installation. On Linux it is usually not necessary 
+to the specify this argument. On Windows it is necessary to specify the path 
+of the Dynare installation.}
 \item{\code{model_options}}{Options passed to the \code{model} command of
 Dynare. This should be a named list, which names corresponding to the Dynare
 options. Specify a \code{NULL} value if the option has no value.
@@ -44,7 +40,10 @@ Dynare. This should be a named list, which names corresponding to the Dynare
 options. Specify a \code{NULL} value if the option has no value.
 Consult the documentation of  Dynare for a list of available options.
 Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.
-The default options are list(tolf = 1e-8, tolx = 1e-8)}.
+The default options are list(tolf = 1e-8, tolx = 1e-8)}
+#' \item{\code{use_octave}}{A logical. If \code{TRUE}, then
+Dynare is envoked with Octave, otherwise Matlab is used. By default 
+Matlab is used if available.}
 }
 }
 

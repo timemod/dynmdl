@@ -1,5 +1,11 @@
-solve_dynare_internal <- function(model_name, mdl, scratch_dir, use_octave, 
-                                  dynare_path, model_options, solve_options) {
+solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path, 
+                                  model_options, solve_options, use_octave) {
+  
+  solve_options_ = list(tolf = 1e-8, tolx = 1e-8)
+  if (!missing(solve_options)) {
+    solve_options_[names(solve_options)] <- solve_options
+  }
+  
   #
   # create scratch directory
   #
@@ -21,28 +27,29 @@ solve_dynare_internal <- function(model_name, mdl, scratch_dir, use_octave,
   if (mdldef$max_endo_lag > 1 || mdldef$max_endo_lead > 1) {
     # NOTE: to data we pass all endogenous and exogenous variables.
     # This we do because of fit procedure.
-    sol  <- run_dynare_internal(model_name, 
-                                mod_file, scratch_dir, 
+    sol  <- run_dynare_internal(model_name, mod_file, 
                                 period = mdl$get_period(), 
                                 data = cbind(mdl$get_exo_data_raw(),
                                              mdl$get_endo_data_raw()),
                                 steady = FALSE, perfect_foresight = TRUE,
-                                use_octave = use_octave,
+                                scratch_dir = scratch_dir, 
                                 dynare_path = dynare_path,
-                                mod_file_in_scratch_dir = TRUE,
                                 perfect_foresight_solver_options = 
-                                  solve_options)$endo_data
+                                                            solve_options,
+                                use_octave = use_octave,
+                                mod_file_in_scratch_dir = TRUE)$endo_data
   } else {
-    sol <- run_dynare_internal(model_name, mod_file, scratch_dir, 
-                               mdl = mdl, rename_aux_vars = FALSE, 
+    sol <- run_dynare_internal(model_name, mod_file, mdl = mdl,
                                steady = FALSE, perfect_foresight = TRUE,
-                               use_octave = use_octave,
+                               scratch_dir = scratch_dir, 
                                dynare_path = dynare_path,
-                               mod_file_in_scratch_dir = TRUE,
                                perfect_foresight_solver_options = 
-                                 solve_options)$endo_data
+                                                            solve_options,
+                               use_octave = use_octave, rename_aux_vars = FALSE,
+                               mod_file_in_scratch_dir = TRUE)$endo_data
   } 
   
+
   endo_names <- names(mdldef$endos)
   
   return(sol[ , endo_names, drop = FALSE])
