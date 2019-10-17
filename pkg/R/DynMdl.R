@@ -668,7 +668,7 @@ DynMdl <- R6Class("DynMdl",
       private$clean_static_model()
       names(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
       if (!missing(tol)) {
-        residuals <- residuals[abs(residuals) > tol]
+        residuals <- residuals[is.na(residuals) | abs(residuals) > tol]
       }
       return(residuals)
     },

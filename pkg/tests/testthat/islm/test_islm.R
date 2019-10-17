@@ -101,6 +101,29 @@ test_that("static_residual_check", {
   
   res2b <- mdl2$static_residual_check(tol = 1e-8)
   expect_equal(res2b, expected_res2[1])
+
+  mdl2$set_static_exos(c(g = 0/0, ms = 230.11))
+  expected_result <- expected_res2
+  expected_result[c("eq_1", "eq_7")] <- c(NaN, -0.11)
+  
+  expect_equal(mdl2$static_residual_check(), expected_result)
+  expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(1, 7)])
+  
+  mdl2$set_static_exos(c(g = 1/0))
+  expected_result["eq_1"] <- -Inf      
+  expect_equal(mdl2$static_residual_check(), expected_result)
+  expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(1, 7)])
+  
+  mdl2$set_static_exos(c(g = -1/0))
+  expected_result["eq_1"] <- Inf      
+  expect_equal(mdl2$static_residual_check(), expected_result)
+  expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(1, 7)])
+  
+  mdl2$set_static_exos(c(g = NA))
+  expected_result["eq_1"] <- NA      
+  expect_equal(mdl2$static_residual_check(), expected_result)
+  expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(1, 7)])
+  expect_equal(mdl2$static_residual_check(tol = 100), expected_result[1])
 })
 
 

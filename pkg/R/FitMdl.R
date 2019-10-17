@@ -271,7 +271,7 @@ FitMdl <- R6Class("FitMdl",
         residuals <- residuals[seq_along(private$fit_info$orig_endos)]
       }
       if (!missing(tol)) {
-        residuals <- residuals[abs(residuals) > tol]
+        residuals <- residuals[is.na(residuals) | abs(residuals) > tol]
       }
       return(residuals)
     },

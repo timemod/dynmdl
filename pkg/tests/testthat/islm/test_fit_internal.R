@@ -49,19 +49,47 @@ test_that("steady state and eigenvalues", {
 
 test_that("static_residual_check", {
   
-  res1 <- mdl$static_residual_check()
+  mdl2 <- mdl$copy()
+  
+  res1 <- mdl2$static_residual_check()
   expect_equal(abs(unname(res1)) < 1e-12, rep(TRUE, 7))
   expect_equal(names(res1), paste0("eq_", 1:7))
   
-  mdl$set_static_exos(c(g = 250))
-  res2a <- mdl$static_residual_check()
+  mdl2$set_static_exos(c(g = 250))
+  res2a <- mdl2$static_residual_check()
   
   expected_res2 <- res1
   expected_res2[2] <- -10
   expect_equal(res2a, expected_res2)
   
-  res2b <- mdl$static_residual_check(tol = 1e-8)
+  res2b <- mdl2$static_residual_check(tol = 1e-8)
   expect_equal(res2b, expected_res2[2])
+  
+  expected_result <- expected_res2
+  
+  mdl2$set_static_exos(c(g = 0/0, ms = 230.11))
+  expected_result <- expected_res2
+  expected_result[c("eq_2", "eq_7")] <- c(NaN, -0.11)
+  
+  expect_equal(mdl2$static_residual_check(), expected_result)
+  expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(2, 7)])
+  
+  mdl2$set_static_exos(c(g = 1/0))
+  expected_result["eq_2"] <- -Inf      
+  expect_equal(mdl2$static_residual_check(), expected_result)
+  expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(2, 7)])
+  
+  mdl2$set_static_exos(c(g = -1/0))
+  expected_result["eq_2"] <- Inf      
+  expect_equal(mdl2$static_residual_check(), expected_result)
+  expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(2, 7)])
+  
+  mdl2$set_static_exos(c(g = NA))
+  expected_result["eq_2"] <- NA      
+  expect_equal(mdl2$static_residual_check(), expected_result)
+  expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(2, 7)])
+  expect_equal(mdl2$static_residual_check(tol = 100), expected_result[2])
+ 
 })
 
 test_that("residual_check", {
