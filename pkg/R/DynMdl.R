@@ -242,12 +242,10 @@ DynMdl <- R6Class("DynMdl",
       }
       return(names)
     },
-    set_param = function(params, name_err = "stop") {
-      names <- names(params)
-      if (is.null(names) || !is.numeric(params)) {
-        stop("params is not a named numeric vector")
-      }
-      names <- private$check_param_names(names, name_err = name_err)
+    set_param = function(params, names, name_err = "stop") {
+      params <- private$convert_vector_arg_internal(params, names, "params")
+      names <- private$check_param_names(base::names(params), 
+                                         name_err = name_err)
       private$mdldef$params[names] <- params[names]
       return(invisible(self))
     },
@@ -264,7 +262,7 @@ DynMdl <- R6Class("DynMdl",
       return(private$mdldef$params[names])
     },
     set_static_exos = function(exos, names, name_err = "stop") {
-      exos <- private$convert_static_data_internal(exos, names, "exos")
+      exos <- private$convert_vector_arg_internal(exos, names, "exos")
       exo_names <- private$get_names_("exo", names = base::names(exos), 
                                       name_err = name_err)
       private$mdldef$exos[exo_names] <- exos[exo_names]
@@ -287,7 +285,7 @@ DynMdl <- R6Class("DynMdl",
       }
     },
     set_static_endos = function(endos, names, name_err = "stop") {
-      endos <- private$convert_static_data_internal(endos, names, "endos")
+      endos <- private$convert_vector_arg_internal(endos, names, "endos")
       endo_names <- private$get_names_("endo", names = base::names(endos), 
                                        name_err = name_err)
       private$mdldef$endos[endo_names] <- endos[endo_names]
@@ -321,7 +319,7 @@ DynMdl <- R6Class("DynMdl",
       return(ret)
     },
     set_static_data = function(data, names, name_err = "stop") {
-      data <- private$convert_static_data_internal(data, names, "data")
+      data <- private$convert_vector_arg_internal(data, names, "data")
       names <- private$get_names_("endo_exo", names = base::names(data), 
                                   name_err = name_err)
       endo_names <- intersect(names, private$endo_names)
@@ -1400,7 +1398,7 @@ DynMdl <- R6Class("DynMdl",
       }
       return(names)
     },
-    convert_static_data_internal = function(data, names, arg_name) {
+    convert_vector_arg_internal = function(data, names, arg_name) {
       # Handle the input of function set_static_endos, set_static_exos
       # en set_static_data.
       if (!is.numeric(data)) {

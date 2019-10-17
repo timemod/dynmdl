@@ -10,9 +10,13 @@ pars <- mdl$get_param()
 
 test_that("set_param", {
   
-  par <- c(i3 = 999)
+  par <- c(i3 = -999)
   mdl$set_param(par)
   expect_identical(mdl$get_param(names = "i3"), par)
+  
+  par <- 999
+  mdl$set_param(par, names = "i3")
+  expect_identical(mdl$get_param(names = "i3"), c(i3 = par))
   
   # errors
   expect_error(mdl$set_param(c(aap = 9999)), "\"aap\" is not a parameter.")
@@ -25,7 +29,8 @@ test_that("set_param", {
  
   expect_silent(mdl$set_param(c(i3 = 9999, aap = 999, jan = 999), 
                                name_err = "silent"))
-  expect_error(mdl$set_param(2), "params is not a named numeric vector")
+  expect_error(mdl$set_param(2), 
+               "If argument params has no names, than argument names must be specified.")
 })
 
 test_that("get_param", {

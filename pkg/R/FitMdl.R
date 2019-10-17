@@ -196,7 +196,7 @@ FitMdl <- R6Class("FitMdl",
       return(ret[ret >= 0])
     },
     set_static_endos = function(endos, names, name_err = "stop") {
-      endos <- private$convert_static_data_internal(endos, names, "endos")
+      endos <- private$convert_vector_arg_internal(endos, names, "endos")
       endo_names <- private$get_names_fitmdl_("endo", 
                                               names = base::names(endos),
                                               name_err = name_err)
@@ -208,7 +208,7 @@ FitMdl <- R6Class("FitMdl",
       return(super$get_static_endos(names = names))
     },
     set_static_exos = function(exos, names, name_err = "stop") {
-      exos <- private$convert_static_data_internal(exos, names, "exos")
+      exos <- private$convert_vector_arg_internal(exos, names, "exos")
       exo_names <- private$get_names_fitmdl_("exo", names = base::names(exos),
                                              name_err = name_err)
       private$mdldef$exos[exo_names] <- exos[exo_names]
@@ -223,7 +223,7 @@ FitMdl <- R6Class("FitMdl",
       return(super$get_static_exos(names = names))
     },
     set_static_data = function(data, names, name_err = "stop") {
-      data <- private$convert_static_data_internal(data, names, "data")
+      data <- private$convert_vector_arg_internal(data, names, "data")
       names <- private$get_names_fitmdl_("endo_exo", names = base::names(data), 
                                          name_err = name_err)
       return(super$set_static_data(data[names]))
