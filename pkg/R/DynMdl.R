@@ -1126,13 +1126,9 @@ DynMdl <- R6Class("DynMdl",
         model_name <- "mdl"
       }
       
-      ret <- solve_steady_dynare_internal(model_name, self, scratch_dir,
-                                          dynare_path, model_options, 
-                                          solve_options, use_octave)
-      
-      private$mdldef$endos[names(ret$steady_endos)] <- ret$steady_endos
-      
-      return(ret$eigval)
+      return(private$solve_steady_dynare_internal(model_name, scratch_dir,
+                                                  dynare_path, model_options, 
+                                                  solve_options, use_octave))
     },
     solve_dynare = function(scratch_dir = tempfile(), dynare_path = NULL, 
                             model_options, solve_options,
@@ -1148,13 +1144,9 @@ DynMdl <- R6Class("DynMdl",
       
       private$prepare_aux_vars()
       
-      solution <- solve_dynare_internal(model_name, self, scratch_dir,
-                                        dynare_path, model_options, 
-                                        solve_options, use_octave)
-      
-      private$endo_data[private$model_period, colnames(solution)] <- solution
-      
-      return(invisible(self))
+      return(private$solve_dynare_internal(model_name, scratch_dir,
+                                          dynare_path, model_options, 
+                                           solve_options, use_octave))
     },
     copy = function() {
       ret <- self$clone(deep = TRUE)
@@ -2153,6 +2145,38 @@ DynMdl <- R6Class("DynMdl",
       if (debug_eqs && private$calc != "internal") {
         warning("Argument debug_eqs is only used if calc = \"internal\"")
       }
+    },
+    solve_steady_dynare_internal = function(model_name, scratch_dir = tempfile(), 
+                                            dynare_path = NULL, model_options, 
+                                            solve_options, 
+                                            use_octave = Sys.which("matlab") == "") { 
+      
+      # this function is called by both DynMdl and FitMdl objects
+      
+      ret <- solve_steady_dynare_internal(model_name, self, scratch_dir,
+                                          dynare_path, model_options, 
+                                          solve_options, use_octave)
+      
+      private$mdldef$endos[names(ret$steady_endos)] <- ret$steady_endos
+      
+      return(ret$eigval)
+    },
+    solve_dynare_internal = function(model_name, scratch_dir = tempfile(), 
+                                     dynare_path = NULL, 
+                                     model_options, solve_options,
+                                     use_octave = Sys.which("matlab") == "") {
+      
+      # this function is called by both DynMdl and FitMdl objects
+      
+      private$prepare_aux_vars()
+      
+      solution <- solve_dynare_internal(model_name, self, scratch_dir,
+                                        dynare_path, model_options, 
+                                        solve_options, use_octave)
+      
+      private$endo_data[private$model_period, colnames(solution)] <- solution
+      
+      return(invisible(self))
     }
   )
 )
