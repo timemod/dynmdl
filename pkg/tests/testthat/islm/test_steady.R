@@ -128,6 +128,14 @@ test_that("set_static_endos/set_static_exos", {
   mdl2$set_static_exos(c(ms = 555, g = 666))
   expect_equal(mdl2$get_static_exos(pattern = "^(g|(ms))$"),
                c(g = 666, ms = 555))
+  
+  mdl2$set_static_endos(c(aap = 333, zzz = 444), names = c("c", "y"))
+  expect_equal(mdl2$get_static_endos(names = c("y", "c")),
+               c(y = 444, c = 333))
+  
+  mdl2$set_static_exos(c(jan = 5555, piet = 6666), names = c("ms", "g"))
+  expect_equal(mdl2$get_static_exos(pattern = "^(g|(ms))$"),
+               c(g = 6666, ms = 5555))
 })
 
 
@@ -183,4 +191,17 @@ test_that("set_static_data / get_static_data", {
   mdl2$set_static_data(c(ms = 555, md = 666))
   expect_equal(mdl2$get_static_data(pattern = "^m"),
                c(md = 666, ms = 555))
+  
+  mdl2$set_static_data(c(5555, 6666), names = c("ms", "md"))
+  expect_equal(mdl2$get_static_data(pattern = "^m"),
+               c(md = 6666, ms = 5555))
+  
+  expect_error(mdl2$set_static_data(c(5555, 6666)),
+       "If argument data has no names, than argument names must be specified.")
+  
+  expect_error(mdl2$set_static_data(c(5555, 6666), names = "xxx"),
+               "The length of argument names \\(1\\) should be equal to the length of argument data \\(2\\).")
+  
+  expect_error(mdl2$set_static_data(c(c = "xxx")),
+               "Argument data must be a numeric vector.")
 })

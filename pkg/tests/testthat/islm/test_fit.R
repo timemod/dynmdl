@@ -322,9 +322,17 @@ test_that("set_static_endos/set_static_exos", {
   expect_equal(mdl2$get_static_endos(names = c("y", "c")),
                c(y = 444, c = 333))
   
+  mdl2$set_static_endos(c(a = 3333, b = 4444), names = c("c", "y"))
+  expect_equal(mdl2$get_static_endos(names = c("y", "c")),
+               c(y = 4444, c = 3333))
+  
   mdl2$set_static_exos(c(ms = 555, g = 666))
   expect_equal(mdl2$get_static_exos(pattern = "^(g|(ms))$"),
                c(g = 666, ms = 555))
+  
+  mdl2$set_static_exos(c(5555, 6666), names = c("ms", "g"))
+  expect_equal(mdl2$get_static_exos(pattern = "^(g|(ms))$"),
+               c(g = 6666, ms = 5555))
 })
 
 test_that("set_static_data / get_static_data", {
@@ -366,4 +374,8 @@ test_that("set_static_data / get_static_data", {
   mdl2$set_static_data(c(ms = 555, md = 666))
   expect_equal(mdl2$get_static_data(pattern = "^m"),
                c(md = 666, ms = 555))
+  
+  mdl2$set_static_data(c(a = 5555, b = 6666), names = c("ms", "md"))
+  expect_equal(mdl2$get_static_data(pattern = "^m"),
+               c(md = 6666, ms = 5555))
 })

@@ -84,7 +84,7 @@ test_that("static_residual_check", {
   expect_equal(mdl2$static_residual_check(), expected_result)
   expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(2, 7)])
   
-  mdl2$set_static_exos(c(g = NA))
+  mdl2$set_static_exos(c(g = NA_real_))
   expected_result["eq_2"] <- NA      
   expect_equal(mdl2$static_residual_check(), expected_result)
   expect_equal(mdl2$static_residual_check(tol = 0.1), expected_result[c(2, 7)])

@@ -263,8 +263,9 @@ DynMdl <- R6Class("DynMdl",
       names <- private$get_param_names_(pattern, names)
       return(private$mdldef$params[names])
     },
-    set_static_exos = function(exos, name_err = "stop") {
-      exo_names <- private$get_names_("exo", names = names(exos), 
+    set_static_exos = function(exos, names, name_err = "stop") {
+      exos <- private$convert_static_data_internal(exos, names, "exos")
+      exo_names <- private$get_names_("exo", names = base::names(exos), 
                                       name_err = name_err)
       private$mdldef$exos[exo_names] <- exos[exo_names]
       return(invisible(self))
@@ -285,8 +286,9 @@ DynMdl <- R6Class("DynMdl",
         return(private$mdldef$exos[names])
       }
     },
-    set_static_endos = function(endos, name_err = "stop") {
-      endo_names <- private$get_names_("endo", names = names(endos), 
+    set_static_endos = function(endos, names, name_err = "stop") {
+      endos <- private$convert_static_data_internal(endos, names, "endos")
+      endo_names <- private$get_names_("endo", names = base::names(endos), 
                                        name_err = name_err)
       private$mdldef$endos[endo_names] <- endos[endo_names]
       return(invisible(self))
@@ -318,8 +320,9 @@ DynMdl <- R6Class("DynMdl",
       if (length(ret) > 0) ret <- ret[order(base::names(ret))]
       return(ret)
     },
-    set_static_data = function(data, name_err = "stop") {
-      names <- private$get_names_("endo_exo", names = names(data), 
+    set_static_data = function(data, names, name_err = "stop") {
+      data <- private$convert_static_data_internal(data, names, "data")
+      names <- private$get_names_("endo_exo", names = base::names(data), 
                                   name_err = name_err)
       endo_names <- intersect(names, private$endo_names)
       exo_names <- intersect(names, private$exo_names)
@@ -1396,6 +1399,25 @@ DynMdl <- R6Class("DynMdl",
         }
       }
       return(names)
+    },
+    convert_static_data_internal = function(data, names, arg_name) {
+      # Handle the input of function set_static_endos, set_static_exos
+      # en set_static_data.
+      if (!is.numeric(data)) {
+        stop(sprintf("Argument %s must be a numeric vector.", arg_name))
+      }
+      if (!missing(names)) {
+        if (length(names) != length(data)) {
+          stop(sprintf(paste("The length of argument names (%d) should be",
+                             "equal to the length of argument %s (%d)."),
+                       length(names), arg_name, length(data)))
+        }
+        base::names(data) <- names
+      } else if (is.null(base::names(data))) {
+        stop(sprintf(paste("If argument %s has no names, than argument",
+                           "names must be specified."), arg_name))
+      }
+      return(data)
     },
     convert_data_internal = function(data, names) {
       # Used by set_data and set_fit: checks the period range of data and 

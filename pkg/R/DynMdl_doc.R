@@ -893,10 +893,10 @@ NULL
 #' @section Usage:
 #' \code{DynMdl} method:
 #' \preformatted{
-#' mdl$set_static_endos(endos, name_err = c("stop", "warn", "silent"))
-#' mdl$set_static_exos(exos, name_err = c("stop", "warn", "silent"))
+#' mdl$set_static_endos(endos, names = names(endos), name_err = c("stop", "warn", "silent"))
+#' mdl$set_static_exos(exos, names = names(endos), name_err = c("stop", "warn", "silent"))
 #' mdl$set_static_exo_values(value, names, pattern)
-#' mdl$set_static_data(data, name_err = c("stop", "warn", "silent"))
+#' mdl$set_static_data(data, names = names(data), name_err = c("stop", "warn", "silent"))
 #' mdl$get_static_endos(pattern, names)
 #' mdl$get_static_endos(pattern, names)
 #' mdl$get_static_data(pattern, names)
@@ -906,12 +906,15 @@ NULL
 #'
 #' @section Arguments:
 #' \describe{
-#' \item{\code{endos}}{A named numerical vector with new static values of the
-#' endogenous variables}
-#' \item{\code{exos}}{A named numerical vector with new static values of the
-#' exogenous variables}
-#'  \item{\code{data}}{A named numerical vector with new static values of 
-#'  both endogenous and exogenous variables}
+#' \item{\code{endos}}{A (named) numerical vector with new static values of the
+#' endogenous variables. If the vector has no names, than argument
+#' \code{names} must be specified.}
+#' \item{\code{exos}}{A (named) numerical vector with new static values of the
+#' exogenous variables. If the vector has no names, than argument
+#' \code{names} must be specified.}
+#'  \item{\code{data}}{A (named) numerical vector with new static values of 
+#'  both endogenous and exogenous variables.  If the vector has no names, than argument
+#' \code{names} must be specified.}
 #' \item{\code{value}}{a numeric vector of length 1}
 #' \item{\code{names}}{a character vector with names of model variables}
 #' \item{\code{pattern}}{a regular expression}
