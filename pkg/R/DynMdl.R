@@ -203,24 +203,17 @@ DynMdl <- R6Class("DynMdl",
       type <- match.arg(type)
       if (type == "leads" || type == "lags") {
         lli <- private$mdldef$lead_lag_incidence
+        lli <- lli[private$endo_indices, , drop = FALSE]
         if (type == "leads") {
             lli <- lli[ , as.integer(colnames(lli)) > 0, drop = FALSE]
         } else {
             lli <- lli[ , as.integer(colnames(lli)) < 0, drop = FALSE]
         }
         lli <- rowSums(lli)
-        names <- names(lli[lli > 0])
-        if (private$mdldef$aux_vars$aux_count > 0) {
-          aux_endo_names <- private$endo_names[private$mdldef$aux_vars$endos]
-          names <- setdiff(names, aux_endo_names)
-        }
+        return(names(lli[lli > 0]))
       } else {
-        names <- private$endo_names
-        if (private$mdldef$aux_vars$aux_count > 0) {
-            names <- names[-private$mdldef$aux_vars$endos]
-        }
+        return(private$endo_names)
       }
-      return(names)
     },
     get_exo_names = function() {
       return(private$exo_names)
@@ -293,8 +286,8 @@ DynMdl <- R6Class("DynMdl",
     },
     get_static_endos = function(pattern, names) {
       if (missing(pattern) && missing(names)) {
-        if (private$mdldef$aux_vars$aux_count > 0) {
-          return(private$mdldef$endos[-private$mdldef$aux_vars$endos])
+        if (private$has_aux_vars > 0) {
+          return(private$mdldef$endos[private$endo_indices])
         } else {
           return(private$mdldef$endos)
         }
@@ -622,7 +615,7 @@ DynMdl <- R6Class("DynMdl",
       private$prepare_static_model()
 
       start <- private$mdldef$endos
-      if (private$mdldef$aux_vars$aux_count > 0) {
+      if (private$has_aux_vars > 0) {
         # make sure that they are ok
         aux_endos <- private$mdldef$endos[private$mdldef$aux_vars$orig_endos]
         start[private$mdldef$aux_vars$endos]  <- aux_endos
@@ -679,7 +672,7 @@ DynMdl <- R6Class("DynMdl",
       period <- private$convert_period_arg(period)
       nper <- nperiod(period)
       endo_data <- regts(matrix(rep(private$mdldef$endos, each = nper), 
-                                nrow = nper), names = private$endo_names,
+                                nrow = nper), names = private$mdldef$endo_names,
                          period = period)
       if (!missing(period) && !is.null(private$endo_data)) {
         private$endo_data[period, ] <- endo_data
@@ -722,7 +715,7 @@ DynMdl <- R6Class("DynMdl",
       residuals <- t(residuals)
       colnames(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
       
-      if (private$mdldef$aux_vars$aux_count > 0) {
+      if (private$has_aux_vars > 0) {
         # remove the residuals for the auxiliary equations
         residuals <- residuals[, -private$mdldef$aux_vars$endos, drop = FALSE]
       }
@@ -945,7 +938,7 @@ DynMdl <- R6Class("DynMdl",
       endo_data <- regts(t(matrix(endos_result, 
                                   nrow = private$mdldef$endo_count)),
                                   period = private$model_period, 
-                                  names = private$endo_names)
+                                  names = private$mdldef$endo_names)
       private$endo_data[private$model_period, ] <- endo_data
       
       if ((is.null(control$silent) || !control$silent) && 
@@ -1284,6 +1277,7 @@ DynMdl <- R6Class("DynMdl",
     orig_equations = NULL,
     exo_names = NULL,
     endo_names = NULL,
+    endo_indices = NULL,
     param_names = NULL,
     f_static = NULL,
     jac_static = NULL,
@@ -1307,10 +1301,7 @@ DynMdl <- R6Class("DynMdl",
     jac_steady = NULL,
     res = numeric(),
     solve_status = NA_character_,
-    
-   
-    
-    
+    has_aux_vars = NA,
     get_names_ = function(type, names, pattern,
                           name_err = c("stop", "warn", "silent")) {
       
@@ -1322,9 +1313,6 @@ DynMdl <- R6Class("DynMdl",
       
       if (type %in% c("all", "endo", "endo_exo")) {
         endo_names <- private$endo_names
-        if (private$mdldef$aux_vars$aux_count > 0) {
-          endo_names <- endo_names[-private$mdldef$aux_vars$endos]
-        }
       }
       
       if (type %in% c("all", "trend")) {
@@ -1468,9 +1456,8 @@ DynMdl <- R6Class("DynMdl",
       # the auxiliary variables.
       # Argument names (if specified) and period are assumed to be correct.
       if (missing(names)) {
-        if (private$mdldef$aux_vars$aux_count > 0) {
-          data <- private$endo_data[period, - private$mdldef$aux_vars$endos, 
-                                    drop = FALSE]
+        if (private$has_aux_vars > 0) {
+          data <- private$endo_data[period, private$endo_indices, drop = FALSE]
         } else {
           data <- private$endo_data[period]
         }
@@ -1785,7 +1772,7 @@ DynMdl <- R6Class("DynMdl",
       }
       
       # prepare the auxiliary variables
-      if (!solve_first_order && private$mdldef$aux_vars$aux_count > 0) {
+      if (!solve_first_order && private$has_aux_vars > 0) {
         private$prepare_aux_vars()
       }
       
@@ -1814,7 +1801,7 @@ DynMdl <- R6Class("DynMdl",
     },
     prepare_aux_vars = function() {
       # calculate the auxiliary auxiliary variables before solving
-      if (private$mdldef$aux_vars$aux_count == 0) {
+      if (!private$has_aux_vars) {
         return()
       }
       
@@ -1875,8 +1862,17 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(NULL))
     },
     set_mdldef = function(mdldef) {
+
       private$mdldef <- mdldef
+      
+      private$has_aux_vars <- mdldef$aux_vars$aux_count > 0
+      
       private$endo_names <- names(private$mdldef$endos)
+      if (mdldef$aux_vars$aux_count > 0) {
+        private$endo_names <- private$endo_names[-private$mdldef$aux_vars$endos]
+      }
+      private$endo_indices <- match(private$endo_names, names(private$mdldef$endos))
+      
       private$exo_names <- names(private$mdldef$exos)
       private$param_names <- names(private$mdldef$params)
       

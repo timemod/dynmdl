@@ -352,6 +352,9 @@ compile_model <- function(...) {
   retval$exo_count  <- length(retval$exos)
   retval$endo_count <- length(retval$endos)
   
+  retval$endo_names <- names(retval$endos)
+  retval$exo_names  <- names(retval$exos)
+  
   #
   # row and column names for the lead_lag_incidence
   #
