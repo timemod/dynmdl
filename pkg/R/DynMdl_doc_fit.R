@@ -1,8 +1,8 @@
-#' \code{\link{FitMdl}} method: transfers data from a timeseries
+#' \code{\link{DynMdl}} method: transfers data from a timeseries
 #' object to the fit targets.
 #' @name set_fit
 #' @description
-#' The method \code{set_fit} of R6 class \code{\link{FitMdl}}
+#' The method \code{set_fit} of R6 class \code{\link{DynMdl}}
 #' transfers data from a timeseries object to the fit targets.
 #' 
 #' @section Usage:
@@ -12,7 +12,7 @@
 #'             name_err = c("stop", "warn", "silent"))
 #' }
 #'
-#' \code{mdl} is an \code{\link{FitMdl}} object
+#' \code{mdl} is an \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -62,7 +62,7 @@
 #' and \code{\link{clear_fit}}
 NULL
 
-#' \code{\link{FitMdl}} method: Sets the values of the fit targets
+#' \code{\link{DynMdl}} method: Sets the values of the fit targets
 #' @name set_fit_values
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
@@ -75,7 +75,7 @@ NULL
 #' mdl$set_fit_values(value, names, pattern, period = mdl$get_data_period())
 #' }
 #'
-#' \code{mdl} is an \code{\link{FitMdl}} object
+#' \code{mdl} is an \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -98,12 +98,12 @@ NULL
 #' @seealso \code{\link{set_fit}} and \code{\link{clear_fit}}
 NULL
 
-#' \code{\link{FitMdl}} methods: Retrieve the names of the fit instruments
+#' \code{\link{DynMdl}} methods: Retrieve the names of the fit instruments
 #' or sigma parameters used in the fit procedure.
 #' @name get_instrument_names/get_sigma_names
 #' @aliases get_instrument_names get_sigma_names
 #' @description
-#' These methods of R6 class \code{\link{FitMdl}} 
+#' These methods of R6 class \code{\link{DynMdl}} 
 #' return the names of the fit instruments or sigma parameters
 #' used in the fit procedure.
 #'
@@ -114,7 +114,7 @@ NULL
 #' mdl$get_sigma_names()
 #'
 #' }
-#' \code{mdl} is an \code{\link{FitMdl}} object
+#' \code{mdl} is an \code{\link{DynMdl}} object
 #' @examples
 #'
 #' mdl <- islm_mdl(period = "2017Q1/2018Q3", fit = TRUE)
@@ -124,12 +124,12 @@ NULL
 #' @seealso \code{\link{get_fit_instruments}}
 NULL
 
-#' \code{\link{FitMdl}} methods: get variables used in the fit procedure.
+#' \code{\link{DynMdl}} methods: get variables used in the fit procedure.
 #' @name get_fit-methods
 #' @aliases get_fit get_fit_instruments get_lagrange
 
 #' @description
-#' These methods of R6 class \code{FitMdl} can be used
+#' These methods of R6 class \code{DynMdl} can be used
 #' to retrieve the variables used in the fit procedure:
 #' the fit targets, fit instruments or Lagrange multipliers.
 #' 
@@ -151,7 +151,7 @@ NULL
 #' mdl$get_lagrange(names, period = mdl$get_period())
 #' }
 #'
-#' \code{mdl} is an \code{\link{FitMdl}} object
+#' \code{mdl} is an \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -171,7 +171,7 @@ NULL
 #' t <- regts(c(250, 255), start = "2016Q1")
 #' fit_targets <- cbind(y, t)
 #' 
-#' # register the fit targets in the FitMdl object
+#' # register the fit targets in the DynMdl object
 #' mdl$set_fit(fit_targets)
 #' 
 #' mdl$solve()
@@ -185,12 +185,12 @@ NULL
 NULL
 
 
-#' \code{\link{FitMdl}} method: removes fit targets and turns off fit
+#' \code{\link{DynMdl}} method: removes fit targets and turns off fit
 #' instruments.
 #' @name clear_fit
 
 #' @description
-#' This method of R6 class \code{FitMdl} removes all fit targets, sets 
+#' This method of R6 class \code{DynMdl} removes all fit targets, sets 
 #' the sigma-parameters of the fit-instruments to \code{-1} and sets
 #' all Lagrange multipliers to 0. 
 #' 
@@ -209,7 +209,7 @@ NULL
 #' mdl$clear_fit()
 #' }
 #'
-#' \code{mdl} is an \code{\link{FitMdl}} object
+#' \code{mdl} is an \code{\link{DynMdl}} object
 #''
 #' @examples
 #'
@@ -220,7 +220,7 @@ NULL
 #' t <- regts(c(250, 255), start = "2016Q1")
 #' fit_targets <- cbind(y, t)
 #' 
-#' # register the fit targets in the FitMdl object
+#' # register the fit targets in the DynMdl object
 #' mdl$set_fit(fit_targets)
 #' 
 #' mdl$solve()

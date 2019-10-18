@@ -11,7 +11,7 @@
 These methods of R6 class \code{\link{DynMdl}} 
 can be used to retrieve timeseries from the model data.
 
-If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 \code{get_data} also returns the fit instruments. In contrast,
 \code{get_endo_data} does not return these fit instruments.
 Both \code{get_data} and \code{get_endo_data} do not return
@@ -59,7 +59,7 @@ then all variables with the specific type are returned.
 \itemize{
 
 \item \code{get_data}: All model variables: exogenous and endogenous model
-variables, trends variables, and fit instruments for \code{\link{FitMdl}}
+variables, trends variables, and fit instruments for \code{\link{DynMdl}}
 objects
 \item \code{get_endo_data}: Endogenous model variables, excluding
 fit instruments.

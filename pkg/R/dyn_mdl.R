@@ -194,8 +194,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     }
     fit_mod_text <- read_file(fit_mod_file)
     orig_equations <- get_orig_equations(fit_mod_text, mdldef)
-    mdl <- FitMdl$new(mdldef, fit_info, orig_equations, base_period, calc, 
-                      dll_dir, dll_file, debug)
+    mdl <- DynMdl$new(mdldef,  orig_equations, base_period, calc, 
+                      dll_dir, dll_file, fit_info)
   } else {
     
     # NO FIT 

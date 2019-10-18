@@ -162,7 +162,7 @@ NULL
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' can be used to retrieve timeseries from the model data.
 #'
-#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 #' \code{get_data} also returns the fit instruments. In contrast,
 #' \code{get_endo_data} does not return these fit instruments.
 #' Both \code{get_data} and \code{get_endo_data} do not return
@@ -204,7 +204,7 @@ NULL
 #' \itemize{
 #' 
 #' \item \code{get_data}: All model variables: exogenous and endogenous model
-#' variables, trends variables, and fit instruments for \code{\link{FitMdl}}
+#' variables, trends variables, and fit instruments for \code{\link{DynMdl}}
 #' objects
 #' \item \code{get_endo_data}: Endogenous model variables, excluding
 #' fit instruments.
@@ -227,7 +227,7 @@ NULL
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
 #' transfers data from a timeseries object to the model data
-#' (both endogenous and exogenous). For \code{\link{FitMdl}} objects,
+#' (both endogenous and exogenous). For \code{\link{DynMdl}} objects,
 #' \code{set_data} can also be used to modify fit instruments and the  
 #' Lagrange multipliers used in the fit method.
 #'
@@ -412,7 +412,7 @@ NULL
 #' \item{\code{changes_endo_data}}{Changes endogenous model variables}
 #' \item{\code{change_exo_data}}{Changes exogenous model variables}
 #' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables.
-#' For \code{\link{FitMdl}} objects,
+#' For \code{\link{DynMdl}} objects,
 #' \code{change_data} can also be used to modify fit instruments and the  
 #' Lagrange multipliers used in the fit method.}
 #' }
@@ -553,7 +553,7 @@ NULL
 #' If specified, then the return value does not include columns for the equations
 #' whose residuals are smaller than \code{tol}}
 #' \item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).  
-#' This argument is only used if \code{mdl} is a \code{\link{FitMdl}} object. 
+#' This argument is only used if \code{mdl} is a \code{\link{DynMdl}} object. 
 #' If \code{TRUE}, then the fit equations are included in the residual check.}
 #' \item{\code{debug_eqs}}{Debug equations (default \code{FALSE}). Only used
 #' for the internal calculation mode (\code{calc == "internal"},
@@ -586,7 +586,7 @@ NULL
 #' If specified, then return value does not include equations whose residuals 
 #' are smaller than \code{tol}}
 #'  \item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).  
-#' This argument is only used if \code{mdl} is a \code{\link{FitMdl}} object. 
+#' This argument is only used if \code{mdl} is a \code{\link{DynMdl}} object. 
 #' If \code{TRUE}, then the fit equations are included in the residual check.}
 #' \item{\code{debug_eqs}}{Debug equations (default \code{FALSE}). Only used
 #' for the internal calculation mode (\code{calc == "internal"},
@@ -927,21 +927,21 @@ NULL
 #' @section Methods:
 #' \itemize{
 #' \item \code{set_static_endos}: Set the static values of one or more 
-#' endogenous variables (excluding fit instruments for \code{\link{FitMDl}} objects).
+#' endogenous variables (excluding fit instruments for \code{\link{DynMdl}} objects).
 #' \item \code{set_static_exos}: Set the static values of one or more 
 #' exogenous variables.
 #' \item \code{set_static_exo_values}: Give more than one exogenous variable 
 #' the same static value.
 #' \item \code{set_static_data}: Set the static values of one or more 
 #' endogenous or exogenous variable  
-#' (excluding fit instruments for \code{\link{FitMDl}} objects).
+#' (excluding fit instruments for \code{\link{DynMdl}} objects).
 #' \item \code{get_static_endos}: Returns the static values of one or more 
-#' endogenous variables. For \code{\link{FitMDl}} objects the static values
+#' endogenous variables. For \code{\link{DynMdl}} objects the static values
 #' of the fit instruments are not included (they are always zero). 
 #' \item \code{get_static_exos}: Returns the static values of one or more 
 #' exogenous variables.
 #' \item \code{get_static_data}: Returns the static values of the model 
-#' variables  (excluding fit instruments for \code{\link{FitMDl}} objects).
+#' variables  (excluding fit instruments for \code{\link{DynMdl}} objects).
 #' }
 #' @examples
 #' mdl <- islm_mdl()
@@ -963,7 +963,7 @@ NULL
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' return the names of the model variables or parameters
 #'
-#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 #' \code{get_endo_names} and \code{get_exo_names} do not include the names of 
 #' the auxiliary endogenous and exogenous variables used in the fit procedure.
 #' Use \code{\link{get_instrument_names}} to obtain the names of the fit 
@@ -1206,7 +1206,7 @@ NULL
 #' to directly evaluate expressions involving both model variables
 #' and parameters.
 #'
-#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 #' the variables do not include the the auxiliary endogenous and
 #' exogenous variables used in the fit procedure.
 #'

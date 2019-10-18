@@ -26,11 +26,7 @@ read_mdl <- function(file, dll_dir) {
     stop(paste("File", file, "does not contain a serialized dynmdl or fitmdl"))
   }
   
-  if (inherits(ser, "serialized_fitmdl")) {
-    mdl <- FitMdl$new()
-  } else {
-    mdl <- DynMdl$new()
-  }
+  mdl <- DynMdl$new()
 
   mdl$deserialize(ser, dll_dir)
 

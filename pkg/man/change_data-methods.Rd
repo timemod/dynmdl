@@ -46,7 +46,7 @@ then the function is applied to all endogenous or exogenous variables.
 \item{\code{changes_endo_data}}{Changes endogenous model variables}
 \item{\code{change_exo_data}}{Changes exogenous model variables}
 \item{\code{change_data}}{Changes endogenous and/or exogenous model variables.
-For \code{\link{FitMdl}} objects,
+For \code{\link{DynMdl}} objects,
 \code{change_data} can also be used to modify fit instruments and the  
 Lagrange multipliers used in the fit method.}
 }
