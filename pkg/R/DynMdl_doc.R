@@ -157,7 +157,8 @@ NULL
 
 #' \code{\link{DynMdl}} methods: Retrieve timeseries from the model data
 #' @name get_data-methods
-#' @aliases get_data get_endo_data get_exo_data get_trend_data
+#' @aliases get_data get_endo_data get_exo_data get_trend_data, get_all_endo_data
+#' get_all_exo_data
 #' @description
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' can be used to retrieve timeseries from the model data.
@@ -167,8 +168,13 @@ NULL
 #' \code{get_endo_data} does not return these fit instruments.
 #' Both \code{get_data} and \code{get_endo_data} do not return
 #' the Lagrange multipliers used in the fit procedure. Use method  
-#' \code{\link{get_lagrange}} to obtain these Lagrange multipliers.
-#'
+#' \code{\link{get_lagrange}} to obtain these Lagrange multipliers. 
+#' 
+#' \code{\link{get_all_endo_data}} returns all endogenous variables, 
+#' fit instruments and Lagrange multipliers, as well as the auxiliary 
+#' endogenous variables used when \code{max_laglead_1 = TRUE}.
+#' #' \code{\link{get_all_exo_data}} returns all exogenous variables, 
+#' including exogenous variables used by the fit procedure.
 #' @section Usage:
 #' \preformatted{
 #' 
@@ -181,6 +187,11 @@ NULL
 #' mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
 #' 
 #' mdl$get_trend_data(pattern, names, period = mdl$get_data_period())
+#' 
+#' mdl$get_all_endo_data()
+#'  
+#' mdl$get_all_exo_data()
+#' 
 #' }
 #'
 #' \code{mdl} is an \code{\link{DynMdl}} object

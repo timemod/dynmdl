@@ -49,7 +49,8 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     if (use_initval_file) {
       initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.m"))
       write_initval_file_internal(initval_file, mdldef, period, 
-                                  mdl$get_endo_data_raw(), mdl$get_exo_data_raw(),
+                                  mdl$get_all_endo_data(), 
+                                  mdl$get_all_exo_data(),
                                   rename_aux_vars = rename_aux_vars)
     }
     toc()

@@ -578,6 +578,12 @@ DynMdl <- R6Class("DynMdl",
       private$set_data_(data, type = "endo", upd_mode = upd_mode, fun = fun)
       return(invisible(self))
     },
+    get_all_endo_data = function() {
+      return(private$endo_data)
+    },
+    get_all_exo_data = function() {
+      return(private$exo_data)
+    },
     get_data = function(pattern, names, period = private$data_period,
                         trend = TRUE) {
       
@@ -1407,25 +1413,26 @@ DynMdl <- R6Class("DynMdl",
   get_aux_vars = function() {
     return(private$mdldef$aux_vars)
   },
-  get_endo_data_raw = function() {
-    return(private$endo_data)
-  },
+
   get_exo_data_raw = function() {
     return(private$exo_data)
   },
   get_mdldef = function() {
     return(private$mdldef)
   },
-  #
-  # public methods for the fit method
-  #
+  #####################################################
+  # public methods for the fit procedure
+  ##################################################
   get_instrument_names = function() {
+    private$check_fit()
     return(private$fit_info$instruments)
   },
   get_sigma_names = function() {
+    private$check_fit()
     return(private$fit_info$sigmas)
   },
   set_fit = function(data, names, name_err = "stop") {
+    private$check_fit()
     data <- private$convert_data_internal(data, names)
     names <- private$get_names_("endo", names = colnames(data), 
                                 name_err = name_err)
@@ -1435,6 +1442,7 @@ DynMdl <- R6Class("DynMdl",
   },
   set_fit_values = function(value, names, pattern, 
                             period = private$data_period) {
+    private$check_fit()
     value <- as.numeric(value)
     period <- private$convert_period_arg(period)
     nper <- nperiod(period)
@@ -1455,12 +1463,13 @@ DynMdl <- R6Class("DynMdl",
     return(private$set_fit_internal(data[per], per))
   },
   clear_fit = function() {
+    private$check_fit()
     self$set_fit_values(NA)
     self$set_param_values(-1, names = private$fit_info$sigmas)
     self$set_endo_values(0, names = private$fit_info$l_vars)
   },
   get_fit = function() {
-    
+    private$check_fit()
     fit_switches <- private$exo_data[ , private$fit_info$fit_vars, 
                                       drop = FALSE]
     fit <- private$exo_data[ , private$fit_info$exo_vars, drop = FALSE]
@@ -1483,6 +1492,7 @@ DynMdl <- R6Class("DynMdl",
   },
   get_fit_instruments = function(pattern, names, 
                                  period = private$model_period) {
+    private$check_fit()
     period <- private$convert_period_arg(period)
     names <- private$get_names_("inst", names, pattern)
     if (length(names) == 0) {
@@ -1493,12 +1503,14 @@ DynMdl <- R6Class("DynMdl",
   },
   get_lagrange = function(names = private$fit_info$l_vars,
                           period = private$model_period) {
+    private$check_fit()
     if (!missing(names)) {
       names <- intersect(names, sort(private$fit_info$l_vars))
     }
     return(private$endo_data[period, names, drop = FALSE])
   },
   get_sigmas = function() {
+    private$check_fit()
     ret <- self$get_param(names = private$fit_info$sigmas)
     return(ret[ret >= 0])
   }
@@ -2420,9 +2432,14 @@ DynMdl <- R6Class("DynMdl",
         warning("Argument debug_eqs is only used if calc = \"internal\"")
       }
     },
-    #
-    # private methods for the fit method
-    #
+    ######################################################################
+    # private methods for the fit procedure
+    ######################################################################
+    check_fit = function() {
+        if (!private$fit) {
+          stop("This DynMdl object is not a fit model.")
+        }
+    },
     set_fit_internal = function(data, period) {
       
       # internal version of set_fit which does not need to check names
