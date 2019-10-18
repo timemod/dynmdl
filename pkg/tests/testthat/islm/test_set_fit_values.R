@@ -39,9 +39,9 @@ test_that("set_fit_values works correctly", {
 
 test_that("set_fit_values handles errors correctly", {
   mdl2 <- mdl$copy()
-  msg <- "\"xxx\" is not an endogenous model variable\\."
+  msg <- "\"xxx\" is not an endogenous variable\\."
   expect_error(mdl2$set_fit_values(1, names = c("y", "xxx")), msg)
-  msg <- "The following names are no endogenous model variables: \"p\", \"xxx\"\\."
+  msg <- "The following names are no endogenous variables: \"p\", \"xxx\"\\."
   expect_error(mdl2$set_fit_values(1, names = c("p", "xxx")), msg)
   expect_warning(mdl2$set_fit_values(1, pattern = "xxx"), 
                  "No endogenous variables match pattern \"xxx\".")

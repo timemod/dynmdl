@@ -53,7 +53,7 @@ test_that("errors", {
   fit_mdl2 <- fit_mdl$copy()
   weird_fit <- cbind(fit, x = 3)
  
-  msg <-   "\"x\" is not an endogenous model variable\\."
+  msg <-   "\"x\" is not an endogenous variable\\."
   
   expect_error(fit_mdl2$set_fit(weird_fit), msg)
 
@@ -64,7 +64,7 @@ test_that("errors", {
   expect_warning(fit_mdl2$set_fit(weird_fit[, "x", drop = FALSE], 
                                   name_err = "warn"), msg)
   
-  msg <- "The following names are no endogenous model variables: \"x\", \"z\"\\."
+  msg <- "The following names are no endogenous variables: \"x\", \"z\"\\."
   
   expect_warning(fit_mdl2$set_fit(cbind(weird_fit, z = 2)[, drop = FALSE], 
                                   name_err = "warn"), msg)

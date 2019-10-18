@@ -123,14 +123,14 @@ test_that("get_data errors", {
       "\"aap\" is not a model variable."
   )
   
-  msg <- "The following names are no endogenous model variables: \"aap\", \"g\"."
+  msg <- "The following names are no endogenous variables: \"aap\", \"g\"."
   expect_error(
     mdl$get_endo_data(names = c("aap", "g"), pattern = "^y"), msg
   )
   
   expect_error(
     mdl$get_exo_data(names = c("aap", "g"), pattern = "^y"),
-    "\"aap\" is not an exogenous model variable."
+    "\"aap\" is not an exogenous variable."
   )
   
   expect_warning(expect_null(mdl$get_data(pattern = "xxx")),

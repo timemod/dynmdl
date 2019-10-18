@@ -1534,6 +1534,7 @@ DynMdl <- R6Class("DynMdl",
     has_aux_vars = NA,
     fit = FALSE,
     fit_info = NULL,
+    
     get_names_ = function(type, names, pattern,
                           name_err = c("stop", "warn", "silent")) {
       
@@ -1541,52 +1542,74 @@ DynMdl <- R6Class("DynMdl",
       # Tt gives an error if names contain any invalid name for the 
       # specified type of model variable.
       
+      #   type
+      #   endo             normal endos (endos defined in original mod file)
+      #   exo              normal exos (exos defined in original mod file)
+      #   endo_exo         normal endos, normal exos
+      #   all              normal endos, normal exos, fit instruments, trends
+      #   all_endo         normal endos, fit instruments, lagrange-multipliers
+      #   all_endo_exo     normal endos, fit instruments, lagrange-multipliers,
+      #                    normal exos
+      #  inst              fit instruments
+      #  trend             trend variables
+      
       name_err <- match.arg(name_err)
+      
+      
+      get_type_text <- function(type) {
+        # this function returns a text describing a variable typr 
+        # for the error messages
+        type_texts <- c(endo = "endogenous variable",
+                        exo = "exogenous variable", 
+                        endo_exo = "endogenous or exogenous variable",
+                        all = "model variable", 
+                        all_endo = "endogenous variable",
+                        all_endo_exo = "model variable",
+                        inst = "fit instrument",
+                        trend = "trend variable")
+        
+        return(type_texts[type])
+      }
       
       if (type %in% c("all", "trend")) {
         trend_names <- private$mdldef$trend_info$trend_vars$names
       }
       
-      if (private$fit && type %in% c("all", "inst", "all_endo")) {
+      if (private$fit && type %in% c("all", "inst")) {
         inst_names <- private$fit_info$instruments
       }
       
-      # return model variable names
-      if (type == "all") {
+      if (type == "endo") {
+        vnames <- private$endo_names
+      } else if (type == "exo") {
+        vnames <- private$exo_names
+      } else if (type == "endo_exo") {
+        vnames <- union(private$endo_names, private$exo_names)
+      } else if (type == "all") {
         vnames <- union(union(private$endo_names, private$exo_names), 
                         trend_names)
         if (private$fit) vnames <- union(vnames, inst_names)
-      } else if (type == "all_endo_exo") {
-        vnames <- union(private$all_endo_names, private$exo_names)
-      } else if (type == "endo_exo") {
-        vnames <- union(private$endo_names, private$exo_names)
-      } else if (type == "endo") {
-        vnames <- private$endo_names
       } else if (type == "all_endo") {
         vnames <- private$all_endo_names
-      } else if (type == "exo") {
-        vnames <- private$exo_names
+      } else if (type == "all_endo_exo") {
+        vnames <- union(private$all_endo_names, private$exo_names)
       } else if (type == "inst") {
         vnames <- inst_names
-      } else {
+      } else if (type == "trend") {
         vnames <- trend_names
+      } else {
+        stop(sprintf("Internal error: unknown name type %s\n", type))
       }
+      
       if (!missing(names)) {
         error_vars <- setdiff(names, vnames)
         if (length(error_vars) > 0) {
           if (name_err != "silent") {
             error_vars <- paste0("\"", error_vars, "\"")
-            type_texts <- c(all = "model variable", 
-                            endo = "endogenous model variable",
-                            all_endo = "endogenous model variable",
-                            exo = "exogenous model variable", 
-                            trend = "trend variable",
-                            all_endo_exo = "model variable",
-                            endo_exo = "endogenous or exogenous model variable",
-                            inst = "fit instrument")
-            type_text <- type_texts[[type]]
+            type_text <- get_type_text(type)
             if (length(error_vars) == 1) {
-              a_word <- if (type %in% c("endo", "exo", "all_endo", "endo_exo")) "an" else "a"
+              a_word <- if (type %in% c("endo", "exo", "endo_exo", "all_endo"))
+                                                   "an" else "a"
               msg <- paste0(error_vars, " is not ", a_word, " ", type_text, ".")
             } else { 
               msg <- paste0("The following names are no ", type_text, 
@@ -1608,18 +1631,8 @@ DynMdl <- R6Class("DynMdl",
       } else if (!missing(pattern)) {
         pattern_names <- grep(pattern, vnames, value = TRUE)
         if (length(pattern_names) == 0) {
-          type_texts <- c(all = "model variables", 
-                          endo = "endogenous variables", 
-                          all_endo = "endogenous variables", 
-                          inst = "fit instruments",
-                          endo_exo = "endogenous or exogenous variables",
-                          all_endo_exo = "endogenous or exogenous variables",
-                          exo = "exogenous variables", 
-                          trend = "trend variables",
-                          inst = "fit instruments")
-          type_text <- type_texts[[type]]
-          warning(sprintf("No %s match pattern \"%s\".\n",
-                          type_text, pattern))
+          type_text <- get_type_text(type)
+          warning(sprintf("No %ss match pattern \"%s\".\n", type_text, pattern))
         }
         if (!missing(names)) {
           names <- union(pattern_names, names)

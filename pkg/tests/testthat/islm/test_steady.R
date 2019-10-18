@@ -90,7 +90,7 @@ test_that("non-finite values", {
 test_that("set_static_endos/set_static_exos", {
   mdl2 <- mdl$copy()
   
-  msg <- "\"xxx\" is not an endogenous model variable\\." 
+  msg <- "\"xxx\" is not an endogenous variable\\." 
   expect_error(mdl2$set_static_endos(c(c = 12, xxx = 3)), msg)
   expect_warning(mdl2$set_static_endos(c(c = 13, xxx = 3), name_err = "warn"), 
                  msg)
@@ -105,7 +105,7 @@ test_that("set_static_endos/set_static_exos", {
   expect_silent(mdl2$set_static_endos(c(c = 14, xxx = 3), name_err = "silent"))
   expect_equal(mdl2$get_static_endos()["c"], c(c = 14))
   
-  msg <- "The following names are no exogenous model variables: \"c\", \"xxx\"\\."
+  msg <- "The following names are no exogenous variables: \"c\", \"xxx\"\\."
   expect_error(mdl$set_static_exos(c(c = 12, xxx = 3, g = 12)), msg)
   expect_warning(mdl2$set_static_exos(c(c = 12, xxx = 3, g = 12), 
                                      name_err = "warn"), msg)
@@ -149,7 +149,7 @@ test_that("set_static_exo_values", {
   expect_identical(mdl2$get_static_exos(), c(g = 3, ms = 2))
   
   expect_error(mdl2$set_static_exo_values(0, names = "xxx"), 
-               "\"xxx\" is not an exogenous model variable")
+               "\"xxx\" is not an exogenous variable")
 })
 
 test_that("set_static_data / get_static_data", {
@@ -159,13 +159,13 @@ test_that("set_static_data / get_static_data", {
   model_names <- c(mdl$get_endo_names(), mdl$get_exo_names())
   
   expect_error(mdl2$set_static_data(c(z  = 2)),
-                                    '"z" is not an endogenous or exogenous model variable.')  
+                                    '"z" is not an endogenous or exogenous variable.')  
   expect_silent(mdl2$set_static_data(c(z  = 2), name_err = "silent"))
   mdl2$set_static_data(mdl2$get_static_data())
   expect_equal(mdl2$get_static_data(names = model_names),
                c(mdl$get_static_endos(), mdl$get_static_exos())[sort(model_names)])
   
-  msg <- 'The following names are no endogenous or exogenous model variables: "xxx", "yyy".'
+  msg <- 'The following names are no endogenous or exogenous variables: "xxx", "yyy".'
   expect_warning(
     mdl2$set_static_data(c(c = 222, g = 333, xxx = 5, yyy = 2), 
                          name_err = "warn"),
