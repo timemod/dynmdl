@@ -586,11 +586,14 @@ DynMdl <- R6Class("DynMdl",
       exo_data <- NULL
       trend_data <- NULL
       
-      if (!private$fit && missing(pattern) && missing(names)) {
-        # TODO: private$fit is TRUE, then private$get_endo_data() without
-        # argument names does not return fit instruments
-        endo_data <- private$get_endo_data_internal(period = period, 
+      if (missing(pattern) && missing(names)) {
+         endo_data <- private$get_endo_data_internal(period = period, 
                                                     trend = trend)
+         if (private$fit) {
+           endo_data <- cbind(endo_data, 
+                              private$endo_data[ , private$fit_info$inst, 
+                                                 drop = FALSE])
+         }
         if (private$mdldef$exo_count > 0) {
           if (private$fit) {
             exo_data <- private$exo_data[period, private$exo_indices, 
@@ -1103,8 +1106,10 @@ DynMdl <- R6Class("DynMdl",
       
       private$endo_data <- solve_perturbation_(private$ss,
                                                private$mdldef$max_endo_lag,
-                                               private$exo_data, private$endo_data,
-                                               private$mdldef$exos, private$mdldef$endos)
+                                               private$exo_data, 
+                                               private$endo_data,
+                                               private$mdldef$exos, 
+                                               private$mdldef$endos)
       
       private$clean_dynamic_model()
       return(invisible(self))
@@ -1708,9 +1713,10 @@ DynMdl <- R6Class("DynMdl",
       return(data)
     },
     get_endo_data_internal = function(names, period, trend) {
-       # Internal function that returns endo data (without labels), exluding 
-      # the auxiliary variables.
-      # Argument names (if specified) and period are assumed to be correct.
+      #  Internal function that returns endo data (without labels).
+      #  Argument names (if specified) and period are assumed to be correct.
+      #  If names has not been specified, then only the "normal endos" 
+      #  (i.e. the endos as specified in the mod file) are returned.
       if (missing(names)) {
         if (private$has_aux_vars || private$fit) {
           data <- private$endo_data[period, private$endo_indices, drop = FALSE]
