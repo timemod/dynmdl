@@ -377,7 +377,7 @@ compile_model <- function(...) {
   retval$tex_names <- tex_names[ord]
   
   retval$max_lag <- max(retval$max_endo_lag,  retval$max_exo_lag)
-  retval$max_lead <- max(retval$max_endo_lag,  retval$max_exo_lag)
+  retval$max_lead <- max(retval$max_endo_lead,  retval$max_exo_lead)
   
   #
   # now calculate the maximum and minimum lag of the data. This is different from

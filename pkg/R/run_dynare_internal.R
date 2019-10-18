@@ -187,9 +187,7 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     
     endo_data <- t(as.matrix(read.csv(endo_data_file, header = FALSE)))
     
-    
-    # NOTE: mdl$get_max_endo_lag() is always <=1 . mdl$get_max_lag() returns
-    # the maximum lag in the original model (without lags/leads > 1 removed
+  
     dyn_data_period <- period_range(start_period(period) - mdldef$max_lag,
                                     end_period(period)   + mdldef$max_lead)
     
