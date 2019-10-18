@@ -376,21 +376,29 @@ compile_model <- function(...) {
   retval$labels <- labels[ord]
   retval$tex_names <- tex_names[ord]
   
+  retval$max_lag <- max(retval$max_endo_lag,  retval$max_exo_lag)
+  retval$max_lead <- max(retval$max_endo_lag,  retval$max_exo_lag)
+  
   #
-  # maximum lag and lead, taking auxiliary variables into account
+  # now calculate the maximum and minimum lag of the data. This is different from
+  # the maximum and minimum lag in the model if max_laglead_1 = TRUE.
   #
-  retval$max_lag    <- max(retval$max_endo_lag,  retval$max_exo_lag)
-  retval$max_lead   <- max(retval$max_endo_lead, retval$max_exo_lead)
+  retval$max_endo_lag_data  <- retval$max_endo_lag
+  retval$max_endo_lead_data <- retval$max_endo_lead
   if (retval$aux_vars$aux_count > 0) {
     max_aux_lag <-  max(max(-retval$aux_vars$orig_leads), 0)
     max_aux_lead <- max(max(retval$aux_vars$orig_leads), 0)
     if (max_aux_lag > 0) {
-      retval$max_lag <- max(retval$max_lag, max_aux_lag + 1)
+      retval$max_endo_lag_data <- max(retval$max_endo_lag_data, max_aux_lag + 1)
     }
     if (max_aux_lead > 0) {
-      retval$max_lead <- max(retval$max_lead, max_aux_lead + 1)
+      retval$max_endo_lead_data <- max(retval$max_endo_lead_data, max_aux_lead +
+                                         1)
     }
   }
+  
+  retval$max_lag_data <- max(retval$max_endo_lag_data,  retval$max_exo_lag)
+  retval$max_lead_data <- max(retval$max_endo_lead_data,  retval$max_exo_lead)
   
   retval$njac_cols <- length(which(retval$lead_lag_incidence != 0)) +
                              retval$exo_count

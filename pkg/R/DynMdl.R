@@ -186,22 +186,80 @@ DynMdl <- R6Class("DynMdl",
     },
     print = function(short = TRUE) {
       cat(paste(class(self)[1], "object\n"))
-      private$print_info(short)
-      return (invisible(NULL))
-    },
-    get_max_lag = function(data = TRUE) {
-      if (data) {
-        return(private$mdldef$max_lag)
-      } else {
-        return(max(private$mdldef$max_endo_lag, private$mdldef$max_exo_lag))
+      cat(sprintf("%-60s%s\n", "Fit:", as.character(private$fit)))
+      cat(sprintf("%-60s%s\n", "Calc method:", private$calc))
+      if (private$calc == "internal") {
+        cat(sprintf("%-60s%d\n", "Model index:", private$mdldef$model_index))
       }
-    },
-    get_max_lead = function(data = TRUE) {
-      if (data) {
-        return(private$mdldef$max_lead)
+      if (private$fit || private$has_aux_vars) {
+         cat(sprintf("%-60s%d\n", "Total number of endogenous variables:",
+                     private$mdldef$endo_count))
+        cat(sprintf("%-60s%d\n", "Number of normal endogenous variables:",
+                    length(private$endo_names)))
+        if (private$fit) {
+          cat(sprintf("%-60s%d\n", "Number of fit instruments:",
+                      length(private$fit_info$instruments)))
+        }
+        if (private$has_aux_vars) {
+          cat(sprintf("%-60s%d\n", "Number of auxiliary endogenous variables:",
+                      private$mdldef$aux_vars$aux_count))
+        }
       } else {
-        return(max(private$mdldef$max_endo_lead, private$mdldef$max_exo_lead))
+        cat(sprintf("%-60s%d\n", "Number of endogenous variables:", 
+                    private$mdldef$endo_count))
       }
+      cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
+                  private$mdldef$exo_count))
+      
+      cat(sprintf("%-60s%d\n", "Maximum endogenous lead data:",
+                    private$mdldef$max_endo_lead_data))
+      cat(sprintf("%-60s%d\n", "Maximum endogenous lag data:",
+                  private$mdldef$max_endo_lag_data))
+      cat(sprintf("%-60s%d\n", "Maximum exogenous lead:",
+                  private$mdldef$max_exo_lead))
+      cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
+                  private$mdldef$max_exo_lag))
+      
+      cat(sprintf("%-60s%d\n", "Number of nonzeros static. jac:",
+                  private$mdldef$jac_static_size))
+      cat(sprintf("%-60s%d\n", "Number of nonzeros dyn. jac:",
+                  private$mdldef$jac_dynamic_size))
+      if (!is.null(private$model_period)) {
+        cat(sprintf("%-60s%s\n", "Model period:",
+                    as.character(private$model_period)))
+        cat(sprintf("%-60s%s\n", "Data period:",
+                    as.character(private$data_period)))
+        if (private$mdldef$trend_info$has_deflated_endos) {
+          cat(sprintf("%-60s%s\n", "Base period for trends:",
+                      as.character(private$base_period)))
+        }
+      }
+      
+      if (!short) {
+        cat("Names of the endogenous variables:\n")
+        print(private$endo_names)
+        cat("Names of the exogenous variables:\n")
+        print(private$exo_names)
+        cat("Names of the parameters:\n")
+        print(private$param_names)
+        cat("Lead lag incidence matrix:\n")
+        print(private$mdldef$lead_lag_incidence)
+        cat("\nstatic function:\n")
+        print(private$f_static)
+        cat("\nstatic Jacobian:\n")
+        print(private$jac_static)
+        cat("\ndynamic function:\n")
+        print(private$f_dynamic)
+        cat("\ndynamic jacobian:\n")
+        print(private$jac_dynamic)
+      }
+      return(invisible(NULL))
+    },
+    get_max_lag = function() {
+      return(private$mdldef$max_lag_data)
+    },
+    get_max_lead = function() {
+      return(private$mdldef$max_lead_data)
     },
     get_endo_names = function(type = c("all", "leads", "lags")) {
       type <- match.arg(type)
@@ -347,8 +405,8 @@ DynMdl <- R6Class("DynMdl",
           } else {
             p <- private$model_period
             data_period <- period_range(
-              start_period(p) - private$mdldef$max_lag,
-              end_period(p)   + private$mdldef$max_lead)
+              start_period(p) - private$mdldef$max_lag_data,
+              end_period(p)   + private$mdldef$max_lead_data)
           }
         } else if (is.null(private$model_period)) {
           data_period <- get_period_range(data)
@@ -356,16 +414,18 @@ DynMdl <- R6Class("DynMdl",
           p <- private$model_period
           p_data <- get_period_range(data)
           data_period <- period_range(
-            min(start_period(p) - private$mdldef$max_lag, start_period(p_data)),
-            max(end_period(p)   + private$mdldef$max_lead, end_period(p_data)))
+            min(start_period(p) - private$mdldef$max_lag_data, 
+                start_period(p_data)),
+            max(end_period(p) + private$mdldef$max_lead_data, 
+                end_period(p_data)))
         }
       } else {
         # data period specified
         data_period <- as.period_range(data_period)
         if (!is.null(private$model_period)) {
           mp <- private$model_period
-          startp <- start_period(mp) - private$mdldef$max_lag
-          endp <- end_period(mp) + private$mdldef$max_lead
+          startp <- start_period(mp) - private$mdldef$max_lag_data
+          endp <- end_period(mp) + private$mdldef$max_lead_data
           if (start_period(data_period) > startp || 
               end_period(data_period)  < endp) {
             stop(paste("The data period should include the range", 
@@ -375,8 +435,8 @@ DynMdl <- R6Class("DynMdl",
       }
     
       if (is.null(private$model_period)) {
-        startp <- start_period(data_period) + private$mdldef$max_lag
-        endp <- end_period(data_period) - private$mdldef$max_lead
+        startp <- start_period(data_period) + private$mdldef$max_lag_data
+        endp <- end_period(data_period) - private$mdldef$max_lead_data
         if (endp < startp) {
           stop(paste("The data period is too short. It should contain at least",
                private$mdldef$max_lag + private$mdldef$max_lead + 1, 
@@ -438,8 +498,8 @@ DynMdl <- R6Class("DynMdl",
      
       if (is.null(private$data_period)) {
         data_period <- period_range(
-          start_period(period) - private$mdldef$max_lag,
-          end_period(period)   + private$mdldef$max_lead)
+          start_period(period) - private$mdldef$max_lag_data,
+          end_period(period)   + private$mdldef$max_lead_data)
         private$model_period <- period
         self$init_data(data_period)
       } else  {
@@ -463,16 +523,16 @@ DynMdl <- R6Class("DynMdl",
     },
     get_lag_period = function() {
       if (private$mdldef$max_lag > 0) {
-        p <- start_period(private$model_period) - private$mdldef$max_lag
-        return(period_range(p, p + private$mdldef$max_lag - 1))
+        p <- start_period(private$model_period) - private$mdldef$max_lag_data
+        return(period_range(p, p + private$mdldef$max_lag_data - 1))
       } else {
         return(NULL)
       }
     },
     get_lead_period = function() {
-      if (private$mdldef$max_lead > 0) {
+      if (private$mdldef$max_lead_data > 0) {
         p <- end_period(private$model_period) + 1
-        return(period_range(p, p + private$mdldef$max_lead - 1))
+        return(period_range(p, p + private$mdldef$max_lead_data - 1))
       } else {
         return(NULL)
       }
@@ -2046,8 +2106,8 @@ DynMdl <- R6Class("DynMdl",
                     private$data_period, ")."))
       }
       
-      ps <- start_period(private$data_period) + private$mdldef$max_lag
-      pe <- end_period(private$data_period)   - private$mdldef$max_lead
+      ps <- start_period(private$data_period) + private$mdldef$max_lag_data
+      pe <- end_period(private$data_period)   - private$mdldef$max_lead_data
       
       if ((start_period(period) < ps)  || (end_period(period)   > pe)) { 
         stop(paste0("The specified period (", period, 
@@ -2180,58 +2240,6 @@ DynMdl <- R6Class("DynMdl",
                 PACKAGE = "mdl_functions")
           return(private$jac)
         }
-      }
-    },
-    print_info = function(short) {
-      cat(sprintf("%-60s%s\n", "Calc method:", private$calc))
-      if (private$calc == "internal") {
-        cat(sprintf("%-60s%d\n", "Model index:",
-                    private$mdldef$model_index))
-      }
-      cat(sprintf("%-60s%d\n", "Number of endogenous variables:",
-                  private$mdldef$endo_count))
-      cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
-                  private$mdldef$exo_count))
-      cat(sprintf("%-60s%d\n", "Maximum endogenous lead:",
-                  private$mdldef$max_endo_lead))
-      cat(sprintf("%-60s%d\n", "Maximum endogenous lag:",
-                  private$mdldef$max_endo_lag))
-      cat(sprintf("%-60s%d\n", "Maximum exogenous lead:",
-                  private$mdldef$max_exo_lead))
-      cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
-                  private$mdldef$max_exo_lag))
-      cat(sprintf("%-60s%d\n", "Number of nonzeros static. jac:",
-                  private$mdldef$jac_static_size))
-      cat(sprintf("%-60s%d\n", "Number of nonzeros dyn. jac:",
-                  private$mdldef$jac_dynamic_size))
-      if (!is.null(private$model_period)) {
-        cat(sprintf("%-60s%s\n", "Model period:",
-                    as.character(private$model_period)))
-        cat(sprintf("%-60s%s\n", "Data period:",
-                    as.character(private$data_period)))
-        if (private$mdldef$trend_info$has_deflated_endos) {
-          cat(sprintf("%-60s%s\n", "Base period for trends:",
-                      as.character(private$base_period)))
-        }
-      }
-
-      if (!short) {
-        cat("Names of the endogenous variables:\n")
-        print(private$endo_names)
-        cat("Names of the exogenous variables:\n")
-        print(private$exo_names)
-        cat("Names of the parameters:\n")
-        print(private$param_names)
-        cat("Lead lag incidence matrix:\n")
-        print(private$mdldef$lead_lag_incidence)
-        cat("\nstatic function:\n")
-        print(private$f_static)
-        cat("\nstatic Jacobian:\n")
-        print(private$jac_static)
-        cat("\ndynamic function:\n")
-        print(private$f_dynamic)
-        cat("\ndynamic jacobian:\n")
-        print(private$jac_dynamic)
       }
     },
     convert_period_arg = function(period, data_period = TRUE) {

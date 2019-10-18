@@ -44,7 +44,7 @@ mdl$get_static_endos(pattern, names)
 mdl$get_static_data(pattern, names)
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{

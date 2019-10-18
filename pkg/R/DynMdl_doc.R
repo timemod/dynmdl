@@ -458,7 +458,7 @@ NULL
 #'
 #' @description
 #' This method of R6 class \code{\link{DynMdl}}
-#' returns a deep copy of an \code{DynMdl} object
+#' returns a deep copy of a \code{DynMdl} object
 #' @section Usage:
 #' \preformatted{
 #' mdl$copy()
@@ -796,16 +796,18 @@ NULL
 #' print(mdl$get_equations())
 NULL
 
-#' \code{\link{DynMdl}} methods: Returns the maximum lag or lead of the model
+#' \code{\link{DynMdl}} methods: Returns the maximum lag or lead
 #'
 #' @name get_max_lag/get_max_lead
 #' @aliases get_max_lag get_max_lead
 #'
 #' @description
 #' Methods \code{get_max_lag} and \code{get_max_lead} of R6 class 
-#' \code{\link{DynMdl}} return the maximum lag and lead, respectively.
-#'  the maximum a character vector 
-#' 
+#' \code{\link{DynMdl}} return the maximum lag and lead of the original model, 
+#' respectively. These are the maximum lag and lead in the equations
+#' specified in the mod file. The actual  maximum lag or lead will be different 
+#' if \code{max_laglead_1 == TRUE}  and if there are endogenous lags or 
+#' leads greater than 1.
 #' @section Usage:
 #' \code{DynMdl} methods:
 #' \preformatted{
@@ -814,7 +816,7 @@ NULL
 #'  
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 NULL
 
 #' \code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model 
@@ -833,7 +835,7 @@ NULL
 #' mdl$check()
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @examples
 #' mdl <- islm_mdl()
@@ -857,7 +859,7 @@ NULL
 #' mdl$get_eigval()
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @seealso \code{\link{check}} 
 NULL
@@ -902,7 +904,7 @@ NULL
 #' mdl$get_static_data(pattern, names)
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #' \describe{
@@ -1168,7 +1170,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'

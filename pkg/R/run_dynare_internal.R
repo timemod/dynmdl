@@ -38,6 +38,8 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
       }
       period <- mdl$get_period()
     }
+    
+    mdldef <- mdl$get_mdldef()
 
     #
     # write initval file (only when eiter mdl or data have  been specified)
@@ -46,7 +48,7 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     use_initval_file <- !missing(data) || !missing(mdl)
     if (use_initval_file) {
       initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.m"))
-      write_initval_file_internal(initval_file, mdl$get_mdldef(), period, 
+      write_initval_file_internal(initval_file, mdldef, period, 
                                   mdl$get_endo_data_raw(), mdl$get_exo_data_raw(),
                                   rename_aux_vars = rename_aux_vars)
     }
@@ -187,11 +189,9 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     
     
     # NOTE: mdl$get_max_endo_lag() is always <=1 . mdl$get_max_lag() returns
-    # the maximum lag in the original model (without lags/leads > 1 removed)
-    max_lag <- mdl$get_max_lag(data = FALSE)
-    max_lead <- mdl$get_max_lead(data = FALSE)
-    dyn_data_period <- period_range(start_period(period) - max_lag,
-                                    end_period(period)   + max_lead)
+    # the maximum lag in the original model (without lags/leads > 1 removed
+    dyn_data_period <- period_range(start_period(period) - mdldef$max_lag,
+                                    end_period(period)   + mdldef$max_lead)
     
     #
     # endogenous variables: return dynare result for the model period

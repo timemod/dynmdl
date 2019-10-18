@@ -25,7 +25,6 @@ write_initval_file_internal <- function(file, mdldef, model_period,
  
   aux_vars <- mdldef$aux_vars
   if (rename_aux_vars && aux_vars$aux_count > 0) {
-    
     if (is.null(aux_vars$orig_expr_index)) {
       stop(paste("write_initval_file does not work for DynMdl objects",
                  "created with dynmdl version < 0.9.0.",
