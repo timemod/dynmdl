@@ -10,6 +10,8 @@ model data by applying a function.}
 \description{
 These methods of R6 class \code{\link{DynMdl}} changes endogenous and/or 
 exogenous model data by applying a function.
+If the model has trends, then the change is applied to the trended
+model variables.
 }
 \section{Usage}{
 

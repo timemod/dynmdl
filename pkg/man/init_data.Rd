@@ -35,7 +35,8 @@ object, or an object that can be coerced to
 \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 object with values for endogogenous and exogenous model variables.
 If \code{data} has labels, then these labels are used to update the model 
-labels.}
+labels. If the model has trends, then the timeseries in \code{data} should 
+include the trends.}
  \item{\code{upd_mode}}{the update mode, a character string specifying
 how the timeseries in object \code{data} are transferred to the 
 model data. For  \code{"upd"} (standard update, default), the timseseries

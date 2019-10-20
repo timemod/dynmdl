@@ -24,7 +24,8 @@ when the perfect foresight solver is called.}
 
 \item{data}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 object with values for endogogenous and exogenous model variables used in
-the perfect foresight solver.}
+the perfect foresight solver. If the model has trends, then the timeseries 
+in \code{data} should include the trends.}
 
 \item{steady}{A logical, indicating wether the steady state should be 
 calculated (default is \code{TRUE}). If the steady state is calculated

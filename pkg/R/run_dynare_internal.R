@@ -9,6 +9,13 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
                                  use_octave, rename_aux_vars = TRUE,
                                  mod_file_in_scratch_dir = FALSE) {
   
+  write_header <- function(text) {
+    line <- paste(rep("=", 80), collapse = "")
+    cat(paste0("\n", line, "\n"))
+    cat(paste0(text, "\n"))
+    cat(paste0(line, "\n\n"))
+    return()
+  }
 
   if (perfect_foresight) {
     
@@ -19,9 +26,8 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
       
       period <- as.period_range(period)
       
-      cat("\n======================================================================\n")
-      cat("Parsing model with dynmdl to obtain information about the model\n")
-      cat("======================================================================\n\n")
+      write_header("Parsing model with dynmdl to check lags/leads/aux. vars")
+     
       mdl <- dyn_mdl(mod_file, period = period, max_laglead_1 = TRUE, 
                      nostrict = TRUE, fit = FALSE)
       if (!missing(data)) {
@@ -133,25 +139,14 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   dir.create("output", showWarnings = FALSE)
   
   if (use_octave) {
-    
-    
-    cat("\n====================================================================\n")
-    cat("Running Octave\n")
-    cat("====================================================================\n")
-    
-    
+    write_header("Running Octave")
     system2("octave", args =  sprintf("run_%s.m", model_name))
     
   } else {
-    
-    cat("=====================================================================\n")
-    cat("Running Matlab\n")
-    cat("=====================================================================\n")
-    
+    write_header("Running Matlab")
     system2("matlab", args =  c("-r", "-nosplash", "-nodesktop", "-wait",
                                 sprintf("\"run('run_%s.m');exit;\"", 
                                               model_name)))
-    
   }
   
   setwd(cwd)

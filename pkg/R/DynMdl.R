@@ -579,9 +579,11 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     get_all_endo_data = function() {
+      if (private$has_aux_vars) private$prepare_aux_vars()
       return(private$endo_data)
     },
     get_all_exo_data = function() {
+      if (private$fit) private$set_old_fit_instruments()
       return(private$exo_data)
     },
     get_data = function(pattern, names, period = private$data_period,
@@ -750,6 +752,8 @@ DynMdl <- R6Class("DynMdl",
         # because of numerical inaccuracies. Therefore set then to zero and 
         # check the maximum static residual
         names <- c(private$fit_info$instruments, private$fit_info$l_vars)
+        old_endos <- private$mdldef$endos[names]
+        private$mdldef$endos[names] <- 0
         fmax <- max(abs(self$static_residual_check(debug_eqs = debug_eqs)))
         ftol <- if (is.null(control$ftol)) {
           1e-8 
@@ -757,9 +761,11 @@ DynMdl <- R6Class("DynMdl",
           control$ftol
         }
         if (fmax > ftol) {
-          stop(paste("The steady state values for the fit instruments",
-                     "and lagrange multipliers are significantly different",
-                     "from 0."))
+          # restore old solution
+          private$mdldef$endos[names] <- old_endos
+          warning(paste("The steady state values for the fit instruments",
+                        "and lagrange multipliers are significantly different",
+                        "from 0."))
         }
         
         # make static _exo variables equal to the corresponding static 
@@ -821,21 +827,13 @@ DynMdl <- R6Class("DynMdl",
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       private$check_debug_eqs(debug_eqs)
-      
-      if (private$fit) {
-        # set old_instruments, these will be used for deactivated 
-        # fit instruments (instruments with sigma < 0), so that the
-        # sigmas do not change.
-        private$exo_data[ , private$fit_info$old_instruments] <-
-                         private$endo_data[ , private$fit_info$instruments] 
-      }
-      
+    
       nper <- nperiod(private$model_period)
       lags <- private$get_endo_lags()
       leads <- private$get_endo_leads()
-      x <- private$get_solve_endo()
       
       private$prepare_dynamic_model()
+      x <- private$get_solve_endo()
       residuals <- private$get_residuals(x, lags, leads, nper, debug_eqs)
       private$clean_dynamic_model()
       
@@ -867,7 +865,7 @@ DynMdl <- R6Class("DynMdl",
       private$check_debug_eqs(debug_eqs)
       
       if (private$fit) private$prepare_fit()
-
+     
       solver <- match.arg(solver)
       start <- match.arg(start)
       
@@ -1281,8 +1279,10 @@ DynMdl <- R6Class("DynMdl",
         model_name <- "mdl"
       }
       
-      private$prepare_aux_vars()
-      if (private$fit) private$prepare_fit()
+      if (private$fit) {
+        private$set_old_fit_instruments()
+        private$prepare_fit()
+      }
       
       solution <- solve_dynare_internal(model_name, self, scratch_dir,
                                         dynare_path, model_options, 
@@ -1520,9 +1520,9 @@ DynMdl <- R6Class("DynMdl",
     model_index = NA_integer_,
     equations = NULL,
     orig_equations = NULL,
-    exo_names = NULL,
-    endo_names = NULL,
-    all_endo_names = NULL,
+    exo_names = NULL,  # exogenous variablesn excl. fit exos     
+    endo_names = NULL, # endogenous variables except fit instr., lagrange mult.
+    all_endo_names = NULL, # all endogenous variables except aux. vars
     endo_indices = NULL,
     exo_indices = NULL,
     param_names = NULL,
@@ -2044,9 +2044,18 @@ DynMdl <- R6Class("DynMdl",
                           dims = as.integer(rep(private$mdldef$endo_count, 2))))
     },
     prepare_dynamic_model = function(solve_first_order =  FALSE) {
+      
+      if (!solve_first_order) {
+        # prepare the auxiliary variables
+        if (private$has_aux_vars) private$prepare_aux_vars()
+        # prepare old fit instruments
+        if (private$fit) private$set_old_fit_instruments()
+      }
+
       #
       # prepare dll calculations or the internal calculator
       #
+      
       if (private$calc == "dll") {
         dyn.load(private$dll_file)
         # NOTE: the basename of the dll_file is always "mdl_functions".
@@ -2076,10 +2085,7 @@ DynMdl <- R6Class("DynMdl",
                               per_freq, first_per_subp_count)
       }
       
-      # prepare the auxiliary variables
-      if (!solve_first_order && private$has_aux_vars > 0) {
-        private$prepare_aux_vars()
-      }
+     
       
       return(invisible(NULL))
     },
@@ -2436,9 +2442,9 @@ DynMdl <- R6Class("DynMdl",
     # private methods for the fit procedure
     ######################################################################
     check_fit = function() {
-        if (!private$fit) {
-          stop("This DynMdl object is not a fit model.")
-        }
+      if (!private$fit) {
+        stop("This DynMdl object is not a fit model.")
+      }
     },
     set_fit_internal = function(data, period) {
       
@@ -2468,7 +2474,7 @@ DynMdl <- R6Class("DynMdl",
     },
     prepare_fit = function() {
       #
-      # prepare model for the fit procedure
+      # prepare the model for the fit procedure, called by method solve
       #
       mp <- private$model_period
       
@@ -2493,13 +2499,14 @@ DynMdl <- R6Class("DynMdl",
         private$endo_data[mp, private$fit_info$orig_endos][fit_sel] <-
           private$exo_data[mp, private$fit_info$exo_vars][fit_sel]
       }
-      
+      return()
+    },
+    set_old_fit_instruments = function() {
       # set old_instruments, these will be used for deactivated 
       # fit instruments (instruments with sigma < 0), so that the
       # sigmas do not change.
       private$exo_data[ , private$fit_info$old_instruments] <-
-        private$endo_data[ , private$fit_info$instruments]
-      
+                    private$endo_data[ , private$fit_info$instruments]
       return()
     }
   )

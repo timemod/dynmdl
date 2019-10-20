@@ -29,7 +29,8 @@
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 #' object with values for endogogenous and exogenous model variables.
 #' If \code{data} has labels, then these labels are used to update the model 
-#' labels.}
+#' labels. If the model has trends, then the timeseries in \code{data} should 
+#' include the trends.}
 #'  \item{\code{upd_mode}}{the update mode, a character string specifying
 #' how the timeseries in object \code{data} are transferred to the 
 #' model data. For  \code{"upd"} (standard update, default), the timseseries
@@ -257,7 +258,9 @@ NULL
 #' \describe{
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 #'  object. If \code{data} has labels, then \code{set_data} will also update
-#' the labels of the corresponding model variables}
+#' the labels of the corresponding model variables. 
+#' If the model has trends, then the timeseries in \code{data} should 
+#' include the trends.}
 #' \item{\code{names}}{a character vector with variable names. Defaults to the
 #' column names of \code{data}. If \code{data} does not have column names,
 #' then argument \code{names} is mandatory}
@@ -339,7 +342,7 @@ NULL
 #' @aliases set_endo_values set_exo_values
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
-#' can be used to set the values of the model data
+#' can be used to set the values of the model data.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -356,7 +359,9 @@ NULL
 #'
 #' \describe{
 #' \item{\code{value}}{a numeric vector of length 1 or with the same length
-#' as the length of the range of \code{period}}
+#' as the length of the range of \code{period}. 
+#' If the model has trends, then the values should 
+#' include the trends.}
 #' \item{\code{names}}{a character vector with variable names}
 #' \item{\code{pattern}}{a regular expression}
 #' \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
@@ -392,6 +397,8 @@ NULL
 #' @description
 #' These methods of R6 class \code{\link{DynMdl}} changes endogenous and/or 
 #' exogenous model data by applying a function.
+#' If the model has trends, then the change is applied to the trended
+#' model variables.
 #'
 #' @section Usage:
 #' \preformatted{
