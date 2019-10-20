@@ -2,11 +2,6 @@ solve_steady_dynare_internal <- function(model_name, mdl, scratch_dir,
                                          dynare_path, model_options, 
                                          solve_options, use_octave) {
 
-  solve_options_ = list(tolf = 1e-8)
-  if (!missing(solve_options)) {
-    solve_options_[names(solve_options)] <- solve_options
-  }
-  
   #
   # create scratch directory
   #

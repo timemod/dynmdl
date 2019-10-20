@@ -1251,9 +1251,14 @@ DynMdl <- R6Class("DynMdl",
         model_name <- "mdl"
       }
       
+      solve_options_ = list(tolf = 1e-8)
+      if (!missing(solve_options)) {
+        solve_options_[names(solve_options)] <- solve_options
+      }
+      
       ret <- solve_steady_dynare_internal(model_name, self, scratch_dir,
                                           dynare_path, model_options, 
-                                          solve_options, use_octave)
+                                          solve_options_, use_octave)
       
       private$mdldef$endos[names(ret$steady_endos)] <- ret$steady_endos
       
@@ -1263,6 +1268,12 @@ DynMdl <- R6Class("DynMdl",
         exo_names <- private$fit_info$exo_vars
         endo_names <- private$fit_info$orig_endos
         private$mdldef$exos[exo_names] <- private$mdldef$endos[endo_names]
+      }
+      
+      # check solution:
+      fmax <- max(abs(self$static_residual_check()))
+      if (fmax > 2 * solve_options_$tolf) {
+        warning("Dynare did not find a solution.")
       }
       
       return(ret$eigval)
@@ -1279,6 +1290,11 @@ DynMdl <- R6Class("DynMdl",
         model_name <- "mdl"
       }
       
+      solve_options_ = list(tolf = 1e-8, tolx = 1e-8)
+      if (!missing(solve_options)) {
+        solve_options_[names(solve_options)] <- solve_options
+      }
+      
       if (private$fit) {
         private$set_old_fit_instruments()
         private$prepare_fit()
@@ -1286,10 +1302,15 @@ DynMdl <- R6Class("DynMdl",
       
       solution <- solve_dynare_internal(model_name, self, scratch_dir,
                                         dynare_path, model_options, 
-                                        solve_options, use_octave)
+                                        solve_options_, use_octave)
       
       private$endo_data[private$model_period, colnames(solution)] <- solution
       
+      # check solution:
+      fmax <- max(abs(self$residual_check()))
+      if (fmax > 2 * solve_options_$tolf) {
+        warning("Dynare did not find a solution.")
+      }
       return(invisible(self))
     },
     copy = function() {

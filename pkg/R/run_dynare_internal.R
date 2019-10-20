@@ -139,16 +139,17 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   dir.create("output", showWarnings = FALSE)
   
   if (use_octave) {
-    write_header("Running Octave")
+    write_header("Running Octave:")
     system2("octave", args =  sprintf("run_%s.m", model_name))
-    
+    write_header("Octave job finished.")
   } else {
-    write_header("Running Matlab")
+    write_header("Running Matlab:")
     system2("matlab", args =  c("-r", "-nosplash", "-nodesktop", "-wait",
                                 sprintf("\"run('run_%s.m');exit;\"", 
                                               model_name)))
+    write_header("Matlab job finished.")
   }
-  
+    
   setwd(cwd)
   
   #
@@ -157,6 +158,9 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   output_dir <- file.path(scratch_dir, "output")
   endo_name_file <- file.path(output_dir, paste0(model_name, "_endo_names.txt"))
  
+  if (!file.exists(endo_name_file)) {
+    stop("Dynare job did not succced. Check output.")
+  }
   
   endo_names_dynare  <- read.csv(endo_name_file, stringsAsFactors = FALSE,
                                  header = FALSE, sep = "")[[1]]
