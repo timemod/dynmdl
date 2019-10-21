@@ -1383,9 +1383,14 @@ DynMdl <- R6Class("DynMdl",
       ser$os_type <- NULL
      
       # copy remaining elements to the private environment
-       list2env(ser, private)
+      if (length(problem_fields <- setdiff(names(ser), names(private))) > 0) {
+        problem_fields <- paste0('"', problem_fields, '"')
+        stop(sprintf("Corrupt serialized DynMdl. Unknown fields found:\n%s.",
+                     paste(problem_fields, collapse = "")))
+      }
+      list2env(ser, private)
        
-       private$make_functions()
+      private$make_functions()
       
       # compute derived object members
       if (!is.null(ser$endo_data)) {
