@@ -9,6 +9,14 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
                                  use_octave, rename_aux_vars = TRUE,
                                  mod_file_in_scratch_dir = FALSE) {
   
+  
+  # if DynMdl is running on CPB, set the appropriate Dynare path
+  dynare_path_cpb <- "m:/p_dynare/dynare/4.5.7_optim_only"
+  if (is.null(dynare_path) && .Platform$OS.type == "windows" &&
+      file.exist(dynare_path_cpb)) {
+    dynare_path <- dynare_path_cpb
+  }
+  
   write_header <- function(text) {
     line <- paste(rep("=", 80), collapse = "")
     cat(paste0("\n", line, "\n"))

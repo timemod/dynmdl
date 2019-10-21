@@ -28,7 +28,8 @@
 #' @param dynare_path Character string specifying the name of the 
 #' directory of the Dynare installation. On Linux it is usually not necessary 
 #' to the specify this argument. On Windows it is necessary to specify the path 
-#' of the Dynare installation.
+#' of the Dynare installation. In you are running R in the  CPB 
+#' environment the path to Dynare is set automatically.
 #' @param steady_options Options passed to the \code{steady} command of
 #' Dynare. This should be a named list, which names corresponding to the Dynare
 #' options. Specify a \code{NULL} value if the option has no value.
