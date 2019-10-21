@@ -154,12 +154,15 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   
   if (fit) instruments <- get_fit_instruments(mod_text)
   
-  if (!missing(fit) && fit && is.null(instruments)) {
-    stop("No fit block in model file, fit procedure not possible")
+  if (fit && is.null(instruments)) {
+    if (!missing(fit)) {
+      stop("No fit block in model file, fit procedure not possible")
+    }
+    fit <- FALSE
   }
   
   
-  if (fit && !is.null(instruments))  {
+  if (fit)  {
     
     # FIT PROCEDURE
     
@@ -178,45 +181,59 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                                fixed_period = fit_fixed_period)
    
     n_fit_derivatives <- length(fit_info$orig_endos) + length(fit_info$sigmas)
- 
-    mdldef <- compile_model(fit_mod_file, latex_basename, use_dll, dll_dir, 
-                            max_laglead_1, nostrict, internal_calc,
-                            n_fit_derivatives, warn_uninit_param, 
-                            latex_options_)
+  
+    mod_file_compile <- fit_mod_file
     
-    if (missing(fit_mod_file)) {
-      unlink(fit_mod_file)
-    } 
-    if (calc == "dll") {
-      dll_file <- compile_c_functions(dll_dir)
-    } else {
-      dll_file <- NA_character_
-    }
-    fit_mod_text <- read_file(fit_mod_file)
-    orig_equations <- get_orig_equations(fit_mod_text, mdldef)
-    mdl <- DynMdl$new(mdldef,  orig_equations, base_period, calc, 
-                      dll_dir, dll_file, fit_info)
   } else {
     
-    # NO FIT 
+    # NO FIT
     
     if (!missing(fit_mod_file)) {
       warning("fit_mod_file specified, but no fit block in mod file found")
     }
-    mdldef <- compile_model(mod_file, latex_basename, use_dll, dll_dir, 
-                            max_laglead_1, nostrict, internal_calc, 0L,
-                            warn_uninit_param, latex_options_)
     
-    if (calc == "dll") {
-      dll_file <- compile_c_functions(dll_dir)
-    } else {
-      dll_file <- NA_character_
-    }
-    orig_equations <- get_orig_equations(mod_text, mdldef)
-    mdl <- DynMdl$new(mdldef, orig_equations, base_period, calc, dll_dir, 
-                      dll_file)
+    fit_info <- NULL
+    n_fit_derivatives <- 0L
+    mod_file_compile <- mod_file
   }
   
+  #
+  # Call C++ function compile_model_
+  #
+  model_info <- compile_model_(mod_file_compile, latex_basename, use_dll, 
+                               dll_dir, max_laglead_1, nostrict, internal_calc,
+                               n_fit_derivatives, warn_uninit_param, 
+                               latex_options_)
+  if (fit && missing(fit_mod_file)) {
+    unlink(fit_mod_file)
+  } 
+  
+  #
+  # construct a vector with  original equations
+  #
+  if (fit) {
+    fit_mod_text <- read_file(fit_mod_file)
+    equations_orig <- get_equations_orig(fit_mod_text, model_info)
+  } else {
+    equations_orig <- get_equations_orig(mod_text, model_info) 
+  }
+  
+  #
+  # Create an object that defines the structure of the model
+  #
+  mdldef <- create_mdldef(model_info, equations_orig, fit_info)
+  
+  #
+  # create the dll file
+  #
+  if (calc == "dll") {
+    dll_file <- compile_c_functions(dll_dir)
+  } else {
+    dll_file <- NA_character_
+  }
+  
+  mdl <- DynMdl$new(mdldef, base_period, calc,  dll_dir, dll_file)
+
   if (!debug) {
     unlink(preprocessed_mod_file)
   }
@@ -247,6 +264,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   
   return(mdl)
 }
+
 
 get_fit_instruments <- function(mod_text) {
   # analyse expanded file line to find a list of instruments
@@ -279,13 +297,17 @@ get_fit_instruments <- function(mod_text) {
   return(instruments)
 }
 
-# this function read the mod file and creates a vector with equations
-get_orig_equations <- function(mod_text, mdldef) {
+# This function creates a vector with original equations. mod_text is 
+# a character vector holding the text of the mod file (for fit models
+# this is the text of the generated fit mod file). 
+# model_info is the model information returned by C++ function compile_model_.
+get_equations_orig <- function(mod_text, model_info) {
   
   # the code below may fail when there are model variables named "model" or
   # "end". Therefore check the names
-  if (any(c("model", "end") %in% c(names(mdldef$endos), names(mdldef$exos),
-                               names(mdldef$params)))) {
+  if (any(c("model", "end") %in% c(names(model_info$endos), 
+                                   names(model_info$exos),
+                                   names(model_info$params)))) {
     stop(paste("\"model\" or \"end\" should not be used as names for model",
                "variables or parameters."))
   }
@@ -325,42 +347,110 @@ get_orig_equations <- function(mod_text, mdldef) {
   return(equations)
 }
 
-# extract a mdldef object from the model_info data returned by compile_model_
-compile_model <- function(...) {
+# This function creates a mdldef object, which contains all information
+# about the model that can be extracted from the mod file.
+# model_info is the object returned by C++ function compile_model_.
+# original_equations is a character vector holding the original equations.
+# fit_info contains information about the fit procedure returned by function
+# create_fit_mod
+create_mdldef <- function(model_info, equations_orig, fit_info) {
   
-  model_info <- compile_model_(...)
- 
-  retval <- list()
-  with(model_info, {
-    retval$endos              <<- endos
-    retval$exos               <<- exos
-    retval$params             <<- params
-    retval$model_index        <<- model_index
-    retval$aux_vars           <<- aux_vars
-    retval$max_endo_lag       <<- dynamic_model$max_endo_lag
-    retval$max_endo_lead      <<- dynamic_model$max_endo_lead
-    retval$max_exo_lag        <<- dynamic_model$max_exo_lag
-    retval$max_exo_lead       <<- dynamic_model$max_exo_lead
-    retval$lead_lag_incidence <<- dynamic_model$lead_lag_incidence
-    retval$jac_static_size    <<- static_model$jac_size
-    retval$jac_dynamic_size   <<- dynamic_model$jac_size
-    retval$static_functions   <<- static_model$static_functions
-    retval$dynamic_functions  <<- dynamic_model$dynamic_functions
-  })
+  static_model  <- model_info$static_model
+  dynamic_model <- model_info$dynamic_model
   
+  retval <- list(fit                = !is.null(fit_info),
+                 has_aux_vars       = model_info$aux_vars$aux_count > 0,
+                 model_index        = model_info$model_index,
+                 endos              = model_info$endos,
+                 exos               = model_info$exos,
+                 params             = model_info$params,
+                 aux_vars           = model_info$aux_vars,
+                 max_endo_lag       = dynamic_model$max_endo_lag,
+                 max_endo_lead      = dynamic_model$max_endo_lead,
+                 max_exo_lag        = dynamic_model$max_exo_lag,
+                 max_exo_lead       = dynamic_model$max_exo_lead,
+                 lead_lag_incidence = dynamic_model$lead_lag_incidence,
+                 jac_static_size    = static_model$jac_size,
+                 jac_dynamic_size   = dynamic_model$jac_size,
+                 static_functions   = static_model$static_functions,
+                 dynamic_functions  = dynamic_model$dynamic_functions)
+  
+  #
+  # set row and column names for the lead_lag_incidence
+  #
+  colnames(retval$lead_lag_incidence) <- as.character(
+                                  - retval$max_endo_lag : retval$max_endo_lead)
+  rownames(retval$lead_lag_incidence) <- names(retval$endos)
+  
+  #      
   # endo and exo_count
+  #
   retval$exo_count  <- length(retval$exos)
   retval$endo_count <- length(retval$endos)
   
+  #
+  #  endo and exo names
+  #
   retval$endo_names <- names(retval$endos)
   retval$exo_names  <- names(retval$exos)
+  retval$param_names <- names(retval$params)
+  
+        # endogenous variables excl. aux. vars
+  if (retval$has_aux_vars > 0) {
+    retval$endo_names_no_aux <- retval$endo_names[-retval$aux_vars$endos]
+  } else {
+    retval$endo_names_no_aux <- retval$endo_names
+  } 
+  
+       # endos and exos of original model (excl. auxiliary variables and 
+       # endos and exos generated for the fit procedure.):
+  if (retval$fit) {
+    retval$endo_names_orig <- fit_info$orig_endos
+    retval$exo_names_orig <- fit_info$orig_exos
+  } else {
+    retval$endo_names_orig <- retval$endo_names_no_aux
+    retval$exo_names_orig <- retval$exo_names
+  }
+  retval$endo_indices_orig <- match(retval$endo_names_orig, retval$endo_names)
+  retval$exo_indices_orig <- match(retval$exo_names_orig, retval$exo_names)
   
   #
-  # row and column names for the lead_lag_incidence
+  # total maximum lag and lead 
   #
-  colnames(retval$lead_lag_incidence) <- as.character(
-    - retval$max_endo_lag : retval$max_endo_lead)
-  rownames(retval$lead_lag_incidence) <- names(retval$endos)
+  retval$max_lag <- max(retval$max_endo_lag,  retval$max_exo_lag)
+  retval$max_lead <- max(retval$max_endo_lead,  retval$max_exo_lead)
+  
+  #
+  # maximum and minimum lag of the original model.
+  #
+     # If the original model has lags or leads greater than 1, this is different
+     # from the values of the actual model.
+  retval$max_endo_lag_orig  <- retval$max_endo_lag
+  retval$max_endo_lead_orig <- retval$max_endo_lead
+  if (retval$aux_vars$aux_count > 0) {
+    max_aux_lag <-  max(max(-retval$aux_vars$orig_leads), 0)
+    max_aux_lead <- max(max(retval$aux_vars$orig_leads), 0)
+    if (max_aux_lag > 0) {
+      retval$max_endo_lag_orig <- max(retval$max_endo_lag_orig, max_aux_lag + 1)
+    }
+    if (max_aux_lead > 0) {
+      retval$max_endo_lead_orig <- max(retval$max_endo_lead_orig, max_aux_lead +
+                                         1)
+    }
+  }
+  retval$max_lag_orig <- max(retval$max_endo_lag_orig,  retval$max_exo_lag)
+  retval$max_lead_orig <- max(retval$max_endo_lead_orig,  retval$max_exo_lead)
+  
+  
+  retval$njac_cols <- length(which(retval$lead_lag_incidence != 0)) +
+                             retval$exo_count
+  
+  #
+  # information about trends
+  #
+  retval$trend_info <- convert_trend_info(model_info$trend_info, 
+                                          names(retval$exos), 
+                                          names(retval$endos))
   
   #
   # labels and tex names
@@ -376,46 +466,25 @@ compile_model <- function(...) {
   retval$labels <- labels[ord]
   retval$tex_names <- tex_names[ord]
   
-  retval$max_lag <- max(retval$max_endo_lag,  retval$max_exo_lag)
-  retval$max_lead <- max(retval$max_endo_lead,  retval$max_exo_lead)
-  
   #
-  # now calculate the maximum and minimum lag of the data. This is different from
-  # the maximum and minimum lag in the model if max_laglead_1 = TRUE.
+  # equations and original equations
   #
-  retval$max_endo_lag_data  <- retval$max_endo_lag
-  retval$max_endo_lead_data <- retval$max_endo_lead
-  if (retval$aux_vars$aux_count > 0) {
-    max_aux_lag <-  max(max(-retval$aux_vars$orig_leads), 0)
-    max_aux_lead <- max(max(retval$aux_vars$orig_leads), 0)
-    if (max_aux_lag > 0) {
-      retval$max_endo_lag_data <- max(retval$max_endo_lag_data, max_aux_lag + 1)
-    }
-    if (max_aux_lead > 0) {
-      retval$max_endo_lead_data <- max(retval$max_endo_lead_data, max_aux_lead +
-                                         1)
-    }
-  }
-  
-  retval$max_lag_data <- max(retval$max_endo_lag_data,  retval$max_exo_lag)
-  retval$max_lead_data <- max(retval$max_endo_lead_data,  retval$max_exo_lead)
-  
-  retval$njac_cols <- length(which(retval$lead_lag_incidence != 0)) +
-                             retval$exo_count
-  
-  
-  retval$trend_info <- convert_trend_info(model_info$trend_info, 
-                                          names(retval$exos), 
-                                          names(retval$endos))
-  
-  # splite equations over multiple lines if necessary
+        # split equations over multiple lines if necessary:
   split_lines <- function(eq) {
       paste(strwrap(eq, width = 80, exdent = 4), collapse = "\n")}
   retval$equations <- sapply(model_info$equations, 
                                     FUN = split_lines, USE.NAMES = FALSE)
-    
+  retval$equations_orig <- equations_orig
+  
+  
+  #
+  # information about the fit procedure
+  #
+  retval$fit_info <- fit_info
+
   return(retval)
 }
+
 
 
 get_var_names <- function(expr_string) {
@@ -479,7 +548,6 @@ convert_trend_info <- function(trend_info, exo_names, endo_names) {
   
   # TODO: check that all trend variables are used in deflators, otherwise
   # give a warning
-  
   trend_info$has_deflated_endos <- nrow(trend_info$deflated_endo) > 0
   
   return(trend_info)
@@ -492,6 +560,3 @@ read_file <- function(filename) {
   Encoding(text) <- "latin1"
   return(text)
 }
-
-
-
