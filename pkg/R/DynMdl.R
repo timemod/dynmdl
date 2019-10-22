@@ -204,16 +204,20 @@ DynMdl <- R6Class("DynMdl",
       }
       cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
                   private$mdldef$exo_count))
-      
-      cat(sprintf("%-60s%d\n", "Maximum endogenous lead data:",
-                    private$mdldef$max_endo_lead_data))
-      cat(sprintf("%-60s%d\n", "Maximum endogenous lag data:",
-                  private$mdldef$max_endo_lag_data))
       cat(sprintf("%-60s%d\n", "Maximum exogenous lead:",
                   private$mdldef$max_exo_lead))
       cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
                   private$mdldef$max_exo_lag))
-      
+      cat(sprintf("%-60s%d\n", "Maximum endogenous lead:",
+                  private$mdldef$max_endo_lead))
+      cat(sprintf("%-60s%d\n", "Maximum endogenous lag:",
+                  private$mdldef$max_endo_lag))
+      if (private$mdldef$has_aux_vars) {
+        cat(sprintf("%-60s%d\n", "Maximum endogenous lead original model:",
+                    private$mdldef$max_endo_lead_orig))
+        cat(sprintf("%-60s%d\n", "Maximum endogenous lag original model:",
+                    private$mdldef$max_endo_lag_orig))
+      }
       cat(sprintf("%-60s%d\n", "Number of nonzeros static. jac:",
                   private$mdldef$jac_static_size))
       cat(sprintf("%-60s%d\n", "Number of nonzeros dyn. jac:",
@@ -534,7 +538,7 @@ DynMdl <- R6Class("DynMdl",
     get_exo_data = function(pattern, names, period = private$data_period) {
       period <- private$convert_period_arg(period)
       if (private$mdldef$exo_count == 0) {
-        return(private$exo_data[period, ])
+        return(private$exo_data[period])
       }
       if (missing(pattern) && missing(names)) {
         if (private$mdldef$fit) {
@@ -589,13 +593,10 @@ DynMdl <- R6Class("DynMdl",
       trend_data <- NULL
       
       if (missing(pattern) && missing(names)) {
-         endo_data <- private$get_endo_data_internal(period = period, 
-                                                    trend = trend)
-         if (private$mdldef$fit) {
-           endo_data <- cbind(endo_data, 
-                              private$endo_data[ , private$mdldef$fit_info$inst, 
-                                                 drop = FALSE])
-         }
+        
+        endo_data <- private$get_endo_data_internal(period = period, 
+                                                    trend = trend,
+                                                    incl_instr = TRUE)
         if (private$mdldef$exo_count > 0) {
           if (private$mdldef$fit) {
             exo_data <- private$exo_data[period, private$mdldef$exo_indices_orig, 
@@ -604,8 +605,12 @@ DynMdl <- R6Class("DynMdl",
             exo_data <- private$exo_data[period]
           }
         }
-        if (!is.null(private$trend_data)) trend_data <- private$trend_data[period]
-      } else { 
+        if (!is.null(private$trend_data)) {
+          trend_data <- private$trend_data[period]
+        }
+         
+      } else {
+        
         names <- private$get_names_("all", names, pattern)
         if (length(names) == 0) {
           return(NULL)
@@ -666,7 +671,7 @@ DynMdl <- R6Class("DynMdl",
       if (length(exo_names) > 0) {
         private$change_data_(fun, exo_names, period, "exo", ...)
       }
-      endo_names <- intersect(names, private$mdldef$endo_names_orig)
+      endo_names <- intersect(names, private$mdldef$endo_names_no_aux)
       if (length(endo_names) > 0) {
         private$change_data_(fun, endo_names, period, "endo", ...)
       }
@@ -1357,7 +1362,7 @@ DynMdl <- R6Class("DynMdl",
     },
     deserialize = function(ser, dll_dir) {
       
-      ser <- check_serialized_mdl(ser)
+      ser <- update_serialized_mdl(ser)
       
       if (ser$calc == "dll") {
         if (missing(dll_dir)) {
@@ -1488,24 +1493,30 @@ DynMdl <- R6Class("DynMdl",
                                  period = private$model_period) {
     private$check_fit()
     period <- private$convert_period_arg(period)
-    names <- private$get_names_("inst", names, pattern)
-    if (length(names) == 0) {
-      return(NULL)
+    if (missing(names) && missing(pattern)) {
+      colsel <- private$mdldef$fit_info$instruments_idx
+    } else {
+      colsel <- private$get_names_("inst", names, pattern)
+      if (length(colsel) == 0) return(NULL)
     }
-    data <- private$endo_data[period, names, drop = FALSE]
+    data <- private$endo_data[period, colsel, drop = FALSE]
     return(update_ts_labels(data, private$mdldef$labels))
   },
   get_lagrange = function(names = private$mdldef$fit_info$l_vars,
                           period = private$model_period) {
     private$check_fit()
-    if (!missing(names)) {
-      names <- intersect(names, sort(private$mdldef$fit_info$l_vars))
+    period <- private$convert_period_arg(period)
+    if (missing(names)) {
+      colsel <- private$mdldef$fit_info$l_vars_idx
+    } else {
+      colsel <- intersect(names, sort(private$mdldef$fit_info$l_vars))
+      if (length(colsel) == 0) return(NULL)
     }
-    return(private$endo_data[period, names, drop = FALSE])
+    return(private$endo_data[period, colsel, drop = FALSE])
   },
   get_sigmas = function() {
     private$check_fit()
-    ret <- self$get_param(names = private$mdldef$fit_info$sigmas)
+    ret <- private$mdldef$params[private$mdldef$fit_info$sigmas_idx]
     return(ret[ret >= 0])
   }
   ),
@@ -1582,15 +1593,18 @@ DynMdl <- R6Class("DynMdl",
       } else if (type == "exo") {
         vnames <- private$mdldef$exo_names_orig
       } else if (type == "endo_exo") {
-        vnames <- union(private$mdldef$endo_names_orig, private$mdldef$exo_names_orig)
+        vnames <- union(private$mdldef$endo_names_orig, 
+                        private$mdldef$exo_names_orig)
       } else if (type == "all") {
-        vnames <- union(union(private$mdldef$endo_names_orig, private$mdldef$exo_names_orig), 
+        vnames <- union(union(private$mdldef$endo_names_orig, 
+                              private$mdldef$exo_names_orig), 
                         trend_names)
         if (private$mdldef$fit) vnames <- union(vnames, inst_names)
       } else if (type == "all_endo") {
         vnames <- private$mdldef$endo_names_no_aux
       } else if (type == "all_endo_exo") {
-        vnames <- union(private$mdldef$endo_names_no_aux, private$mdldef$exo_names_orig)
+        vnames <- union(private$mdldef$endo_names_no_aux, 
+                        private$mdldef$exo_names_orig)
       } else if (type == "inst") {
         vnames <- inst_names
       } else if (type == "trend") {
@@ -1705,14 +1719,20 @@ DynMdl <- R6Class("DynMdl",
       
       return(data)
     },
-    get_endo_data_internal = function(names, period, trend) {
+    get_endo_data_internal = function(names, period, trend, 
+                                      incl_instr = FALSE) {
       #  Internal function that returns endo data (without labels).
       #  Argument names (if specified) and period are assumed to be correct.
-      #  If names has not been specified, then only the "normal endos" 
-      #  (i.e. the endos as specified in the mod file) are returned.
+      #  If names has not been specified, all "normal" endos (i.e. the original
+      # endogenous variables in the mod file) are returned. If incl_instr,
+      # then fit instruments (if present) all included.n
       if (missing(names)) {
         if (private$mdldef$has_aux_vars || private$mdldef$fit) {
-          data <- private$endo_data[period, private$mdldef$endo_indices_orig, drop = FALSE]
+          colsel <- private$mdldef$endo_indices_orig
+          if (private$mdldef$fit && incl_instr) {
+            colsel <- c(colsel, private$mdldef$fit_info$instruments_idx)
+          }
+          data <- private$endo_data[period, colsel, drop = FALSE]
         } else {
           data <- private$endo_data[period]
         }
@@ -2465,9 +2485,8 @@ DynMdl <- R6Class("DynMdl",
       # Set fit exo values. Note: when the fit target is NA, the value
       # of the fit exo value is irrelevant and can be set to 0.
       data[data_na] <- 0
-      exo_names <- private$mdldef$fit_info$exo_vars[fit_names_idx]
-      
-      private$exo_data[period, exo_names] <- data
+      colsel <- private$mdldef$fit_info$exo_vars_idx[fit_names_idx]
+      private$exo_data[period, colsel] <- data
       return(invisible(self))
     },
     prepare_fit = function() {
@@ -2476,7 +2495,7 @@ DynMdl <- R6Class("DynMdl",
       #
       mp <- private$model_period
       
-      fit_switches <- private$exo_data[mp, private$mdldef$fit_info$fit_vars, 
+      fit_switches <- private$exo_data[mp, private$mdldef$fit_info$fit_vars_idx, 
                                        drop = FALSE]
       fit_sel <- fit_switches == 1
       
@@ -2494,8 +2513,8 @@ DynMdl <- R6Class("DynMdl",
         }
         
         # make endo data equal to fit result.
-        private$endo_data[mp, private$mdldef$fit_info$orig_endos][fit_sel] <-
-          private$exo_data[mp, private$mdldef$fit_info$exo_vars][fit_sel]
+        private$endo_data[mp, private$mdldef$endo_indices_orig][fit_sel] <-
+          private$exo_data[mp, private$mdldef$fit_info$exo_vars_idx][fit_sel]
       }
       return()
     },
@@ -2503,8 +2522,8 @@ DynMdl <- R6Class("DynMdl",
       # set old_instruments, these will be used for deactivated 
       # fit instruments (instruments with sigma < 0), so that the
       # sigmas do not change.
-      private$exo_data[ , private$mdldef$fit_info$old_instruments] <-
-                    private$endo_data[ , private$mdldef$fit_info$instruments]
+      private$exo_data[ , private$mdldef$fit_info$old_instruments_idx] <-
+                private$endo_data[ , private$mdldef$fit_info$instruments_idx]
       return()
     }
   )

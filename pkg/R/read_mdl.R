@@ -25,6 +25,14 @@ read_mdl <- function(file, dll_dir) {
   
   ser <- readRDS(file)
   
+  # Check class of ser. Since version 1.0, write_mdl always generates an
+  # object of class serialized_dynmdl. However, for earlier version
+  # the class was serialized_fitmdl for fit model.
+  if (!(inherits(ser, "serialized_fitmdl") || 
+        inherits(ser, "serialized_dynmdl"))) {
+    stop(paste("File", file, "does not contain a serialized DynMdl object."))
+  }
+  
   mdl <- DynMdl$new()$deserialize(ser, dll_dir)
 
   cat("Done\n")

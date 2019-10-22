@@ -396,7 +396,7 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
   retval$param_names <- names(retval$params)
   
         # endogenous variables excl. aux. vars
-  if (retval$has_aux_vars > 0) {
+  if (retval$has_aux_vars) {
     retval$endo_names_no_aux <- retval$endo_names[-retval$aux_vars$endos]
   } else {
     retval$endo_names_no_aux <- retval$endo_names
@@ -480,7 +480,21 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
   #
   # information about the fit procedure
   #
+  
+        # calculate indices
+  fit_info$l_vars_idx <- match(fit_info$l_vars, retval$endo_names)
+  fit_info$fit_vars_idx <- match(fit_info$fit_vars, retval$exo_names)
+  fit_info$exo_vars_idx <- match(fit_info$exo_vars, retval$exo_names)
+
+  fit_info$instruments_idx <- match(fit_info$instruments, retval$endo_names)
+  fit_info$old_instruments_idx <- match(fit_info$old_instruments, 
+                                        retval$exo_names)
+  fit_info$sigmas_idx <- match(fit_info$sigmas, retval$param_names)
+  
+  
   retval$fit_info <- fit_info
+  
+  print(retval$fit_info)
 
   return(retval)
 }
