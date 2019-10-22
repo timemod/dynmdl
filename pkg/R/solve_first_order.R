@@ -9,7 +9,7 @@ solve_first_order <- function(ss, calc, mdldef, jac_dynamic,
   static_endos <- mdldef$endos
   params <- mdldef$params
   nendo <- mdldef$endo_count
-  njac_cols <- mdldef$njac_cols
+  njac_cols <- length(which(mdldef$lead_lag_incidence != 0)) + mdldef$exo_count
   
   # max_lag and max_lead computed in the following way are not the same
   # as mdldef$max_lag or mdldef$max_lead when max_laglead_1 = TRUE:

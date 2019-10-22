@@ -358,7 +358,7 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
   static_model  <- model_info$static_model
   dynamic_model <- model_info$dynamic_model
   
-  retval <- list(fit                = !is.null(fit_info),
+  mdldef <- list(fit                = !is.null(fit_info),
                  has_aux_vars       = model_info$aux_vars$aux_count > 0,
                  model_index        = model_info$model_index,
                  endos              = model_info$endos,
@@ -378,84 +378,30 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
   #
   # set row and column names for the lead_lag_incidence
   #
-  colnames(retval$lead_lag_incidence) <- as.character(
-                                  - retval$max_endo_lag : retval$max_endo_lead)
-  rownames(retval$lead_lag_incidence) <- names(retval$endos)
+  colnames(mdldef$lead_lag_incidence) <- as.character(
+                                  - mdldef$max_endo_lag : mdldef$max_endo_lead)
+  rownames(mdldef$lead_lag_incidence) <- names(mdldef$endos)
   
   #      
   # endo and exo_count
   #
-  retval$exo_count  <- length(retval$exos)
-  retval$endo_count <- length(retval$endos)
+  mdldef$exo_count  <- length(mdldef$exos)
+  mdldef$endo_count <- length(mdldef$endos)
   
-  #
-  #  endo and exo names
-  #
-  retval$endo_names <- names(retval$endos)
-  retval$exo_names  <- names(retval$exos)
-  retval$param_names <- names(retval$params)
-  
-        # endogenous variables excl. aux. vars
-  if (retval$has_aux_vars) {
-    retval$endo_names_no_aux <- retval$endo_names[-retval$aux_vars$endos]
-  } else {
-    retval$endo_names_no_aux <- retval$endo_names
-  } 
-  
-       # endos and exos of original model (excl. auxiliary variables and 
-       # endos and exos generated for the fit procedure.):
-  if (retval$fit) {
-    retval$endo_names_orig <- fit_info$orig_endos
-    retval$exo_names_orig <- fit_info$orig_exos
-  } else {
-    retval$endo_names_orig <- retval$endo_names_no_aux
-    retval$exo_names_orig <- retval$exo_names
-  }
-  retval$endo_indices_orig <- match(retval$endo_names_orig, retval$endo_names)
-  retval$exo_indices_orig <- match(retval$exo_names_orig, retval$exo_names)
-  
-  #
-  # total maximum lag and lead 
-  #
-  retval$max_lag <- max(retval$max_endo_lag,  retval$max_exo_lag)
-  retval$max_lead <- max(retval$max_endo_lead,  retval$max_exo_lead)
-  
-  #
-  # maximum and minimum lag of the original model.
-  #
-     # If the original model has lags or leads greater than 1, this is different
-     # from the values of the actual model.
-  retval$max_endo_lag_orig  <- retval$max_endo_lag
-  retval$max_endo_lead_orig <- retval$max_endo_lead
-  if (retval$aux_vars$aux_count > 0) {
-    max_aux_lag <-  max(max(-retval$aux_vars$orig_leads), 0)
-    max_aux_lead <- max(max(retval$aux_vars$orig_leads), 0)
-    if (max_aux_lag > 0) {
-      retval$max_endo_lag_orig <- max(retval$max_endo_lag_orig, max_aux_lag + 1)
-    }
-    if (max_aux_lead > 0) {
-      retval$max_endo_lead_orig <- max(retval$max_endo_lead_orig, max_aux_lead +
-                                         1)
-    }
-  }
-  retval$max_lag_orig <- max(retval$max_endo_lag_orig,  retval$max_exo_lag)
-  retval$max_lead_orig <- max(retval$max_endo_lead_orig,  retval$max_exo_lead)
-  
-  
-  retval$njac_cols <- length(which(retval$lead_lag_incidence != 0)) +
-                             retval$exo_count
+  mdldef <- install_name_admin(mdldef, fit_info)
+  mdldef <- install_laglead_admin(mdldef)
   
   #
   # information about trends
   #
-  retval$trend_info <- convert_trend_info(model_info$trend_info, 
-                                          names(retval$exos), 
-                                          names(retval$endos))
+  mdldef$trend_info <- convert_trend_info(model_info$trend_info, 
+                                          names(mdldef$exos), 
+                                          names(mdldef$endos))
   
   #
   # labels and tex names
   #
-  names <- c(names(retval$endos), names(retval$exos), names(retval$params))
+  names <- c(names(mdldef$endos), names(mdldef$exos), names(mdldef$params))
   labels <- c(model_info$endo_long_names, model_info$exo_long_names, 
               model_info$param_long_names)
   tex_names <- c(model_info$endo_tex_names, model_info$exo_tex_names, 
@@ -463,8 +409,8 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
   names(labels) <- names
   names(tex_names) <- names
   ord <- order(names)
-  retval$labels <- labels[ord]
-  retval$tex_names <- tex_names[ord]
+  mdldef$labels <- labels[ord]
+  mdldef$tex_names <- tex_names[ord]
   
   #
   # equations and original equations
@@ -472,33 +418,92 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
         # split equations over multiple lines if necessary:
   split_lines <- function(eq) {
       paste(strwrap(eq, width = 80, exdent = 4), collapse = "\n")}
-  retval$equations <- sapply(model_info$equations, 
+  mdldef$equations <- sapply(model_info$equations, 
                                     FUN = split_lines, USE.NAMES = FALSE)
-  retval$equations_orig <- equations_orig
+  mdldef$equations_orig <- equations_orig
   
   
   #
   # information about the fit procedure
   #
-  
-        # calculate indices
-  fit_info$l_vars_idx <- match(fit_info$l_vars, retval$endo_names)
-  fit_info$fit_vars_idx <- match(fit_info$fit_vars, retval$exo_names)
-  fit_info$exo_vars_idx <- match(fit_info$exo_vars, retval$exo_names)
+  mdldef$fit_info <- install_fit_indices(fit_info, mdldef)
 
-  fit_info$instruments_idx <- match(fit_info$instruments, retval$endo_names)
-  fit_info$old_instruments_idx <- match(fit_info$old_instruments, 
-                                        retval$exo_names)
-  fit_info$sigmas_idx <- match(fit_info$sigmas, retval$param_names)
-  
-  
-  retval$fit_info <- fit_info
-
-
-  return(retval)
+  return(mdldef)
 }
 
+install_name_admin <- function(mdldef, fit_info) {
+  #
+  #  endo and exo names
+  #
+  mdldef$endo_names <- names(mdldef$endos)
+  mdldef$exo_names  <- names(mdldef$exos)
+  mdldef$param_names <- names(mdldef$params)
+  
+  # endogenous variables excl. aux. vars
+  if (mdldef$has_aux_vars) {
+    mdldef$endo_names_no_aux <- mdldef$endo_names[-mdldef$aux_vars$endos]
+  } else {
+    mdldef$endo_names_no_aux <- mdldef$endo_names
+  } 
+  
+  # endos and exos of original model (excl. auxiliary variables and 
+  # endos and exos generated for the fit procedure.):
+  if (mdldef$fit) {
+    mdldef$endo_names_orig <- fit_info$orig_endos
+    mdldef$exo_names_orig <- fit_info$orig_exos
+  } else {
+    mdldef$endo_names_orig <- mdldef$endo_names_no_aux
+    mdldef$exo_names_orig <- mdldef$exo_names
+  }
+  mdldef$endo_indices_orig <- match(mdldef$endo_names_orig, mdldef$endo_names)
+  mdldef$exo_indices_orig <- match(mdldef$exo_names_orig, mdldef$exo_names)
+  
+  return(mdldef)
+}
 
+install_laglead_admin <- function(mdldef) {
+  #
+  # total maximum lag and lead 
+  #
+  mdldef$max_lag <- max(mdldef$max_endo_lag,  mdldef$max_exo_lag)
+  mdldef$max_lead <- max(mdldef$max_endo_lead,  mdldef$max_exo_lead)
+  
+  #
+  # maximum and minimum lag of the original model.
+  #
+  # If the original model has lags or leads greater than 1, this is different
+  # from the values of the actual model.
+  mdldef$max_endo_lag_orig  <- mdldef$max_endo_lag
+  mdldef$max_endo_lead_orig <- mdldef$max_endo_lead
+  if (mdldef$aux_vars$aux_count > 0) {
+    max_aux_lag <-  max(max(-mdldef$aux_vars$orig_leads), 0)
+    max_aux_lead <- max(max(mdldef$aux_vars$orig_leads), 0)
+    if (max_aux_lag > 0) {
+      mdldef$max_endo_lag_orig <- max(mdldef$max_endo_lag_orig, max_aux_lag + 1)
+    }
+    if (max_aux_lead > 0) {
+      mdldef$max_endo_lead_orig <- max(mdldef$max_endo_lead_orig, max_aux_lead +
+                                         1)
+    }
+  }
+  mdldef$max_lag_orig <- max(mdldef$max_endo_lag_orig,  mdldef$max_exo_lag)
+  mdldef$max_lead_orig <- max(mdldef$max_endo_lead_orig,  mdldef$max_exo_lead)
+  return(mdldef)
+}
+
+install_fit_indices <- function(fit_info, mdldef) {
+  
+  fit_info$l_vars_idx <- match(fit_info$l_vars, mdldef$endo_names)
+  fit_info$fit_vars_idx <- match(fit_info$fit_vars, mdldef$exo_names)
+  fit_info$exo_vars_idx <- match(fit_info$exo_vars, mdldef$exo_names)
+  
+  fit_info$instruments_idx <- match(fit_info$instruments, mdldef$endo_names)
+  fit_info$old_instruments_idx <- match(fit_info$old_instruments, 
+                                        mdldef$exo_names)
+  fit_info$sigmas_idx <- match(fit_info$sigmas, mdldef$param_names)
+  
+  return(fit_info)
+}
 
 get_var_names <- function(expr_string) {
   # returns the variable names from a string with an R expression

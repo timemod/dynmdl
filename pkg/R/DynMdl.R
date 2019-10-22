@@ -1360,6 +1360,9 @@ DynMdl <- R6Class("DynMdl",
       ser <- update_serialized_mdl(ser)
       
       if (ser$calc == "dll") {
+        if (ser$os_type != .Platform$OS.type) {
+          stop("The model functions have been compiled on a different platform")
+        }
         if (missing(dll_dir)) {
           private$dll_dir <- tempfile(pattern = "dynmdl_dll_")
         } else {
@@ -1381,7 +1384,8 @@ DynMdl <- R6Class("DynMdl",
       ser$version <- NULL
       ser$dll_basename <- NULL
       ser$os_type <- NULL
-     
+      
+      
       # copy remaining elements to the private environment
       if (length(problem_fields <- setdiff(names(ser), names(private))) > 0) {
         problem_fields <- paste0('"', problem_fields, '"')
