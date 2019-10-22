@@ -2169,59 +2169,6 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(NULL))
     },
-    set_mdldef = function(mdldef) {
-
-      
-      
-      private$mdldef$has_aux_vars <- mdldef$aux_vars$aux_count > 0
-      
-      private$mdldef$endo_names_no_aux <- private$mdldef$endo_names
-      if (mdldef$aux_vars$aux_count > 0) {
-        private$mdldef$endo_names_no_aux <- private$mdldef$endo_names_no_aux[-private$mdldef$aux_vars$endos]
-      }
-      
-      # names and indices of endogenous variables (exluding fit instruments
-      # and auxiliary variables when max_laglead_1 == TRUE)
-      if (private$mdldef$fit) {
-        private$mdldef$endo_names_orig <- private$mdldef$fit_info$orig_endos
-      } else {
-        private$mdldef$endo_names_orig <- private$mdldef$endo_names_no_aux
-      }
-     
-      private$mdldef$endo_indices_orig <- match(private$mdldef$endo_names_orig, private$mdldef$endo_names)
-      
-      # names and indices of exogebous variables (exlucing auxiliary exogenous
-      # variables for the fit procedure)
-      if (private$mdldef$fit) {
-        private$mdldef$exo_names_orig <- private$mdldef$fit_info$orig_exos
-        private$mdldef$exo_indices_orig <- match(private$mdldef$exo_names_orig, private$mdldef$exo_names_orig) 
-      } else {
-        private$mdldef$exo_names_orig <- private$mdldef$exo_names
-        private$mdldef$exo_indices_orig <- seq_len(private$mdldef$exo_count)
-      }
-      private$mdldef$param_names <- names(private$mdldef$params)
-      
-      if (private$calc == "dll") {
-        
-        # allocate memory for function f_static, f_dynamic, 
-        # jac_static and jac_dynamic. It is more efficient to
-        # allocate the memory once.
-        
-        private$res <- numeric(private$mdldef$endo_count)
-        
-        private$jac  <- list(
-          rows   = integer(private$mdldef$jac_dynamic_size),
-          cols   = integer(private$mdldef$jac_dynamic_size),
-          values = numeric(private$mdldef$jac_dynamic_size))
-        
-        
-        private$jac_steady <- list(
-          rows   = integer(private$mdldef$jac_static_size),
-          cols   = integer(private$mdldef$jac_static_size),
-          values = numeric(private$mdldef$jac_static_size))
-      }
-      
-    },
     make_functions = function() {
       
       if (private$calc == "R" || private$calc == "bytecode") {
@@ -2414,8 +2361,6 @@ DynMdl <- R6Class("DynMdl",
       }
       
       return(deflator_data)
-      
-      
     },
     trend_endo_data = function(endo_data) {
       return(private$trend_detrend_endo_data(endo_data, TRUE))
@@ -2445,13 +2390,13 @@ DynMdl <- R6Class("DynMdl",
       } else {
         endo_data[ , sel] <- endo_data[ , sel] / defl_data
       }  
-
       return(endo_data)
     },
     check_debug_eqs = function(debug_eqs) {
       if (debug_eqs && private$calc != "internal") {
         warning("Argument debug_eqs is only used if calc = \"internal\"")
       }
+      return()
     },
     ######################################################################
     # private methods for the fit procedure
@@ -2460,6 +2405,7 @@ DynMdl <- R6Class("DynMdl",
       if (!private$mdldef$fit) {
         stop("This DynMdl object is not a fit model.")
       }
+      return()
     },
     set_fit_internal = function(data, period) {
       
