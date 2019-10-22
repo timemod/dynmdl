@@ -535,8 +535,8 @@ DynMdl <- R6Class("DynMdl",
         return(NULL)
       }
     },
-    get_exo_data = function(pattern, names, period = private$data_period) {
-      period <- private$convert_period_arg(period)
+    get_exo_data = function(pattern, names, period) {
+      period <- private$check_period_arg(period)
       if (private$mdldef$exo_count == 0) {
         return(private$exo_data[period])
       }
@@ -555,12 +555,10 @@ DynMdl <- R6Class("DynMdl",
       }
       return(update_ts_labels(ret, private$mdldef$labels))
     },
-    set_endo_values = function(value, names, pattern,
-                               period = private$data_period) {
+    set_endo_values = function(value, names, pattern, period) {
       return(private$set_values_(value, names, pattern, period, type = "endo"))
     },
-    set_exo_values = function(value, names, pattern,
-                              period = private$data_period) {
+    set_exo_values = function(value, names, pattern, period) {
       return(private$set_values_(value, names, pattern, period, type = "exo"))
     },
     set_data = function(data, names, upd_mode = c("upd", "updval"), fun,
@@ -587,7 +585,7 @@ DynMdl <- R6Class("DynMdl",
     get_data = function(pattern, names, period = private$data_period,
                         trend = TRUE) {
       
-      period <- private$convert_period_arg(period)
+      period <- private$check_period_arg(period)
 
       exo_data <- NULL
       trend_data <- NULL
@@ -636,9 +634,8 @@ DynMdl <- R6Class("DynMdl",
       if (ncol(data) == 0) return(NULL)
       return(update_ts_labels(data, private$mdldef$labels))
     },
-    get_endo_data = function(pattern, names, period = private$data_period,
-                             trend = TRUE) {
-      period <- private$convert_period_arg(period)
+    get_endo_data = function(pattern, names, period, trend = TRUE) {
+      period <- private$check_period_arg(period)
       if (missing(pattern) && missing(names)) {
         endo_data <- private$get_endo_data_internal(period = period, 
                                                     trend = trend)
@@ -677,9 +674,8 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(self))
     },
-    get_trend_data = function(names, pattern, period = private$data_period) {
-      if (is.null(private$model_period)) stop(private$period_error_msg)
-      period <- private$convert_period_arg(period)
+    get_trend_data = function(names, pattern, period) {
+      period <- private$check_period_arg(period)
       if (missing(pattern) && missing(names)) {
         return(private$trend_data[period, ])
       } else {
@@ -791,10 +787,9 @@ DynMdl <- R6Class("DynMdl",
       }
       return(residuals)
     },
-    put_static_endos = function(period = private$data_period) {
+    put_static_endos = function(period) {
       # copy the static endogenous variables to the endogenous model data
-      if (is.null(private$model_period)) stop(private$period_error_msg)
-      period <- private$convert_period_arg(period)
+      period <- private$check_period_arg(period)
       nper <- nperiod(period)
       endo_data <- regts(matrix(rep(private$mdldef$endos, each = nper), 
                                 nrow = nper), names = private$mdldef$endo_names,
@@ -1439,11 +1434,10 @@ DynMdl <- R6Class("DynMdl",
     data <- data[ , names, drop = FALSE]
     return(private$set_fit_internal(data, get_period_range(data)))
   },
-  set_fit_values = function(value, names, pattern, 
-                            period = private$data_period) {
+  set_fit_values = function(value, names, pattern, period) {
     private$check_fit()
+    period <- private$check_period_arg(period)
     value <- as.numeric(value)
-    period <- private$convert_period_arg(period)
     nper <- nperiod(period)
     vlen <- length(value)
     if (vlen != 1 && vlen < nper) {
@@ -1489,10 +1483,9 @@ DynMdl <- R6Class("DynMdl",
       return(fit)
     }
   },
-  get_fit_instruments = function(pattern, names, 
-                                 period = private$model_period) {
+  get_fit_instruments = function(pattern, names, period) {
     private$check_fit()
-    period <- private$convert_period_arg(period)
+    period <- private$check_period_arg(period, data_period = FALSE)
     if (missing(names) && missing(pattern)) {
       colsel <- private$mdldef$fit_info$instruments_idx
     } else {
@@ -1502,10 +1495,9 @@ DynMdl <- R6Class("DynMdl",
     data <- private$endo_data[period, colsel, drop = FALSE]
     return(update_ts_labels(data, private$mdldef$labels))
   },
-  get_lagrange = function(names = private$mdldef$fit_info$l_vars,
-                          period = private$model_period) {
+  get_lagrange = function(names, period) {
     private$check_fit()
-    period <- private$convert_period_arg(period)
+    period <- private$check_period_arg(period, data_period = FALSE)
     if (missing(names)) {
       colsel <- private$mdldef$fit_info$l_vars_idx
     } else {
@@ -1538,7 +1530,7 @@ DynMdl <- R6Class("DynMdl",
     calc = NA_character_,
     dll_dir = NA_character_,
     dll_file = NA_character_,
-    period_error_msg = paste("The model period is not set.",
+    period_error_msg = paste("The model period has not been set.",
                              "Set the model period with set_period()."),
     jac = NULL,
     jac_steady = NULL,
@@ -1811,7 +1803,7 @@ DynMdl <- R6Class("DynMdl",
     },
     set_values_ = function(value, names, pattern, period, type) {
       value <- as.numeric(value)
-      period <- private$convert_period_arg(period)
+      period <- private$check_period_arg(period)
       nper <- nperiod(period)
       vlen <- length(value)
       if (vlen != 1 && vlen < nper) {
@@ -1851,7 +1843,7 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     change_data_ = function(fun, names, period, type, ...) {
-      period <- private$convert_period_arg(period)
+      period <- private$check_period_arg(period)
       period <- range_intersect(period, private$data_period)
       if (is.null(period)) return(invisible(self))
       if (!is.function(fun)) {
@@ -2297,30 +2289,31 @@ DynMdl <- R6Class("DynMdl",
         }
       }
     },
-    convert_period_arg = function(period, data_period = TRUE) {
-      if (is.null(private$model_period)) {
-        stop(private$period_error_msg)
-      }
-      period <- as.period_range(period)
-      period <- change_frequency(period, frequency(private$data_period))
-      if (frequency(period) != frequency(private$data_period)) {
-        stop(paste0("Period ", period, " has a different frequency than ",
-                    "the model period ", private$model_period, "."))
-      }
-      if (data_period) {
-        defaultp <- private$data_period
+    check_period_arg = function(period, data_period = TRUE) {
+      if (is.null(private$model_period)) stop(private$period_error_msg)
+      defaultp <- if (data_period) private$data_period else private$model_period
+      if (missing(period)) {
+        return(defaultp)
       } else {
-        defaultp <- private$model_period
+        period <- as.period_range(period)
+        f_mdl <- frequency(private$data_period)
+        f_per <- frequency(period)
+        if (f_per > f_mdl) {
+          stop(paste0("Period ", period, " has a higher frequency than ",
+                      "the model period ", private$model_period, "."))
+        } else if (f_per < f_mdl)  {
+          period <- change_frequency(period, f_mdl)
+        }    
+        startp <- start_period(period)
+        if (is.null(startp)) {
+          startp <- start_period(defaultp)
+        }
+        endp <- end_period(period)
+        if (is.null(endp)) {
+          endp <- end_period(defaultp)
+        }
+        return(period_range(startp, endp))
       }
-      startp <- start_period(period)
-      if (is.null(startp)) {
-        startp <- start_period(defaultp)
-      }
-      endp <- end_period(period)
-      if (is.null(endp)) {
-        endp <- end_period(defaultp)
-      }
-      return(period_range(startp, endp))
     },
     check_param_names = function(names, 
                                  name_err = c("stop", "warn", "silent")) {

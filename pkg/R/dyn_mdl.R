@@ -493,8 +493,7 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
   
   
   retval$fit_info <- fit_info
-  
-  print(retval$fit_info)
+
 
   return(retval)
 }
