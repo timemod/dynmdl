@@ -13,7 +13,7 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   # if DynMdl is running on CPB, set the appropriate Dynare path
   dynare_path_cpb <- "m:/p_dynare/dynare/4.5.7_optim_only"
   if (is.null(dynare_path) && .Platform$OS.type == "windows" &&
-      file.exist(dynare_path_cpb)) {
+      file.exists(dynare_path_cpb)) {
     dynare_path <- dynare_path_cpb
   }
   
@@ -153,8 +153,8 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   } else {
     write_header("Running Matlab:")
     system2("matlab", args =  c("-r", "-nosplash", "-nodesktop", "-wait",
-                                sprintf("\"run('run_%s.m');exit;\"", 
-                                              model_name)))
+                                sprintf("\"run('run_%s.m');\"", 
+                                        model_name)))
     write_header("Matlab job finished.")
   }
     
