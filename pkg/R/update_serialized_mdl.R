@@ -38,7 +38,7 @@ update_serialized_mdl <- function(ser) {
     # information about fit
     #
     if (mdldef$fit) {
-      mdldef$fit_info <- install_fit_indices(ser$fit_info, mdldef)
+      mdldef$fit_info <- convert_fit_info(ser$fit_info, mdldef)
     } else {
       mdldef$fit_info <- NULL
     }

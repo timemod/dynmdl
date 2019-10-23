@@ -746,9 +746,10 @@ DynMdl <- R6Class("DynMdl",
         # multipliers should be exactly 0. However, they are sometimes small
         # because of numerical inaccuracies. Therefore set then to zero and 
         # check the maximum static residual
-        names <- c(private$mdldef$fit_info$instruments, private$mdldef$fit_info$l_vars)
-        old_endos <- private$mdldef$endos[names]
-        private$mdldef$endos[names] <- 0
+        indices <- c(private$mdldef$fit_info$instruments, 
+                     private$mdldef$fit_info$l_vars)
+        old_endos <- private$mdldef$endos[indices]
+        private$mdldef$endos[indices] <- 0
         fmax <- max(abs(self$static_residual_check(debug_eqs = debug_eqs)))
         ftol <- if (is.null(control$ftol)) {
           1e-8 
@@ -757,7 +758,7 @@ DynMdl <- R6Class("DynMdl",
         }
         if (fmax > ftol) {
           # restore old solution
-          private$mdldef$endos[names] <- old_endos
+          private$mdldef$endos[indices] <- old_endos
           warning(paste("The steady state values for the fit instruments",
                         "and lagrange multipliers are significantly different",
                         "from 0."))
@@ -765,27 +766,12 @@ DynMdl <- R6Class("DynMdl",
         
         # make static _exo variables equal to the corresponding static 
         # endogenous variables
-        exo_names <- private$mdldef$fit_info$exo_vars
-        endo_names <- private$mdldef$fit_info$orig_endos
-        private$mdldef$exos[exo_names] <- private$mdldef$endos[endo_names]
+        exo_idx <- private$mdldef$fit_info$exo_vars
+        endo_idx <- private$mdldef$fit_info$orig_endos
+        private$mdldef$exos[exo_idx] <- private$mdldef$endos[endo_idx]
       }
       
       return (invisible(self))
-    },
-    static_residual_check = function(tol, debug_eqs = FALSE, 
-                                     include_fit_eqs = FALSE) {
-      private$check_debug_eqs(debug_eqs)
-      private$prepare_static_model()
-      residuals <- private$get_static_residuals(private$mdldef$endos, debug_eqs)
-      private$clean_static_model()
-      names(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
-      if (private$mdldef$fit && !include_fit_eqs) {
-        residuals <- residuals[seq_along(private$mdldef$fit_info$orig_endos)]
-      }
-      if (!missing(tol)) {
-        residuals <- residuals[is.na(residuals) | abs(residuals) > tol]
-      }
-      return(residuals)
     },
     put_static_endos = function(period) {
       # copy the static endogenous variables to the endogenous model data
@@ -817,6 +803,23 @@ DynMdl <- R6Class("DynMdl",
       private$clean_dynamic_model()
       return(invisible(self))
     },
+    static_residual_check = function(tol, debug_eqs = FALSE, 
+                                     include_fit_eqs = FALSE) {
+      private$check_debug_eqs(debug_eqs)
+      private$prepare_static_model()
+      residuals <- private$get_static_residuals(private$mdldef$endos, debug_eqs)
+      private$clean_static_model()
+      names(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
+      if (private$mdldef$fit && !include_fit_eqs) {
+        residuals <- residuals[seq_along(private$mdldef$endo_names_orig)]
+      } else {
+        residuals <- residuals[seq_along(private$mdldef$endo_names_no_aux)]
+      }
+      if (!missing(tol)) {
+        residuals <- residuals[is.na(residuals) | abs(residuals) > tol]
+      }
+      return(residuals)
+    },
     residual_check = function(tol, debug_eqs = FALSE, include_fit_eqs = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       private$check_debug_eqs(debug_eqs)
@@ -833,20 +836,18 @@ DynMdl <- R6Class("DynMdl",
       dim(residuals) <- c(private$mdldef$endo_count, nper)
       residuals <- t(residuals)
       colnames(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
-      if (private$mdldef$has_aux_vars > 0) {
-        # remove the residuals for the auxiliary equations
-        residuals <- residuals[, -private$mdldef$aux_vars$endos, drop = FALSE]
-      }
-      residuals <- regts(residuals, period = private$model_period)
       if (private$mdldef$fit && !include_fit_eqs) {
-        residuals <- residuals[ , seq_along(private$mdldef$fit_info$orig_endos),
+        residuals <- residuals[ , seq_along(private$mdldef$endo_names_orig), 
+                                drop = FALSE]
+      } else {
+        residuals <- residuals[ , seq_along(private$mdldef$endo_names_no_aux),
                                 drop = FALSE]
       }
+      residuals <- regts(residuals, period = private$model_period)
       if (!missing(tol)) {
         residuals <- trim_ts(residuals, private$model_period, tol)
       }
       return(residuals)
-     
     },
     solve = function(control = list(), mode , solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
@@ -902,6 +903,9 @@ DynMdl <- R6Class("DynMdl",
         if (!ret$solved && homotopy) {
           if (!silent) cat("\n+++++++++++ HOMOTOPY ++++++++++++++\n\n")
           
+          fit <- private$mdldef$fit
+          has_exos <- private$mdldef$exo_count > 0
+          
           # create endogenous variables in solution period 
           endos_steady <- matrix(rep(private$mdldef$endos, nper), ncol = nper)
           
@@ -920,11 +924,11 @@ DynMdl <- R6Class("DynMdl",
           }
           
           # create steady state exogenous variables
-          exo_info <- private$get_exo_info_homotopy(nper)
-          
+          exo_info <- private$get_exo_info_homotopy()
+
           # save exos/lags/leads needed in the simulation
-          if (exo_info$has_exos) {
-            if (!exo_info$fitmdl) {
+          if (has_exos) {
+            if (!fit) {
               exo_sim <- private$exo_data
             } else {
               exo_sim <- private$exo_data[ , exo_info$exo_indices, drop = FALSE]
@@ -934,9 +938,9 @@ DynMdl <- R6Class("DynMdl",
           leads_sim <- leads
           endos <- endos_steady
           
-          if (exo_info$fitmdl || isTRUE(all.equal(endos, endos_steady, 
-                                                    check.attributes = FALSE,
-                                    tolerance = 1e-4))) {
+          if (fit || isTRUE(all.equal(endos, endos_steady, 
+                                      check.attributes = FALSE,
+                                      tolerance = 1e-4))) {
             # if endogenous variables at steady state, try half the values of
             # exogenous variables and lags/leads
             step <- 0.5
@@ -965,13 +969,13 @@ DynMdl <- R6Class("DynMdl",
               step <- lambda - lambda_prev
             }
             
-            if (exo_info$has_exos) {
-              if (!exo_info$fitmdl) {
-                private$exo_data <- exo_sim * lambda + 
-                                      exo_info$steady_exos * (1 - lambda)
-              } else {
+            if (has_exos) {
+              if (fit) {
                 private$exo_data[ , exo_info$exo_indices] <- exo_sim * lambda + 
-                                           exo_info$steady_exos * (1 - lambda)
+                                            exo_info$steady_exos * (1 - lambda)
+              } else {
+                private$exo_data <- exo_sim * lambda + 
+                                            exo_info$steady_exos * (1 - lambda)
               }
             }
             
@@ -1026,11 +1030,11 @@ DynMdl <- R6Class("DynMdl",
           }
           
           # restore original exo_data
-          if (exo_info$has_exos) {
-            if (!exo_info$fitmdl) {
-              private$exo_data <- exo_sim
-            } else {
+          if (has_exos) {
+            if (fit) {
               private$exo_data[ , exo_info$exo_indices] <- exo_sim
+            } else {
+              private$exo_data <- exo_sim
             }
           }
         }
@@ -1257,9 +1261,9 @@ DynMdl <- R6Class("DynMdl",
       if (private$mdldef$fit) {
         # make static _exo variables equal to the corresponding static 
         # endogenous variables
-        exo_names <- private$mdldef$fit_info$exo_vars
-        endo_names <- private$mdldef$fit_info$orig_endos
-        private$mdldef$exos[exo_names] <- private$mdldef$endos[endo_names]
+        exo_idx <- private$mdldef$fit_info$exo_vars
+        endo_idx <- private$mdldef$fit_info$orig_endos
+        private$mdldef$exos[exo_idx] <- private$mdldef$endos[endo_idx]
       }
       
       # check solution:
@@ -1425,7 +1429,7 @@ DynMdl <- R6Class("DynMdl",
   },
   get_sigma_names = function() {
     private$check_fit()
-    return(private$mdldef$fit_info$sigmas)
+    return(private$mdldef$fit_info$sigma_names)
   },
   set_fit = function(data, names, name_err = "stop") {
     private$check_fit()
@@ -1460,8 +1464,8 @@ DynMdl <- R6Class("DynMdl",
   clear_fit = function() {
     private$check_fit()
     self$set_fit_values(NA)
-    self$set_param_values(-1, names = private$mdldef$fit_info$sigmas)
-    self$set_endo_values(0, names = private$mdldef$fit_info$l_vars)
+    self$set_param_values(-1, names = private$mdldef$fit_info$sigma_names)
+    self$set_endo_values(0, names = private$mdldef$fit_info$l_var_names)
   },
   get_fit = function() {
     private$check_fit()
@@ -1469,7 +1473,7 @@ DynMdl <- R6Class("DynMdl",
                                       drop = FALSE]
     fit <- private$exo_data[ , private$mdldef$fit_info$exo_vars, drop = FALSE]
     fit[fit_switches == 0] <- NA
-    colnames(fit) <- private$mdldef$fit_info$orig_endos
+    colnames(fit) <- private$mdldef$endo_names_orig
     
     # remove NA columns and leading/trailing NA rows
     fit <- remove_na_columns(fit)
@@ -1489,7 +1493,7 @@ DynMdl <- R6Class("DynMdl",
     private$check_fit()
     period <- private$check_period_arg(period, data_period = FALSE)
     if (missing(names) && missing(pattern)) {
-      colsel <- private$mdldef$fit_info$instruments_idx
+      colsel <- private$mdldef$fit_info$instruments
     } else {
       colsel <- private$get_names_("inst", names, pattern)
       if (length(colsel) == 0) return(NULL)
@@ -1501,16 +1505,16 @@ DynMdl <- R6Class("DynMdl",
     private$check_fit()
     period <- private$check_period_arg(period, data_period = FALSE)
     if (missing(names)) {
-      colsel <- private$mdldef$fit_info$l_vars_idx
+      colsel <- private$mdldef$fit_info$l_vars
     } else {
-      colsel <- intersect(names, sort(private$mdldef$fit_info$l_vars))
+      colsel <- intersect(names, sort(private$mdldef$fit_info$l_var_names))
       if (length(colsel) == 0) return(NULL)
     }
     return(private$endo_data[period, colsel, drop = FALSE])
   },
   get_sigmas = function() {
     private$check_fit()
-    ret <- private$mdldef$params[private$mdldef$fit_info$sigmas_idx]
+    ret <- private$mdldef$params[private$mdldef$fit_info$sigmas]
     return(ret[ret >= 0])
   }
   ),
@@ -1579,7 +1583,7 @@ DynMdl <- R6Class("DynMdl",
       }
       
       if (private$mdldef$fit && type %in% c("all", "inst")) {
-        inst_names <- private$mdldef$fit_info$instruments
+        inst_names <- private$mdldef$fit_info$instrument_names
       }
       
       if (type == "endo") {
@@ -1724,7 +1728,7 @@ DynMdl <- R6Class("DynMdl",
         if (private$mdldef$has_aux_vars || private$mdldef$fit) {
           colsel <- private$mdldef$endo_indices_orig
           if (private$mdldef$fit && incl_instr) {
-            colsel <- c(colsel, private$mdldef$fit_info$instruments_idx)
+            colsel <- c(colsel, private$mdldef$fit_info$instruments)
           }
           data <- private$endo_data[period, colsel, drop = FALSE]
         } else {
@@ -1887,24 +1891,10 @@ DynMdl <- R6Class("DynMdl",
       }
       return(ret)
     },
-    get_exo_info_homotopy = function(nper) {
+    get_exo_info_homotopy = function() {
       # Returns a list with information about the exogenous variables needed 
       # for solving the model with a homotopy approach.
-      
-      if (!private$mdldef$fit) {
-        has_exos <- private$mdldef$exo_count > 0
-        if (has_exos) {
-          nper <- nrow(private$exo_data)
-          data_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
-          colnames(data_mat) <- private$mdldef$exo_names_orig
-          steady_exos <- regts(data_mat, period = private$data_period)
-        } else {
-          steady_exos <- NULL
-        }
-        return(list(has_exos = has_exos, fitmdl = FALSE, 
-                    steady_exos = steady_exos))
-        
-      } else {
+      if (private$mdldef$fit) {
         # For FitMdl objects, not all exogenous variables should be modified
         # in the homotopy approach: the fit switches and _old (old fit instruments)
         # should not be modified.
@@ -1912,20 +1902,25 @@ DynMdl <- R6Class("DynMdl",
                                     private$mdldef$fit_info$fit_vars, drop = FALSE] == 1
         is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
         
-        exo_names <- c(private$mdldef$fit_info$orig_exos, 
-                       private$mdldef$fit_info$exo_vars[is_fit_var])
-        exo_indices <- match(exo_names, private$mdldef$exo_names)
+        exo_indices <- c(private$mdldef$fit_info$orig_exos, 
+                         private$mdldef$fit_info$exo_vars[is_fit_var])
         
         np <- nrow(private$exo_data)
-        data_mat <- matrix(rep(private$mdldef$exos[exo_indices], each = np), 
-                           nrow = np)
-        steady_exos <- regts(data_mat, period = private$data_period, 
-                             names = exo_names)
+        steady_exos <- matrix(rep(private$mdldef$exos[exo_indices], each = np), 
+                              nrow = np)
         
-        return(list(has_exos = TRUE, steady_exos = steady_exos, fitmdl = TRUE,
-                    exo_indices = exo_indices))
-        
-      }
+        return(list(steady_exos = steady_exos, exo_indices = exo_indices))
+      } else {
+        if (private$mdldef$exo_count > 0) {
+          nper <- nrow(private$exo_data)
+          data_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
+          colnames(data_mat) <- private$mdldef$exo_names_orig
+          steady_exos <- data_mat
+        } else {
+          steady_exos <- NULL
+        }
+        return(list(steady_exos = steady_exos))
+      } 
     },
     check_change_growth_exos = function(names) {
       growth_exos <- intersect(names, private$mdldef$trend_info$growth_exos)
@@ -2415,7 +2410,7 @@ DynMdl <- R6Class("DynMdl",
       }
       
       fit_names <- colnames(data)
-      fit_names_idx <- match(fit_names, private$mdldef$fit_info$orig_endos)
+      fit_names_idx <- match(fit_names, private$mdldef$endo_names_orig)
       
       data_na <- is.na(data)
       
@@ -2426,7 +2421,7 @@ DynMdl <- R6Class("DynMdl",
       # Set fit exo values. Note: when the fit target is NA, the value
       # of the fit exo value is irrelevant and can be set to 0.
       data[data_na] <- 0
-      colsel <- private$mdldef$fit_info$exo_vars_idx[fit_names_idx]
+      colsel <- private$mdldef$fit_info$exo_vars[fit_names_idx]
       private$exo_data[period, colsel] <- data
       return(invisible(self))
     },
@@ -2436,7 +2431,7 @@ DynMdl <- R6Class("DynMdl",
       #
       mp <- private$model_period
       
-      fit_switches <- private$exo_data[mp, private$mdldef$fit_info$fit_vars_idx, 
+      fit_switches <- private$exo_data[mp, private$mdldef$fit_info$fit_vars, 
                                        drop = FALSE]
       fit_sel <- fit_switches == 1
       
@@ -2455,7 +2450,7 @@ DynMdl <- R6Class("DynMdl",
         
         # make endo data equal to fit result.
         private$endo_data[mp, private$mdldef$endo_indices_orig][fit_sel] <-
-          private$exo_data[mp, private$mdldef$fit_info$exo_vars_idx][fit_sel]
+          private$exo_data[mp, private$mdldef$fit_info$exo_vars][fit_sel]
       }
       return()
     },
@@ -2463,8 +2458,8 @@ DynMdl <- R6Class("DynMdl",
       # set old_instruments, these will be used for deactivated 
       # fit instruments (instruments with sigma < 0), so that the
       # sigmas do not change.
-      private$exo_data[ , private$mdldef$fit_info$old_instruments_idx] <-
-                private$endo_data[ , private$mdldef$fit_info$instruments_idx]
+      private$exo_data[ , private$mdldef$fit_info$old_instruments] <-
+                private$endo_data[ , private$mdldef$fit_info$instruments]
       return()
     }
   )

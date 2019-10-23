@@ -422,11 +422,10 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
                                     FUN = split_lines, USE.NAMES = FALSE)
   mdldef$equations_orig <- equations_orig
   
-  
   #
   # information about the fit procedure
   #
-  mdldef$fit_info <- install_fit_indices(fit_info, mdldef)
+  if (mdldef$fit) mdldef$fit_info <- convert_fit_info(fit_info, mdldef)
 
   return(mdldef)
 }
@@ -491,18 +490,21 @@ install_laglead_admin <- function(mdldef) {
   return(mdldef)
 }
 
-install_fit_indices <- function(fit_info, mdldef) {
-  
-  fit_info$l_vars_idx <- match(fit_info$l_vars, mdldef$endo_names)
-  fit_info$fit_vars_idx <- match(fit_info$fit_vars, mdldef$exo_names)
-  fit_info$exo_vars_idx <- match(fit_info$exo_vars, mdldef$exo_names)
-  
-  fit_info$instruments_idx <- match(fit_info$instruments, mdldef$endo_names)
-  fit_info$old_instruments_idx <- match(fit_info$old_instruments, 
-                                        mdldef$exo_names)
-  fit_info$sigmas_idx <- match(fit_info$sigmas, mdldef$param_names)
-  
-  return(fit_info)
+convert_fit_info <- function(fit_info, mdldef) {
+  # convert names in fit_info to indices
+  return(within(fit_info, {
+    instrument_names <- instruments
+    sigma_names <- sigmas
+    l_var_names <- l_vars
+    orig_endos <- match(orig_endos, mdldef$endo_names)
+    orig_exos <- match(orig_exos, mdldef$exo_names)
+    l_vars <- match(l_vars, mdldef$endo_names)
+    fit_vars <- match(fit_vars, mdldef$exo_names)
+    exo_vars <- match(exo_vars, mdldef$exo_names)
+    instruments <- match(instruments, mdldef$endo_names)
+    old_instruments <- match(old_instruments, mdldef$exo_names)
+    sigmas <- match(sigmas, mdldef$param_names)
+  }))
 }
 
 get_var_names <- function(expr_string) {
