@@ -818,7 +818,6 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     residual_check = function(tol, debug_eqs = FALSE, include_fit_eqs = FALSE) {
-      
       if (is.null(private$model_period)) stop(private$period_error_msg)
       private$check_debug_eqs(debug_eqs)
     
@@ -834,14 +833,13 @@ DynMdl <- R6Class("DynMdl",
       dim(residuals) <- c(private$mdldef$endo_count, nper)
       residuals <- t(residuals)
       colnames(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
-      
       if (private$mdldef$has_aux_vars > 0) {
         # remove the residuals for the auxiliary equations
         residuals <- residuals[, -private$mdldef$aux_vars$endos, drop = FALSE]
       }
       residuals <- regts(residuals, period = private$model_period)
       if (private$mdldef$fit && !include_fit_eqs) {
-        residuals <- residuals[ , seq_along(private$mdldef$fit_info$orig_endos), 
+        residuals <- residuals[ , seq_along(private$mdldef$fit_info$orig_endos),
                                 drop = FALSE]
       }
       if (!missing(tol)) {
@@ -1266,7 +1264,7 @@ DynMdl <- R6Class("DynMdl",
       
       # check solution:
       fmax <- max(abs(self$static_residual_check()))
-      if (fmax > 2 * solve_options_$tolf) {
+      if (is.na(fmax) || fmax > 2 * solve_options_$tolf) {
         warning("Dynare did not find a solution.")
       }
       
@@ -1302,7 +1300,7 @@ DynMdl <- R6Class("DynMdl",
       
       # check solution:
       fmax <- max(abs(self$residual_check()))
-      if (fmax > 2 * solve_options_$tolf) {
+      if (is.na(fmax) || fmax > 2 * solve_options_$tolf) {
         warning("Dynare did not find a solution.")
       }
       return(invisible(self))
