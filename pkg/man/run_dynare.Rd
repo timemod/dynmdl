@@ -51,6 +51,13 @@ options. Specify a \code{NULL} value if the option has no value.
 Consult the documentation of  Dynare for a list of available options.
 Example: \code{steady_options = list(tolf = 1e-7, nocheck = NULL)}}
 
+\item{perfect_foresight_solver_options}{Options passed to the 
+\code{perfect_foresight_solver} command of
+Dynare. This should be a named list, which names corresponding to the Dynare
+options. Specify a \code{NULL} value if the option has no value.
+Consult the documentation of  Dynare for a list of available options.
+Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.}
+
 \item{use_octave}{A logical. If \code{TRUE}, then
 Dynare is envoked with Octave, otherwise Matlab is used. By default 
 Matlab is used if available.}
@@ -63,13 +70,6 @@ this console, or entered \code{exit} in the console. Otherwise the console
 is automatically closed at the end of the calculation and all output is lost.
 This argument is ignored if Dynare is run with Octave. Octave does not 
 open a seperate console: all output appears in the same console used by R.}
-
-\item{pefect_foresight_solver_optios}{Options passed to the 
-\code{perfect_foresight_solver} command of
-Dynare. This should be a named list, which names corresponding to the Dynare
-options. Specify a \code{NULL} value if the option has no value.
-Consult the documentation of  Dynare for a list of available options.
-Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.}
 }
 \value{
 A list with the following components

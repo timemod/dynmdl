@@ -35,7 +35,7 @@
 #' options. Specify a \code{NULL} value if the option has no value.
 #' Consult the documentation of  Dynare for a list of available options.
 #' Example: \code{steady_options = list(tolf = 1e-7, nocheck = NULL)}
-#' @param pefect_foresight_solver_optios Options passed to the 
+#' @param perfect_foresight_solver_options Options passed to the 
 #' \code{perfect_foresight_solver} command of
 #' Dynare. This should be a named list, which names corresponding to the Dynare
 #' options. Specify a \code{NULL} value if the option has no value.

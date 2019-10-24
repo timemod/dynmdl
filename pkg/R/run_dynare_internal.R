@@ -2,6 +2,7 @@
 #' @importFrom tools file_path_as_absolute
 #' @importFrom tictoc tic
 #' @importFrom tictoc toc
+#' @importFrom utils read.csv
 run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data, 
                                  steady, perfect_foresight, scratch_dir, 
                                  dynare_path, steady_options,
