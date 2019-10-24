@@ -15,7 +15,7 @@ of function \code{\link{set_fit}} for more information about fit targets.
 mdl$set_fit_values(value, names, pattern, period = mdl$get_data_period())
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 }
 
 \section{Arguments}{

@@ -1,8 +1,8 @@
-#' Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file
+#' Creates a \code{\link{DynMdl}} object from a mod file
 #'
 #' Creates a \code{\link{DynMdl}} object from a mod file. If the mod file
-#' contains a fit block, then this function returns a \code{\link{FitMdl}} 
-#' object, which is an extension of a \code{DynMdl} object.
+#' contains a fit block, then the \code{DynMdl} object implements the fit 
+#' procedure (except if argument \code{fit} is \code{FALSE}).
 #' 
 #' \subsection{Latex options}{
 #' When the mod file contains a \code{write_latex_static_model},
@@ -63,17 +63,17 @@
 #' @param warn_uninit_param A logical. If \code{TRUE} (the default) then
 #' a warning is given for each parameter that has not been initialized in the
 #' mod file. Uninitialized parameters are always set to zero.
-#' @param fit a logical. If \code{TRUE}, then the function returns
-#' a  \code{FitMdl} object if a fit block has been found in the mod file.
-#' If \code{FALSE} then this function does not return a \code{FitMdl} object.
+#' @param fit a logical (default \code{TRUE}) indicating if the \code{DynMdl} 
+#' object returned by this function should implement the fit procedure if the 
+#' mod file contains a fit block. Specify \code{FALSE} if the mod file  has a fit
+#' block while you do not want to use the fit procedure.
 #' @param fit_fixed_period a logical. If \code{TRUE}, then the fit conditions are
 #' derived for a fixed period, treating lags and leads as exogenous variables.
 #' If \code{FALSE} (the default), the fit conditions are derived from the
 #' stacked-time equations.
 #' @param latex_options a list with options for writing LaTeX files.
 #' See Details.
-#' @return A \code{DynMdl} object or, if the mod file contains a
-#' fit block, a \code{\link{FitMdl}} object.
+#' @return A \code{DynMdl} object.
 #' @export
 #' @importFrom Rcpp sourceCpp
 #' @importFrom tools file_path_sans_ext

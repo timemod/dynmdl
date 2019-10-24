@@ -7,9 +7,9 @@ object to the model data}
 \description{
 This method of R6 class \code{\link{DynMdl}} 
 transfers data from a timeseries object to the model data
-(both endogenous and exogenous). For \code{\link{DynMdl}} objects,
-\code{set_data} can also be used to modify fit instruments and the  
-Lagrange multipliers used in the fit method.
+(both endogenous and exogenous). If the model implements the fit method,
+then \code{set_data} can also be used to modify fit instruments and the  
+Lagrange multipliers.
 }
 \section{Usage}{
 

@@ -12,7 +12,7 @@
 #'             name_err = c("stop", "warn", "silent"))
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 #'
 #' @section Arguments:
 #'
@@ -75,7 +75,7 @@ NULL
 #' mdl$set_fit_values(value, names, pattern, period = mdl$get_data_period())
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 #'
 #' @section Arguments:
 #'
@@ -99,13 +99,13 @@ NULL
 NULL
 
 #' \code{\link{DynMdl}} methods: Retrieve the names of the fit instruments
-#' or sigma parameters used in the fit procedure.
+#' or sigma parameters used in the fit method.
 #' @name get_instrument_names/get_sigma_names
 #' @aliases get_instrument_names get_sigma_names
 #' @description
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' return the names of the fit instruments or sigma parameters
-#' used in the fit procedure.
+#' used in the fit method.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -114,7 +114,7 @@ NULL
 #' mdl$get_sigma_names()
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 #' @examples
 #'
 #' mdl <- islm_mdl(period = "2017Q1/2018Q3", fit = TRUE)
@@ -124,13 +124,13 @@ NULL
 #' @seealso \code{\link{get_fit_instruments}}
 NULL
 
-#' \code{\link{DynMdl}} methods: get variables used in the fit procedure.
+#' \code{\link{DynMdl}} methods: get variables used in the fit method.
 #' @name get_fit-methods
 #' @aliases get_fit get_fit_instruments get_lagrange
 
 #' @description
 #' These methods of R6 class \code{DynMdl} can be used
-#' to retrieve the variables used in the fit procedure:
+#' to retrieve the variables used in the fit method:
 #' the fit targets, fit instruments or Lagrange multipliers.
 #' 
 #' For method \code{get_fit} there are corresponding \code{\link{set_fit}} and
@@ -151,7 +151,7 @@ NULL
 #' mdl$get_lagrange(names, period = mdl$get_period())
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 #'
 #' @section Arguments:
 #'
@@ -209,7 +209,7 @@ NULL
 #' mdl$clear_fit()
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 #''
 #' @examples
 #'
@@ -230,4 +230,34 @@ NULL
 #' mdl$solve()
 #' @seealso \code{\link{get_data-methods}}, \code{\link{set_fit}},
 #' \code{\link{set_fit_values}} and \code{\link{clear_fit}}.
+NULL
+
+#' \code{\link{DynMdl}} methods: Retrieve the 
+#' sigma parameters used in the fit method.
+#' @name get_sigmas
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} 
+#' return all sigma parameters for the fit method larger than or 
+#' equal to zero. The fit instruments for which the corresponding
+#' sigma-parameter is \eqn{\ge 0} are used as instruments in the 
+#' fit method. Instruments which a sigma-parameter smaller than 0 are 
+#' fixed at their original value. 
+#' 
+#' The sigma-parameters can be modified with methods
+#' \code{\link{set_param}} and \code{\link{set_param_values}}.
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$get_sigmas()
+#' 
+#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
+#' }
+#' @examples
+#'
+#' mdl <- islm_mdl(period = "2016Q1/2017Q3", fit = TRUE)
+#' mdl$get_sigmas()
+#' 
+#' # disable ui as fit instrument by setting sigma_ui to -1:
+#' mdl$set_param(c(sigma_ui = -1))
+#' mdl$get_sigmas()
 NULL

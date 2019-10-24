@@ -5,10 +5,10 @@
 \alias{get_fit}
 \alias{get_fit_instruments}
 \alias{get_lagrange}
-\title{\code{\link{DynMdl}} methods: get variables used in the fit procedure.}
+\title{\code{\link{DynMdl}} methods: get variables used in the fit method.}
 \description{
 These methods of R6 class \code{DynMdl} can be used
-to retrieve the variables used in the fit procedure:
+to retrieve the variables used in the fit method:
 the fit targets, fit instruments or Lagrange multipliers.
 
 For method \code{get_fit} there are corresponding \code{\link{set_fit}} and
@@ -30,7 +30,7 @@ mdl$get_fit_instruments(pattern, names, period = mdl$get_period())
 mdl$get_lagrange(names, period = mdl$get_period())
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 }
 
 \section{Arguments}{

@@ -20,7 +20,7 @@ file.
  mdl$get_original_equations(i)
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{

@@ -13,7 +13,7 @@ returns a deep copy of a \code{DynMdl} object
 mdl$copy()
 
 }
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Details}{

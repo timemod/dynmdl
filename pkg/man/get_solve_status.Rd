@@ -15,7 +15,7 @@ was succesfull, it returns the string \code{"OK"}.
 mdl$get_solve_status()
 
 }
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Details}{

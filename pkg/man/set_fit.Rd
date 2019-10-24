@@ -16,7 +16,7 @@ mdl$set_fit(data, names = colnames(data),
             name_err = c("stop", "warn", "silent"))
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 }
 
 \section{Arguments}{

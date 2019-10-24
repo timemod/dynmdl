@@ -87,9 +87,9 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{get_data_period}}}{Returns the model data period.}
 #'
-#' \item{\code{get_lag_period}}{Returns the lag period.}
+#' \item{\code{\link{get_lag_period}}}{Returns the lag period.}
 #'
-#' \item{\code{get_lead_period}}{Returns the lead period}
+#' \item{\code{\link{get_lead_period}}}{Returns the lead period}
 #'
 #' \item{\code{\link{set_endo_values}}}{Sets the values of endogenous model 
 #' variables}
@@ -161,6 +161,33 @@ setOldClass("regts")
 #' 
 #' \item{\code{\link{get_solve_status}}}{Returns the status of the last model
 #' solve attempt}
+#' }
+#' 
+#' @section Methods for the fit method:
+#' \describe{
+#'
+#' \item{\code{\link{get_instrument_names}}}{Returns the names of the fit 
+#' instruments.}
+#' 
+#' \item{\code{\link{get_sigma_names}}}{Returns the names of the sigma
+#' parameters used in the fit procedure.} 
+#'
+#' \item{\code{\link{set_fit_values}}}{Sets the values of the fit targets}
+#'
+#' \item{\code{\link{set_fit}}}{Sets the targets for the fit procedure} 
+#'
+#' \item{\code{\link{get_fit}}}{Returns the fit targets
+#' used in the fit procedure}
+#'
+#' \item{\code{\link{get_fit_instruments}}}{Returns all non-zero fit instruments
+#' used in the fit procedure}
+#' 
+#' \item{\code{\link{get_sigmas}}}{Returns all sigma parameters >= 0 used in 
+#' the fit procedure. If a sigma parameter is negative, then the 
+#' corresponding fit instrument is not included}
+#' 
+#' \item{\code{\link{get_lagrange}}}{Returns the Lagrange multipliers
+#' used in the fit procedure.}
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(

@@ -13,7 +13,7 @@ for the model variables.
 mdl$set_labels(labels)
 
 }
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{

@@ -27,7 +27,8 @@
 #' object, or an object that can be coerced to 
 #' \code{\link[regts]{period_range}},}
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
-#' object with values for endogogenous and exogenous model variables.
+#' object with values for endogogenous and exogenous model variables, 
+#' including fit instruments and Lagrange multipliers used in the fit method.
 #' If \code{data} has labels, then these labels are used to update the model 
 #' labels. If the model has trends, then the timeseries in \code{data} should 
 #' include the trends.}
@@ -168,14 +169,14 @@ NULL
 #' \code{get_data} also returns the fit instruments. In contrast,
 #' \code{get_endo_data} does not return these fit instruments.
 #' Both \code{get_data} and \code{get_endo_data} do not return
-#' the Lagrange multipliers used in the fit procedure. Use method  
+#' the Lagrange multipliers used in the fit method. Use method  
 #' \code{\link{get_lagrange}} to obtain these Lagrange multipliers. 
 #' 
 #' \code{\link{get_all_endo_data}} returns all endogenous variables, 
 #' fit instruments and Lagrange multipliers, as well as the auxiliary 
 #' endogenous variables used when \code{max_laglead_1 = TRUE}.
 #' #' \code{\link{get_all_exo_data}} returns all exogenous variables, 
-#' including exogenous variables used by the fit procedure.
+#' including exogenous variables used by the fit method.
 #' @section Usage:
 #' \preformatted{
 #' 
@@ -195,7 +196,7 @@ NULL
 #' 
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -239,9 +240,9 @@ NULL
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
 #' transfers data from a timeseries object to the model data
-#' (both endogenous and exogenous). For \code{\link{DynMdl}} objects,
-#' \code{set_data} can also be used to modify fit instruments and the  
-#' Lagrange multipliers used in the fit method.
+#' (both endogenous and exogenous). If the model implements the fit method,
+#' then \code{set_data} can also be used to modify fit instruments and the  
+#' Lagrange multipliers.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -353,7 +354,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -409,7 +410,7 @@ NULL
 #' mdl$change_data(fun, names, pattern, period = mdl$get_data_period(), ...)
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -429,10 +430,9 @@ NULL
 #' \describe{
 #' \item{\code{changes_endo_data}}{Changes endogenous model variables}
 #' \item{\code{change_exo_data}}{Changes exogenous model variables}
-#' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables.
-#' For \code{\link{DynMdl}} objects,
-#' \code{change_data} can also be used to modify fit instruments and the  
-#' Lagrange multipliers used in the fit method.}
+#' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables,
+#' including fit instruments and Lagrange multipliers used in the fit method 
+#' (if present).}
 #' }
 #' @examples
 #' mdl <- islm_mdl(period = "2017Q1/2017Q3")
@@ -482,7 +482,7 @@ NULL
 #' mdl$copy()
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Details:
 #' \code{mdl$copy()} is  equivalent to \code{mdl$clone(deep = TRUE)}
@@ -503,7 +503,7 @@ NULL
 #' mdl$set_labels(labels)
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -538,7 +538,7 @@ NULL
 #' mdl$get_tex_names()
 #' 
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #' @section Methods:
 #' \itemize{
 #' \item \code{get_labels}: Returns the labels (long names), 
@@ -562,7 +562,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -601,7 +601,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -659,7 +659,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -707,7 +707,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -750,7 +750,7 @@ NULL
 #'           homotopy = FALSE, ...)
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -808,7 +808,7 @@ NULL
 #'  mdl$get_original_equations(i)
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -997,7 +997,7 @@ NULL
 #'
 #' If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 #' \code{get_endo_names} and \code{get_exo_names} do not include the names of 
-#' the auxiliary endogenous and exogenous variables used in the fit procedure.
+#' the auxiliary endogenous and exogenous variables used in the fit method.
 #' Use \code{\link{get_instrument_names}} to obtain the names of the fit 
 #' instruments.
 #' 
@@ -1011,7 +1011,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -1044,7 +1044,7 @@ NULL
 #' mdl$set_param(p, name_err = c("stop", "warn", "silent"))
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #' @section Arguments:
 #'
 #' \describe{
@@ -1074,7 +1074,7 @@ NULL
 #' mdl$get_param(pattern, names)
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #' @section Arguments:
 #'
 #' \describe{
@@ -1119,7 +1119,7 @@ NULL
 #' mdl$get_back_jacob(period, sparse = FALSE)
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #' 
 #' @section Arguments:
 #'
@@ -1166,7 +1166,7 @@ NULL
 #' mdl$get_solve_status()
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Details:
 #'
@@ -1240,7 +1240,7 @@ NULL
 #'
 #' If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 #' the variables do not include the the auxiliary endogenous and
-#' exogenous variables used in the fit procedure.
+#' exogenous variables used in the fit method.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -1249,7 +1249,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'

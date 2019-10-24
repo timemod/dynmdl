@@ -25,7 +25,7 @@ model is still solved after \code{clear_fit} has been called.
 mdl$clear_fit()
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 '
 }
 

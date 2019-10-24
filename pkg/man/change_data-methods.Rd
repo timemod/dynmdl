@@ -23,7 +23,7 @@ mdl$change_exo_data(fun names, pattern, period = mdl$get_data_period(), ...)
 mdl$change_data(fun, names, pattern, period = mdl$get_data_period(), ...)
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{
@@ -47,10 +47,9 @@ then the function is applied to all endogenous or exogenous variables.
 \describe{
 \item{\code{changes_endo_data}}{Changes endogenous model variables}
 \item{\code{change_exo_data}}{Changes exogenous model variables}
-\item{\code{change_data}}{Changes endogenous and/or exogenous model variables.
-For \code{\link{DynMdl}} objects,
-\code{change_data} can also be used to modify fit instruments and the  
-Lagrange multipliers used in the fit method.}
+\item{\code{change_data}}{Changes endogenous and/or exogenous model variables,
+including fit instruments and Lagrange multipliers used in the fit method 
+(if present).}
 }
 }
 

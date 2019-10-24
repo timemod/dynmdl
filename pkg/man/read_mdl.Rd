@@ -14,12 +14,11 @@ Primarily used for testing. Only used if the model
 was created with the dll option (see function  \code{\link{dyn_mdl}}).}
 }
 \value{
-a \code{\link{DynMdl}} or \code{\link{FitMdl}} object
+a \code{\link{DynMdl}} object.
 }
 \description{
 This function reads a model from an RDS file that has been written
-by method \code{\link{write_mdl}} of an \code{\link{DynMdl}} or
-\code{\link{FitMdl}} object.
+by method \code{\link{write_mdl}} of an \code{\link{DynMdl}} object.
 }
 \examples{
 mdl <- islm_mdl("2017Q1/2019Q2")

@@ -5,11 +5,11 @@
 \alias{get_instrument_names}
 \alias{get_sigma_names}
 \title{\code{\link{DynMdl}} methods: Retrieve the names of the fit instruments
-or sigma parameters used in the fit procedure.}
+or sigma parameters used in the fit method.}
 \description{
 These methods of R6 class \code{\link{DynMdl}} 
 return the names of the fit instruments or sigma parameters
-used in the fit procedure.
+used in the fit method.
 }
 \section{Usage}{
 
@@ -19,7 +19,7 @@ mdl$get_instrument_names()
 mdl$get_sigma_names()
 
 }
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
 }
 
 \examples{

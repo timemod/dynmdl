@@ -6,8 +6,7 @@
 #' @param period the model period for the ISLM model
 #' @param fit a logical indicating whether the dynamical fit procedure
 #' should be used
-#' @return a \code{\link{DynMdl}} object or a \code{\link{FitMdl}} 
-#' object is argument \code{fit} is \code{TRUE}
+#' @return a \code{\link{DynMdl}} object.
 #' @examples
 #' mdl <- islm_mdl("2017Q1/2019Q4")
 #' @export

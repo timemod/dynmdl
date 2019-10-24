@@ -33,7 +33,8 @@ mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"))
 object, or an object that can be coerced to 
 \code{\link[regts]{period_range}},}
 \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
-object with values for endogogenous and exogenous model variables.
+object with values for endogogenous and exogenous model variables, 
+including fit instruments and Lagrange multipliers used in the fit method.
 If \code{data} has labels, then these labels are used to update the model 
 labels. If the model has trends, then the timeseries in \code{data} should 
 include the trends.}

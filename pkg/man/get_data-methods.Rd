@@ -17,14 +17,14 @@ If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 \code{get_data} also returns the fit instruments. In contrast,
 \code{get_endo_data} does not return these fit instruments.
 Both \code{get_data} and \code{get_endo_data} do not return
-the Lagrange multipliers used in the fit procedure. Use method  
+the Lagrange multipliers used in the fit method. Use method  
 \code{\link{get_lagrange}} to obtain these Lagrange multipliers. 
 
 \code{\link{get_all_endo_data}} returns all endogenous variables, 
 fit instruments and Lagrange multipliers, as well as the auxiliary 
 endogenous variables used when \code{max_laglead_1 = TRUE}.
 #' \code{\link{get_all_exo_data}} returns all exogenous variables, 
-including exogenous variables used by the fit procedure.
+including exogenous variables used by the fit method.
 }
 \section{Usage}{
 
@@ -46,7 +46,7 @@ mdl$get_all_exo_data()
 
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{
