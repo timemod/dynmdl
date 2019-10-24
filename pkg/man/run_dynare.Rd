@@ -8,7 +8,7 @@ run_dynare(mod_file, period, data, steady = TRUE,
   perfect_foresight = !missing(period) || !missing(data),
   scratch_dir = tempfile(), dynare_path = NULL, steady_options,
   perfect_foresight_solver_options, use_octave = Sys.which("matlab") ==
-  "")
+  "", exit_matlab = FALSE)
 }
 \arguments{
 \item{mod_file}{The name of a Dynare mod file. For models with trends,
@@ -54,6 +54,15 @@ Example: \code{steady_options = list(tolf = 1e-7, nocheck = NULL)}}
 \item{use_octave}{A logical. If \code{TRUE}, then
 Dynare is envoked with Octave, otherwise Matlab is used. By default 
 Matlab is used if available.}
+
+\item{exit_matlab}{A logical specifying if Matlab
+should immediately  exit when the calcultions have finished 
+Matlab writes the output to a separate console. If \code{exit_matlab} is 
+\code{FALSE} (the default), then the R job waits until the user has closed 
+this console, or entered \code{exit} in the console. Otherwise the console 
+is automatically closed at the end of the calculation and all output is lost.
+This argument is ignored if Dynare is run with Octave. Octave does not 
+open a seperate console: all output appears in the same console used by R.}
 
 \item{pefect_foresight_solver_optios}{Options passed to the 
 \code{perfect_foresight_solver} command of

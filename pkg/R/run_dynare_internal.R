@@ -6,8 +6,9 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
                                  steady, perfect_foresight, scratch_dir, 
                                  dynare_path, steady_options,
                                  perfect_foresight_solver_options,
-                                 use_octave, rename_aux_vars = TRUE,
-                                 mod_file_in_scratch_dir = FALSE) {
+                                 rename_aux_vars = TRUE,
+                                 mod_file_in_scratch_dir = FALSE,
+                                 use_octave, exit_matlab) {
   
   
   # if DynMdl is running on CPB, set the appropriate Dynare path
@@ -152,9 +153,10 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     write_header("Octave job finished.")
   } else {
     write_header("Running Matlab:")
+    matlab_command <- sprintf("\"run('run_%s.m');\"", model_name)
+    if (exit_matlab) matlab_command <- paste0(matlab_command, "exit;")
     system2("matlab", args =  c("-r", "-nosplash", "-nodesktop", "-wait",
-                                sprintf("\"run('run_%s.m');\"", 
-                                        model_name)))
+                                matlab_commnand))
     write_header("Matlab job finished.")
   }
     

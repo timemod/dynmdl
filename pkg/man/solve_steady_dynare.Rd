@@ -14,7 +14,8 @@ with Dynare using Matlab or Octave.
 mdl$solve_steady_dynare(scratch_dir = tempfile(), dynare_path = NULL,
                         model_options = list(), 
                         solve_options = list(tolf = 1e-8),
-                        use_octave = Sys.which("matlab") == "")
+                        use_octave = Sys.which("matlab") == "",
+                        exit_matlab = FALSE)
 }
 
 \code{mdl} is a \code{\link{DynMdl}} object
@@ -46,6 +47,14 @@ The default is \code{list(tolf = 1e-8)}}
 \item{\code{use_octave}}{A logical. If \code{TRUE}, then
 Dynare is envoked with Octave, otherwise Matlab is used. By default 
 Matlab is used if available.}
+\item{\code{exit_matlab}}{A logical specifying if Matlab
+should immediately  exit when the calcultions have finished 
+Matlab writes the output to a separate console. If \code{exit_matlab} is 
+\code{FALSE} (the default), then the R job waits until the user has closed 
+this console, or entered \code{exit} in the console. Otherwise the console 
+is automatically closed at the end of the calculation and all output is lost.
+This argument is ignored if Dynare is run with Octave. Octave does not 
+open a seperate console: all output appears in the same console used by R.}
 }
 }
 

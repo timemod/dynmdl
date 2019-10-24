@@ -44,6 +44,14 @@
 #' @param use_octave A logical. If \code{TRUE}, then
 #' Dynare is envoked with Octave, otherwise Matlab is used. By default 
 #' Matlab is used if available.
+#' @param exit_matlab A logical specifying if Matlab
+#' should immediately  exit when the calcultions have finished 
+#' Matlab writes the output to a separate console. If \code{exit_matlab} is 
+#' \code{FALSE} (the default), then the R job waits until the user has closed 
+#' this console, or entered \code{exit} in the console. Otherwise the console 
+#' is automatically closed at the end of the calculation and all output is lost.
+#' This argument is ignored if Dynare is run with Octave. Octave does not 
+#' open a seperate console: all output appears in the same console used by R.
 #' @return A list with the following components
 #' \item{steady_endos}{(only if \code{steady == TRUE}): a steady state 
 #' endogenous variables} 
@@ -69,7 +77,8 @@ run_dynare <- function(mod_file, period, data, steady = TRUE,
                        scratch_dir = tempfile(), dynare_path = NULL, 
                        steady_options,
                        perfect_foresight_solver_options,
-                       use_octave = Sys.which("matlab") == "") {
+                       use_octave = Sys.which("matlab") == "",
+                       exit_matlab = FALSE) {
   
   if (!steady && !perfect_foresight) {
     warning("run_dynare has nothing to do ...")
@@ -95,5 +104,6 @@ run_dynare <- function(mod_file, period, data, steady = TRUE,
                              steady_options = steady_options,
                              perfect_foresight_solver_options = 
                                       perfect_foresight_solver_options,
-                             use_octave = use_octave))
+                             use_octave = use_octave, 
+                             exit_matlab = exit_matlab))
 }

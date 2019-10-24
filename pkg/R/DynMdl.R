@@ -1246,7 +1246,8 @@ DynMdl <- R6Class("DynMdl",
     },
     solve_steady_dynare = function(scratch_dir = tempfile(),  dynare_path = NULL,
                                    model_options, solve_options,
-                                   use_octave = Sys.which("matlab") == "") {
+                                   use_octave = Sys.which("matlab") == "",
+                                   exit_matlab = FALSE) {
       
       # create mode name based on the name of the DynMdl object
       z <- sys.call()[[1]]
@@ -1263,7 +1264,8 @@ DynMdl <- R6Class("DynMdl",
       
       ret <- solve_steady_dynare_internal(model_name, self, scratch_dir,
                                           dynare_path, model_options, 
-                                          solve_options_, use_octave)
+                                          solve_options_, use_octave,
+                                          exit_matlab)
       
       private$mdldef$endos[names(ret$steady_endos)] <- ret$steady_endos
       
@@ -1285,7 +1287,8 @@ DynMdl <- R6Class("DynMdl",
     },
     solve_dynare = function(scratch_dir = tempfile(), dynare_path = NULL, 
                             model_options, solve_options,
-                            use_octave = Sys.which("matlab") == "") {
+                            use_octave = Sys.which("matlab") == "",
+                            exit_matlab = FALSE) {
 
       # create mode name based on the name of the DynMdl object
       z <- sys.call()[[1]]
@@ -1307,7 +1310,7 @@ DynMdl <- R6Class("DynMdl",
       
       solution <- solve_dynare_internal(model_name, self, scratch_dir,
                                         dynare_path, model_options, 
-                                        solve_options_, use_octave)
+                                        solve_options_, use_octave, exit_matlab)
       
       private$endo_data[private$model_period, colnames(solution)] <- solution
       
