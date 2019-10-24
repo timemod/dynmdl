@@ -1364,12 +1364,9 @@ DynMdl <- R6Class("DynMdl",
         # virtual memory space. This point should be examined later.
         # See the parallel examples in directory examples.
       #  bin_data <- serialize_polish_models(private$model_index)
-      #  ret$deserialize_polish(bin_data)
+      #  ret$model_index <- deserialize_polish_models(bin_data)
       #}
       return(ret)
-    },
-    deserialize_polish = function(bin_data) {
-      private$model_index <- deserialize_polish_models(bin_data)
     },
     serialize = function() {
       
