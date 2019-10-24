@@ -232,7 +232,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     dll_file <- NA_character_
   }
   
-  mdl <- DynMdl$new(mdldef, base_period, calc,  dll_dir, dll_file)
+  model_index <- model_info$model_index
+  mdl <- DynMdl$new(model_index, mdldef, base_period, calc,  dll_dir, dll_file)
 
   if (!debug) {
     unlink(preprocessed_mod_file)
@@ -360,7 +361,6 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
   
   mdldef <- list(fit                = !is.null(fit_info),
                  has_aux_vars       = model_info$aux_vars$aux_count > 0,
-                 model_index        = model_info$model_index,
                  endos              = model_info$endos,
                  exos               = model_info$exos,
                  params             = model_info$params,

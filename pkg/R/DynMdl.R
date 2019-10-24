@@ -164,11 +164,13 @@ setOldClass("regts")
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(
-    initialize = function(mdldef, base_period, calc, dll_dir, dll_file) {
+    initialize = function(model_index, mdldef, base_period, calc, dll_dir, 
+                          dll_file) {
 
       # no arguments supplied
       if (nargs() == 0) return()
       
+      private$model_index <- model_index
       private$mdldef <- mdldef
       private$base_period <- base_period
       private$calc <- calc
@@ -183,7 +185,7 @@ DynMdl <- R6Class("DynMdl",
       cat(sprintf("%-60s%s\n", "Fit:", as.character(private$mdldef$fit)))
       cat(sprintf("%-60s%s\n", "Calc method:", private$calc))
       if (private$calc == "internal") {
-        cat(sprintf("%-60s%d\n", "Model index:", private$mdldef$model_index))
+        cat(sprintf("%-60s%d\n", "Model index:", private$model_index))
       }
       if (private$mdldef$fit || private$mdldef$has_aux_vars) {
          cat(sprintf("%-60s%d\n", "Total number of endogenous variables:",
@@ -797,7 +799,8 @@ DynMdl <- R6Class("DynMdl",
       }
       
       private$prepare_dynamic_model(solve_first_order = TRUE)
-      private$ss <- solve_first_order(private$ss, private$calc, private$mdldef, 
+      private$ss <- solve_first_order(private$ss, private$calc, 
+                                      private$model_index, private$mdldef, 
                                       private$jac_dynamic, 
                                       check_only = TRUE, debug = FALSE,
                                       debug_eqs = FALSE)
@@ -995,7 +998,7 @@ DynMdl <- R6Class("DynMdl",
                                               leads_steady * (1 - lambda)
    
             if (private$calc == "internal") {
-              internal_dyn_set_exo(private$mdldef$model_index, private$exo_data,
+              internal_dyn_set_exo(private$model_index, private$exo_data,
                                    nrow(private$exo_data))
             }
             
@@ -1055,8 +1058,9 @@ DynMdl <- R6Class("DynMdl",
         if (!missing(homotopy) && homotopy) {
           warning("homotopy not yet implemented for backward models")
         }
-        ret <- solve_backward_model(private$mdldef, private$calc,
-                                    private$model_period, private$data_period,
+        ret <- solve_backward_model(private$model_index, private$mdldef, 
+                                    private$calc, private$model_period, 
+                                    private$data_period,
                                     private$endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
                                     control = control_, solver = solver,
@@ -1108,7 +1112,8 @@ DynMdl <- R6Class("DynMdl",
       
       private$prepare_dynamic_model(solve_first_order = TRUE)
       
-      private$ss <- solve_first_order(private$ss, private$calc, private$mdldef, 
+      private$ss <- solve_first_order(private$ss, private$calc, 
+                                      private$model_index, private$mdldef, 
                                       private$jac_dynamic, 
                                       check_only = FALSE, debug = FALSE,
                                       debug_eqs = FALSE)
@@ -1331,13 +1336,13 @@ DynMdl <- R6Class("DynMdl",
         # not necessary because forking creates a subprocess with its own 
         # virtual memory space. This point should be examined later.
         # See the parallel examples in directory examples.
-      #  bin_data <- serialize_polish_models(private$mdldef$model_index)
+      #  bin_data <- serialize_polish_models(private$model_index)
       #  ret$deserialize_polish(bin_data)
       #}
       return(ret)
     },
     deserialize_polish = function(bin_data) {
-      private$mdldef$model_index <- deserialize_polish_models(bin_data)
+      private$model_index <- deserialize_polish_models(bin_data)
     },
     serialize = function() {
       
@@ -1350,7 +1355,7 @@ DynMdl <- R6Class("DynMdl",
         bin_data <- readBin(zip_file, what = "raw", n = size)
         unlink(zip_file)
       } else if (private$calc == "internal") {
-        bin_data <- serialize_polish_models(private$mdldef$model_index)
+        bin_data <- serialize_polish_models(private$model_index)
       } else {
         bin_data <- NULL
       }
@@ -1390,7 +1395,7 @@ DynMdl <- R6Class("DynMdl",
         unzip(zipfile = zip_file, exdir = private$dll_dir, junkpaths = TRUE)
         unlink(zip_file)
       } else if (ser$calc == "internal") {
-        private$mdldef$model_index <- deserialize_polish_models(ser$bin_data)
+        private$model_index <- deserialize_polish_models(ser$bin_data)
       }
       
       # we don't need these elements anymore
@@ -1398,7 +1403,6 @@ DynMdl <- R6Class("DynMdl",
       ser$version <- NULL
       ser$dll_basename <- NULL
       ser$os_type <- NULL
-      
       
       # copy remaining elements to the private environment
       if (length(problem_fields <- setdiff(names(ser), names(private))) > 0) {
@@ -1531,6 +1535,7 @@ DynMdl <- R6Class("DynMdl",
   }
   ),
   private = list(
+    model_index = NA_integer_,  # model index, only used for internal calc.
     mdldef = NULL,
     f_static = NULL,
     jac_static = NULL,
@@ -1971,7 +1976,7 @@ DynMdl <- R6Class("DynMdl",
       endos <- c(lags, x, leads)
       nper <- nperiod(private$model_period)
       if (private$calc == "internal") {
-        return(get_residuals_dyn(private$mdldef$model_index, endos,
+        return(get_residuals_dyn(private$model_index, endos,
                                  which(private$mdldef$lead_lag_incidence != 0) - 1,
                                  private$mdldef$endo_count, nper,
                                  private$period_shift, debug_eqs))
@@ -1985,7 +1990,7 @@ DynMdl <- R6Class("DynMdl",
     },
     get_static_residuals  = function(endos, debug_eqs) {
       if (private$calc == "internal") {
-        return(get_residuals_stat(private$mdldef$model_index, endos, debug_eqs))
+        return(get_residuals_stat(private$model_index, endos, debug_eqs))
       } else {
         return(private$f_static(endos, private$mdldef$exos, 
                                 private$mdldef$params))
@@ -1996,7 +2001,7 @@ DynMdl <- R6Class("DynMdl",
       nper <- nperiod(private$model_period)
       tshift  <- -private$mdldef$max_endo_lag : private$mdldef$max_endo_lead
       if (private$calc == "internal") {
-        mat_info <- get_triplet_jac_dyn(private$mdldef$model_index, endos, 
+        mat_info <- get_triplet_jac_dyn(private$model_index, endos, 
                           private$mdldef$lead_lag_incidence, tshift, 
                           private$mdldef$endo_count, nper, private$period_shift,
                           debug_eqs)
@@ -2020,7 +2025,7 @@ DynMdl <- R6Class("DynMdl",
     get_static_jac = function(x, debug_eqs) {
       # private function to obtain the jacobian for the static model
       if (private$calc == "internal") {
-        mat_info <- get_triplet_jac_stat(private$mdldef$model_index, x, 
+        mat_info <- get_triplet_jac_stat(private$model_index, x, 
                                          debug_eqs)
       } else {
         mat_info <- private$jac_static(x, private$mdldef$exos, 
@@ -2034,7 +2039,7 @@ DynMdl <- R6Class("DynMdl",
       # private function to obtain the backward jacobian at period period_index
       jac_cols <- private$mdldef$lead_lag_incidence[, "0"]
       if (private$calc == "internal") {
-        mat_info <- get_jac_back_dyn(private$mdldef$model_index, x, lags, 
+        mat_info <- get_jac_back_dyn(private$model_index, x, lags, 
                                      leads, jac_cols, period_index, debug_eqs)
       } else {
         mat_info <- get_jac_backwards(x, lags, leads, jac_cols, 
@@ -2082,7 +2087,7 @@ DynMdl <- R6Class("DynMdl",
           first_per_subp_count <- as.numeric(start_period(private$data_period))
         }
         
-        prepare_internal_dyn(private$mdldef$model_index, exo_data,
+        prepare_internal_dyn(private$model_index, exo_data,
                               nrow(exo_data), private$mdldef$params,
                               per_freq, first_per_subp_count)
       }
@@ -2101,7 +2106,7 @@ DynMdl <- R6Class("DynMdl",
       if (private$calc == "dll") {
         dyn.load(private$dll_file)
       } else if (private$calc == "internal") {
-        prepare_internal_stat(private$mdldef$model_index, private$mdldef$exos,
+        prepare_internal_stat(private$model_index, private$mdldef$exos,
                               private$mdldef$params)
       }
       return(invisible(NULL))

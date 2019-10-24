@@ -1,7 +1,7 @@
 # construct the solution of the linear state space model.
 # also computes the eigenvalues.
 #' @importFrom regts printobj
-solve_first_order <- function(ss, calc, mdldef, jac_dynamic, 
+solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic, 
                               check_only = FALSE, debug = FALSE, debug_eqs) {
   
   lead_lag_incidence <- mdldef$lead_lag_incidence
@@ -41,7 +41,7 @@ solve_first_order <- function(ss, calc, mdldef, jac_dynamic,
   it <- mdldef$max_exo_lag + 1 # time index for exogenous variables
   if (calc == "internal") {
     # exogenous variables are prepared in DynMdl method prepare_dynamic_model
-    jacobia <- get_jac_dyn(mdldef$model_index, y, it, debug_eqs)
+    jacobia <- get_jac_dyn(model_index, y, it, debug_eqs)
   } else {
     nper_exo <- mdldef$max_exo_lag + mdldef$max_exo_lead + 1 
     exos <- matrix(rep(static_exos, each = nper_exo), nrow = nper_exo)

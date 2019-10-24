@@ -1431,7 +1431,7 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
         PolishModel *dyn_mdl  = dynamic_model.makePolishModel(ext_calc);
         model_index = PolishModels::add_model(stat_mdl, dyn_mdl, ext_calc);
     } else {
-        model_index = 0;
+        model_index = NA_INTEGER;
     }
 
     Rcpp::List trend_info = dynamic_model.get_trend_info();

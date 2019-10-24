@@ -34,6 +34,10 @@ update_serialized_mdl <- function(ser) {
     mdldef$equations_orig <- ser$equations
     mdldef["equations"] <- list(NULL)
     
+    # model_index has moved from private$mdldef to private
+    # private$model_index will be set by method mdl$deserialize()
+    mdldef$model_index <- NULL
+    
     #
     # information about fit
     #
