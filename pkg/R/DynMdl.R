@@ -750,7 +750,8 @@ DynMdl <- R6Class("DynMdl",
                      private$mdldef$fit_info$l_vars)
         old_endos <- private$mdldef$endos[indices]
         private$mdldef$endos[indices] <- 0
-        fmax <- max(abs(self$static_residual_check(debug_eqs = debug_eqs)))
+        fmax <- max(abs(self$static_residual_check(include_all_eqs = TRUE,
+                                                   debug_eqs = FALSE)))
         ftol <- if (is.null(control$ftol)) {
           1e-8 
         } else { 
@@ -804,23 +805,28 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     static_residual_check = function(tol, debug_eqs = FALSE, 
-                                     include_fit_eqs = FALSE) {
+                                     include_fit_eqs = FALSE,
+                                     include_all_eqs = FALSE) {
       private$check_debug_eqs(debug_eqs)
       private$prepare_static_model()
       residuals <- private$get_static_residuals(private$mdldef$endos, debug_eqs)
       private$clean_static_model()
       names(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
-      if (private$mdldef$fit && !include_fit_eqs) {
-        residuals <- residuals[seq_along(private$mdldef$endo_names_orig)]
-      } else {
-        residuals <- residuals[seq_along(private$mdldef$endo_names_no_aux)]
+      if (!include_all_eqs) {
+        if (private$mdldef$fit && !include_fit_eqs) {
+          residuals <- residuals[seq_along(private$mdldef$endo_names_orig)]
+        } else {
+          residuals <- residuals[seq_along(private$mdldef$endo_names_no_aux)]
+        }
       }
       if (!missing(tol)) {
         residuals <- residuals[is.na(residuals) | abs(residuals) > tol]
       }
       return(residuals)
     },
-    residual_check = function(tol, debug_eqs = FALSE, include_fit_eqs = FALSE) {
+    residual_check = function(tol, debug_eqs = FALSE, include_fit_eqs = FALSE,
+                              include_all_eqs = FALSE
+                              ) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
       private$check_debug_eqs(debug_eqs)
     
@@ -836,12 +842,15 @@ DynMdl <- R6Class("DynMdl",
       dim(residuals) <- c(private$mdldef$endo_count, nper)
       residuals <- t(residuals)
       colnames(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
-      if (private$mdldef$fit && !include_fit_eqs) {
-        residuals <- residuals[ , seq_along(private$mdldef$endo_names_orig), 
-                                drop = FALSE]
-      } else {
-        residuals <- residuals[ , seq_along(private$mdldef$endo_names_no_aux),
-                                drop = FALSE]
+      
+      if (!include_all_eqs) {
+        if (private$mdldef$fit && !include_fit_eqs) {
+          residuals <- residuals[ , seq_along(private$mdldef$endo_names_orig), 
+                                  drop = FALSE]
+        } else {
+          residuals <- residuals[ , seq_along(private$mdldef$endo_names_no_aux),
+                                  drop = FALSE]
+        }
       }
       residuals <- regts(residuals, period = private$model_period)
       if (!missing(tol)) {
@@ -1267,7 +1276,7 @@ DynMdl <- R6Class("DynMdl",
       }
       
       # check solution:
-      fmax <- max(abs(self$static_residual_check()))
+      fmax <- max(abs(self$static_residual_check(include_all_eqs = TRUE)))
       if (is.na(fmax) || fmax > 2 * solve_options_$tolf) {
         warning("Dynare did not find a solution.")
       }
@@ -1303,7 +1312,7 @@ DynMdl <- R6Class("DynMdl",
       private$endo_data[private$model_period, colnames(solution)] <- solution
       
       # check solution:
-      fmax <- max(abs(self$residual_check()))
+      fmax <- max(abs(self$residual_check(include_all_eqs = TRUE)))
       if (is.na(fmax) || fmax > 2 * solve_options_$tolf) {
         warning("Dynare did not find a solution.")
       }
