@@ -8,7 +8,7 @@ run_dynare(mod_file, period, data, steady = TRUE,
   perfect_foresight = !missing(period) || !missing(data),
   scratch_dir = tempfile(), dynare_path = NULL, steady_options,
   perfect_foresight_solver_options, use_octave = Sys.which("matlab") ==
-  "")
+  "", exit_matlab = FALSE)
 }
 \arguments{
 \item{mod_file}{The name of a Dynare mod file. For models with trends,
@@ -24,7 +24,8 @@ when the perfect foresight solver is called.}
 
 \item{data}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 object with values for endogogenous and exogenous model variables used in
-the perfect foresight solver.}
+the perfect foresight solver. If the model has trends, then the timeseries 
+in \code{data} should include the trends.}
 
 \item{steady}{A logical, indicating wether the steady state should be 
 calculated (default is \code{TRUE}). If the steady state is calculated
@@ -41,7 +42,8 @@ deleted when the R session terminates.}
 \item{dynare_path}{Character string specifying the name of the 
 directory of the Dynare installation. On Linux it is usually not necessary 
 to the specify this argument. On Windows it is necessary to specify the path 
-of the Dynare installation.}
+of the Dynare installation. In you are running R in the  CPB 
+environment the path to Dynare is set automatically.}
 
 \item{steady_options}{Options passed to the \code{steady} command of
 Dynare. This should be a named list, which names corresponding to the Dynare
@@ -49,16 +51,25 @@ options. Specify a \code{NULL} value if the option has no value.
 Consult the documentation of  Dynare for a list of available options.
 Example: \code{steady_options = list(tolf = 1e-7, nocheck = NULL)}}
 
-\item{use_octave}{A logical. If \code{TRUE}, then
-Dynare is envoked with Octave, otherwise Matlab is used. By default 
-Matlab is used if available.}
-
-\item{pefect_foresight_solver_optios}{Options passed to the 
+\item{perfect_foresight_solver_options}{Options passed to the 
 \code{perfect_foresight_solver} command of
 Dynare. This should be a named list, which names corresponding to the Dynare
 options. Specify a \code{NULL} value if the option has no value.
 Consult the documentation of  Dynare for a list of available options.
 Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.}
+
+\item{use_octave}{A logical. If \code{TRUE}, then
+Dynare is envoked with Octave, otherwise Matlab is used. By default 
+Matlab is used if available.}
+
+\item{exit_matlab}{A logical specifying if Matlab
+should immediately  exit when the calcultions have finished 
+Matlab writes the output to a separate console. If \code{exit_matlab} is 
+\code{FALSE} (the default), then the R job waits until the user has closed 
+this console, or entered \code{exit} in the console. Otherwise the console 
+is automatically closed at the end of the calculation and all output is lost.
+This argument is ignored if Dynare is run with Octave. Octave does not 
+open a seperate console: all output appears in the same console used by R.}
 }
 \value{
 A list with the following components

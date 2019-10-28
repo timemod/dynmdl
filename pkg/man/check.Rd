@@ -17,7 +17,7 @@ also checks if the Blachard and  Kahn conditions are satisfied.
 mdl$check()
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \examples{

@@ -55,9 +55,9 @@ test_that("change_data works correctly with timeseries input (2)", {
 
 test_that("change_data handles errors correctly", {
   mdl2 <- mdl$clone(deep = TRUE)
-  msg <- "\"xxx\" is not an endogenous model variable."
+  msg <- "\"xxx\" is not an endogenous variable."
   expect_error(mdl2$change_endo_data(identity, names = c("y", "xxx")), msg)
-  msg <-  "The following names are no endogenous model variables: \"p\", \"xxx\"."
+  msg <-  "The following names are no endogenous variables: \"p\", \"xxx\"."
   expect_error(mdl2$change_endo_data(identity, names = c("p", "xxx")), msg)
   msg <- "argument fun is not a function"
   expect_error(mdl2$change_endo_data(2, names = "y"), msg)

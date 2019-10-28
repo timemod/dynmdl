@@ -21,7 +21,7 @@ whether the solve was successfully terminated or not.
           homotopy = FALSE, ...)
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{

@@ -2,14 +2,14 @@
 #' @importFrom nleqslv nleqslv
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom methods as
-solve_backward_model <- function(mdldef, calc, solve_period, data_period, 
+solve_backward_model <- function(model_index, mdldef, calc, solve_period, data_period, 
                                  endo_data, exo_data, f_dynamic, 
                                  get_back_jac, control, solver, 
                                  start_option, debug_eqs, ...) {
   
   if (calc == "internal") {
     f <- function(x, lags, leads, period_index, debug_eqs) {
-      return(get_res_back_dyn(mdldef$model_index, x, lags, leads, period_index, 
+      return(get_res_back_dyn(model_index, x, lags, leads, period_index, 
                               debug_eqs))
     }
   } else {

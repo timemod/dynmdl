@@ -13,8 +13,7 @@ islm_mdl(period, fit = FALSE)
 should be used}
 }
 \value{
-a \code{\link{DynMdl}} object or a \code{\link{FitMdl}} 
-object is argument \code{fit} is \code{TRUE}
+a \code{\link{DynMdl}} object.
 }
 \description{
 This function returns an example ISLM model, If argument \code{period} has

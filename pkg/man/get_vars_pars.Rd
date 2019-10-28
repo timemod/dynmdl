@@ -10,9 +10,9 @@ returns a list of all model variables and parameters. This makes it easy
 to directly evaluate expressions involving both model variables
 and parameters.
 
-If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 the variables do not include the the auxiliary endogenous and
-exogenous variables used in the fit procedure.
+exogenous variables used in the fit method.
 }
 \section{Usage}{
 
@@ -22,7 +22,7 @@ mdl$get_vars_pars(period = mdl$get_data_period(), trend = TRUE)
 
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{

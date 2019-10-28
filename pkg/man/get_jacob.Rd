@@ -28,7 +28,7 @@ mdl$get_jacob(sparse = FALSE)
 mdl$get_back_jacob(period, sparse = FALSE)
 
 }
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{

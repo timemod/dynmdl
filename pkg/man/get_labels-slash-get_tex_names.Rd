@@ -23,7 +23,7 @@ mdl$get_labels()
 mdl$get_tex_names()
 
 }
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Methods}{

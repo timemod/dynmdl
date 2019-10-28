@@ -15,7 +15,7 @@ mdl$set_param_values(value, names, pattern)
 
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{

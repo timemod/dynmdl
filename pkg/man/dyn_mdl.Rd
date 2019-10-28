@@ -2,7 +2,7 @@
 % Please edit documentation in R/dyn_mdl.R
 \name{dyn_mdl}
 \alias{dyn_mdl}
-\title{Creates a \code{\link{DynMdl}} or  \code{\link{FitMdl}} object from a mod file}
+\title{Creates a \code{\link{DynMdl}} object from a mod file}
 \usage{
 dyn_mdl(mod_file, period, data, base_period = NULL, calc = c("R",
   "bytecode", "dll", "internal"), fit_mod_file, debug = FALSE, dll_dir,
@@ -60,9 +60,10 @@ or exogenous variables were declared but not used in the model block.}
 a warning is given for each parameter that has not been initialized in the
 mod file. Uninitialized parameters are always set to zero.}
 
-\item{fit}{a logical. If \code{TRUE}, then the function returns
-a  \code{FitMdl} object if a fit block has been found in the mod file.
-If \code{FALSE} then this function does not return a \code{FitMdl} object.}
+\item{fit}{a logical (default \code{TRUE}) indicating if the \code{DynMdl} 
+object returned by this function should implement the fit procedure if the 
+mod file contains a fit block. Specify \code{FALSE} if the mod file  has a fit
+block while you do not want to use the fit procedure.}
 
 \item{fit_fixed_period}{a logical. If \code{TRUE}, then the fit conditions are
 derived for a fixed period, treating lags and leads as exogenous variables.
@@ -73,13 +74,12 @@ stacked-time equations.}
 See Details.}
 }
 \value{
-A \code{DynMdl} object or, if the mod file contains a
-fit block, a \code{\link{FitMdl}} object.
+A \code{DynMdl} object.
 }
 \description{
 Creates a \code{\link{DynMdl}} object from a mod file. If the mod file
-contains a fit block, then this function returns a \code{\link{FitMdl}} 
-object, which is an extension of a \code{DynMdl} object.
+contains a fit block, then the \code{DynMdl} object implements the fit 
+procedure (except if argument \code{fit} is \code{FALSE}).
 }
 \details{
 \subsection{Latex options}{

@@ -44,7 +44,7 @@ mdl$get_static_endos(pattern, names)
 mdl$get_static_data(pattern, names)
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{
@@ -74,21 +74,21 @@ variables are skipped. \code{"warn"} does however give a warning.}
 
 \itemize{
 \item \code{set_static_endos}: Set the static values of one or more 
-endogenous variables (excluding fit instruments for \code{\link{FitMDl}} objects).
+endogenous variables (excluding fit instruments for \code{\link{DynMdl}} objects).
 \item \code{set_static_exos}: Set the static values of one or more 
 exogenous variables.
 \item \code{set_static_exo_values}: Give more than one exogenous variable 
 the same static value.
 \item \code{set_static_data}: Set the static values of one or more 
 endogenous or exogenous variable  
-(excluding fit instruments for \code{\link{FitMDl}} objects).
+(excluding fit instruments for \code{\link{DynMdl}} objects).
 \item \code{get_static_endos}: Returns the static values of one or more 
-endogenous variables. For \code{\link{FitMDl}} objects the static values
+endogenous variables. For \code{\link{DynMdl}} objects the static values
 of the fit instruments are not included (they are always zero). 
 \item \code{get_static_exos}: Returns the static values of one or more 
 exogenous variables.
 \item \code{get_static_data}: Returns the static values of the model 
-variables  (excluding fit instruments for \code{\link{FitMDl}} objects).
+variables  (excluding fit instruments for \code{\link{DynMdl}} objects).
 }
 }
 

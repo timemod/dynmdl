@@ -7,9 +7,9 @@ object to the model data}
 \description{
 This method of R6 class \code{\link{DynMdl}} 
 transfers data from a timeseries object to the model data
-(both endogenous and exogenous). For \code{\link{FitMdl}} objects,
-\code{set_data} can also be used to modify fit instruments and the  
-Lagrange multipliers used in the fit method.
+(both endogenous and exogenous). If the model implements the fit method,
+then \code{set_data} can also be used to modify fit instruments and the  
+Lagrange multipliers.
 }
 \section{Usage}{
 
@@ -29,7 +29,9 @@ mdl$set_data(data, names = colnames(data),
 \describe{
 \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
  object. If \code{data} has labels, then \code{set_data} will also update
-the labels of the corresponding model variables}
+the labels of the corresponding model variables. 
+If the model has trends, then the timeseries in \code{data} should 
+include the trends.}
 \item{\code{names}}{a character vector with variable names. Defaults to the
 column names of \code{data}. If \code{data} does not have column names,
 then argument \code{names} is mandatory}

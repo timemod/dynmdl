@@ -1,11 +1,6 @@
 solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path, 
-                                  model_options, solve_options, use_octave) {
-  
-  solve_options_ = list(tolf = 1e-8, tolx = 1e-8)
-  if (!missing(solve_options)) {
-    solve_options_[names(solve_options)] <- solve_options
-  }
-  
+                                  model_options, solve_options, use_octave,
+                                  exit_matlab) {
   #
   # create scratch directory
   #
@@ -29,15 +24,16 @@ solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path,
     # This we do because of fit procedure.
     sol  <- run_dynare_internal(model_name, mod_file, 
                                 period = mdl$get_period(), 
-                                data = cbind(mdl$get_exo_data_raw(),
-                                             mdl$get_endo_data_raw()),
+                                data = cbind(mdl$get_all_endo_data(),
+                                             mdl$get_all_exo_data()),
                                 steady = FALSE, perfect_foresight = TRUE,
                                 scratch_dir = scratch_dir, 
                                 dynare_path = dynare_path,
                                 perfect_foresight_solver_options = 
                                                             solve_options,
+                                mod_file_in_scratch_dir = TRUE,
                                 use_octave = use_octave,
-                                mod_file_in_scratch_dir = TRUE)$endo_data
+                                exit_matlab = exit_matlab)$endo_data
   } else {
     sol <- run_dynare_internal(model_name, mod_file, mdl = mdl,
                                steady = FALSE, perfect_foresight = TRUE,
@@ -45,8 +41,10 @@ solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path,
                                dynare_path = dynare_path,
                                perfect_foresight_solver_options = 
                                                             solve_options,
-                               use_octave = use_octave, rename_aux_vars = FALSE,
-                               mod_file_in_scratch_dir = TRUE)$endo_data
+                               rename_aux_vars = FALSE,
+                               mod_file_in_scratch_dir = TRUE,
+                               use_octave = use_octave,
+                               exit_matlab = exit_matlab)$endo_data
   } 
   
 

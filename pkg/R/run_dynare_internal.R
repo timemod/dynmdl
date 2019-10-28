@@ -2,13 +2,30 @@
 #' @importFrom tools file_path_as_absolute
 #' @importFrom tictoc tic
 #' @importFrom tictoc toc
+#' @importFrom utils read.csv
 run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data, 
                                  steady, perfect_foresight, scratch_dir, 
                                  dynare_path, steady_options,
                                  perfect_foresight_solver_options,
-                                 use_octave, rename_aux_vars = TRUE,
-                                 mod_file_in_scratch_dir = FALSE) {
+                                 rename_aux_vars = TRUE,
+                                 mod_file_in_scratch_dir = FALSE,
+                                 use_octave, exit_matlab) {
   
+  
+  # if DynMdl is running on CPB, set the appropriate Dynare path
+  dynare_path_cpb <- "m:/p_dynare/dynare/4.5.7_optim_only"
+  if (is.null(dynare_path) && .Platform$OS.type == "windows" &&
+      file.exists(dynare_path_cpb)) {
+    dynare_path <- dynare_path_cpb
+  }
+  
+  write_header <- function(text) {
+    line <- paste(rep("=", 80), collapse = "")
+    cat(paste0("\n", line, "\n"))
+    cat(paste0(text, "\n"))
+    cat(paste0(line, "\n\n"))
+    return()
+  }
 
   if (perfect_foresight) {
     
@@ -19,9 +36,8 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
       
       period <- as.period_range(period)
       
-      cat("\n======================================================================\n")
-      cat("Parsing model with dynmdl to obtain information about the model\n")
-      cat("======================================================================\n\n")
+      write_header("Parsing model with dynmdl to check lags/leads/aux. vars")
+     
       mdl <- dyn_mdl(mod_file, period = period, max_laglead_1 = TRUE, 
                      nostrict = TRUE, fit = FALSE)
       if (!missing(data)) {
@@ -38,6 +54,8 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
       }
       period <- mdl$get_period()
     }
+    
+    mdldef <- mdl$get_mdldef()
 
     #
     # write initval file (only when eiter mdl or data have  been specified)
@@ -46,8 +64,9 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     use_initval_file <- !missing(data) || !missing(mdl)
     if (use_initval_file) {
       initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.m"))
-      write_initval_file_internal(initval_file, mdl$get_mdldef(), period, 
-                                  mdl$get_endo_data_raw(), mdl$get_exo_data_raw(),
+      write_initval_file_internal(initval_file, mdldef, period, 
+                                  mdl$get_all_endo_data(), 
+                                  mdl$get_all_exo_data(),
                                   rename_aux_vars = rename_aux_vars)
     }
     toc()
@@ -130,27 +149,18 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   dir.create("output", showWarnings = FALSE)
   
   if (use_octave) {
-    
-    
-    cat("\n====================================================================\n")
-    cat("Running Octave\n")
-    cat("====================================================================\n")
-    
-    
+    write_header("Running Octave:")
     system2("octave", args =  sprintf("run_%s.m", model_name))
-    
+    write_header("Octave job finished.")
   } else {
-    
-    cat("=====================================================================\n")
-    cat("Running Matlab\n")
-    cat("=====================================================================\n")
-    
+    write_header("Running Matlab:")
+    matlab_command <- sprintf("\"run('run_%s.m');\"", model_name)
+    if (exit_matlab) matlab_command <- paste0(matlab_command, "exit;")
     system2("matlab", args =  c("-r", "-nosplash", "-nodesktop", "-wait",
-                                sprintf("\"run('run_%s.m');exit;\"", 
-                                              model_name)))
-    
+                                matlab_command))
+    write_header("Matlab job finished.")
   }
-  
+    
   setwd(cwd)
   
   #
@@ -159,6 +169,9 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   output_dir <- file.path(scratch_dir, "output")
   endo_name_file <- file.path(output_dir, paste0(model_name, "_endo_names.txt"))
  
+  if (!file.exists(endo_name_file)) {
+    stop("Dynare job did not succced. Check output.")
+  }
   
   endo_names_dynare  <- read.csv(endo_name_file, stringsAsFactors = FALSE,
                                  header = FALSE, sep = "")[[1]]
@@ -185,13 +198,9 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     
     endo_data <- t(as.matrix(read.csv(endo_data_file, header = FALSE)))
     
-    
-    # NOTE: mdl$get_max_endo_lag() is always <=1 . mdl$get_max_lag() returns
-    # the maximum lag in the original model (without lags/leads > 1 removed)
-    max_lag <- mdl$get_max_lag(data = FALSE)
-    max_lead <- mdl$get_max_lead(data = FALSE)
-    dyn_data_period <- period_range(start_period(period) - max_lag,
-                                    end_period(period)   + max_lead)
+  
+    dyn_data_period <- period_range(start_period(period) - mdldef$max_lag,
+                                    end_period(period)   + mdldef$max_lead)
     
     #
     # endogenous variables: return dynare result for the model period

@@ -27,9 +27,11 @@
 #' object, or an object that can be coerced to 
 #' \code{\link[regts]{period_range}},}
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
-#' object with values for endogogenous and exogenous model variables.
+#' object with values for endogogenous and exogenous model variables, 
+#' including fit instruments and Lagrange multipliers used in the fit method.
 #' If \code{data} has labels, then these labels are used to update the model 
-#' labels.}
+#' labels. If the model has trends, then the timeseries in \code{data} should 
+#' include the trends.}
 #'  \item{\code{upd_mode}}{the update mode, a character string specifying
 #' how the timeseries in object \code{data} are transferred to the 
 #' model data. For  \code{"upd"} (standard update, default), the timseseries
@@ -157,18 +159,24 @@ NULL
 
 #' \code{\link{DynMdl}} methods: Retrieve timeseries from the model data
 #' @name get_data-methods
-#' @aliases get_data get_endo_data get_exo_data get_trend_data
+#' @aliases get_data get_endo_data get_exo_data get_trend_data, get_all_endo_data
+#' get_all_exo_data
 #' @description
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' can be used to retrieve timeseries from the model data.
 #'
-#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 #' \code{get_data} also returns the fit instruments. In contrast,
 #' \code{get_endo_data} does not return these fit instruments.
 #' Both \code{get_data} and \code{get_endo_data} do not return
-#' the Lagrange multipliers used in the fit procedure. Use method  
-#' \code{\link{get_lagrange}} to obtain these Lagrange multipliers.
-#'
+#' the Lagrange multipliers used in the fit method. Use method  
+#' \code{\link{get_lagrange}} to obtain these Lagrange multipliers. 
+#' 
+#' \code{\link{get_all_endo_data}} returns all endogenous variables, 
+#' fit instruments and Lagrange multipliers, as well as the auxiliary 
+#' endogenous variables used when \code{max_laglead_1 = TRUE}.
+#' #' \code{\link{get_all_exo_data}} returns all exogenous variables, 
+#' including exogenous variables used by the fit method.
 #' @section Usage:
 #' \preformatted{
 #' 
@@ -181,9 +189,14 @@ NULL
 #' mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
 #' 
 #' mdl$get_trend_data(pattern, names, period = mdl$get_data_period())
+#' 
+#' mdl$get_all_endo_data()
+#'  
+#' mdl$get_all_exo_data()
+#' 
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -204,7 +217,7 @@ NULL
 #' \itemize{
 #' 
 #' \item \code{get_data}: All model variables: exogenous and endogenous model
-#' variables, trends variables, and fit instruments for \code{\link{FitMdl}}
+#' variables, trends variables, and fit instruments for \code{\link{DynMdl}}
 #' objects
 #' \item \code{get_endo_data}: Endogenous model variables, excluding
 #' fit instruments.
@@ -227,9 +240,9 @@ NULL
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
 #' transfers data from a timeseries object to the model data
-#' (both endogenous and exogenous). For \code{\link{FitMdl}} objects,
-#' \code{set_data} can also be used to modify fit instruments and the  
-#' Lagrange multipliers used in the fit method.
+#' (both endogenous and exogenous). If the model implements the fit method,
+#' then \code{set_data} can also be used to modify fit instruments and the  
+#' Lagrange multipliers.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -246,7 +259,9 @@ NULL
 #' \describe{
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 #'  object. If \code{data} has labels, then \code{set_data} will also update
-#' the labels of the corresponding model variables}
+#' the labels of the corresponding model variables. 
+#' If the model has trends, then the timeseries in \code{data} should 
+#' include the trends.}
 #' \item{\code{names}}{a character vector with variable names. Defaults to the
 #' column names of \code{data}. If \code{data} does not have column names,
 #' then argument \code{names} is mandatory}
@@ -328,7 +343,7 @@ NULL
 #' @aliases set_endo_values set_exo_values
 #' @description
 #' This method of R6 class \code{\link{DynMdl}} 
-#' can be used to set the values of the model data
+#' can be used to set the values of the model data.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -339,13 +354,15 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
 #' \describe{
 #' \item{\code{value}}{a numeric vector of length 1 or with the same length
-#' as the length of the range of \code{period}}
+#' as the length of the range of \code{period}. 
+#' If the model has trends, then the values should 
+#' include the trends.}
 #' \item{\code{names}}{a character vector with variable names}
 #' \item{\code{pattern}}{a regular expression}
 #' \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
@@ -381,6 +398,8 @@ NULL
 #' @description
 #' These methods of R6 class \code{\link{DynMdl}} changes endogenous and/or 
 #' exogenous model data by applying a function.
+#' If the model has trends, then the change is applied to the trended
+#' model variables.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -391,7 +410,7 @@ NULL
 #' mdl$change_data(fun, names, pattern, period = mdl$get_data_period(), ...)
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -411,10 +430,9 @@ NULL
 #' \describe{
 #' \item{\code{changes_endo_data}}{Changes endogenous model variables}
 #' \item{\code{change_exo_data}}{Changes exogenous model variables}
-#' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables.
-#' For \code{\link{FitMdl}} objects,
-#' \code{change_data} can also be used to modify fit instruments and the  
-#' Lagrange multipliers used in the fit method.}
+#' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables,
+#' including fit instruments and Lagrange multipliers used in the fit method 
+#' (if present).}
 #' }
 #' @examples
 #' mdl <- islm_mdl(period = "2017Q1/2017Q3")
@@ -458,13 +476,13 @@ NULL
 #'
 #' @description
 #' This method of R6 class \code{\link{DynMdl}}
-#' returns a deep copy of an \code{DynMdl} object
+#' returns a deep copy of a \code{DynMdl} object
 #' @section Usage:
 #' \preformatted{
 #' mdl$copy()
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Details:
 #' \code{mdl$copy()} is  equivalent to \code{mdl$clone(deep = TRUE)}
@@ -485,7 +503,7 @@ NULL
 #' mdl$set_labels(labels)
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -520,7 +538,7 @@ NULL
 #' mdl$get_tex_names()
 #' 
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #' @section Methods:
 #' \itemize{
 #' \item \code{get_labels}: Returns the labels (long names), 
@@ -544,7 +562,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -552,9 +570,15 @@ NULL
 #' \item{\code{tol}}{the tolerance parameter.
 #' If specified, then the return value does not include columns for the equations
 #' whose residuals are smaller than \code{tol}}
+#'  \item{\code{include_all_eqs}}{a logical value (default \code{FALSE}).  
+#' If \code{TRUE}, then the all equations, including fit equations and 
+#' auxiliary equations (if present),  are included in the residual check.
+#' The auxiliary equations are extra equations created when the model
+#' has lags or leads greater than 1 and if \code{dynmdl} was called
+#' with \code{max_laglead_1 = TRUE}.}
 #' \item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).  
-#' This argument is only used if \code{mdl} is a \code{\link{FitMdl}} object. 
-#' If \code{TRUE}, then the fit equations are included in the residual check.}
+#' If \code{TRUE}, then fit equations (if present) are included in the residual 
+#' check. Ignored if \code{include_all_eqs} is \code{TRUE}.}
 #' \item{\code{debug_eqs}}{Debug equations (default \code{FALSE}). Only used
 #' for the internal calculation mode (\code{calc == "internal"},
 #' see \code{\link{dyn_mdl}}). If
@@ -577,17 +601,23 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
 #' \describe{
 #' \item{\code{tol}}{the tolerance parameter. 
 #' If specified, then return value does not include equations whose residuals 
-#' are smaller than \code{tol}}
-#'  \item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).  
-#' This argument is only used if \code{mdl} is a \code{\link{FitMdl}} object. 
-#' If \code{TRUE}, then the fit equations are included in the residual check.}
+#' are smaller than \code{tol}.}
+#'  \item{\code{include_all_eqs}}{a logical value (default \code{FALSE}).  
+#' If \code{TRUE}, then the all equations, including fit equations and 
+#' auxiliary equations (if present),  are included in the residual check.
+#' The auxiliary equations are extra equations created when the model
+#' has lags or leads greater than 1 and if \code{dynmdl} was called
+#' with \code{max_laglead_1 = TRUE}.}
+#' \item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).  
+#' If \code{TRUE}, then fit equations (if present) are included in the residual 
+#' check. Ignored if \code{include_all_eqs} is \code{TRUE}.}
 #' \item{\code{debug_eqs}}{Debug equations (default \code{FALSE}). Only used
 #' for the internal calculation mode (\code{calc == "internal"},
 #' see \code{\link{dyn_mdl}}). If
@@ -629,7 +659,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -677,7 +707,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -720,7 +750,7 @@ NULL
 #'           homotopy = FALSE, ...)
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -778,7 +808,7 @@ NULL
 #'  mdl$get_original_equations(i)
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -796,16 +826,18 @@ NULL
 #' print(mdl$get_equations())
 NULL
 
-#' \code{\link{DynMdl}} methods: Returns the maximum lag or lead of the model
+#' \code{\link{DynMdl}} methods: Returns the maximum lag or lead
 #'
 #' @name get_max_lag/get_max_lead
 #' @aliases get_max_lag get_max_lead
 #'
 #' @description
 #' Methods \code{get_max_lag} and \code{get_max_lead} of R6 class 
-#' \code{\link{DynMdl}} return the maximum lag and lead, respectively.
-#'  the maximum a character vector 
-#' 
+#' \code{\link{DynMdl}} return the maximum lag and lead of the original model, 
+#' respectively. These are the maximum lag and lead in the equations
+#' specified in the mod file. The actual  maximum lag or lead will be different 
+#' if \code{max_laglead_1 == TRUE}  and if there are endogenous lags or 
+#' leads greater than 1.
 #' @section Usage:
 #' \code{DynMdl} methods:
 #' \preformatted{
@@ -814,7 +846,7 @@ NULL
 #'  
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 NULL
 
 #' \code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model 
@@ -833,7 +865,7 @@ NULL
 #' mdl$check()
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @examples
 #' mdl <- islm_mdl()
@@ -857,7 +889,7 @@ NULL
 #' mdl$get_eigval()
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @seealso \code{\link{check}} 
 NULL
@@ -902,7 +934,7 @@ NULL
 #' mdl$get_static_data(pattern, names)
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #' \describe{
@@ -927,21 +959,21 @@ NULL
 #' @section Methods:
 #' \itemize{
 #' \item \code{set_static_endos}: Set the static values of one or more 
-#' endogenous variables (excluding fit instruments for \code{\link{FitMDl}} objects).
+#' endogenous variables (excluding fit instruments for \code{\link{DynMdl}} objects).
 #' \item \code{set_static_exos}: Set the static values of one or more 
 #' exogenous variables.
 #' \item \code{set_static_exo_values}: Give more than one exogenous variable 
 #' the same static value.
 #' \item \code{set_static_data}: Set the static values of one or more 
 #' endogenous or exogenous variable  
-#' (excluding fit instruments for \code{\link{FitMDl}} objects).
+#' (excluding fit instruments for \code{\link{DynMdl}} objects).
 #' \item \code{get_static_endos}: Returns the static values of one or more 
-#' endogenous variables. For \code{\link{FitMDl}} objects the static values
+#' endogenous variables. For \code{\link{DynMdl}} objects the static values
 #' of the fit instruments are not included (they are always zero). 
 #' \item \code{get_static_exos}: Returns the static values of one or more 
 #' exogenous variables.
 #' \item \code{get_static_data}: Returns the static values of the model 
-#' variables  (excluding fit instruments for \code{\link{FitMDl}} objects).
+#' variables  (excluding fit instruments for \code{\link{DynMdl}} objects).
 #' }
 #' @examples
 #' mdl <- islm_mdl()
@@ -963,9 +995,9 @@ NULL
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' return the names of the model variables or parameters
 #'
-#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 #' \code{get_endo_names} and \code{get_exo_names} do not include the names of 
-#' the auxiliary endogenous and exogenous variables used in the fit procedure.
+#' the auxiliary endogenous and exogenous variables used in the fit method.
 #' Use \code{\link{get_instrument_names}} to obtain the names of the fit 
 #' instruments.
 #' 
@@ -979,7 +1011,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -1012,7 +1044,7 @@ NULL
 #' mdl$set_param(p, name_err = c("stop", "warn", "silent"))
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #' @section Arguments:
 #'
 #' \describe{
@@ -1042,7 +1074,7 @@ NULL
 #' mdl$get_param(pattern, names)
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #' @section Arguments:
 #'
 #' \describe{
@@ -1087,7 +1119,7 @@ NULL
 #' mdl$get_back_jacob(period, sparse = FALSE)
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #' 
 #' @section Arguments:
 #'
@@ -1134,7 +1166,7 @@ NULL
 #' mdl$get_solve_status()
 #'
 #' }
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Details:
 #'
@@ -1168,7 +1200,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -1206,9 +1238,9 @@ NULL
 #' to directly evaluate expressions involving both model variables
 #' and parameters.
 #'
-#' If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+#' If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 #' the variables do not include the the auxiliary endogenous and
-#' exogenous variables used in the fit procedure.
+#' exogenous variables used in the fit method.
 #'
 #' @section Usage:
 #' \preformatted{
@@ -1217,7 +1249,7 @@ NULL
 #'
 #' }
 #'
-#' \code{mdl} is an \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object
 #'
 #' @section Arguments:
 #'
@@ -1288,7 +1320,8 @@ NULL
 #' mdl$solve_steady_dynare(scratch_dir = tempfile(), dynare_path = NULL,
 #'                         model_options = list(), 
 #'                         solve_options = list(tolf = 1e-8),
-#'                         use_octave = Sys.which("matlab") == "")
+#'                         use_octave = Sys.which("matlab") == "",
+#'                         exit_matlab = FALSE)
 #' }
 #' 
 #' \code{mdl} is a \code{\link{DynMdl}} object
@@ -1301,7 +1334,8 @@ NULL
 #' \item{\code{dynare_path}}{Character string specifying the name of the 
 #' directory of the Dynare installation. On Linux it is usually not necessary 
 #' to the specify this argument. On Windows it is necessary to specify the path 
-#' of the Dynare installation.}
+#' of the Dynare installation. In you are running R in the  CPB 
+#' environment the path to Dynare is set automatically.}
 #' \item{\code{model_options}}{Options passed to the \code{model} command of
 #' Dynare. This should be a named list, which names corresponding to the Dynare
 #' options. Specify a \code{NULL} value if the option has no value.
@@ -1317,6 +1351,14 @@ NULL
 #' \item{\code{use_octave}}{A logical. If \code{TRUE}, then
 #' Dynare is envoked with Octave, otherwise Matlab is used. By default 
 #' Matlab is used if available.}
+#' \item{\code{exit_matlab}}{A logical specifying if Matlab
+#' should immediately  exit when the calcultions have finished 
+#' Matlab writes the output to a separate console. If \code{exit_matlab} is 
+#' \code{FALSE} (the default), then the R job waits until the user has closed 
+#' this console, or entered \code{exit} in the console. Otherwise the console 
+#' is automatically closed at the end of the calculation and all output is lost.
+#' This argument is ignored if Dynare is run with Octave. Octave does not 
+#' open a seperate console: all output appears in the same console used by R.}
 #' }
 #' 
 #' @section Value:
@@ -1341,7 +1383,8 @@ NULL
 #' mdl$solve_dynare(scratch_dir = tempfile(), 
 #'                  dynarere_path = NULL, model_options = list(), 
 #'                  solve_options = list(tolf = 1e-8, tolx = 1e-8)),
-#'                  use_octave = Sys.which("matlab") == "") 
+#'                  use_octave = Sys.which("matlab") == "",
+#'                  exit_matlab = FALSE) 
 #' }
 #' 
 #' \code{mdl} is a \code{\link{DynMdl}} object
@@ -1354,7 +1397,8 @@ NULL
 #' \item{\code{dynare_path}}{Character string specifying the name of the 
 #' directory of the Dynare installation. On Linux it is usually not necessary 
 #' to the specify this argument. On Windows it is necessary to specify the path 
-#' of the Dynare installation.}
+#' of the Dynare installation. In you are running R in the CPB 
+#' environment the path to Dynare is set automatically.}
 #' \item{\code{model_options}}{Options passed to the \code{model} command of
 #' Dynare. This should be a named list, which names corresponding to the Dynare
 #' options. Specify a \code{NULL} value if the option has no value.
@@ -1370,6 +1414,14 @@ NULL
 #' #' \item{\code{use_octave}}{A logical. If \code{TRUE}, then
 #' Dynare is envoked with Octave, otherwise Matlab is used. By default 
 #' Matlab is used if available.}
+#'  \item{\code{exit_matlab}}{A logical specifying if Matlab
+#' should immediately  exit when the calcultions have finished 
+#' Matlab writes the output to a separate console. If \code{exit_matlab} is 
+#' \code{FALSE} (the default), then the R job waits until the user has closed 
+#' this console, or entered \code{exit} in the console. Otherwise the console 
+#' is automatically closed at the end of the calculation and all output is lost.
+#' This argument is ignored if Dynare is run with Octave. Octave does not 
+#' open a seperate console: all output appears in the same console used by R.}
 #' }
 #' @importFrom tools file_path_sans_ext
 #' @examples

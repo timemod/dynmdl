@@ -3,6 +3,7 @@
 # @param mod_file the filename of the mod file
 # @param instruments a list of instruments used in the fit procedure
 #' @importFrom gsubfn gsubfn
+#' @importFrom stats aggregate
 # @return a list with information about the derivatives
 get_fit_conditions <- function(mod_file,  instruments, latex_basename, 
                                fixed_period = TRUE) {
@@ -10,9 +11,15 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   # call C++ function compute_derivatives
   model_info <- compute_derivatives(mod_file, latex_basename, instruments, 
                                     fixed_period)
-  list2env(model_info, envir = environment())
-  list2env(dynamic_model, envir = environment())
-
+  
+  endo_names <- model_info$endo_names
+  exo_names <- model_info$exo_names
+  param_names <- model_info$param_names
+  dynamic_model <- model_info$dynamic_model
+  instr_has_lag <- dynamic_model$instr_has_lag
+  instr_deriv <- dynamic_model$instr_deriv
+  endo_deriv <- dynamic_model$endo_deriv
+  
   # Check if there are lags/leads on instruments. Dynare ignores lags and 
   # leads on exogeneous variables when computing the derivatives, therefore
   # the fit procedure cannot handle this situation (actually it would be fine
@@ -25,6 +32,9 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
                 "."))
   }
   
+
+
+  
   #
   # create list of auxiliarty variables for the fit procedure
   #
@@ -34,7 +44,7 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   exo_vars <- paste(endo_names, "exo", sep = "_")
   sigmas <- paste("sigma", instruments, sep = "_")
   old_instruments <- paste0(instruments, "_old")
-  initialized_sigmas <- intersect(sigmas, model_info$param_names)
+  initialized_sigmas <- intersect(sigmas, param_names)
   
   # TODO: check that the intersection of fit_vars, exo_vars,
   # l_vars and sigmas with endo_names and exo_names is zero.
@@ -143,7 +153,7 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   fit_cond <- list(vars = endo_names, l_vars = l_vars, fit_vars = fit_vars,
                    exo_vars = exo_vars, instruments = instruments, 
                    old_instruments = old_instruments, sigmas = sigmas,
-                   orig_exos = setdiff(model_info$exo_names, instruments),
+                   orig_exos = setdiff(exo_names, instruments),
                    instr_equations = instr_equations,
                    endo_equations = endo_equations,
                    initialized_sigmas = initialized_sigmas)

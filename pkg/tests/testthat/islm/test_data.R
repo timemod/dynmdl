@@ -68,7 +68,8 @@ test_that("set_data, set_endo_values and set_exo_values works correctly (1)", {
   expect_equal(mdl3$get_data(names = "i"), data[, "i", drop = FALSE])
   
   expect_equal(mdl3$get_data(period = "2017"), data["2017"])
-  expect_equal(mdl3$get_data(period = "2017m1"), data["2017q1"])
+  expect_error(expect_equal(mdl3$get_data(period = "2017m1"), data["2017q1"]),
+               "Period 2017M01 has a higher frequency than the model period 2017Q1/2017Q2.")
   
   expect_equal(mdl3$get_data(names = "g"), data[, "g", drop = FALSE])
 })
@@ -123,14 +124,14 @@ test_that("get_data errors", {
       "\"aap\" is not a model variable."
   )
   
-  msg <- "The following names are no endogenous model variables: \"aap\", \"g\"."
+  msg <- "The following names are no endogenous variables: \"aap\", \"g\"."
   expect_error(
     mdl$get_endo_data(names = c("aap", "g"), pattern = "^y"), msg
   )
   
   expect_error(
     mdl$get_exo_data(names = c("aap", "g"), pattern = "^y"),
-    "\"aap\" is not an exogenous model variable."
+    "\"aap\" is not an exogenous variable."
   )
   
   expect_warning(expect_null(mdl$get_data(pattern = "xxx")),

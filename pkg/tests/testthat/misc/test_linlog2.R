@@ -96,14 +96,19 @@ test_that("sigma_uy1 > 0", {
   #  2)  (y1, y2) = (2, 1)
   
   # first attempt: find solution (2)
+  # this solution is no valid soluiton, since the steady state
+  # values of the fit instruments and lagrange multiplier
+  # are signifiucantly differently from 0
   mdl$set_static_endos(c(y1 = 2, y2 = 0.8))
-  mdl$solve_steady(control = list(silent = TRUE, trace = TRUE, 
-                                  allow_singular = TRUE))
+  expect_warning(
+    mdl$solve_steady(control = list(silent = TRUE, trace = TRUE, 
+                                    allow_singular = TRUE)),
+    paste("The steady state values for the fit instruments and lagrange",
+          "multipliers are significantly different from 0."))
   expect_equal(mdl$get_solve_status(), "OK")
   expect_equal(mdl$get_static_endos(), c(y1 = 2, y2 = 1))
   expect_known_value(mdl$get_static_jacob(),  
                      "expected_output/linlog2_steady_sol2.rds")
-                           
   
   # second attempt: find solution (1)
   mdl$set_static_endos(c(y1 = 1, y2 = 0.8))

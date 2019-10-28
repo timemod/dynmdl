@@ -1,5 +1,11 @@
 write_mod_file_internal <- function(mod_file, mdldef, equations, model_options) {
   
+  
+  if (is.null(equations)) {
+    stop(paste("Methods solve_steady_dynare and solve_dynare cannot be used",
+               "for DynMdl object created with dynmdl version < 1.0."))
+  }
+  
   #
   # local functions
   #
@@ -48,7 +54,7 @@ write_mod_file_internal <- function(mod_file, mdldef, equations, model_options) 
     writeLines("\nmodel;", con = output)
   } else {
     writeLines(paste0("\nmodel(", get_dynare_option_string(model_options), 
-                      ");"), con = out)
+                      ");"), con = output)
   }
   for (eq in equations) {
     eq <- paste0(eq, ";")

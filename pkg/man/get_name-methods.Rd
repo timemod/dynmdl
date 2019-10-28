@@ -11,9 +11,9 @@ parameters}
 These methods of R6 class \code{\link{DynMdl}} 
 return the names of the model variables or parameters
 
-If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 \code{get_endo_names} and \code{get_exo_names} do not include the names of 
-the auxiliary endogenous and exogenous variables used in the fit procedure.
+the auxiliary endogenous and exogenous variables used in the fit method.
 Use \code{\link{get_instrument_names}} to obtain the names of the fit 
 instruments.
 }
@@ -28,7 +28,7 @@ mdl$get_par_names()
 
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{

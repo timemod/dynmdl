@@ -9,7 +9,7 @@
 \method{all.equal}{DynMdl}(target, current, ...)
 }
 \arguments{
-\item{target}{and \code{DynMdl} (or \code{\link{FitMdl}}) object}
+\item{target}{and \code{DynMdl} object}
 
 \item{current}{another \code{DynMdl} object, to be compared with
 \code{target}}
@@ -22,9 +22,9 @@ Either \code{TRUE} or a character vector describing the
 differences between target and current.
 }
 \description{
-\code{all.equal(x, y)} is a utility to compare R objects x and y testing
-near equality. If they are different, comparison is still made to some
-extent, and a report of the differences is returned. Do not use
+\code{all.equal(x, y)} is a utility to compare R objects \code{x} and 
+\code{y} testing near equality. If they are different, comparison is still 
+made to some extent, and a report of the differences is returned. Do not use
 \code{all.equal} directly in if expressions - use
 \code{isTRUE(all.equal(...))}.
 }

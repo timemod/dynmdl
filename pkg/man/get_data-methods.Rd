@@ -5,18 +5,26 @@
 \alias{get_data}
 \alias{get_endo_data}
 \alias{get_exo_data}
-\alias{get_trend_data}
+\alias{get_trend_data,}
+\alias{get_all_endo_data}
+\alias{get_all_exo_data}
 \title{\code{\link{DynMdl}} methods: Retrieve timeseries from the model data}
 \description{
 These methods of R6 class \code{\link{DynMdl}} 
 can be used to retrieve timeseries from the model data.
 
-If the \code{DynMdl} object is also a \code{\link{FitMdl}} object, then
+If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 \code{get_data} also returns the fit instruments. In contrast,
 \code{get_endo_data} does not return these fit instruments.
 Both \code{get_data} and \code{get_endo_data} do not return
-the Lagrange multipliers used in the fit procedure. Use method  
-\code{\link{get_lagrange}} to obtain these Lagrange multipliers.
+the Lagrange multipliers used in the fit method. Use method  
+\code{\link{get_lagrange}} to obtain these Lagrange multipliers. 
+
+\code{\link{get_all_endo_data}} returns all endogenous variables, 
+fit instruments and Lagrange multipliers, as well as the auxiliary 
+endogenous variables used when \code{max_laglead_1 = TRUE}.
+#' \code{\link{get_all_exo_data}} returns all exogenous variables, 
+including exogenous variables used by the fit method.
 }
 \section{Usage}{
 
@@ -31,9 +39,14 @@ mdl$get_endo_data(pattern, names, period = mdl$get_data_period(),
 mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
 
 mdl$get_trend_data(pattern, names, period = mdl$get_data_period())
+
+mdl$get_all_endo_data()
+ 
+mdl$get_all_exo_data()
+
 }
 
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Arguments}{
@@ -59,7 +72,7 @@ then all variables with the specific type are returned.
 \itemize{
 
 \item \code{get_data}: All model variables: exogenous and endogenous model
-variables, trends variables, and fit instruments for \code{\link{FitMdl}}
+variables, trends variables, and fit instruments for \code{\link{DynMdl}}
 objects
 \item \code{get_endo_data}: Endogenous model variables, excluding
 fit instruments.

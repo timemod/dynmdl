@@ -14,8 +14,8 @@
 #' when the perfect foresight solver is called.
 #' @param data a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 #' object with values for endogogenous and exogenous model variables used in
-#' the perfect foresight solver.
-
+#' the perfect foresight solver. If the model has trends, then the timeseries 
+#' in \code{data} should include the trends.
 #' @param steady A logical, indicating wether the steady state should be 
 #' calculated (default is \code{TRUE}). If the steady state is calculated
 #' then also the eigenvalues are calculated.
@@ -28,13 +28,14 @@
 #' @param dynare_path Character string specifying the name of the 
 #' directory of the Dynare installation. On Linux it is usually not necessary 
 #' to the specify this argument. On Windows it is necessary to specify the path 
-#' of the Dynare installation.
+#' of the Dynare installation. In you are running R in the  CPB 
+#' environment the path to Dynare is set automatically.
 #' @param steady_options Options passed to the \code{steady} command of
 #' Dynare. This should be a named list, which names corresponding to the Dynare
 #' options. Specify a \code{NULL} value if the option has no value.
 #' Consult the documentation of  Dynare for a list of available options.
 #' Example: \code{steady_options = list(tolf = 1e-7, nocheck = NULL)}
-#' @param pefect_foresight_solver_optios Options passed to the 
+#' @param perfect_foresight_solver_options Options passed to the 
 #' \code{perfect_foresight_solver} command of
 #' Dynare. This should be a named list, which names corresponding to the Dynare
 #' options. Specify a \code{NULL} value if the option has no value.
@@ -43,6 +44,14 @@
 #' @param use_octave A logical. If \code{TRUE}, then
 #' Dynare is envoked with Octave, otherwise Matlab is used. By default 
 #' Matlab is used if available.
+#' @param exit_matlab A logical specifying if Matlab
+#' should immediately  exit when the calcultions have finished 
+#' Matlab writes the output to a separate console. If \code{exit_matlab} is 
+#' \code{FALSE} (the default), then the R job waits until the user has closed 
+#' this console, or entered \code{exit} in the console. Otherwise the console 
+#' is automatically closed at the end of the calculation and all output is lost.
+#' This argument is ignored if Dynare is run with Octave. Octave does not 
+#' open a seperate console: all output appears in the same console used by R.
 #' @return A list with the following components
 #' \item{steady_endos}{(only if \code{steady == TRUE}): a steady state 
 #' endogenous variables} 
@@ -68,7 +77,8 @@ run_dynare <- function(mod_file, period, data, steady = TRUE,
                        scratch_dir = tempfile(), dynare_path = NULL, 
                        steady_options,
                        perfect_foresight_solver_options,
-                       use_octave = Sys.which("matlab") == "") {
+                       use_octave = Sys.which("matlab") == "",
+                       exit_matlab = FALSE) {
   
   if (!steady && !perfect_foresight) {
     warning("run_dynare has nothing to do ...")
@@ -94,5 +104,6 @@ run_dynare <- function(mod_file, period, data, steady = TRUE,
                              steady_options = steady_options,
                              perfect_foresight_solver_options = 
                                       perfect_foresight_solver_options,
-                             use_octave = use_octave))
+                             use_octave = use_octave, 
+                             exit_matlab = exit_matlab))
 }

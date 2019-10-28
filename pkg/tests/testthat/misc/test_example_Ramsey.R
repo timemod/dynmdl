@@ -86,7 +86,7 @@ test_that("trend_data", {
   expect_error(mdl$get_trend_data(names = "c"), 
                "\"c\" is not a trend variable")
   expect_error(mdl$get_endo_data(names = "x"), 
-               "\"x\" is not an endogenous model variable")
+               "\"x\" is not an endogenous variable")
   
   per <- period_range("1999/2002")
   per_data <- period_range("2000/2002")

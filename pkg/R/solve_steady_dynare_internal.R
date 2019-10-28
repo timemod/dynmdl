@@ -1,12 +1,8 @@
 solve_steady_dynare_internal <- function(model_name, mdl, scratch_dir, 
                                          dynare_path, model_options, 
-                                         solve_options, use_octave) {
+                                         solve_options, use_octave, 
+                                         exit_matlab) {
 
-  solve_options_ = list(tolf = 1e-8)
-  if (!missing(solve_options)) {
-    solve_options_[names(solve_options)] <- solve_options
-  }
-  
   #
   # create scratch directory
   #
@@ -29,8 +25,9 @@ solve_steady_dynare_internal <- function(model_name, mdl, scratch_dir,
                              steady = TRUE, perfect_foresight = FALSE,
                              dynare_path = dynare_path,
                              steady_options = solve_options,
+                             mod_file_in_scratch_dir = TRUE,
                              use_octave = use_octave,
-                             mod_file_in_scratch_dir = TRUE) 
+                             exit_matlab = exit_matlab,) 
 
   endo_names <- names(mdldef$endos)
   ret$steady_endos <- ret$steady_endos[endo_names]

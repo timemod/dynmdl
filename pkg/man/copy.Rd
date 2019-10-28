@@ -5,7 +5,7 @@
 \title{\code{\link{DynMdl}} method: Returns a copy of this \code{DynMdl} object}
 \description{
 This method of R6 class \code{\link{DynMdl}}
-returns a deep copy of an \code{DynMdl} object
+returns a deep copy of a \code{DynMdl} object
 }
 \section{Usage}{
 
@@ -13,7 +13,7 @@ returns a deep copy of an \code{DynMdl} object
 mdl$copy()
 
 }
-\code{mdl} is an \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object
 }
 
 \section{Details}{
