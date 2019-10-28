@@ -38,6 +38,9 @@ update_serialized_mdl <- function(ser) {
     # private$model_index will be set by method mdl$deserialize()
     mdldef$model_index <- NULL
     
+    # njac_cols has also been removed from mdldef
+    mdldef$njac_cols <- NULL
+    
     #
     # information about fit
     #
@@ -50,13 +53,10 @@ update_serialized_mdl <- function(ser) {
     ser$mdldef <- mdldef
    
     # remove fields that do no longer exist
-    ser$fit_info <- NULL
+    ser$fit_info <- NULL    # moved to mdldef
     ser$equations  <- NULL
-    ser$njac_cols <- NULL
+   
   }
-  
-  
- 
   
   return(ser)
 }
