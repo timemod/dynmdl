@@ -287,7 +287,7 @@ DynMdl <- R6Class("DynMdl",
         cat("\ndynamic jacobian:\n")
         print(private$jac_dynamic)
       }
-      return(invisible(NULL))
+      return(invisible(self))
     },
     get_max_lag = function() {
       return(private$mdldef$max_lag_orig)
