@@ -1431,3 +1431,24 @@ NULL
 #'  islm$solve_dynare()
 #' }
 NULL
+
+
+#' \code{\link{DynMdl}} method: Returns technical details about the model.
+#' @name get_mdldef
+#' 
+#' @description
+#' 
+#' This function returns a list with various components containing technical
+#' details of the model, such as the names of the variables,
+#' the lead-lag incidence matrix, etc.
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$sget_mdldef()
+#' }
+#' 
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#' 
+NULL
+

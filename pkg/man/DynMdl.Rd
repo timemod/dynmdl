@@ -144,6 +144,9 @@ object}
 
 \item{\code{\link{get_solve_status}}}{Returns the status of the last model
 solve attempt}
+
+\item{\code{\link{get_mdldef}}}{Returns a list with technical details of the 
+model.}
 }
 }
 

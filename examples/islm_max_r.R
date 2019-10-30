@@ -1,8 +1,8 @@
 # Basic example of the ISLM model with lags
 
 library(dynmdl)
-dyn_mdl("mod/islm_max_r.mod")
-#print(mdl, short = FALSE)
+mdl <- dyn_mdl("mod/islm_max_r.mod")
+print(mdl)
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2019Q3")

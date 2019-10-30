@@ -3,7 +3,7 @@
 library(dynmdl)
 
 mdl <- dyn_mdl("mod/islm.mod", calc = "dll")
-#print(mdl, short = FALSE)
+print(mdl)
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2019Q3")

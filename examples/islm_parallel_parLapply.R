@@ -7,7 +7,6 @@ library(parallel)
 rm(list = ls())
 
 mdl <- dyn_mdl("mod/islm.mod", calc = "internal")
-#print(mdl, short = FALSE)
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2019Q3")

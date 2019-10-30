@@ -12,7 +12,7 @@ fibur_jac <- function(x, y) {
 }
 
 mdl <- dyn_mdl("mod/islm_max_r_fibur.mod")
-#print(mdl, short = FALSE)
+print(mdl)
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2019Q3")
