@@ -215,7 +215,7 @@ DynMdl <- R6Class("DynMdl",
         cat(sprintf("%-60s%d\n", "Model index:", private$model_index))
       }
       if (private$mdldef$fit || private$mdldef$has_aux_vars) {
-         cat(sprintf("%-60s%d\n", "Total number of endogenous variables:",
+        cat(sprintf("%-60s%d\n", "Total number of endogenous variables:",
                      private$mdldef$endo_count))
         cat(sprintf("%-60s%d\n", "Number of normal endogenous variables:",
                     length(private$mdldef$endo_names_orig)))
@@ -231,8 +231,15 @@ DynMdl <- R6Class("DynMdl",
         cat(sprintf("%-60s%d\n", "Number of endogenous variables:", 
                     private$mdldef$endo_count))
       }
-      cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
+      if (private$mdldef$fit || private$mdldef$has_aux_vars) {
+        cat(sprintf("%-60s%d\n", "Total number of exogenous variables:",
+                     private$mdldef$exo_count))
+        cat(sprintf("%-60s%d\n", "Number of normal exogenous variables:",
+                    length(private$mdldef$exo_names_orig)))
+      } else {
+        cat(sprintf("%-60s%d\n", "Number of exogenous variables:",
                   private$mdldef$exo_count))
+      }
       cat(sprintf("%-60s%d\n", "Maximum exogenous lead:",
                   private$mdldef$max_exo_lead))
       cat(sprintf("%-60s%d\n", "Maximum exogenous lag:",
