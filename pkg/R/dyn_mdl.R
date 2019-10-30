@@ -359,21 +359,22 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
   static_model  <- model_info$static_model
   dynamic_model <- model_info$dynamic_model
   
-  mdldef <- list(fit                = !is.null(fit_info),
-                 has_aux_vars       = model_info$aux_vars$aux_count > 0,
-                 endos              = model_info$endos,
-                 exos               = model_info$exos,
-                 params             = model_info$params,
-                 aux_vars           = model_info$aux_vars,
-                 max_endo_lag       = dynamic_model$max_endo_lag,
-                 max_endo_lead      = dynamic_model$max_endo_lead,
-                 max_exo_lag        = dynamic_model$max_exo_lag,
-                 max_exo_lead       = dynamic_model$max_exo_lead,
-                 lead_lag_incidence = dynamic_model$lead_lag_incidence,
-                 jac_static_size    = static_model$jac_size,
-                 jac_dynamic_size   = dynamic_model$jac_size,
-                 static_functions   = static_model$static_functions,
-                 dynamic_functions  = dynamic_model$dynamic_functions)
+  mdldef <- list(fit                   = !is.null(fit_info),
+                 has_aux_vars          = model_info$aux_vars$aux_count > 0,
+                 endos                 = model_info$endos,
+                 exos                  = model_info$exos,
+                 params                = model_info$params,
+                 aux_vars              = model_info$aux_vars,
+                 max_endo_lag          = dynamic_model$max_endo_lag,
+                 max_endo_lead         = dynamic_model$max_endo_lead,
+                 max_exo_lag           = dynamic_model$max_exo_lag,
+                 max_exo_lead          = dynamic_model$max_exo_lead,
+                 lead_lag_incidence    = dynamic_model$lead_lag_incidence,
+                 jac_static_size       = static_model$jac_size,
+                 jac_dynamic_size      = dynamic_model$jac_size,
+                 jac_dynamic_size_endo = dynamic_model$jac_size_endo,
+                 static_functions      = static_model$static_functions,
+                 dynamic_functions     = dynamic_model$dynamic_functions)
   
   #
   # set row and column names for the lead_lag_incidence

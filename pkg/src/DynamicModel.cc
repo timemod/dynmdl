@@ -5609,9 +5609,19 @@ Rcpp::List DynamicModel::getDynamicModelR(bool internal_calc) const {
         dynamic_functions = Rcpp::String(dynout.str());
     }
 
+    // calculate the number of nonzero elements of the jacobian for only
+    // the columns of endogenous variables.
+    int n_jac_col_endo = dynJacobianColsNbr - symbol_table.exo_nbr();
+    int jac_size_endo = 0;
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        if (getDynJacobianCol(it->first.second) < n_jac_col_endo) jac_size_endo++;
+    }
+
     return Rcpp::List::create(Rcpp::Named("lead_lag_incidence") = lead_lag_incidence,
                               Rcpp::Named("jac_size")           = 
                                          (int) first_derivatives.size(),
+                              Rcpp::Named("jac_size_endo")      = jac_size_endo,
                               Rcpp::Named("dynamic_functions")  = dynamic_functions,
                               Rcpp::Named("max_endo_lag")       = max_endo_lag,
                               Rcpp::Named("max_endo_lead")      = max_endo_lead,

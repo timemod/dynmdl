@@ -2,8 +2,10 @@
 
 library(dynmdl)
 mdl <- dyn_mdl("mod/islm.mod", latex_options = list(par_as_num = TRUE,
-                                                    ndigits = 6))
-#print(mdl, short = FALSE)
+                                                    ndigits = 6), calc = "internal")
+print(mdl)
+
+print(mdl$get_mdldef())
 
 mdl$solve_steady(control = list(trace = TRUE))
 mdl$set_period("2017Q1/2019Q3")

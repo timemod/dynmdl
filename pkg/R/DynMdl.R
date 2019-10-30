@@ -257,7 +257,7 @@ DynMdl <- R6Class("DynMdl",
       cat(sprintf("%-60s%d\n", "Number of nonzeros static. jac:",
                   private$mdldef$jac_static_size))
       cat(sprintf("%-60s%d\n", "Number of nonzeros dyn. jac:",
-                  private$mdldef$jac_dynamic_size))
+                  private$mdldef$jac_dynamic_size_endo))
       if (!is.null(private$model_period)) {
         cat(sprintf("%-60s%s\n", "Model period:",
                     as.character(private$model_period)))
@@ -267,25 +267,6 @@ DynMdl <- R6Class("DynMdl",
           cat(sprintf("%-60s%s\n", "Base period for trends:",
                       as.character(private$base_period)))
         }
-      }
-      
-      if (!short) {
-        cat("Names of the endogenous variables:\n")
-        print(private$mdldef$endo_names_orig)
-        cat("Names of the exogenous variables:\n")
-        print(private$mdldef$exo_names_orig)
-        cat("Names of the parameters:\n")
-        print(private$mdldef$param_names)
-        cat("Lead lag incidence matrix:\n")
-        print(private$mdldef$lead_lag_incidence)
-        cat("\nstatic function:\n")
-        print(private$f_static)
-        cat("\nstatic Jacobian:\n")
-        print(private$jac_static)
-        cat("\ndynamic function:\n")
-        print(private$f_dynamic)
-        cat("\ndynamic jacobian:\n")
-        print(private$jac_dynamic)
       }
       return(invisible(self))
     },
