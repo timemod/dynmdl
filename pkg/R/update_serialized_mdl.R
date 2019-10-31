@@ -55,6 +55,7 @@ update_serialized_mdl <- function(ser) {
     # remove fields that do no longer exist
     ser$fit_info <- NULL    # moved to mdldef
     ser$equations  <- NULL
+    ser$orig_equations  <- NULL
    
   }
   
