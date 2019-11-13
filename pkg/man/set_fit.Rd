@@ -24,15 +24,15 @@ mdl$set_fit(data, names = colnames(data),
 
 \describe{
 \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
- timeseries object}
+timeseries object}
 \item{\code{names}}{a character vector with variable names, with the
 same length as the number of timeseries in \code{data}. Defaults to the
 column names of \code{data}. If \code{data} does not have column names,
 then argument \code{names} is mandatory}
-\item{\code{name_err}}{this option specifies the action that should be taken 
+\item{\code{name_err}}{this option specifies the action that should be taken
 when a variable name is not an endogenous model variable.
 For \code{"stop"} (the default), the execution of this function is stopped.
-For \code{"warn"} and \code{"silent"} the timeseries that are no endogenous 
+For \code{"warn"} and \code{"silent"} the timeseries that are no endogenous
 model variables are skipped. \code{"warn"} does however give a warning.}
 }
 }
@@ -48,7 +48,7 @@ name as the column name. If \code{data} does not have column names,
 or if the column names do not correspond to the model variable names,
 then argument \code{names} should be specified.
 
-If \code{data} contains  \code{NA} values, then the variable is not a fit 
+If \code{data} contains  \code{NA} values, then the variable is not a fit
 target for the corresponding periods, which implies that the variable
 will be calculated according to the equations of the model.
 }

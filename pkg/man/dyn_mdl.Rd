@@ -4,10 +4,22 @@
 \alias{dyn_mdl}
 \title{Creates a \code{\link{DynMdl}} object from a mod file}
 \usage{
-dyn_mdl(mod_file, period, data, base_period = NULL, calc = c("R",
-  "bytecode", "dll", "internal"), fit_mod_file, debug = FALSE, dll_dir,
-  max_laglead_1 = FALSE, nostrict = FALSE, warn_uninit_param = TRUE,
-  fit = TRUE, fit_fixed_period = FALSE, latex_options)
+dyn_mdl(
+  mod_file,
+  period,
+  data,
+  base_period = NULL,
+  calc = c("R", "bytecode", "dll", "internal"),
+  fit_mod_file,
+  debug = FALSE,
+  dll_dir,
+  max_laglead_1 = FALSE,
+  nostrict = FALSE,
+  warn_uninit_param = TRUE,
+  fit = TRUE,
+  fit_fixed_period = FALSE,
+  latex_options
+)
 }
 \arguments{
 \item{mod_file}{the name of the model file (including extension .mod)}
@@ -23,32 +35,32 @@ names}
 the base period for the trends. This is used if the model has trend variables.
 All trend variables will be equal to 1 at the base period.}
 
-\item{calc}{Method used to evaluate the model equations. 
-Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and 
+\item{calc}{Method used to evaluate the model equations.
+Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and
 \code{"internal"}. See details.}
 
 \item{fit_mod_file}{the name of the generated fit mod file. If not specified,
 then the fit mod file is destroyed after the model has been parsed.
 This argument should not be specified if the model contains
-trends, since in that case the fit mod file cannot be used a input mod file 
-for function \code{dyn_mdl} or for Dynare. If wou want to check the 
+trends, since in that case the fit mod file cannot be used a input mod file
+for function \code{dyn_mdl} or for Dynare. If wou want to check the
 equations in the fit mod file, use argument \code{DEBUG} (see below).}
 
-\item{debug}{If logical (default \code{FALSE}), only used when the 
+\item{debug}{If logical (default \code{FALSE}), only used when the
 model is a fit model. If \code{TRUE}, then intermediate files created when
 preparing the fit model are written to the current directory. By default
-these files are written in a temporary directory and deleted when the 
+these files are written in a temporary directory and deleted when the
 R session terminates.}
 
 \item{dll_dir}{the directory where the dynamically linked library is stored.
 Primarily used for testing.
 Only used if argument \code{use_dll} is \code{TRUE}.}
 
-\item{max_laglead_1}{a logical indicating whether the model should be 
+\item{max_laglead_1}{a logical indicating whether the model should be
 transformed internally to a model with a maximum lag and lead of 1.
 The default is \code{FALSE}. This option has no effect if the maximum lag
 and lead of the original model is 1. Set this argument to
-\code{TRUE} if you want to analyse the stability of the steady state with 
+\code{TRUE} if you want to analyse the stability of the steady state with
 method \code{\link{check}} for models with a maximum lag or lead larger than 1.}
 
 \item{nostrict}{Allows Dynare to issue a warning and continue processing when
@@ -60,8 +72,8 @@ or exogenous variables were declared but not used in the model block.}
 a warning is given for each parameter that has not been initialized in the
 mod file. Uninitialized parameters are always set to zero.}
 
-\item{fit}{a logical (default \code{TRUE}) indicating if the \code{DynMdl} 
-object returned by this function should implement the fit procedure if the 
+\item{fit}{a logical (default \code{TRUE}) indicating if the \code{DynMdl}
+object returned by this function should implement the fit procedure if the
 mod file contains a fit block. Specify \code{FALSE} if the mod file  has a fit
 block while you do not want to use the fit procedure.}
 
@@ -78,13 +90,13 @@ A \code{DynMdl} object.
 }
 \description{
 Creates a \code{\link{DynMdl}} object from a mod file. If the mod file
-contains a fit block, then the \code{DynMdl} object implements the fit 
+contains a fit block, then the \code{DynMdl} object implements the fit
 procedure (except if argument \code{fit} is \code{FALSE}).
 }
 \details{
 \subsection{Latex options}{
 When the mod file contains a \code{write_latex_static_model},
-\code{write_latex_dynamic_model} or \code{write_latex_oiriginal_model} 
+\code{write_latex_dynamic_model} or \code{write_latex_oiriginal_model}
 statement, then the Dynare parser of package \code{dynmdl} generates
 LaTeX files in directory \code{latex}. Argument \code{latex_options} can be
 used to change the format of the LaTeX files.
@@ -95,7 +107,7 @@ the following components:
 are written as numerical constants to the LaTeX file, using the numerical
 values as specified in the mod file. The default is \code{FALSE}.}
 \item{\code{ndigits}}{The number of significant digits used when parameters
-as written as numerical values (default 4). This argument is only used 
+as written as numerical values (default 4). This argument is only used
 if \code{par_as_num} is \code{TRUE}. For example, if \code{ndigits} is 4,
 then the number \eqn{\pi} is printed as \code{3.142},
 the number 120.25 as \code{120.2}, and the number

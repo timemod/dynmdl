@@ -6,7 +6,7 @@
 \alias{set_exo_values}
 \title{\code{\link{DynMdl}} methods: Sets the values of the model data}
 \description{
-This method of R6 class \code{\link{DynMdl}} 
+This method of R6 class \code{\link{DynMdl}}
 can be used to set the values of the model data.
 }
 \section{Usage}{
@@ -27,8 +27,8 @@ mdl$set_exo_values(value, names, pattern, period = mdl$get_data_period())
 
 \describe{
 \item{\code{value}}{a numeric vector of length 1 or with the same length
-as the length of the range of \code{period}. 
-If the model has trends, then the values should 
+as the length of the range of \code{period}.
+If the model has trends, then the values should
 include the trends.}
 \item{\code{names}}{a character vector with variable names}
 \item{\code{pattern}}{a regular expression}

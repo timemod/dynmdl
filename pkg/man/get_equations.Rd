@@ -3,13 +3,13 @@
 \name{get_equations}
 \alias{get_equations}
 \alias{get_original_equations}
-\title{\code{\link{DynMdl}} method: Returns a character vector with the model 
+\title{\code{\link{DynMdl}} method: Returns a character vector with the model
 equations.}
 \description{
-These method of R6 class \code{\link{DynMdl}} returns a character vector 
+These method of R6 class \code{\link{DynMdl}} returns a character vector
 with the model equations (excluding local equations). \code{get_equations}
 returned the parsed equations, where trends (if present) have been removed.
-\code{get_original_equations} returns the equations as defined in the mod 
+\code{get_original_equations} returns the equations as defined in the mod
 file.
 }
 \section{Usage}{

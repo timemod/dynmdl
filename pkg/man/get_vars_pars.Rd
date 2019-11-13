@@ -2,10 +2,10 @@
 % Please edit documentation in R/DynMdl_doc.R
 \name{get_vars_pars}
 \alias{get_vars_pars}
-\title{\code{\link{DynMdl}} methods: Returns a list of all model variables and 
+\title{\code{\link{DynMdl}} methods: Returns a list of all model variables and
 parameters}
 \description{
-This method of R6 class \code{\link{DynMdl}} 
+This method of R6 class \code{\link{DynMdl}}
 returns a list of all model variables and parameters. This makes it easy
 to directly evaluate expressions involving both model variables
 and parameters.
@@ -56,7 +56,7 @@ print(md - ms)
 
 }
 \seealso{
-\code{\link{get_data-methods}}, \code{\link{get_param}}, 
-\code{\link{get_fit}}, \code{\link{get_fit_instruments}} and 
+\code{\link{get_data-methods}}, \code{\link{get_param}},
+\code{\link{get_fit}}, \code{\link{get_fit_instruments}} and
 \code{\link{get_lagrange}}
 }

@@ -35,6 +35,6 @@ print(mdl$get_param())
 print(mdl$get_param(pattern = "^c.*"))
 }
 \seealso{
-\code{\link{set_param}}, \code{\link{set_param_values}} 
+\code{\link{set_param}}, \code{\link{set_param_values}}
 and \code{\link{get_vars_pars}}
 }

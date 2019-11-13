@@ -5,13 +5,12 @@
 \alias{DynMdl}
 \title{An R6 class for a Dynare model}
 \format{\code{\link{R6Class}} object.}
-\usage{
-DynMdl
-}
 \value{
 Object of \code{\link{R6Class}} containing a macro-economic model,
 }
 \description{
+An R6 class for a Dynare model
+
 An R6 class for a Dynare model
 }
 \section{Methods}{
@@ -31,7 +30,7 @@ An R6 class for a Dynare model
 \item{\code{\link{get_labels}}}{Returns the labels of the model variables and
 parameters}
 
-\item{\code{\link{get_tex_names}}}{Returns the LaTeX names of the model 
+\item{\code{\link{get_tex_names}}}{Returns the LaTeX names of the model
 variables and parameters}
 
 \item{\code{\link{get_par_names}}}{Returns the names of the parameters.}
@@ -55,13 +54,13 @@ the exogenous variables.}
 the endogenous variables.}
 
 \item{\code{\link{get_static_endos}}}{Returns the static values of
-the endogenous variables.} 
+the endogenous variables.}
 
- \item{\code{\link{set_static_data}}}{Sets the static values of
+\item{\code{\link{set_static_data}}}{Sets the static values of
 the model variables.}
 
 \item{\code{\link{get_static_data}}}{Returns the static values of
-the model variables.} 
+the model variables.}
 
 \item{\code{\link{init_data}}}{Initializes the model data}
 
@@ -75,21 +74,21 @@ the model variables.}
 
 \item{\code{\link{get_lead_period}}}{Returns the lead period}
 
-\item{\code{\link{set_endo_values}}}{Sets the values of endogenous model 
+\item{\code{\link{set_endo_values}}}{Sets the values of endogenous model
 variables}
 
-\item{\code{\link{set_exo_values}}}{Sets the values of exogenous model 
+\item{\code{\link{set_exo_values}}}{Sets the values of exogenous model
 variables}
 
 \item{\code{\link{set_data}}}{Transfer timeseries to the model data}
 
-\item{\code{\link{change_endo_data}}}{Changes the values of endogenous model 
+\item{\code{\link{change_endo_data}}}{Changes the values of endogenous model
 variables by applying a function}
 
-\item{\code{\link{change_exo_data}}}{Changes the values of exogenous model 
+\item{\code{\link{change_exo_data}}}{Changes the values of exogenous model
 variables by applying a function}
 
-\item{\code{\link{change_data}}}{Changes the values of endogenous and 
+\item{\code{\link{change_data}}}{Changes the values of endogenous and
 exogenous model variables by applying a function}
 
 \item{\code{\link{get_data}}}{Returns the model data}
@@ -98,8 +97,8 @@ exogenous model variables by applying a function}
 
 \item{\code{\link{get_exo_data}}}{Returns the exogenous model data}
 
-\item{\code{\link{get_vars_pars}}}{Returns a list with model variables and 
-                                   parameters}
+\item{\code{\link{get_vars_pars}}}{Returns a list with model variables and
+parameters}
 
 \item{\code{\link{solve_steady}}}{Solves the steady state}
 
@@ -116,7 +115,7 @@ system and check if the Blachard and Kahn conditions are satisfied.}
 \item{\code{\link{residual_check}}}{Calculates the residuals of the equations
 and reports the differences larger than a tolerance parameters}
 
-\item{\code{\link{static_residual_check}}}{Calculates the residuals of the 
+\item{\code{\link{static_residual_check}}}{Calculates the residuals of the
 static model equations and reports the differences larger than a tolerance parameters}
 
 \item{\code{solve_perturbation}}{Solves the model using the perturbation
@@ -131,21 +130,21 @@ static version of the model}
 \item{\code{\link{get_back_jacob}}}{Returns the Jacobian for a
 backward looking model at a specific period}
 
-\item{\code{\link{get_eigval}}}{Returns the eigenvalues computed with 
+\item{\code{\link{get_eigval}}}{Returns the eigenvalues computed with
 method \code{\link{check}} or \code{solve_perturbation}}
 
-\item{\code{\link{get_equations}}}{Returns a character vector with the 
+\item{\code{\link{get_equations}}}{Returns a character vector with the
 parsed equations of the model.}
-\item{\code{\link{get_original_equations}}}{Returns a character vector with the 
+\item{\code{\link{get_original_equations}}}{Returns a character vector with the
 equations of the original model.}
 
-\item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} 
+\item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}}
 object}
 
 \item{\code{\link{get_solve_status}}}{Returns the status of the last model
 solve attempt}
 
-\item{\code{\link{get_mdldef}}}{Returns a list with technical details of the 
+\item{\code{\link{get_mdldef}}}{Returns a list with technical details of the
 model.}
 }
 }
@@ -154,15 +153,15 @@ model.}
 
 \describe{
 
-\item{\code{\link{get_instrument_names}}}{Returns the names of the fit 
+\item{\code{\link{get_instrument_names}}}{Returns the names of the fit
 instruments.}
 
 \item{\code{\link{get_sigma_names}}}{Returns the names of the sigma
-parameters used in the fit procedure.} 
+parameters used in the fit procedure.}
 
 \item{\code{\link{set_fit_values}}}{Sets the values of the fit targets}
 
-\item{\code{\link{set_fit}}}{Sets the targets for the fit procedure} 
+\item{\code{\link{set_fit}}}{Sets the targets for the fit procedure}
 
 \item{\code{\link{get_fit}}}{Returns the fit targets
 used in the fit procedure}
@@ -170,8 +169,8 @@ used in the fit procedure}
 \item{\code{\link{get_fit_instruments}}}{Returns all non-zero fit instruments
 used in the fit procedure}
 
-\item{\code{\link{get_sigmas}}}{Returns all sigma parameters >= 0 used in 
-the fit procedure. If a sigma parameter is negative, then the 
+\item{\code{\link{get_sigmas}}}{Returns all sigma parameters >= 0 used in
+the fit procedure. If a sigma parameter is negative, then the
 corresponding fit instrument is not included}
 
 \item{\code{\link{get_lagrange}}}{Returns the Lagrange multipliers
@@ -180,3 +179,735 @@ used in the fit procedure.}
 }
 
 \keyword{data}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-new}{\code{DynMdl$new()}}
+\item \href{#method-print}{\code{DynMdl$print()}}
+\item \href{#method-get_max_lag}{\code{DynMdl$get_max_lag()}}
+\item \href{#method-get_max_lead}{\code{DynMdl$get_max_lead()}}
+\item \href{#method-get_endo_names}{\code{DynMdl$get_endo_names()}}
+\item \href{#method-get_exo_names}{\code{DynMdl$get_exo_names()}}
+\item \href{#method-set_labels}{\code{DynMdl$set_labels()}}
+\item \href{#method-get_labels}{\code{DynMdl$get_labels()}}
+\item \href{#method-get_tex_names}{\code{DynMdl$get_tex_names()}}
+\item \href{#method-get_par_names}{\code{DynMdl$get_par_names()}}
+\item \href{#method-set_param}{\code{DynMdl$set_param()}}
+\item \href{#method-set_param_values}{\code{DynMdl$set_param_values()}}
+\item \href{#method-get_param}{\code{DynMdl$get_param()}}
+\item \href{#method-set_static_exos}{\code{DynMdl$set_static_exos()}}
+\item \href{#method-set_static_exo_values}{\code{DynMdl$set_static_exo_values()}}
+\item \href{#method-get_static_exos}{\code{DynMdl$get_static_exos()}}
+\item \href{#method-set_static_endos}{\code{DynMdl$set_static_endos()}}
+\item \href{#method-get_static_endos}{\code{DynMdl$get_static_endos()}}
+\item \href{#method-get_static_data}{\code{DynMdl$get_static_data()}}
+\item \href{#method-set_static_data}{\code{DynMdl$set_static_data()}}
+\item \href{#method-init_data}{\code{DynMdl$init_data()}}
+\item \href{#method-set_period}{\code{DynMdl$set_period()}}
+\item \href{#method-get_period}{\code{DynMdl$get_period()}}
+\item \href{#method-get_base_period}{\code{DynMdl$get_base_period()}}
+\item \href{#method-get_data_period}{\code{DynMdl$get_data_period()}}
+\item \href{#method-get_lag_period}{\code{DynMdl$get_lag_period()}}
+\item \href{#method-get_lead_period}{\code{DynMdl$get_lead_period()}}
+\item \href{#method-get_exo_data}{\code{DynMdl$get_exo_data()}}
+\item \href{#method-set_endo_values}{\code{DynMdl$set_endo_values()}}
+\item \href{#method-set_exo_values}{\code{DynMdl$set_exo_values()}}
+\item \href{#method-set_data}{\code{DynMdl$set_data()}}
+\item \href{#method-get_all_endo_data}{\code{DynMdl$get_all_endo_data()}}
+\item \href{#method-get_all_exo_data}{\code{DynMdl$get_all_exo_data()}}
+\item \href{#method-get_data}{\code{DynMdl$get_data()}}
+\item \href{#method-get_endo_data}{\code{DynMdl$get_endo_data()}}
+\item \href{#method-change_endo_data}{\code{DynMdl$change_endo_data()}}
+\item \href{#method-change_exo_data}{\code{DynMdl$change_exo_data()}}
+\item \href{#method-change_data}{\code{DynMdl$change_data()}}
+\item \href{#method-get_trend_data}{\code{DynMdl$get_trend_data()}}
+\item \href{#method-get_vars_pars}{\code{DynMdl$get_vars_pars()}}
+\item \href{#method-solve_steady}{\code{DynMdl$solve_steady()}}
+\item \href{#method-put_static_endos}{\code{DynMdl$put_static_endos()}}
+\item \href{#method-check}{\code{DynMdl$check()}}
+\item \href{#method-static_residual_check}{\code{DynMdl$static_residual_check()}}
+\item \href{#method-residual_check}{\code{DynMdl$residual_check()}}
+\item \href{#method-solve}{\code{DynMdl$solve()}}
+\item \href{#method-solve_perturbation}{\code{DynMdl$solve_perturbation()}}
+\item \href{#method-get_jacob}{\code{DynMdl$get_jacob()}}
+\item \href{#method-get_static_jacob}{\code{DynMdl$get_static_jacob()}}
+\item \href{#method-get_back_jacob}{\code{DynMdl$get_back_jacob()}}
+\item \href{#method-get_equations}{\code{DynMdl$get_equations()}}
+\item \href{#method-get_original_equations}{\code{DynMdl$get_original_equations()}}
+\item \href{#method-get_eigval}{\code{DynMdl$get_eigval()}}
+\item \href{#method-time_functions}{\code{DynMdl$time_functions()}}
+\item \href{#method-write_mdl}{\code{DynMdl$write_mdl()}}
+\item \href{#method-write_initval_file}{\code{DynMdl$write_initval_file()}}
+\item \href{#method-solve_steady_dynare}{\code{DynMdl$solve_steady_dynare()}}
+\item \href{#method-solve_dynare}{\code{DynMdl$solve_dynare()}}
+\item \href{#method-copy}{\code{DynMdl$copy()}}
+\item \href{#method-serialize}{\code{DynMdl$serialize()}}
+\item \href{#method-deserialize}{\code{DynMdl$deserialize()}}
+\item \href{#method-get_solve_status}{\code{DynMdl$get_solve_status()}}
+\item \href{#method-get_aux_vars}{\code{DynMdl$get_aux_vars()}}
+\item \href{#method-get_exo_data_raw}{\code{DynMdl$get_exo_data_raw()}}
+\item \href{#method-get_mdldef}{\code{DynMdl$get_mdldef()}}
+\item \href{#method-get_instrument_names}{\code{DynMdl$get_instrument_names()}}
+\item \href{#method-get_sigma_names}{\code{DynMdl$get_sigma_names()}}
+\item \href{#method-set_fit}{\code{DynMdl$set_fit()}}
+\item \href{#method-set_fit_values}{\code{DynMdl$set_fit_values()}}
+\item \href{#method-clear_fit}{\code{DynMdl$clear_fit()}}
+\item \href{#method-get_fit}{\code{DynMdl$get_fit()}}
+\item \href{#method-get_fit_instruments}{\code{DynMdl$get_fit_instruments()}}
+\item \href{#method-get_lagrange}{\code{DynMdl$get_lagrange()}}
+\item \href{#method-get_sigmas}{\code{DynMdl$get_sigmas()}}
+\item \href{#method-clone}{\code{DynMdl$clone()}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$new(model_index, mdldef, base_period, calc, dll_dir, dll_file)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-print"></a>}}
+\subsection{Method \code{print()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$print(short = TRUE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_max_lag"></a>}}
+\subsection{Method \code{get_max_lag()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_max_lag()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_max_lead"></a>}}
+\subsection{Method \code{get_max_lead()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_max_lead()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_endo_names"></a>}}
+\subsection{Method \code{get_endo_names()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_endo_names(type = c("all", "leads", "lags"))}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_exo_names"></a>}}
+\subsection{Method \code{get_exo_names()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_exo_names()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_labels"></a>}}
+\subsection{Method \code{set_labels()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_labels(labels)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_labels"></a>}}
+\subsection{Method \code{get_labels()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_labels()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_tex_names"></a>}}
+\subsection{Method \code{get_tex_names()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_tex_names()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_par_names"></a>}}
+\subsection{Method \code{get_par_names()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_par_names(pattern = ".*")}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_param"></a>}}
+\subsection{Method \code{set_param()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_param(params, names, name_err = "stop")}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_param_values"></a>}}
+\subsection{Method \code{set_param_values()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_param_values(value, names, pattern)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_param"></a>}}
+\subsection{Method \code{get_param()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_param(pattern, names)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_static_exos"></a>}}
+\subsection{Method \code{set_static_exos()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_static_exos(exos, names, name_err = "stop")}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_static_exo_values"></a>}}
+\subsection{Method \code{set_static_exo_values()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_static_exo_values(value, names, pattern)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_static_exos"></a>}}
+\subsection{Method \code{get_static_exos()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_static_exos(pattern, names)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_static_endos"></a>}}
+\subsection{Method \code{set_static_endos()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_static_endos(endos, names, name_err = "stop")}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_static_endos"></a>}}
+\subsection{Method \code{get_static_endos()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_static_endos(pattern, names)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_static_data"></a>}}
+\subsection{Method \code{get_static_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_static_data(pattern, names)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_static_data"></a>}}
+\subsection{Method \code{set_static_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_static_data(data, names, name_err = "stop")}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-init_data"></a>}}
+\subsection{Method \code{init_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$init_data(data_period, data, upd_mode = c("upd", "updval"))}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_period"></a>}}
+\subsection{Method \code{set_period()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_period(period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_period"></a>}}
+\subsection{Method \code{get_period()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_period()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_base_period"></a>}}
+\subsection{Method \code{get_base_period()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_base_period()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_data_period"></a>}}
+\subsection{Method \code{get_data_period()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_data_period()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_lag_period"></a>}}
+\subsection{Method \code{get_lag_period()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_lag_period()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_lead_period"></a>}}
+\subsection{Method \code{get_lead_period()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_lead_period()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_exo_data"></a>}}
+\subsection{Method \code{get_exo_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_exo_data(pattern, names, period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_endo_values"></a>}}
+\subsection{Method \code{set_endo_values()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_endo_values(value, names, pattern, period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_exo_values"></a>}}
+\subsection{Method \code{set_exo_values()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_exo_values(value, names, pattern, period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_data"></a>}}
+\subsection{Method \code{set_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_data(
+  data,
+  names,
+  upd_mode = c("upd", "updval"),
+  fun,
+  name_err = "stop"
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_all_endo_data"></a>}}
+\subsection{Method \code{get_all_endo_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_all_endo_data()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_all_exo_data"></a>}}
+\subsection{Method \code{get_all_exo_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_all_exo_data()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_data"></a>}}
+\subsection{Method \code{get_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_data(pattern, names, period = private$data_period, trend = TRUE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_endo_data"></a>}}
+\subsection{Method \code{get_endo_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_endo_data(pattern, names, period, trend = TRUE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-change_endo_data"></a>}}
+\subsection{Method \code{change_endo_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$change_endo_data(fun, names, pattern, period = private$data_period, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-change_exo_data"></a>}}
+\subsection{Method \code{change_exo_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$change_exo_data(fun, names, pattern, period = private$data_period, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-change_data"></a>}}
+\subsection{Method \code{change_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$change_data(fun, names, pattern, period = private$data_period, ...)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_trend_data"></a>}}
+\subsection{Method \code{get_trend_data()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_trend_data(names, pattern, period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_vars_pars"></a>}}
+\subsection{Method \code{get_vars_pars()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_vars_pars(period = private$data_period, trend = TRUE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-solve_steady"></a>}}
+\subsection{Method \code{solve_steady()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$solve_steady(
+  control = list(),
+  solver = c("umfpackr", "nleqslv"),
+  debug_eqs = FALSE,
+  ...
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-put_static_endos"></a>}}
+\subsection{Method \code{put_static_endos()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$put_static_endos(period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-check"></a>}}
+\subsection{Method \code{check()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$check()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-static_residual_check"></a>}}
+\subsection{Method \code{static_residual_check()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$static_residual_check(
+  tol,
+  debug_eqs = FALSE,
+  include_fit_eqs = FALSE,
+  include_all_eqs = FALSE
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-residual_check"></a>}}
+\subsection{Method \code{residual_check()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$residual_check(
+  tol,
+  debug_eqs = FALSE,
+  include_fit_eqs = FALSE,
+  include_all_eqs = FALSE
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-solve"></a>}}
+\subsection{Method \code{solve()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$solve(
+  control = list(),
+  mode,
+  solver = c("umfpackr", "nleqslv"),
+  start = c("current", "previous"),
+  debug_eqs = FALSE,
+  homotopy,
+  ...
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-solve_perturbation"></a>}}
+\subsection{Method \code{solve_perturbation()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$solve_perturbation()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_jacob"></a>}}
+\subsection{Method \code{get_jacob()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_jacob(sparse = FALSE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_static_jacob"></a>}}
+\subsection{Method \code{get_static_jacob()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_static_jacob(sparse = FALSE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_back_jacob"></a>}}
+\subsection{Method \code{get_back_jacob()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_back_jacob(period, sparse = FALSE)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_equations"></a>}}
+\subsection{Method \code{get_equations()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_equations(i)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_original_equations"></a>}}
+\subsection{Method \code{get_original_equations()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_original_equations(i)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_eigval"></a>}}
+\subsection{Method \code{get_eigval()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_eigval()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-time_functions"></a>}}
+\subsection{Method \code{time_functions()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$time_functions()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-write_mdl"></a>}}
+\subsection{Method \code{write_mdl()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$write_mdl(file)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-write_initval_file"></a>}}
+\subsection{Method \code{write_initval_file()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$write_initval_file(file)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-solve_steady_dynare"></a>}}
+\subsection{Method \code{solve_steady_dynare()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$solve_steady_dynare(
+  scratch_dir = tempfile(),
+  dynare_path = NULL,
+  model_options,
+  solve_options,
+  use_octave = Sys.which("matlab") == "",
+  exit_matlab = FALSE
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-solve_dynare"></a>}}
+\subsection{Method \code{solve_dynare()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$solve_dynare(
+  scratch_dir = tempfile(),
+  dynare_path = NULL,
+  model_options,
+  solve_options,
+  use_octave = Sys.which("matlab") == "",
+  exit_matlab = FALSE
+)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-copy"></a>}}
+\subsection{Method \code{copy()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$copy()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-serialize"></a>}}
+\subsection{Method \code{serialize()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$serialize()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-deserialize"></a>}}
+\subsection{Method \code{deserialize()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$deserialize(ser, dll_dir)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_solve_status"></a>}}
+\subsection{Method \code{get_solve_status()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_solve_status()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_aux_vars"></a>}}
+\subsection{Method \code{get_aux_vars()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_aux_vars()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_exo_data_raw"></a>}}
+\subsection{Method \code{get_exo_data_raw()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_exo_data_raw()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_mdldef"></a>}}
+\subsection{Method \code{get_mdldef()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_mdldef()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_instrument_names"></a>}}
+\subsection{Method \code{get_instrument_names()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_instrument_names()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_sigma_names"></a>}}
+\subsection{Method \code{get_sigma_names()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_sigma_names()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_fit"></a>}}
+\subsection{Method \code{set_fit()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_fit(data, names, name_err = "stop")}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set_fit_values"></a>}}
+\subsection{Method \code{set_fit_values()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$set_fit_values(value, names, pattern, period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clear_fit"></a>}}
+\subsection{Method \code{clear_fit()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$clear_fit()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_fit"></a>}}
+\subsection{Method \code{get_fit()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_fit()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_fit_instruments"></a>}}
+\subsection{Method \code{get_fit_instruments()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_fit_instruments(pattern, names, period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_lagrange"></a>}}
+\subsection{Method \code{get_lagrange()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_lagrange(names, period)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_sigmas"></a>}}
+\subsection{Method \code{get_sigmas()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$get_sigmas()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DynMdl$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}

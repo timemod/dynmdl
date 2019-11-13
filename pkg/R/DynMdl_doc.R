@@ -415,16 +415,45 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{fun}}{a function applied each model timeseries specified with 
-#'  argument \code{names} or \code{pattern}}
+#' \item{\code{fun}}{a function applied each model variable specified with 
+#'  argument \code{names} or \code{pattern}. See Details.}
 #' \item{\code{names}}{a character vector with variable names}
 #' \item{\code{pattern}}{a regular expression}
 #' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
-#' object that can be coerced to a \code{period_range}}
+#' object that can be coerced to a \code{period_range}: the period 
+#' for which the function will be applied}
 #' \item{\code{...}}{arguments passed to \code{fun}}
 #' }
 #' If neither \code{names} nor \code{pattern} have been specified,
 #' then the function is applied to all endogenous or exogenous variables.
+#' 
+#' @section Details:
+#' 
+#' The function specified with argument `fun` should be a function
+#' with at least one argument, for example `fun = function(x) {x + 0.1}`.
+#' The first argument (named `x` in the example) will be the model
+#' variable. The function is evaluated for each model variable separately. 
+#' The values of the model variables for period range `period` are passed as a 
+#' normal numeric vector (not a timeseries) to the first argument.
+#' 
+#' An example may help to clarify this. Consider the following statement
+#'  ```
+#'  mdl$change_endo_data(fun = myfun, names = c("c", "y"), 
+#'                       period = "2017q1/2017q2"),
+#'  ```
+#'  
+#'  where `mdl` is a `DynMdl` object and `myfun` some function whose details
+#'  are not relevant here. Method  \code{change_endo_data} evaluates this as
+#'  ```
+#'  data <- mdl$get_endo_data(names = c("c", "y"), period = "2017q1/2017q2")
+#'  data[, "c"] <- myfun(as.numeric(data[, "c"])
+#'  data[, "y"] <- myfun(as.numeric(data[, "y"])
+#'  mdl$set_data(data)
+#'  ```
+#' 
+#'  The function result must be a vector (or timeseries) of length one or with
+#'  the same length as the number of periods in the period range \code{period}.
+#' 
 #' 
 #' @section Methods:
 #' \describe{

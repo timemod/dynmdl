@@ -4,7 +4,7 @@
 \alias{set_param_values}
 \title{\code{\link{DynMdl}} methods: Sets the values of the model parameters}
 \description{
-This method of R6 class \code{\link{DynMdl}} 
+This method of R6 class \code{\link{DynMdl}}
 can be used to set the values of the model data
 }
 \section{Usage}{

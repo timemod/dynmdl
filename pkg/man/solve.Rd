@@ -8,7 +8,7 @@ This method of R6 class \code{\link{DynMdl}} solves
 the model.
 
 \code{solve} does \emph{not} raise an error when the solve was
-not successful. In that case a warning may be issued. 
+not successful. In that case a warning may be issued.
 Method \code{\link{get_solve_status}} can be used to check
 whether the solve was successfully terminated or not.
 }
@@ -39,18 +39,18 @@ are solved backwards.}
 \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
 For large model, the \code{umfpackr} solve can be much faster.}
 \item{\code{start}}{Method used to initialize starting values when solving
-the model backwards. For \code{"current"} (the default) the current values 
-of the endogenous variables are used as starting values. For 
-\code{"previous"} the solution of the previous period is used to create 
-starting values (except for the first period when the model is solved). 
-This argument is ignored if the model if solved with the stacked time Newton 
+the model backwards. For \code{"current"} (the default) the current values
+of the endogenous variables are used as starting values. For
+\code{"previous"} the solution of the previous period is used to create
+starting values (except for the first period when the model is solved).
+This argument is ignored if the model if solved with the stacked time Newton
 method}
 \item{\code{debug_eqs}}{Debug equations (default \code{FALSE}). Only used
 for the internal calculation mode (\code{calc == "internal"},
 see \code{\link{dyn_mdl}}). If
 \code{TRUE} then numerical problems in evaluation
 of mathematical functions or operators such a \code{log} are reported.}
-\item{\code{homotopy}}{A logical. If \code{TRUE} (the default), then the 
+\item{\code{homotopy}}{A logical. If \code{TRUE} (the default), then the
 homotopy approach is used when directly solving the model fails.
 Consult the documentation of Dynare for more information about the homotopy aproach.}
 \item{\code{...}}{Other arguments passed to the solver}

@@ -5,13 +5,13 @@
 \title{\code{\link{DynMdl}} method: removes fit targets and turns off fit
 instruments.}
 \description{
-This method of R6 class \code{DynMdl} removes all fit targets, sets 
+This method of R6 class \code{DynMdl} removes all fit targets, sets
 the sigma-parameters of the fit-instruments to \code{-1} and sets
-all Lagrange multipliers to 0. 
+all Lagrange multipliers to 0.
 
 By removing the fit targets (which is equivalent to setting all fit targets to
 \code{NA}), all endogenous variables are calculated according to the equations
-of the model, while the fit instruments stay fixed at their current value, 
+of the model, while the fit instruments stay fixed at their current value,
 and are efficitively exogenous (even though they are still implemented
 as endogenous variables).
 

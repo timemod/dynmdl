@@ -7,7 +7,7 @@
 \title{\code{\link{DynMdl}} methods: Retrieve the names of the fit instruments
 or sigma parameters used in the fit method.}
 \description{
-These methods of R6 class \code{\link{DynMdl}} 
+These methods of R6 class \code{\link{DynMdl}}
 return the names of the fit instruments or sigma parameters
 used in the fit method.
 }

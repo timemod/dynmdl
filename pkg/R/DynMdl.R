@@ -1898,7 +1898,13 @@ DynMdl <- R6Class("DynMdl",
         data <- private$exo_data[period, names, drop = FALSE]
       }
       for (c in seq_len(ncol(data))) {
-        data[, c] <- fun(data[, c], ...)
+        fun_result <- fun(as.numeric(data[ , c]), ...)
+        result_len <- length(fun_result)
+        if (result_len != 1 && result_len != nper) {
+          stop(sprintf(paste("The function result has length %d but should have",
+                             "length 1 or %d."), result_len, nper))
+        }
+        data[, c] <- fun_result
       }
       if (type == "endo") {
         if (private$mdldef$trend_info$has_deflated_endos) {

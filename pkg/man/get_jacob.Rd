@@ -4,17 +4,17 @@
 \alias{get_jacob}
 \alias{get_static_jacob}
 \alias{get_back_jacob}
-\title{\code{\link{DynMdl}} methods: Return the Jacobian for the static or 
+\title{\code{\link{DynMdl}} methods: Return the Jacobian for the static or
 dynamic model}
 \description{
-These methods of R6 class \code{\link{DynMdl}} 
+These methods of R6 class \code{\link{DynMdl}}
 can be used to retrieve the Jacobian for the static or dynamic model.
 
-The methods return a \code{matrix} object which can be further 
+The methods return a \code{matrix} object which can be further
 analysed using standard linear algebra functions.
 This is particularly useful when method \code{\link{solve}} complains
 about (nearly) singular Jacobians.
-For example, an SVD decomposition using function 
+For example, an SVD decomposition using function
 \code{\link[base]{svd}} can be used to identify linearly
 dependent rows or columns.
 }
@@ -48,7 +48,7 @@ object that can be coerced to a \code{period}}
 \item \code{get_jacob}: The Jacobian for the dynamic model
 This is the Jacobian used
 when solving the model with the stacked-time Newton method.
-\item \code{get_static_jacob}: The Jacobian for the static 
+\item \code{get_static_jacob}: The Jacobian for the static
 version of the model. This Jacobian  is used when solving the steady state.
 \item \code{get_back_jacob}: The Jacobian at a specific period
 for backward looking models, treating the lags as exogenous.

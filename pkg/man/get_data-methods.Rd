@@ -10,20 +10,20 @@
 \alias{get_all_exo_data}
 \title{\code{\link{DynMdl}} methods: Retrieve timeseries from the model data}
 \description{
-These methods of R6 class \code{\link{DynMdl}} 
+These methods of R6 class \code{\link{DynMdl}}
 can be used to retrieve timeseries from the model data.
 
 If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 \code{get_data} also returns the fit instruments. In contrast,
 \code{get_endo_data} does not return these fit instruments.
 Both \code{get_data} and \code{get_endo_data} do not return
-the Lagrange multipliers used in the fit method. Use method  
-\code{\link{get_lagrange}} to obtain these Lagrange multipliers. 
+the Lagrange multipliers used in the fit method. Use method
+\code{\link{get_lagrange}} to obtain these Lagrange multipliers.
 
-\code{\link{get_all_endo_data}} returns all endogenous variables, 
-fit instruments and Lagrange multipliers, as well as the auxiliary 
+\code{\link{get_all_endo_data}} returns all endogenous variables,
+fit instruments and Lagrange multipliers, as well as the auxiliary
 endogenous variables used when \code{max_laglead_1 = TRUE}.
-#' \code{\link{get_all_exo_data}} returns all exogenous variables, 
+#' \code{\link{get_all_exo_data}} returns all exogenous variables,
 including exogenous variables used by the fit method.
 }
 \section{Usage}{

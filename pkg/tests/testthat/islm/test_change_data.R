@@ -41,12 +41,22 @@ test_that("change_data works correctly with timeseries input", {
 })
 
 test_that("change_data works correctly with timeseries input (2)", {
+  
   mdl2 <- mdl$copy()
   mdl2$change_endo_data(function(x, fac) {x * fac}, names = "c", 
                         fac = c_multipliers)
   ms_g_ts <- regts(c(-999, ms_g_additions, 999), period = "2015Q2/2016Q3")
-  mdl2$change_exo_data(function(x) {x + ms_g_ts}, names = c("ms", "g"),
-                   period = "2015Q3/2016Q2")
+  
+  expect_error(
+    expect_warning(
+    mdl2$change_exo_data(function(x) {x + ms_g_ts}, names = c("ms", "g"),
+                       period = "2015Q3/2016Q2")),
+    "The function result has length 6 but should have length 1 or 4.")
+  
+  mdl2$change_exo_data(function(x) {x + ms_g_ts["2015q3/2016q2"]}, 
+                       names = c("ms", "g"),
+                       period = "2015Q3/2016Q2")
+  
   mdl2$change_endo_data(function(x) {x * 1.1}, pattern = "^y", 
                         period = "2016Q2")
   expect_equal(mdl2$get_endo_data(), new_endo_data)

@@ -30,18 +30,18 @@ mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"))
 
 \describe{
 \item{\code{data_period}}{\code{\link[regts]{period_range}}
-object, or an object that can be coerced to 
+object, or an object that can be coerced to
 \code{\link[regts]{period_range}},}
 \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
-object with values for endogogenous and exogenous model variables, 
+object with values for endogogenous and exogenous model variables,
 including fit instruments and Lagrange multipliers used in the fit method.
-If \code{data} has labels, then these labels are used to update the model 
-labels. If the model has trends, then the timeseries in \code{data} should 
+If \code{data} has labels, then these labels are used to update the model
+labels. If the model has trends, then the timeseries in \code{data} should
 include the trends.}
- \item{\code{upd_mode}}{the update mode, a character string specifying
-how the timeseries in object \code{data} are transferred to the 
+\item{\code{upd_mode}}{the update mode, a character string specifying
+how the timeseries in object \code{data} are transferred to the
 model data. For  \code{"upd"} (standard update, default), the timseseries
-in \code{data} are used to replace the steady state values of the 
+in \code{data} are used to replace the steady state values of the
 exogenous and endogenous model variables.
 For \code{"updval"}, the static model variables are only replaced
 by valid (i.e. non-\code{NA}) values in \code{data}). }

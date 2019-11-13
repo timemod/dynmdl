@@ -24,8 +24,8 @@ mdl$put_static_endos(period = mdl$get_data_period())
 
 \describe{
 \item{\code{period}}{
-A \code{\link[regts]{period_range}} object or an object that can be 
-coerced to a \code{period_range}, specifying the period for which the 
+A \code{\link[regts]{period_range}} object or an object that can be
+coerced to a \code{period_range}, specifying the period for which the
 endogenous model data will be updated with the static endogenous variables.}
 }
 }
@@ -40,6 +40,6 @@ mdl$put_static_endos()
 mdl$put_static_endos(period = mdl$get_lead_period())
 }
 \seealso{
-\code{\link{solve_steady}}, \code{\link{set_static_endos}} 
+\code{\link{solve_steady}}, \code{\link{set_static_endos}}
 and \code{\link{get_static_endos}}.
 }

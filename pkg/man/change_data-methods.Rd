@@ -8,7 +8,7 @@
 \title{\code{\link{DynMdl}} methods: changes the endogenous or exogenous
 model data by applying a function.}
 \description{
-These methods of R6 class \code{\link{DynMdl}} changes endogenous and/or 
+These methods of R6 class \code{\link{DynMdl}} changes endogenous and/or
 exogenous model data by applying a function.
 If the model has trends, then the change is applied to the trended
 model variables.
@@ -30,16 +30,42 @@ mdl$change_data(fun, names, pattern, period = mdl$get_data_period(), ...)
 
 
 \describe{
-\item{\code{fun}}{a function applied each model timeseries specified with 
- argument \code{names} or \code{pattern}}
+\item{\code{fun}}{a function applied each model variable specified with
+argument \code{names} or \code{pattern}. See Details.}
 \item{\code{names}}{a character vector with variable names}
 \item{\code{pattern}}{a regular expression}
 \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
-object that can be coerced to a \code{period_range}}
+object that can be coerced to a \code{period_range}: the period
+for which the function will be applied}
 \item{\code{...}}{arguments passed to \code{fun}}
 }
 If neither \code{names} nor \code{pattern} have been specified,
 then the function is applied to all endogenous or exogenous variables.
+}
+
+\section{Details}{
+
+
+The function specified with argument \code{fun} should be a function
+with at least one argument, for example \code{fun = function(x) {x + 0.1}}.
+The first argument (named \code{x} in the example) will be the model
+variable. The function is evaluated for each model variable separately.
+The values of the model variables for period range \code{period} are passed as a
+normal numeric vector (not a timeseries) to the first argument.
+
+An example may help to clarify this. Consider the following statement\preformatted{mdl$change_endo_data(fun = myfun, names = c("c", "y"), 
+                     period = "2017q1/2017q2"),
+}
+
+where \code{mdl} is a \code{DynMdl} object and \code{myfun} some function whose details
+are not relevant here. Method  \code{change_endo_data} evaluates this as\preformatted{data <- mdl$get_endo_data(names = c("c", "y"), period = "2017q1/2017q2")
+data[, "c"] <- myfun(as.numeric(data[, "c"])
+data[, "y"] <- myfun(as.numeric(data[, "y"])
+mdl$set_data(data)
+}
+
+The function result must be a vector (or timeseries) of length one or with
+the same length as the number of periods in the period range \code{period}.
 }
 
 \section{Methods}{
@@ -48,7 +74,7 @@ then the function is applied to all endogenous or exogenous variables.
 \item{\code{changes_endo_data}}{Changes endogenous model variables}
 \item{\code{change_exo_data}}{Changes exogenous model variables}
 \item{\code{change_data}}{Changes endogenous and/or exogenous model variables,
-including fit instruments and Lagrange multipliers used in the fit method 
+including fit instruments and Lagrange multipliers used in the fit method
 (if present).}
 }
 }

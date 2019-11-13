@@ -4,7 +4,7 @@
 \alias{set_fit_values}
 \title{\code{\link{DynMdl}} method: Sets the values of the fit targets}
 \description{
-This method of R6 class \code{\link{DynMdl}} 
+This method of R6 class \code{\link{DynMdl}}
 can be used to set the values of the fit targets. See the documentation
 of function \code{\link{set_fit}} for more information about fit targets.
 }

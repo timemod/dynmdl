@@ -8,13 +8,13 @@
 \title{\code{\link{DynMdl}} methods: Retrieve the names of model variables or
 parameters}
 \description{
-These methods of R6 class \code{\link{DynMdl}} 
+These methods of R6 class \code{\link{DynMdl}}
 return the names of the model variables or parameters
 
 If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
-\code{get_endo_names} and \code{get_exo_names} do not include the names of 
+\code{get_endo_names} and \code{get_exo_names} do not include the names of
 the auxiliary endogenous and exogenous variables used in the fit method.
-Use \code{\link{get_instrument_names}} to obtain the names of the fit 
+Use \code{\link{get_instrument_names}} to obtain the names of the fit
 instruments.
 }
 \section{Usage}{
@@ -36,7 +36,7 @@ mdl$get_par_names()
 
 \describe{
 \item{\code{type}}{a character describing the type of the endogenous variables:
- \code{"lags"} or \code{"leads"} for endogenous variables with lags or leads,
+\code{"lags"} or \code{"leads"} for endogenous variables with lags or leads,
 respectively. The default is \code{"all"} (all endogenous variables).}
 }
 }

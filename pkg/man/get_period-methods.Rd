@@ -12,7 +12,7 @@
 These methods of R6 class \code{\link{DynMdl}} return the model period,
 data period, lag period, lead period, or base period respectively.
 
-The \emph{model period} is the default period for which the model will be 
+The \emph{model period} is the default period for which the model will be
 solved. The \emph{data period} is the period for which the model contains
 the values for the endogenous and exogenous variables. If a model has lags,
 then the data period always include the \emph{lag period}: the period

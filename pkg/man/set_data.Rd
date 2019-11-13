@@ -2,13 +2,13 @@
 % Please edit documentation in R/DynMdl_doc.R
 \name{set_data}
 \alias{set_data}
-\title{\code{\link{DynMdl}} method: transfers data from a timeseries 
+\title{\code{\link{DynMdl}} method: transfers data from a timeseries
 object to the model data}
 \description{
-This method of R6 class \code{\link{DynMdl}} 
+This method of R6 class \code{\link{DynMdl}}
 transfers data from a timeseries object to the model data
 (both endogenous and exogenous). If the model implements the fit method,
-then \code{set_data} can also be used to modify fit instruments and the  
+then \code{set_data} can also be used to modify fit instruments and the
 Lagrange multipliers.
 }
 \section{Usage}{
@@ -28,9 +28,9 @@ mdl$set_data(data, names = colnames(data),
 
 \describe{
 \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
- object. If \code{data} has labels, then \code{set_data} will also update
-the labels of the corresponding model variables. 
-If the model has trends, then the timeseries in \code{data} should 
+object. If \code{data} has labels, then \code{set_data} will also update
+the labels of the corresponding model variables.
+If the model has trends, then the timeseries in \code{data} should
 include the trends.}
 \item{\code{names}}{a character vector with variable names. Defaults to the
 column names of \code{data}. If \code{data} does not have column names,
@@ -39,10 +39,10 @@ then argument \code{names} is mandatory}
 how the timeseries are updated: \code{"upd"} (standard update, default) or
 \code{"updval"} (update only with valid numbers). See details.}
 \item{\code{fun}}{a function used to update the model data. This should
-be a function with two arguments. The original model data is passed to 
+be a function with two arguments. The original model data is passed to
 the first argument of the function and \code{data} to the second argument.
 See the examples.}
-\item{\code{name_err}}{this option specifies the action that should be taken 
+\item{\code{name_err}}{this option specifies the action that should be taken
 when a variable name is not a model variable.
 For \code{"stop"} (the default), the execution of this function is stopped.
 For \code{"warn"} and \code{"silent"} the timeseries that are no model
@@ -67,7 +67,7 @@ in \code{data}. This can be achieved by selecting \code{"updval"} for argument
 \code{-Inf}) are also disregarded for this update mode.
 The argument \code{upd_mode} controls how the timeseries are updated:
 \describe{
-\item{\code{"update"}}{Model variables are updated with the 
+\item{\code{"update"}}{Model variables are updated with the
 timeseries in \code{data}}
 \item{\code{"updval"}}{Model variables are updated with the non \code{NA}
 values in \code{data}}
@@ -108,7 +108,7 @@ mdl$set_data(shock, fun = `+`)
 
 }
 \seealso{
-\code{\link{get_data-methods}}, 
+\code{\link{get_data-methods}},
 \code{\link{set_values-methods}} and
 \code{\link{change_data-methods}}
 }

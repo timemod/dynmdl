@@ -5,8 +5,8 @@
 \title{\code{\link{DynMdl}} method: Return the eigenvalues computed with method
 \code{check}}
 \description{
-This method of R6 class \code{\link{DynMdl}} returns the eigenvalues 
-computed with method \code{\link{check}}, ordered with increasing absolute 
+This method of R6 class \code{\link{DynMdl}} returns the eigenvalues
+computed with method \code{\link{check}}, ordered with increasing absolute
 value
 }
 \section{Usage}{

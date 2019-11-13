@@ -2,15 +2,15 @@
 % Please edit documentation in R/DynMdl_doc_fit.R
 \name{get_sigmas}
 \alias{get_sigmas}
-\title{\code{\link{DynMdl}} methods: Retrieve the 
+\title{\code{\link{DynMdl}} methods: Retrieve the
 sigma parameters used in the fit method.}
 \description{
-This method of R6 class \code{\link{DynMdl}} 
-return all sigma parameters for the fit method larger than or 
+This method of R6 class \code{\link{DynMdl}}
+return all sigma parameters for the fit method larger than or
 equal to zero. The fit instruments for which the corresponding
-sigma-parameter is \eqn{\ge 0} are used as instruments in the 
-fit method. Instruments which a sigma-parameter smaller than 0 are 
-fixed at their original value. 
+sigma-parameter is \eqn{\ge 0} are used as instruments in the
+fit method. Instruments which a sigma-parameter smaller than 0 are
+fixed at their original value.
 
 The sigma-parameters can be modified with methods
 \code{\link{set_param}} and \code{\link{set_param_values}}.

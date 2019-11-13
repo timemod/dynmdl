@@ -4,11 +4,11 @@
 \alias{get_labels/get_tex_names}
 \alias{get_labels}
 \alias{get_tex_names}
-\title{\code{\link{DynMdl}} method: Returns the labels or LaTeX names 
+\title{\code{\link{DynMdl}} method: Returns the labels or LaTeX names
 of the model variables and parameters}
 \description{
 These methods of R6 class \code{\link{DynMdl}}
-return the labels (long names) or LaTeX names of the model variables and 
+return the labels (long names) or LaTeX names of the model variables and
 parameters. The return value is a named character vector.
 
 The labels and LaTeX names are defined in the mod file (consult the documentation
@@ -29,7 +29,7 @@ mdl$get_tex_names()
 \section{Methods}{
 
 \itemize{
-\item \code{get_labels}: Returns the labels (long names), 
+\item \code{get_labels}: Returns the labels (long names),
 e.g. \code{"Disposable income"}
 \item \code{get_tex_names}: Returns the LaTeX names (e.g. \code{"Y_d"})
 }

@@ -10,7 +10,7 @@ This function uses the static exogenous and endogenous variables
 stored in the \code{DynMdl} object. The static endogenous variables
 are used as an initial guess for solving the steady state.
 After creating a \code{DynMdl} object, the static exogenous and endogenous
-variables are initialized to the values specified in the initval block of 
+variables are initialized to the values specified in the initval block of
 the mod file, or to zero if they are not specified in the initval block.
 The static variables can be modified with methods
 \code{\link{set_static_exos}} and \code{\link{set_static_endos}}.
@@ -19,7 +19,7 @@ The function \code{\link{get_static_endos}} can be used to retrieve the
 steady state solution.
 
 \code{solve_steady} does \emph{not} raise an error when the solve was
-not successful. In that case a warning may be issued. 
+not successful. In that case a warning may be issued.
 Method \code{\link{get_solve_status}} can be used to check
 whether the solve was successfully terminated or not.
 }

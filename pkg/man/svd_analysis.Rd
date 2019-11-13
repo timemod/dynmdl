@@ -8,27 +8,27 @@ svd_analysis(jac, sd_tol = 1e-12, coef_tol = 1e-12)
 }
 \arguments{
 \item{jac}{a square matrix, for example the matrix returned
-by \code{\link{DynMdl}} methods \code{\link{get_static_jacob}}, 
+by \code{\link{DynMdl}} methods \code{\link{get_static_jacob}},
 \code{\link{get_jacob}} or \code{\link{get_back_jacob}}.}
 
 \item{sd_tol}{singular value tolerance. Singular values smaller
 than this tolerance are ignored.}
 
-\item{coef_tol}{coefficient tolerance. The returned 
-singular vector matrices do no include rows for which all elements are smaller than 
+\item{coef_tol}{coefficient tolerance. The returned
+singular vector matrices do no include rows for which all elements are smaller than
 \code{coef_tol}.}
 }
 \value{
-a list with class \code{svd_analysis}, 
+a list with class \code{svd_analysis},
 containing the following components
 \item{d}{a vector with singular values smaller than \code{sd_tol},
 in decreasing order.}
-\item{u}{a matrix with the left singular vectors corresponding to the 
+\item{u}{a matrix with the left singular vectors corresponding to the
 singular values \code{d}. Rows for which all elements are smaller
 than \code{coef_tol} have been removed. The columns of this matrix
-can be interpreted as the (near) linear relations between the rows 
+can be interpreted as the (near) linear relations between the rows
 of the jacobian.}
-\item{v}{a matrix with the right singular vectors corresponding to the 
+\item{v}{a matrix with the right singular vectors corresponding to the
 singular values \code{d}. Rows for which all elements are smaller
 than \code{coef_tol} have been removed. The columns of this matrix
 can be interpreted as the (near) linear relations between the columns
@@ -65,6 +65,6 @@ mat2 <- cbind(x1, x2, x3 = x2)
 svd_analysis(mat2) 
 }
 \seealso{
-\code{\link[base]{svd}} and function 
+\code{\link[base]{svd}} and function
 \code{\link[caret]{findLinearCombos}} in package \code{caret}.
 }

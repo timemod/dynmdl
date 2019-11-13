@@ -3,7 +3,7 @@
 \name{all.equal}
 \alias{all.equal}
 \alias{all.equal.DynMdl}
-\title{Test if two \code{\link{DynMdl}} objects are 
+\title{Test if two \code{\link{DynMdl}} objects are
 (nearly) equal}
 \usage{
 \method{all.equal}{DynMdl}(target, current, ...)
@@ -22,8 +22,8 @@ Either \code{TRUE} or a character vector describing the
 differences between target and current.
 }
 \description{
-\code{all.equal(x, y)} is a utility to compare R objects \code{x} and 
-\code{y} testing near equality. If they are different, comparison is still 
+\code{all.equal(x, y)} is a utility to compare R objects \code{x} and
+\code{y} testing near equality. If they are different, comparison is still
 made to some extent, and a report of the differences is returned. Do not use
 \code{all.equal} directly in if expressions - use
 \code{isTRUE(all.equal(...))}.

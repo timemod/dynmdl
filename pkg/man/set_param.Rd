@@ -22,7 +22,7 @@ mdl$set_param(p, name_err = c("stop", "warn", "silent"))
 \describe{
 \item{\code{p}}{a named numeric vector with parameter values.
 The names are the names of the parameters}
-\item{\code{name_err}}{this option specifies the action that should be taken 
+\item{\code{name_err}}{this option specifies the action that should be taken
 when a variable name is not a model variable.
 For \code{"stop"} (the default), the execution of this function is stopped.
 For \code{"warn"} and \code{"silent"} the names imeseries that are no model

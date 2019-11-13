@@ -2,12 +2,12 @@
 % Please edit documentation in R/DynMdl_doc.R
 \name{check}
 \alias{check}
-\title{\code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model 
+\title{\code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model
 around the steady state.}
 \description{
 This method of R6 class \code{\link{DynMdl}} computes the steady state,
 constructs a linear model around the state steady and finally
-computes the eigenvalues of the linearized model around the steady state. It 
+computes the eigenvalues of the linearized model around the steady state. It
 also checks if the Blachard and  Kahn conditions are satisfied.
 }
 \section{Usage}{

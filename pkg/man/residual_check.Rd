@@ -4,8 +4,8 @@
 \alias{residual_check}
 \title{\code{\link{DynMdl}} method: Calculates the residuals of the equations}
 \description{
-This method of R6 class \code{\link{DynMdl}} calculates the 
-residuals for the full model period and returns the 
+This method of R6 class \code{\link{DynMdl}} calculates the
+residuals for the full model period and returns the
 result  as a \code{\link[regts]{regts}} timeseries object.
 }
 \section{Usage}{
@@ -25,14 +25,14 @@ mdl$residual_check(tol, include_fit_eqs = FALSE)
 \item{\code{tol}}{the tolerance parameter.
 If specified, then the return value does not include columns for the equations
 whose residuals are smaller than \code{tol}}
- \item{\code{include_all_eqs}}{a logical value (default \code{FALSE}).  
-If \code{TRUE}, then the all equations, including fit equations and 
+\item{\code{include_all_eqs}}{a logical value (default \code{FALSE}).
+If \code{TRUE}, then the all equations, including fit equations and
 auxiliary equations (if present),  are included in the residual check.
 The auxiliary equations are extra equations created when the model
 has lags or leads greater than 1 and if \code{dynmdl} was called
 with \code{max_laglead_1 = TRUE}.}
-\item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).  
-If \code{TRUE}, then fit equations (if present) are included in the residual 
+\item{\code{include_fit_eqs}}{a logical value (default \code{FALSE}).
+If \code{TRUE}, then fit equations (if present) are included in the residual
 check. Ignored if \code{include_all_eqs} is \code{TRUE}.}
 \item{\code{debug_eqs}}{Debug equations (default \code{FALSE}). Only used
 for the internal calculation mode (\code{calc == "internal"},
