@@ -72,6 +72,8 @@ test_that("set_data, set_endo_values and set_exo_values works correctly (1)", {
                "Period 2017M01 has a higher frequency than the model period 2017Q1/2017Q2.")
   
   expect_equal(mdl3$get_data(names = "g"), data[, "g", drop = FALSE])
+  
+  expect_equal(mdl3$get_all_endo_data(), mdl3$get_endo_data())
 })
 
 test_that("mdl2 is a different object than mdl", {

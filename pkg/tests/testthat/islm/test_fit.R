@@ -152,8 +152,15 @@ test_that("get_names", {
                  paste0("t", 0:1))
   expect_equal(mdl$get_par_names(), par_names)
   
-  
   expect_equal(mdl$get_sigma_names(), paste0("sigma_", inames))
+})
+
+test_that("get_all_endo_data", {
+  data <- mdl$get_all_endo_data()
+  expected_result <- cbind(mdl$get_endo_data(), mdl$get_fit_instruments(),
+                           mdl$get_lagrange())
+  expected_result[is.na(expected_result)]  <- 0 # zero instruments
+  expect_equal(data, expected_result)
 })
 
 test_that("start solution with correct lagrange multipliers", {

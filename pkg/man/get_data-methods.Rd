@@ -19,12 +19,11 @@ If the \code{DynMdl} object is also a \code{\link{DynMdl}} object, then
 Both \code{get_data} and \code{get_endo_data} do not return
 the Lagrange multipliers used in the fit method. Use method
 \code{\link{get_lagrange}} to obtain these Lagrange multipliers.
-
 \code{\link{get_all_endo_data}} returns all endogenous variables,
-fit instruments and Lagrange multipliers, as well as the auxiliary
-endogenous variables used when \code{max_laglead_1 = TRUE}.
-#' \code{\link{get_all_exo_data}} returns all exogenous variables,
-including exogenous variables used by the fit method.
+fit instruments and Lagrange multipliers, for the complete data period.
+This function is useful to save the complete solution of a model that
+be used as initial values for the endogenopus variables in another
+model.
 }
 \section{Usage}{
 
@@ -41,8 +40,6 @@ mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
 mdl$get_trend_data(pattern, names, period = mdl$get_data_period())
 
 mdl$get_all_endo_data()
- 
-mdl$get_all_exo_data()
 
 }
 
@@ -79,6 +76,8 @@ fit instruments.
 \item \code{get_exo_data}: Exogenous model variables
 \item \code{get_trend_data}: Trend variables (variables declared with
 \code{trend_var} in the mod file).
+\item \code{get_all_endo_data}: All endogenous variables, including
+fit instruments and lagrange multipliers.
 }
 }
 
@@ -88,6 +87,7 @@ mdl <- islm_mdl(period = "2017Q1/2017Q3")
 mdl$get_data(names = "c", pattern  = "y.", period = "2017Q1/2017Q2")
 }
 \seealso{
-\code{\link{get_fit-methods}}, \code{\link{get_fit}}, \code{\link{get_fit_instruments}},
-\code{\link{get_lagrange}} and \code{\link{get_vars_pars}}.
+\code{\link{get_fit-methods}}, \code{\link{get_fit}},
+\code{\link{get_fit_instruments}}, \code{\link{get_lagrange}} and
+\code{\link{get_vars_pars}}.
 }

@@ -594,11 +594,35 @@ DynMdl <- R6Class("DynMdl",
       private$set_data_(data, type = "endo", upd_mode = upd_mode, fun = fun)
       return(invisible(self))
     },
-    get_all_endo_data = function() {
+    get_all_endo_data = function(trend = TRUE) {
+      data <- private$endo_data
+      if (private$mdldef$has_aux_vars) {
+        data <- data[ , -private$mdldef$aux_vars$endos, drop = FALSE]
+      }
+      if (trend && private$mdldef$trend_info$has_deflated_endos) {
+        data <- private$trend_endo_data(data)
+      }
+      # only use labels for the original variables
+      lbls <- private$mdldef$labels
+      if (private$mdldef$fit) {
+        # no labels for Lagrange multipliers
+        l_sel <- match(private$mdldef$fit_info$l_var_names, names(lbls))
+        lbls <- lbls[-l_sel]
+      }
+      return(update_ts_labels(data, lbls))
+    },
+    get_all_endo_data_dynare = function() {
+      # Return all endogenous variables, including auxiliary variables,
+      # fit instruments and lagrange multipliers, without trend.
+      # This function is used in package dynmdl to prepare input for Dynare,
+      # but is not useful outside of package dyndml. The function should 
+      # therefore not be documented.
       if (private$mdldef$has_aux_vars) private$prepare_aux_vars()
       return(private$endo_data)
     },
-    get_all_exo_data = function() {
+    get_all_exo_data_dynare = function() {
+      # Return all exgenous variables, including exogenous variables
+      # used in the fit procedure.
       if (private$mdldef$fit) private$set_old_fit_instruments()
       return(private$exo_data)
     },

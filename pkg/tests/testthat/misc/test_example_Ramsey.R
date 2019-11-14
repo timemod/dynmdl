@@ -162,3 +162,9 @@ test_that("change_endo_data", {
  
 })
 
+test_that("get_all_endo_data", {
+  data <- mdl$get_all_endo_data()
+  data_no_trend <- mdl$get_all_endo_data(trend = FALSE)
+  expect_equal(data, mdl$get_endo_data())
+  expect_equal(data_no_trend, mdl$get_endo_data(trend = FALSE))
+})

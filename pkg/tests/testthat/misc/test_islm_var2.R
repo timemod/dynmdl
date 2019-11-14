@@ -99,6 +99,13 @@ test_that("solve with max_laglead_1", {
   dynare_data[ , "uc_old"] <- dynare_data[ , "uc"]
   
   expect_true(tsdif(initval_data, dynare_data, fun = cvgdif, tol = 1e-8)$equal)
+  
+  # test get_all_endo_data
+  data <- mdl2$get_all_endo_data()
+  expected_result <- cbind(mdl2$get_endo_data(), mdl2$get_fit_instruments(),
+                           mdl2$get_lagrange())
+  expected_result[is.na(expected_result)]  <- 0 # zero instruments
+  expect_equal(data, expected_result)
 })
 
 test_that("eigenvalues", {
