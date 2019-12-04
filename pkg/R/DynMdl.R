@@ -1933,6 +1933,10 @@ DynMdl <- R6Class("DynMdl",
       if (!is.function(fun)) {
         stop("argument fun is not a function")
       }
+      
+      # remove duplicated names
+      names <- unique(names)
+      
       nper <- nperiod(period)
       if (length(names) == 0) return(invisible(self))
       if (type == "endo") {
