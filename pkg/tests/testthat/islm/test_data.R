@@ -159,3 +159,29 @@ test_that("get_vars_pars", {
   var_data <- do.call(cbind, vars)
   expect_identical(var_data, mdl$get_data())
 })
+
+
+test_that("set_data with duplicate column names", {
+  
+  # prepare data
+  g  <- regts(c(241, NA, 243), start = start_period(period))
+  y  <- regts(c(1210, 1215, 1220), start = start_period(period) + 1)
+  yd <- y
+  t <- regts(260, period = period)
+  ms <- regts(240, period = period + 2)
+  data <- cbind(g, y, t, ms, yd, g2 = g)
+  colnames(data)[ncol(data)] <- "g"
+  
+  
+  mdl2 <- mdl$copy()
+  
+  expect_warning(mdl2$set_data(data),
+                 paste("Data contains duplicate names. The first column is",
+                      "used.\nThe duplicated names are: g."))
+  
+  endo_data <- update_mdl_data(endo_data_org, data[, c("y", "yd", "t")])
+  exo_data <- update_mdl_data(exo_data_org, data[, c("ms", "g")])
+  
+  expect_equal(mdl2$get_endo_data(), endo_data)
+  expect_equal(mdl2$get_exo_data(),  exo_data)
+})

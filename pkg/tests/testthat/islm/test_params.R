@@ -10,27 +10,43 @@ pars <- mdl$get_param()
 
 test_that("set_param", {
   
+  mdl2 <- mdl$copy()
+  
   par <- c(i3 = -999)
-  mdl$set_param(par)
-  expect_identical(mdl$get_param(names = "i3"), par)
+  mdl2$set_param(par)
+  expect_identical(mdl2$get_param(names = "i3"), par)
   
   par <- 999
-  mdl$set_param(par, names = "i3")
-  expect_identical(mdl$get_param(names = "i3"), c(i3 = par))
+  mdl2$set_param(par, names = "i3")
+  expect_identical(mdl2$get_param(names = "i3"), c(i3 = par))
   
   # errors
-  expect_error(mdl$set_param(c(aap = 9999)), "\"aap\" is not a parameter.")
+  expect_error(mdl2$set_param(c(aap = 9999)), "\"aap\" is not a parameter.")
   
   msg <-  "The following names are no parameters: \"aap\", \"jan\"."
-  expect_error(mdl$set_param(c(i3 = 999, aap = 999, jan = 999)), msg)
-  expect_warning(mdl$set_param(c(i3 = 9999, aap = 999, jan = 999), 
+  expect_error(mdl2$set_param(c(i3 = 999, aap = 999, jan = 999)), msg)
+  expect_warning(mdl2$set_param(c(i3 = 9999, aap = 999, jan = 999), 
                                name_err = "warn"), msg)
-  expect_equal(mdl$get_param(names = "i3"), c(i3 = 9999))
+  expect_equal(mdl2$get_param(names = "i3"), c(i3 = 9999))
  
-  expect_silent(mdl$set_param(c(i3 = 9999, aap = 999, jan = 999), 
+  expect_silent(mdl2$set_param(c(i3 = 9999, aap = 999, jan = 999), 
                                name_err = "silent"))
-  expect_error(mdl$set_param(2), 
+  expect_error(mdl2$set_param(2), 
                "If argument params has no names, than argument names must be specified.")
+  
+  # duplicate names
+  par <- c(i3  = -999, i3 = 666)
+  expect_warning(mdl2$set_param(par),
+                 paste("Values contains duplicate names. The first value is",
+                       "used.\nThe duplicated names are: i3."))
+  expect_identical(mdl2$get_param(names = "i3"), par[1])
+  
+  par <- c(i3  = -999, i3 = 666, i1 = 222,  i1 = 111)
+  expect_warning(mdl2$set_param(par),
+                 paste("Values contains duplicate names. The first value is",
+                       "used.\nThe duplicated names are: i3, i1."))
+  expect_identical(mdl2$get_param(names = c("i1", "i3")), par[c(3, 1)])
+  
 })
 
 test_that("get_param", {

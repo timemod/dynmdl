@@ -316,7 +316,7 @@ DynMdl <- R6Class("DynMdl",
       return(names)
     },
     set_param = function(params, names, name_err = "stop") {
-      params <- private$convert_vector_arg_internal(params, names, "params")
+      params <- private$convert_values_internal(params, names, "params")
       names <- private$check_param_names(base::names(params), 
                                          name_err = name_err)
       private$mdldef$params[names] <- params[names]
@@ -335,7 +335,7 @@ DynMdl <- R6Class("DynMdl",
       return(private$mdldef$params[names])
     },
     set_static_exos = function(exos, names, name_err = "stop") {
-      exos <- private$convert_vector_arg_internal(exos, names, "exos")
+      exos <- private$convert_values_internal(exos, names, "exos")
       exo_names <- private$get_names_("exo", names = base::names(exos), 
                                       name_err = name_err)
       private$mdldef$exos[exo_names] <- exos[exo_names]
@@ -362,7 +362,7 @@ DynMdl <- R6Class("DynMdl",
       }
     },
     set_static_endos = function(endos, names, name_err = "stop") {
-      endos <- private$convert_vector_arg_internal(endos, names, "endos")
+      endos <- private$convert_values_internal(endos, names, "endos")
       endo_names <- private$get_names_("endo", names = base::names(endos), 
                                        name_err = name_err)
       private$mdldef$endos[endo_names] <- endos[endo_names]
@@ -396,7 +396,7 @@ DynMdl <- R6Class("DynMdl",
       return(ret)
     },
     set_static_data = function(data, names, name_err = "stop") {
-      data <- private$convert_vector_arg_internal(data, names, "data")
+      data <- private$convert_values_internal(data, names, "data")
       names <- private$get_names_("endo_exo", names = base::names(data), 
                                   name_err = name_err)
       endo_names <- intersect(names, private$mdldef$endo_names_orig)
@@ -1708,9 +1708,9 @@ DynMdl <- R6Class("DynMdl",
       }
       return(names)
     },
-    convert_vector_arg_internal = function(data, names, arg_name) {
-      # Handle the input of function set_static_endos, set_static_exos
-      # en set_static_data.
+    convert_values_internal = function(data, names, arg_name) {
+      # Handle the input of function set_param, set_static_endos, 
+      # set_static_exos and set_static_data.
       if (!is.numeric(data)) {
         stop(sprintf("Argument %s must be a numeric vector.", arg_name))
       }
@@ -1724,6 +1724,17 @@ DynMdl <- R6Class("DynMdl",
       } else if (is.null(base::names(data))) {
         stop(sprintf(paste("If argument %s has no names, than argument",
                            "names must be specified."), arg_name))
+      } else {
+        names <- base::names(data)
+      }
+      
+      # check for duplicate names
+      if (anyDuplicated(names)) {
+        dupl <- duplicated(names)
+        data <- data[!dupl]
+        warning(sprintf(paste("Values contains duplicate names. The first value",
+                              "is used.\nThe duplicated names are: %s."),
+                        paste(names[dupl], collapse = ", ")))
       }
       return(data)
     },
@@ -1769,6 +1780,17 @@ DynMdl <- R6Class("DynMdl",
       } else if (is.null(colnames(data))) { 
           stop(paste("Argument data has no colnames.",
                    "In that case, argument names should be specified"))
+      } else {
+        names <- colnames(data)
+      }
+      
+      # check for duplicate names
+      if (anyDuplicated(names)) {
+        dupl <- duplicated(names)
+        data <- data[  , !dupl, drop = FALSE]
+        warning(sprintf(paste("Data contains duplicate names. The first column",
+                              "is used.\nThe duplicated names are: %s."),
+                        paste(names[dupl], collapse = ", ")))
       }
       
       return(data)
