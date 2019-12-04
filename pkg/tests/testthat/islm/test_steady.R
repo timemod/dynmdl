@@ -188,7 +188,11 @@ test_that("set_static_data / get_static_data", {
   expect_equal(length(mdl2$get_static_endos(names = character(0))), 0)
   expect_equal(length(mdl2$get_static_exos(names = character(0))), 0)
   
-  mdl2$set_static_data(c(ms = 555, md = 666))
+  
+  expect_warning(mdl2$set_static_data(c(ms = 555, md = 666, ms = -999)),
+                                      paste0("Values contains duplicate names.",
+                                            " The first value is used.\n",
+                                            "The duplicated names are: ms."))
   expect_equal(mdl2$get_static_data(pattern = "^m"),
                c(md = 666, ms = 555))
   
@@ -204,4 +208,5 @@ test_that("set_static_data / get_static_data", {
   
   expect_error(mdl2$set_static_data(c(c = "xxx")),
                "Argument data must be a numeric vector.")
+  
 })
