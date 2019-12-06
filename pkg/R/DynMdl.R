@@ -1522,27 +1522,54 @@ DynMdl <- R6Class("DynMdl",
     self$set_param_values(-1, names = private$mdldef$fit_info$sigma_names)
     self$set_endo_values(0, names = private$mdldef$fit_info$l_var_names)
   },
-  get_fit = function() {
+  get_fit = function(pattern, names, period = private$data_period) {
     private$check_fit()
-    fit_switches <- private$exo_data[ , private$mdldef$fit_info$fit_vars, 
-                                      drop = FALSE]
-    fit <- private$exo_data[ , private$mdldef$fit_info$exo_vars, drop = FALSE]
+    period_specified <- !missing(period)
+    period <- private$check_period_arg(period)
+    fit_target_names <- private$mdldef$endo_names_orig
+    fit_switch_names <-  private$mdldef$fit_info$fit_vars
+    exo_names <- private$mdldef$fit_info$exo_vars
+    names_specified <- !missing(pattern) || !missing(names)
+    if (names_specified) {
+      endo_names <- private$get_names_("endo", names, pattern)
+      if (length(endo_names) == 0) return(NULL)
+      idx <- match(endo_names, fit_target_names)
+      fit_switch_names <- fit_switch_names[idx]
+      exo_names <- exo_names[idx]
+      fit_target_names <- endo_names
+    }
+    fit_switches <- private$exo_data[period , fit_switch_names, drop = FALSE]
+    fit <- private$exo_data[period, exo_names, drop = FALSE]
     fit[fit_switches == 0] <- NA
-    colnames(fit) <- private$mdldef$endo_names_orig
+    colnames(fit) <- fit_target_names
     
     # remove NA columns and leading/trailing NA rows
-    fit <- remove_na_columns(fit)
-    if (is.null(fit)) {
-      return(NULL) 
-    } else {
-      fit <- na_trim(fit)
-      if (private$mdldef$trend_info$has_deflated_endos) {
-        fit <- private$trend_endo_data(fit)
+    if (!names_specified) {
+      fit <- remove_na_columns(fit)
+      if (is.null(fit)) {
+        if (period_specified) {
+          # always return a timeseries with the specified period
+          return(regts(matrix(nrow = nperiod(period), ncol = 0), 
+                       period = period))
+        } else {
+          return(NULL)
+        }
       }
-      fit <- fit[ , order(colnames(fit)), drop = FALSE]
-      fit <- update_ts_labels(fit, private$mdldef$labels)
-      return(fit)
     }
+      
+    # remove trailing/leading rows with only NA values 
+    # if the period has not been specified
+    if (!period_specified) {
+      fit <- na_trim(fit)
+      if (is.null(fit)) return(NULL)
+    }
+    
+    if (private$mdldef$trend_info$has_deflated_endos) {
+      fit <- private$trend_endo_data(fit)
+    }
+    fit <- fit[ , order(colnames(fit)), drop = FALSE]
+    fit <- update_ts_labels(fit, private$mdldef$labels)
+    return(fit)
   },
   get_fit_instruments = function(pattern, names, period) {
     private$check_fit()

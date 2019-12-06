@@ -68,6 +68,8 @@ mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")
 
 fit_targets <- mdl$get_fit()
 
+
+
 test_that("all.equal works correctly for fit models", {
   expect_false(isTRUE(all.equal(mdl, mdl_old)))
 })
@@ -113,7 +115,7 @@ test_that("get_data", {
   
   expect_warning(expect_null(mdl$get_endo_data(pattern = "^u")),
                  "No endogenous variables match pattern \"\\^u\".")
-                 
+  
   expect_warning(expect_null(mdl$get_data(pattern = "^z")),
                  "No model variables match pattern \"\\^z\".")
   
@@ -214,9 +216,9 @@ test_that("get_vars_pars", {
 test_that("too many fit targets", {
   
   mdl2 <- mdl$copy()
- 
+  
   mdl2$set_param(c(sigma_umd = -1))
-
+  
   # set fit targets outside model period and with NA values should not mattter
   mdl2$set_fit_values(-999, names = "y", period = "2015q3/2015q4")
   mdl2$set_fit_values(3, names = "c", period = "2008q1")
@@ -230,16 +232,16 @@ test_that("too many fit targets", {
   expect_identical(ncol(mdl2$residual_check(include_fit_eqs = TRUE, tol = 1e-8)), 
                    0L)
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
- 
+  
   mdl2$set_fit_values(720, names = "c", period = "2016q1")
   mdl2$set_fit_values(3.35, names = "r", period = "2016q1/2016q4")
   msg <- paste("The number of fit targets \\(4\\) exceeds the number",
-                "of fit instruments \\(3\\)")
+               "of fit instruments \\(3\\)")
   expect_error(mdl2$solve(), msg)
 })
 
 test_that("solve replaces endogenous variables with fit targets before solving", {
-
+  
   mdl$set_endo_values(999, names = "y", period = "2016q1/2016q3")
   mdl$set_endo_values(NA, names = "t", period = "2016q1")
   
@@ -260,7 +262,7 @@ test_that("changing fit instruments", {
   mdl2$set_data(ut, names = "ut")
   mdl2$set_endo_values(3, names = "uc", period = "2016q1")
   mdl2$change_endo_data(function(x) {x + 2}, names = "ui", 
-                       period = "2016q1/2016q3")
+                        period = "2016q1/2016q3")
   
   expected_result <- mdl2$get_fit_instruments()
   expected_result["2016q1/2016q2", "ut"] <- c(1,2)
@@ -269,7 +271,7 @@ test_that("changing fit instruments", {
   
   
   expect_error(mdl2$change_endo_data(function(x) {x + 2}, names = "g", 
-                                    period = "2016q1/2016q3"),
+                                     period = "2016q1/2016q3"),
                "\"g\" is not an endogenous variable")
 })
 
@@ -283,13 +285,13 @@ test_that("clear_fit", {
 })
 
 test_that("error: fit instrument not in model block", {
-    expect_warning(
-      expect_error(
-        msg <- capture.output(
-          rep <- capture_output(mdl <- dyn_mdl("mod/islm_fit_error.mod")),
-          type = "message"),
-        "The following fit instruments do not occur in the model equations: uc.")
-    )
+  expect_warning(
+    expect_error(
+      msg <- capture.output(
+        rep <- capture_output(mdl <- dyn_mdl("mod/islm_fit_error.mod")),
+        type = "message"),
+      "The following fit instruments do not occur in the model equations: uc.")
+  )
 })
 
 test_that("set_static_endos/set_static_exos", {
@@ -386,3 +388,28 @@ test_that("set_static_data / get_static_data", {
   expect_equal(mdl2$get_static_data(pattern = "^m"),
                c(md = 6666, ms = 5555))
 })
+
+test_that("get_fit for argument period, pattern and names", {
+  
+  per <- period_range("2015q1/2020q3")
+  ref_result <- mdl$get_endo_data(period = per)
+  ref_result[ , ] <- NA
+  ref_result <- update_ts(ref_result, fit_targets)
+  
+  expect_equal(mdl$get_fit(period = per, pattern = ".*"), ref_result)
+  expect_equal(mdl$get_fit(period = per), ref_result[, c("t", "y")])
+  expect_equal(mdl$get_fit(names = c("c", "y")), 
+               ref_result["2016q1/2016q3", c("c", "y")])
+  
+  result <- mdl$get_fit(period = "11q1/12q2")
+  expect_equal(ncol(result), 0)
+  expect_equal(get_period_range(result), period_range("11q1/12q2"))
+  expect_null(mdl$get_fit(names = "c"))
+  expect_equal(mdl$get_fit(names = "c", period = "2016q1"), 
+               ref_result["2016q1", "c", drop = FALSE])
+  
+  expect_error(mdl$get_fit(names = c("x", "c")), 
+                   "\"x\" is not an endogenous variable.")
+})
+
+

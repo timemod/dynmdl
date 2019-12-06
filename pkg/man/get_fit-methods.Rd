@@ -10,7 +10,17 @@
 These methods of R6 class \code{DynMdl} can be used
 to retrieve the variables used in the fit method:
 the fit targets, fit instruments or Lagrange multipliers.
-
+\cr\cr
+By default, function \code{get_fit} only returns fit targets with
+any non-\code{NA} value for the period range with any non-\code{NA} value.
+Thus columns with only \code{NA} values and leading and trailing rows with
+only \code{NA} values are removed.
+If all values are \code{NA}, then the function returns \code{NULL}.
+If argument \code{period} has been specified, then the function always returns
+a  timeseries with the specified period range.
+If \code{names} or \code{pattern} has been specified, it always returns a timeseries
+with the specified variables, except if all values are \code{NA}.
+\cr\cr
 For method \code{get_fit} there are corresponding \code{\link{set_fit}} and
 \code{\link{set_fit_values}} methods. There are currently no special
 methods to set or change the fit instruments and Lagrange multipliers.
@@ -23,7 +33,7 @@ or Lagrange multipliers.
 
 \preformatted{
 
-mdl$get_fit() # fit targets
+mdl$get_fit(pattern, names, period) # fit targets
 
 mdl$get_fit_instruments(pattern, names, period = mdl$get_period())
 
