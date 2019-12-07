@@ -796,8 +796,8 @@ NULL
 #' with leads are solved with the stacked time method and models without leads
 #' are solved backwards.}
 #' \item{\code{solver}}{Specifies the solver employed to solve the model:
-#' \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
-#' For large model, the \code{umfpackr} solve can be much faster.}
+#' \code{"umfpackr"} (sparse linear algebra) or \code{"nleqslv"} (dense linear algebra).
+#' For large models, the \code{umfpackr} solve can be much faster.}
 #' \item{\code{start}}{Method used to initialize starting values when solving
 #' the model backwards. For \code{"current"} (the default) the current values 
 #' of the endogenous variables are used as starting values. For 
@@ -813,13 +813,27 @@ NULL
 #' \item{\code{homotopy}}{A logical. If \code{TRUE} (the default), then the 
 #' homotopy approach is used when directly solving the model fails.
 #' Consult the documentation of Dynare for more information about the homotopy aproach.}
-#' \item{\code{...}}{Other arguments passed to the solver}
+#' \item{\code{...}}{Other arguments passed to the solver function (\code{\link{umf_solve_nl}}
+#' when the solver is`"umfpackr"`), Useful arguments for `umf_solve_nl` are 
+#' `global` (select a global strategy) and
+#' `umf_control` (this option can be used to specify the UMFPACK ordering
+#' method, see the example below). See the documentation of 
+#' \code{\link[umfpackr]{umf_solve_nl}} for more details.}
 #' }
 #' @seealso \code{\link{solve_steady}} and \code{\link{get_solve_status}}
 #' @examples
 #' islm <- islm_mdl(period = "2018Q1/2023Q3")
 #' islm$set_exo_values(260, period = "2018q1", names = "g")
 #' islm$solve(control = list(trace = TRUE))
+#' 
+#' # use the METIS ordering method of UMFACK. This method can handle
+#' # larger matrices than the standard AMD ordering, and is therefore
+#' # suitable for larghe models. 
+#' # WARNING: The METIS ordering is not available on Windows.
+#' \dontrun{
+#' islm$solve(control = list(trace = TRUE), 
+#'            umf_control = list(ordering = "METIS"))
+#' }
 NULL
 
 #' \code{\link{DynMdl}} method: Returns a character vector with the model 
