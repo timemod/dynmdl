@@ -419,7 +419,7 @@ DynMdl <- R6Class("DynMdl",
         if (missing(data)) {
           if (is.null(private$model_period)) {
             stop(paste("If neither data_period nor data have been specified", 
-               "then model_period should be known"))
+                       "then model_period should be known"))
           } else {
             p <- private$model_period
             data_period <- period_range(
@@ -452,6 +452,8 @@ DynMdl <- R6Class("DynMdl",
         }
       }
     
+      # if the model period has not been set, then determine the model
+      # period from the data period
       if (is.null(private$model_period)) {
         startp <- start_period(data_period) + private$mdldef$max_lag_orig
         endp <- end_period(data_period) - private$mdldef$max_lead_orig
@@ -465,11 +467,15 @@ DynMdl <- R6Class("DynMdl",
       
       private$data_period <- data_period
       private$period_shift <- start_period(private$model_period) - 
-                               start_period(data_period)
+                              start_period(data_period)
       if (is.null(private$base_period)) {
         private$base_period <- start_period(private$model_period)
       } 
       
+      #
+      # Initialise private$exo and private$endo with steady state values
+      # for the complete data period.
+      #
       nper <- nperiod(data_period)
       if (private$mdldef$exo_count > 0) {
         exo_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
@@ -477,11 +483,16 @@ DynMdl <- R6Class("DynMdl",
       } else {
         exo_mat <- matrix(NA_real_, nrow = nper, ncol = 0)
       }
-      private$exo_data <- regts(exo_mat, start = start_period(data_period))
+      private$exo_data <- regts(exo_mat, period = data_period)
+      private$endo_data <- regts(matrix(rep(private$mdldef$endos, each = nper), 
+                                        nrow = nper), 
+                                 names = private$mdldef$endo_names,
+                                 period = data_period)
   
-      # first set exo data, before we call put_static_endos(),
-      # because put_static_endos needs the actual values of the growth variables
-      # when computing the trended variables.
+      # First update exo_data with data, because the actual values of the 
+      # growth variables are needed in method get_trend_data_internal() called 
+      # below. endo_data can only updated with values in data when the trends 
+      # are known.
       if (!missing(data) && !is.null(data)) {
         if (is.null(colnames(data))) {
           stop("data should be a timeseries with colnames")
@@ -491,15 +502,19 @@ DynMdl <- R6Class("DynMdl",
                           init_data = TRUE)
       }
       
+      #
+      # The exogenous variables have been set -> now build trend timeseries.
+      #
       private$trend_data <- private$get_trend_data_internal()
-      
       private$deflator_data <- private$get_deflator_data_internal()
       
-      self$put_static_endos()
-  
+      #
+      # Now update endogenous variables with values in data.
+      # Variables with trends will be detrended with the calculated trends.
+      #
       if (!missing(data) && !is.null(data)) {
         private$set_data_(data, type = "endo", upd_mode = upd_mode,
-                          init_data = TRUE)
+                         init_data = TRUE)
       }
       
       # call prepare_aux_vars, this is actually only needed when 
@@ -820,12 +835,13 @@ DynMdl <- R6Class("DynMdl",
     },
     put_static_endos = function(period) {
       # copy the static endogenous variables to the endogenous model data
+      period_specified <- !missing(period)
       period <- private$check_period_arg(period)
       nper <- nperiod(period)
       endo_data <- regts(matrix(rep(private$mdldef$endos, each = nper), 
                                 nrow = nper), names = private$mdldef$endo_names,
                          period = period)
-      if (!missing(period) && !is.null(private$endo_data)) {
+      if (period_specified) {
         private$endo_data[period, ] <- endo_data
       } else {
         private$endo_data <- endo_data
@@ -928,7 +944,7 @@ DynMdl <- R6Class("DynMdl",
       silent <- !is.null(control_$silent) && control_$silent
       
       private$prepare_dynamic_model()
-
+      
       if (!missing(mode)) {
         mode <- match.arg(mode, c("stacked_time", "backwards"))
         stacked_time <- mode == "stacked_time"

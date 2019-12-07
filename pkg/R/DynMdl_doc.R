@@ -9,7 +9,9 @@
 #' the model variables with static values
 #' of the exogenous and endogenous model variables.
 #'
-#' This methods also sets the model period, the standard period
+#' If the model period has not yet been specified (in function 
+#' \code{\link{dyn_mdl}} or method \code{\link{set_period}}), then 
+#' this method also sets the model period, the standard period
 #' for which the model will be solved. The model period
 #' is obtained from the data period by subtracting the lag and lead periods.
 #' @section Usage:
@@ -25,7 +27,9 @@
 #' \describe{
 #' \item{\code{data_period}}{\code{\link[regts]{period_range}}
 #' object, or an object that can be coerced to 
-#' \code{\link[regts]{period_range}},}
+#' \code{\link[regts]{period_range}} If not specified then the data period
+#' is based on the period range of argument \code{data} (if this argument 
+#' has been specified) and  the model period.}
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 #' object with values for endogogenous and exogenous model variables, 
 #' including fit instruments and Lagrange multipliers used in the fit method.
