@@ -969,9 +969,19 @@ DynMdl <- R6Class("DynMdl",
         endos_result <- ret$x
         solved <- ret$solved
         message <- ret$message
+
+        cat_header <- function(txt) {
+          pre <- paste(rep("+", 10), collapse = "")
+          post <- paste(rep("+", 80 - 10 - nchar(txt) - 2), collapse = "")
+          cat(paste0("\n", pre, " ", txt, " ", post, "\n\n"))
+          return()
+        }
         
         if (!ret$solved && homotopy) {
-          if (!silent) cat("\n+++++++++++ HOMOTOPY ++++++++++++++\n\n")
+          if (!silent) {
+            cat("\n")
+            cat_header("HOMOTOPY")
+          }
           
           fit <- private$mdldef$fit
           has_exos <- private$mdldef$exo_count > 0
@@ -1019,15 +1029,16 @@ DynMdl <- R6Class("DynMdl",
                       # endos at steady state
           }
          
+          LAMBDA_MIN <- 0.1
           lambda_prev <- 0
           iteration <- 0
           success_counter <- 0
           while (TRUE) {
-            if (step < 0.1) {
+            if (step < LAMBDA_MIN) {
               # minimum homotopy step size of 0.1 seems reasonable
               if (!silent) {
-                cat(paste("\n+++++++++++ HOMOTOPY FAILED (final step size <",
-                            "0.1) ++++++++++++++\n\n"))
+                  cat_header(sprintf("HOMOTOPY FAILED (final lambda = %g)", 
+                                     LAMBDA_MIN))
               }
               break
             }
@@ -1038,7 +1049,17 @@ DynMdl <- R6Class("DynMdl",
               lambda <- 1
               step <- lambda - lambda_prev
             }
-            
+            if (!silent) {
+                if (iteration > 1) {
+                  if (control_$trace) {
+                    cat("\n\n")
+                  } else {
+                    cat("\n")
+                  }
+                }
+                cat(sprintf("-------> HOMOTOPY iteration = %d, lambda = %g <------\n",
+                            iteration, lambda))
+            }
             if (has_exos) {
               if (fit) {
                 private$exo_data[ , exo_info$exo_indices] <- exo_sim * lambda + 
@@ -1067,18 +1088,13 @@ DynMdl <- R6Class("DynMdl",
             if (ret$solved) {
               if (lambda == 1) {
                 if (!silent) {
-                  cat(sprintf(paste("\n+++++++++++ HOMOTOPY SUCCESFUL after %d",
-                                    "iterations++++++++++++++\n"), iteration))
+                  cat_header(sprintf("HOMOTOPY SUCCESFUL after %d iterations", 
+                                     iteration))
                 }
                 endos_result <- ret$x
                 solved <- TRUE
                 message <- "ok"
                 break
-              }
-              if (!silent) {
-                cat(sprintf(paste0("\n---> homotopy step succesfull",
-                                  " iteration = %d, lambda = %g\n\n"),
-                            iteration, lambda))
               }
               lambda_prev <- lambda
               succes_counter <- success_counter + 1
@@ -1091,11 +1107,6 @@ DynMdl <- R6Class("DynMdl",
               # failure, step back
               success_counter <- 0
               step <- step / 2
-              if (!silent) {
-                cat(sprintf(paste0("\n---> homotopy step failed",
-                                  " iteration = %d, lambda = %g\n\n"), 
-                            iteration, lambda))
-              }
             }
           }
           

@@ -1,21 +1,18 @@
 Initial value of function contains non-finite values (starting at index=1)
 
-+++++++++++ HOMOTOPY ++++++++++++++
 
+++++++++++ HOMOTOPY ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+-------> HOMOTOPY iteration = 1, lambda = 0.5 <------
 Initial value of function contains non-finite values (starting at index=1)
 
----> homotopy step failed iteration = 1, lambda = 0.5
-
+-------> HOMOTOPY iteration = 2, lambda = 0.25 <------
 Initial value of function contains non-finite values (starting at index=1)
 
----> homotopy step failed iteration = 2, lambda = 0.25
-
+-------> HOMOTOPY iteration = 3, lambda = 0.125 <------
 Initial value of function contains non-finite values (starting at index=1)
 
----> homotopy step failed iteration = 3, lambda = 0.125
-
-
-+++++++++++ HOMOTOPY FAILED (final step size < 0.1) ++++++++++++++
+++++++++++ HOMOTOPY FAILED (final lambda = 0.1) ++++++++++++++++++++++++++++++++
 
 Non-finite values in residuals for the following equations and periods:
        eq_1 eq_2 eq_3 eq_5 eq_6
