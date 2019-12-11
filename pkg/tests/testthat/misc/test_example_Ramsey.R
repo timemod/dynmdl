@@ -14,17 +14,23 @@ per <- period_range("2001/2100")
 
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 
+expect_error(
+  ret <- capture.output(mdl <- dyn_mdl(mod_file, period = per)),
+             paste("ERROR: the following exogenous variable\\(s\\) not used",
+                   "in model block\n\\(to bypass this error, use argument",
+                   "strict = FALSE):\n \"gx\"\\."))
+
 expect_warning(
   capture_output(
     msg <- capture.output(
-      mdl <- dyn_mdl(mod_file, period = per, nostrict = TRUE),
+      mdl <- dyn_mdl(mod_file, period = per, strict = FALSE),
       type = "message"
     )
   )
   , "1 warnings encountered in the preprocessor. Check the output")
 
 expect_identical(msg,
-"WARNING: the following variables in model block are not used: gx .")
+        'WARNING: the following exogenous variable(s) not used in model block: "gx".')
 
 dynare_result <- read_dynare_result(model_name, mdl)
 

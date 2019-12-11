@@ -11,7 +11,7 @@
 // [[Rcpp::export]]
 Rcpp::List compile_model_(std::string modfile, std::string latex_basename,
                           bool use_dll, std::string dll_dir, bool max_laglead_1, 
-                          bool nostrict, bool internal_calc, int n_fit_derivatives,
+                          bool strict, bool internal_calc, int n_fit_derivatives,
                           bool warn_uninit_param, Rcpp::List latex_options) {
 
     // the treatement of char in the next statement does not deserve a beauty
@@ -29,7 +29,7 @@ Rcpp::List compile_model_(std::string modfile, std::string latex_basename,
 
     ModFile *mod_file = parse((char *) modfile.c_str(), 
                               (char *) latex_basename.c_str(),
-                              max_laglead_1, nostrict, no_tmp_terms, 
+                              max_laglead_1, !strict, no_tmp_terms, 
                               n_fit_derivatives, warn_uninit_param, 
                               output_params);
     

@@ -56,10 +56,12 @@
 #' and lead of the original model is 1. Set this argument to
 #' \code{TRUE} if you want to analyse the stability of the steady state with 
 #' method \code{\link{check}} for models with a maximum lag or lead larger than 1.
-#' @param nostrict Allows Dynare to issue a warning and continue processing when
-#' there are more endogenous variables than equations,
-#' an undeclared symbol is assigned in initval or endval,
-#' or exogenous variables were declared but not used in the model block.
+#' @param strict A logical. If `TRUE` (the default), then an error
+#' is given when endogenous or exogenous variables are not used in the model block 
+#' or when an undeclared symbol is assigned in the initval block. If
+#' `FALSE`, then only a warning is issued,  unused endogenous variables
+#' are removed, and the assignments of undeclared symbols in the initval block 
+#' are ignored.
 #' @param warn_uninit_param A logical. If \code{TRUE} (the default) then
 #' a warning is given for each parameter that has not been initialized in the
 #' mod file. Uninitialized parameters are always set to zero.
@@ -73,6 +75,8 @@
 #' stacked-time equations.
 #' @param latex_options a list with options for writing LaTeX files.
 #' See Details.
+#' @param nostrict Obsolete: the logical negation of argument  `strict`. This 
+#' argument should not be used in new code: use argument `strict` instead.
 #' @return A \code{DynMdl} object.
 #' @export
 #' @importFrom Rcpp sourceCpp
@@ -83,10 +87,10 @@
 dyn_mdl <- function(mod_file, period, data, base_period = NULL, 
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
-                    max_laglead_1 = FALSE, nostrict = FALSE,
+                    max_laglead_1 = FALSE, strict = TRUE,
                     warn_uninit_param = TRUE, fit = TRUE, 
                     fit_fixed_period = FALSE,
-                    latex_options) {
+                    latex_options, nostrict) {
   
   calc <- match.arg(calc)
   
@@ -105,6 +109,24 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     latex_options_[names(latex_options)] <- latex_options
   }
   
+  # check strict and nostrict
+  if (!missing(strict)) {
+    if (!is.logical(strict) || length(strict) != 1) {
+      stop("Argument `strict` should be TRUE or FALSE.")
+    }
+    if (!missing(nostrict)) {
+      warning(paste("Obsolete argument 'nostrict' is ignored because argument",
+                    "'strict` has been specified."))
+    }
+  } else if (!missing(nostrict)) {
+    if (!is.logical(nostrict) || length(nostrict) != 1) {
+      stop("Argument `nostrict` should be TRUE or FALSE.")
+    }
+    warning(paste("Argument 'nostrict' is obsolete. Use argument 'strict'",
+                  "instead."))
+    strict <- !nostrict
+  }
+
   use_dll <- calc == "dll"
   internal_calc <- calc == "internal"
   
@@ -201,7 +223,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   # Call C++ function compile_model_
   #
   model_info <- compile_model_(mod_file_compile, latex_basename, use_dll, 
-                               dll_dir, max_laglead_1, nostrict, internal_calc,
+                               dll_dir, max_laglead_1, strict, internal_calc,
                                n_fit_derivatives, warn_uninit_param, 
                                latex_options_)
   if (fit && missing(fit_mod_file)) {

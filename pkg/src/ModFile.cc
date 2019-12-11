@@ -332,17 +332,33 @@ ModFile::checkPass(bool nostrict)
   if (unusedExo.size() > 0)
     {
       ostringstream unused_exos;
-      for (set<int>::iterator it = unusedExo.begin(); it != unusedExo.end(); it++)
-        unused_exos << symbol_table.getName(*it) << " ";
+      for (set<int>::iterator it = unusedExo.begin(); it != unusedExo.end(); it++) 
+#ifdef USE_R
+        {
+            unused_exos << " \"" << symbol_table.getName(*it) << "\"";
+        }
+#else
+        unused_exos << symbol_table.getName(*it) < " ";
+#endif
 
       if (nostrict)
-        warnings << "WARNING: the following variables in model block are not used: " 
+#ifdef USE_R
+        warnings << "WARNING: the following exogenous variable(s) not used in model block:" 
                  << unused_exos.str() << "." << endl;
+#else 
+       warnings << "WARNING: " << unused_exos.str()
+                 << "not used in model block, removed by nostrict command-line option" << endl;
+#endif
       else
         {
-          dyn_error("ERROR: the following variables are not used in model block"
-                   "\n(to bypass this error, use the `nostrict` option in dyn_mdl):\n" + 
-                   unused_exos.str() + ".\n");
+#ifdef USE_R
+          dyn_error("ERROR: the following exogenous variable(s) not used in model block"
+                   "\n(to bypass this error, use argument strict = FALSE):\n" + 
+                   unused_exos.str() + ".");
+#else 
+          cerr << "ERROR: " << unused_exos.str() << "not used in model block. To bypass this error, use the `nostrict` option. This may lead to crashes or unexpected behavior." << endl;
+          exit(EXIT_FAILURE);
+#endif
         }
     }
 }
@@ -359,7 +375,28 @@ ModFile::transformPass(bool nostrict, bool compute_xrefs)
   // Save the original model (must be done before any model transformations by preprocessor)
   dynamic_model.cloneDynamic(original_model);
 
-  if (nostrict)
+#ifdef USE_R
+  // Unused endogenous variable. If nostrict, then remove the variable. If not
+  // nostrict, then given an error.
+  set<int> unusedEndogs = dynamic_model.findUnusedEndogenous();
+  if (unusedEndogs.size() > 0) {
+      ostringstream unused_endos;
+      for (set<int>::iterator it = unusedEndogs.begin(); it != unusedEndogs.end(); it++) {
+          symbol_table.changeType(*it, eUnusedEndogenous);
+          unused_endos << " \"" << symbol_table.getName(*it) << "\"";
+      }
+      if (nostrict) {
+         warnings << "WARNING: the following endogenous variable(s) not used in model block" 
+                 << " are removed because strict = FALSE:"  
+                 << unused_endos.str() << "." << endl;
+      } else {
+          dyn_error("ERROR: the following endogenous variable(s) not used in model block"
+                    "\n(to bypass this error, use argument strict = FALSE):\n" 
+                    + unused_endos.str() + ".");
+      }
+  }
+#else 
+  if (nostrict) 
     {
       set<int> unusedEndogs = dynamic_model.findUnusedEndogenous();
       for (set<int>::iterator it = unusedEndogs.begin(); it != unusedEndogs.end(); it++)
@@ -369,6 +406,7 @@ ModFile::transformPass(bool nostrict, bool compute_xrefs)
                    << "' not used in model block, removed by nostrict command-line option" << endl;
         }
     }
+#endif
 
   if (symbol_table.predeterminedNbr() > 0)
     dynamic_model.transformPredeterminedVariables();

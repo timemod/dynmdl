@@ -22,7 +22,7 @@ a=0.5;
 model;
 
 % eq (1): equilibrium good markets
-c + k - (1-delt)*k(-1)=a*(x^(1-alph))*k(-1)^alph + eps_1 * x; 
+c + k - (1-delt)*k(-1)=a*(x^(1-alph))*k(-1)^alph + eps_1;
 
 % eq (5): combi of FOC utility max. wrt c & k
 c^(-gam) = (1+bet)^(-1)*(a*alph*(x(+1)^(1-alph))*k^(alph-1) + 1 - delt)*c(+1)^(-gam); 

@@ -14,11 +14,12 @@ dyn_mdl(
   debug = FALSE,
   dll_dir,
   max_laglead_1 = FALSE,
-  nostrict = FALSE,
+  strict = TRUE,
   warn_uninit_param = TRUE,
   fit = TRUE,
   fit_fixed_period = FALSE,
-  latex_options
+  latex_options,
+  nostrict
 )
 }
 \arguments{
@@ -63,10 +64,12 @@ and lead of the original model is 1. Set this argument to
 \code{TRUE} if you want to analyse the stability of the steady state with
 method \code{\link{check}} for models with a maximum lag or lead larger than 1.}
 
-\item{nostrict}{Allows Dynare to issue a warning and continue processing when
-there are more endogenous variables than equations,
-an undeclared symbol is assigned in initval or endval,
-or exogenous variables were declared but not used in the model block.}
+\item{strict}{A logical. If \code{TRUE} (the default), then an error
+is given when endogenous or exogenous variables are not used in the model block
+or when an undeclared symbol is assigned in the initval block. If
+\code{FALSE}, then only a warning is issued,  unused endogenous variables
+are removed, and the assignments of undeclared symbols in the initval block
+are ignored.}
 
 \item{warn_uninit_param}{A logical. If \code{TRUE} (the default) then
 a warning is given for each parameter that has not been initialized in the
@@ -84,6 +87,9 @@ stacked-time equations.}
 
 \item{latex_options}{a list with options for writing LaTeX files.
 See Details.}
+
+\item{nostrict}{Obsolete: the logical negation of argument  \code{strict}. This
+argument should not be used in new code: use argument \code{strict} instead.}
 }
 \value{
 A \code{DynMdl} object.

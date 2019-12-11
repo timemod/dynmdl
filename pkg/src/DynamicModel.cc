@@ -4211,7 +4211,11 @@ DynamicModel::testTrendDerivativesEqualToZero(const eval_context_t &eval_context
                         msg << "WARNING: trends not compatible with balanced growth path; the second-order cross partial of equation " << eq + 1 << " (line "
                              << equations_lineno[eq] << ") w.r.t. trend variable "
                              << symbol_table.getName(it->first.first) << " and endogenous variable "
+#ifdef USE_R
+                             << symbol_table.getName(endogit->first.first) << " is not null." << endl;
+#else
                              << symbol_table.getName(endogit->first.first) << " is not null. " << endl;
+#endif
                         dyn_warning(msg);
                         // Changed to warning. See discussion in #1389
                       }
