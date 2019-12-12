@@ -2,11 +2,8 @@
 #' @name init_data
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMdl}} initializes the
-#' model data.
-#' 
-#' This method sets the model data period and initializes
-#' the model variables with static values
+#' This method of R6 class \code{\link{DynMdl}} sets the model data period and 
+#' initializes the model variables with static values
 #' of the exogenous and endogenous model variables.
 #'
 #' If the model period has not yet been specified (in function 
@@ -27,7 +24,7 @@
 #' \describe{
 #' \item{\code{data_period}}{\code{\link[regts]{period_range}}
 #' object, or an object that can be coerced to 
-#' \code{\link[regts]{period_range}} If not specified then the data period
+#' \code{\link[regts]{period_range}}. If not specified, then the data period
 #' is based on the period range of argument \code{data} (if this argument 
 #' has been specified) and  the model period.}
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
