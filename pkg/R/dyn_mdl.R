@@ -116,7 +116,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     }
     if (!missing(nostrict)) {
       warning(paste("Obsolete argument 'nostrict' is ignored because argument",
-                    "'strict` has been specified."))
+                    "'strict' has been specified."))
     }
   } else if (!missing(nostrict)) {
     if (!is.logical(nostrict) || length(nostrict) != 1) {

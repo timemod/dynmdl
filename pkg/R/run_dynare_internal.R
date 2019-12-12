@@ -39,7 +39,7 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
       write_header("Parsing model with dynmdl to check lags/leads/aux. vars")
      
       mdl <- dyn_mdl(mod_file, period = period, max_laglead_1 = TRUE, 
-                     nostrict = TRUE, fit = FALSE)
+                     strict = FALSE, fit = FALSE)
       if (!missing(data)) {
         mdl$init_data(data = data)
       }
