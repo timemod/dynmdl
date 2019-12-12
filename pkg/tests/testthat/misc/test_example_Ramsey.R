@@ -147,7 +147,10 @@ test_that("set_endo_values", {
   expected_result[datap , 1] <- c(11, 12)
   expected_result[datap , 2] <- c(11, 12)
   
-  mdl2$set_endo_values(6, pattern = "^c$", period = "1990/1992")
+  msg <- paste("Specified period \\(1990/1992\\) is completely outside",
+               "the data period \\(2000/2101\\)\\.")
+  expect_warning(mdl2$set_endo_values(6, pattern = "^c$", period = "1990/1992"),
+                 msg)
   expect_equal(mdl2$get_endo_data(), expected_result)
 })
 

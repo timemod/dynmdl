@@ -1950,7 +1950,11 @@ DynMdl <- R6Class("DynMdl",
       }
       
       upd_per <- range_intersect(period, private$data_period)
-      if (is.null(upd_per)) return(invisible(NULL))
+      if (is.null(upd_per)) {
+        warning(sprintf(paste("Specified period (%s) is completely outside the",
+                              "data period (%s)."), period, private$data_period))
+        return(invisible(self))
+      }
       
       get_name_type <- if (type == "endo") {
                           "all_endo"
@@ -1959,33 +1963,39 @@ DynMdl <- R6Class("DynMdl",
                         }
   
       names <- private$get_names_(get_name_type, names, pattern)
-      if (length(names) == 0) return(invisible(NULL))
+      if (length(names) == 0) return(invisible(self))
       if (type == "exo" && private$mdldef$trend_info$has_deflated_endos) {
         private$check_change_growth_exos(names)
       }
                 
       # convert value to ts, to that we can select the period                     
       value_ts <- regts(value, period = period)
-      value_ts <- value_ts[upd_per]
       
+      # finally transfer value_ts to private$endo_data or private$exo_data
+      value_ts <- value_ts[upd_per]
       if (type == "endo") {
         private$endo_data[upd_per, names] <- value_ts
         if (private$mdldef$trend_info$has_deflated_endos) {
           private$endo_data[upd_per, names] <- 
-              private$detrend_endo_data(private$endo_data[upd_per, names, 
-                                                          drop = FALSE])
+            private$detrend_endo_data(private$endo_data[upd_per, names, 
+                                                        drop = FALSE])
         }
       } else {
-        private$exo_data[upd_per, names]  <- value_ts
+        private$exo_data[upd_per, names] <- value_ts
       }
       return(invisible(self))
     },
     change_data_ = function(fun, names, period, type, ...) {
       period <- private$check_period_arg(period)
-      period <- range_intersect(period, private$data_period)
-      if (is.null(period)) return(invisible(self))
+      upd_per <- range_intersect(period, private$data_period)
+      if (is.null(upd_per)) {
+        warning(sprintf(paste("Specified period (%s) is completely outside the",
+                              "data period (%s)."), period, 
+                        private$data_period))
+        return(invisible(self))
+      }
       if (!is.function(fun)) {
-        stop("argument fun is not a function")
+        stop("Argument 'fun' is not a function.")
       }
       
       # remove duplicated names
@@ -2001,6 +2011,8 @@ DynMdl <- R6Class("DynMdl",
         }
         data <- private$exo_data[period, names, drop = FALSE]
       }
+      
+      # now apply function to each timeseries independently
       for (c in seq_len(ncol(data))) {
         fun_result <- fun(as.numeric(data[ , c]), ...)
         result_len <- length(fun_result)
@@ -2008,15 +2020,18 @@ DynMdl <- R6Class("DynMdl",
           stop(sprintf(paste("The function result has length %d but should have",
                              "length 1 or %d."), result_len, nper))
         }
-        data[, c] <- fun_result
+        data[ , c] <- fun_result
       }
+      
+      data <- data[upd_per]
+      
       if (type == "endo") {
         if (private$mdldef$trend_info$has_deflated_endos) {
           data <- private$detrend_endo_data(data)
         }
-        private$endo_data[period, names] <- data
-      } else  { 
-        private$exo_data[period, names] <- data
+        private$endo_data[upd_per, names] <- data
+      } else {
+        private$exo_data[upd_per, names] <- data
       }
       return(invisible(self))
     },

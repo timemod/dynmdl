@@ -29,7 +29,12 @@ test_that("solve", {
   
   # set_exo_values / set_data with strange period", 
   p <- period_range("2007q3/2007q4")
-  mdl2$set_exo_values(c(2500, 2600), names = "g", period = p)
+  
+  msg <- paste("Specified period \\(2007Q3/2007Q4\\) is completely outside",
+              "the data period \\(2011Q2/2016Q1\\)\\.")
+  expect_warning(mdl2$set_exo_values(c(2500, 2600), names = "g", period = p),
+                 msg)
+                 
   data <- regts(matrix(999,  ncol = 2), names = c("g", "y"),
                 period = "2005q1")
   mdl2$set_data(data)

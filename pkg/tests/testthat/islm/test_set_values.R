@@ -38,11 +38,14 @@ test_that("set_values works correctly (2)", {
   
   # these two statements should have no effect, since the period
   # lies outside the model period
-  expect_silent({
-    mdl2$set_endo_values(999999, names = "y", period = "2109q1")
-    mdl2$set_exo_values(999999, period = "2109q1")
-  })
+  wmsg <- paste("Specified period \\(2109Q1\\) is completely outside",
+                "the data period \\(2015Q1/2016Q4\\)\\.")
+  expect_warning(mdl2$set_endo_values(999999, names = "y", period = "2109q1"),
+                 wmsg)
   
+  expect_warning(mdl2$set_exo_values(999999, period = "2109q1"),
+                 wmsg)
+
   
   mdl2$set_endo_values(990, pattern = "^y", period = "2016")
   expect_equal(mdl2$get_endo_data(), new_endo_data)

@@ -69,7 +69,7 @@ test_that("change_data handles errors correctly", {
   expect_error(mdl2$change_endo_data(identity, names = c("y", "xxx")), msg)
   msg <-  "The following names are no endogenous variables: \"p\", \"xxx\"."
   expect_error(mdl2$change_endo_data(identity, names = c("p", "xxx")), msg)
-  msg <- "argument fun is not a function"
+  msg <- "Argument 'fun' is not a function\\."
   expect_error(mdl2$change_endo_data(2, names = "y"), msg)
 })
 
