@@ -1844,7 +1844,7 @@ DynMdl <- R6Class("DynMdl",
         data <- data[  , !dupl, drop = FALSE]
         warning(sprintf(paste("Data contains duplicate names. The first column",
                               "is used.\nThe duplicated names are: %s."),
-                        paste(names[dupl], collapse = ", ")))
+                        paste(unique(names[dupl]), collapse = ", ")))
       }
       
       return(data)
