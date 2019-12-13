@@ -63,6 +63,35 @@ test_that("change_data works correctly with timeseries input (2)", {
   expect_equal(mdl2$get_exo_data(), new_exo_data)
 })
 
+test_that("change_data works correctly with timeseries input (3)", {
+  mdl2 <- mdl$copy()
+  mdl2$change_data(function(x, fac) {x * fac}, names = "c", fac = c_multipliers,
+                   period = "2015/")
+  ms_g_ts <- regts(c(-999, ms_g_additions, 999), period = "2015Q2/2016Q3")
+  
+  expect_error(mdl2$change_data(function(x) {x + ms_g_ts["2015q3"]},
+                                names = c("ms", "g"),
+                                period = "2015Q3/2016Q3"),
+               "time-series/vector length mismatch")
+  for (per in as.list(seq(period("2015q3"), period("2016q2")))) {
+    mdl2$change_data(function(x) {x + ms_g_ts[per]}, names = c("ms", "g"),
+                     period = per)
+  }
+  
+  mdl2$change_data(function(x) {x * 1.1}, pattern = "^y", period = "2016Q2")
+  
+  
+  msg <- paste("Specified period \\(11Q1/11Q4\\) is completely outside the",
+               "data period \\(2015Q1/2016Q4\\)\\.")
+  expect_warning(mdl2$change_data(function(x) {x * 1.1}, pattern = "^y",
+                                  period = "11"),
+                 msg)
+  
+  expect_equal(mdl2$get_endo_data(), new_endo_data)
+
+  expect_equal(mdl2$get_exo_data(), new_exo_data)
+})
+
 test_that("change_data handles errors correctly", {
   mdl2 <- mdl$clone(deep = TRUE)
   msg <- "\"xxx\" is not an endogenous variable."
@@ -82,4 +111,13 @@ test_that("change_data works correctly (with endo and exo)", {
   new_data[ , names] <- new_data[ ,  names] * c_multipliers
   
   expect_equal(mdl2$get_data(), new_data)
+})
+
+test_that("test with period partially outside period range", {
+  mdl2 <- mdl$copy()
+  old_endos <- mdl2$get_endo_data(period = "2016q3/", names = c("c", "y"))
+  mdl2$change_data(function(x) x + 1:3, names = c("c", "y"),
+                   period = "2016q3/2017q1")
+  new_endos <- mdl2$get_endo_data(period = "2016q3/", names = c("c", "y"))
+  expect_equal(new_endos, old_endos + 1:2)
 })
