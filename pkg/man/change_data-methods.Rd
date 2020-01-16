@@ -59,8 +59,8 @@ An example may help to clarify this. Consider the following statement\preformatt
 
 where \code{mdl} is a \code{DynMdl} object and \code{myfun} some function whose details
 are not relevant here. Method  \code{change_endo_data} evaluates this as\preformatted{data <- mdl$get_endo_data(names = c("c", "y"), period = "2017q1/2017q2")
-data[, "c"] <- myfun(as.numeric(data[, "c"])
-data[, "y"] <- myfun(as.numeric(data[, "y"])
+data[, "c"] <- myfun(as.numeric(data[, "c"]))
+data[, "y"] <- myfun(as.numeric(data[, "y"]))
 mdl$set_data(data)
 }
 

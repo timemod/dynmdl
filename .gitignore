@@ -10,7 +10,6 @@ pkg/config.*
 inst/doc
 dynmdl.Rcheck
 pkg.log
-dynmdl.pdf
 dynmdl*tar.gz
 dynmdl*zip
 tmp/
