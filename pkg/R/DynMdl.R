@@ -1037,8 +1037,8 @@ DynMdl <- R6Class("DynMdl",
             if (step < LAMBDA_MIN) {
               # minimum homotopy step size of 0.1 seems reasonable
               if (!silent) {
-                  cat_header(sprintf("HOMOTOPY FAILED (final lambda = %g)", 
-                                     LAMBDA_MIN))
+                  cat_header(sprintf("HOMOTOPY FAILED (step < %g, final lambda = %g)", 
+                                     LAMBDA_MIN, lambda))
               }
               break
             }

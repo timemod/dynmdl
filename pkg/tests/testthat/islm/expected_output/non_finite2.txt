@@ -12,7 +12,7 @@ Initial value of function contains non-finite values (starting at index=1)
 -------> HOMOTOPY iteration = 3, lambda = 0.125 <------
 Initial value of function contains non-finite values (starting at index=1)
 
-++++++++++ HOMOTOPY FAILED (final lambda = 0.1) ++++++++++++++++++++++++++++++++
+++++++++++ HOMOTOPY FAILED (step < 0.1, final lambda = 0.125) ++++++++++++++++++
 
 Non-finite values in residuals for the following equations and periods:
        eq_1 eq_2 eq_3 eq_5 eq_6
