@@ -30,7 +30,8 @@ test_that("residual check", {
   msg <- paste0("Model solving not succesful.\n",
                 "Function value contains non-finite values",
                 " \\(starting at index=2\\)")
-  expect_known_output(expect_warning(mdl2$solve(homotopy = FALSE), msg),
+  expect_known_output(expect_warning(mdl2$solve(homotopy = FALSE,
+                                                control = list(trace = FALSE)), msg),
                       file = "expected_output/non_finite_2.txt")
   
   expected_result2 <-regts(matrix(c(0, -Inf), ncol = 2), names = c("eq_1", "eq_2"),

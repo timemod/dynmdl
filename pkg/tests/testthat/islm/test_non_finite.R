@@ -13,8 +13,7 @@ test_that("single period", {
  
   msg <- paste("Initial value of function contains non-finite values",
               "\\(starting at index=1\\)")
-  expect_silent(expect_warning(mdl$solve(control = list(silent = TRUE)), 
-                                     msg))
+  expect_silent(expect_warning(mdl$solve(silent = TRUE), msg))
   expect_known_output(expect_warning(mdl$solve(control = list(silent = FALSE), 
                                                homotopy = FALSE), 
                                msg),

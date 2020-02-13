@@ -16,7 +16,7 @@ mdl$set_period(mdl_per)
 x <- regts(seq_len(nperiod(data_per)), period = data_per)
 mdl$set_data(x, names = "x")
 mdl$solve_steady(control = list(silent = TRUE))
-mdl$solve(control = list(silent = TRUE))
+mdl$solve(silent = TRUE)
 
 compute_back_jacob <- function(period) {
   y <- mdl$get_endo_data(names = "y", period = period)

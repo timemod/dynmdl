@@ -753,10 +753,13 @@ DynMdl <- R6Class("DynMdl",
         ret <- ret[order(names(ret))]
         return(ret)
     },
-    solve_steady = function(control = list(), solver = c("umfpackr", "nleqslv"),
+    solve_steady = function(control = list(trace = TRUE), 
+                            solver = c("umfpackr", "nleqslv"),
                             debug_eqs = FALSE, ...) {
     
       solver <- match.arg(solver)
+      
+      if (solver == "nleqslv") control$trace <- as.integer(control$trace)
       
       private$prepare_static_model()
 
@@ -921,29 +924,11 @@ DynMdl <- R6Class("DynMdl",
     },
     solve = function(control = list(), mode , solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
-                     homotopy, ...) {
+                     homotopy, silent = FALSE, ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       
       private$check_debug_eqs(debug_eqs)
-      
-      if (private$mdldef$fit) private$prepare_fit()
-     
-      solver <- match.arg(solver)
-      start <- match.arg(start)
-      
-      control_ <- list(ftol = 1e-8, trace = FALSE, cndtol = 1e-12, 
-                       silent = FALSE)
-      if (solver == "umfpackr")  {
-        control_$maxiter <- 20
-      } else {
-        control_$maxit <- 20
-        control_$silent <- NULL
-      }
-      control_[names(control)] <- control
-      silent <- !is.null(control_$silent) && control_$silent
-      
-      private$prepare_dynamic_model()
       
       if (!missing(mode)) {
         mode <- match.arg(mode, c("stacked_time", "backwards"))
@@ -951,6 +936,42 @@ DynMdl <- R6Class("DynMdl",
       } else {
         stacked_time <- private$mdldef$max_endo_lead > 0
       }
+    
+      if (private$mdldef$fit) private$prepare_fit()
+     
+      solver <- match.arg(solver)
+      start <- match.arg(start)
+      
+      if (silent) {
+        if (!is.null(control$silent) && !control$silent) {
+          warning(paste("Control parameter 'silent' overruled",
+                        "by argument 'silent = TRUE'."))
+        }
+        if (silent && !is.null(control$trace) && control$trace) {
+          warning(paste("Control parameter 'trace' overruled",
+                        "by argument 'silent = TRUE'."))
+        }
+        if (solver == "umfpackr") {
+          control$silent <- TRUE
+          control$trace <- FALSE
+        } else {
+          control$trace <- 0
+        }
+      }  else if (is.null(control$trace)) {
+          # if control$trace has not been specified, then make it equal
+          # to true when the stacked time method is used and equal to false
+          # when the model is solve using the backwards method
+          control$trace <- stacked_time
+          if (solver == "nleqslv") control$trace <- as.integer(control$trace)
+      }
+      
+      if (!stacked_time && solver == "umfpackr" && !control$trace) {
+        # Do not print "Convergence after X iterations" in this case
+        control$silent <- TRUE
+      }
+      
+      private$prepare_dynamic_model()
+    
       if (stacked_time) {
         
         if (missing(homotopy)) homotopy <- TRUE
@@ -964,7 +985,7 @@ DynMdl <- R6Class("DynMdl",
         
         ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
                                           leads = leads, solver = solver, 
-                                          control = control_, 
+                                          control = control, 
                                           debug_eqs = debug_eqs, ...)  
         endos_result <- ret$x
         solved <- ret$solved
@@ -1051,7 +1072,7 @@ DynMdl <- R6Class("DynMdl",
             }
             if (!silent) {
                 if (iteration > 1) {
-                  if (control_$trace) {
+                  if (control$trace) {
                     cat("\n\n")
                   } else {
                     cat("\n")
@@ -1083,7 +1104,7 @@ DynMdl <- R6Class("DynMdl",
             
             ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
                                               leads = leads, solver = solver, 
-                                              control = control_, 
+                                              control = control, 
                                               debug_eqs = debug_eqs, ...)
             if (ret$solved) {
               if (lambda == 1) {
@@ -1132,9 +1153,9 @@ DynMdl <- R6Class("DynMdl",
                                     private$data_period,
                                     private$endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
-                                    control = control_, solver = solver,
+                                    control = control, solver = solver,
                                     start_option = start, debug_eqs = debug_eqs,
-                                    ...)
+                                    silent = silent, ...)
         endos_result <- ret$x
         solved <- ret$solved
         message <- ret$message

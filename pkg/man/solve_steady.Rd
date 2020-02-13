@@ -41,7 +41,8 @@ mdl$solve_steady(control = list(), solver = c("umfpackr", "nleqslv"),
 \describe{
 \item{\code{control}}{A named list of control parameters passed to function
 \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
-depending on argument \code{solver}}
+depending on argument \code{solver}. If control parameter \code{trace} has
+not been specified, then that parameter is set to \code{TRUE}.}
 \item{\code{solver}}{Specifies the solver employed to solve the model:
 \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
 For large model, the \code{umfpackr} solve can be much faster.}

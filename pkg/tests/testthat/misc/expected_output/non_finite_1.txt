@@ -1,3 +1,9 @@
+
+Iteration report
+----------------
+ Iter            Jac         Largest |f|   Index largest |f|
+    0                          3.000e+00                   2
+    1       5.00e-01                 Inf                   2
 Function value contains non-finite values (starting at index=2) at iteration 1
 Non-finite values in residuals for the following equations:
 eq 2 

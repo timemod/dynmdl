@@ -25,14 +25,12 @@ test_that("generated fit mod file equal to reference ", {
                       file = "expected_output/fit_fixed_period_fmod_file.txt")
 })
 
-
-
 test_that("single fit target", {
   fit_per <- period_range("2016q1/2016q2")
   mdl_fixed_per$set_param(c(sigma_ut = 7, sigma_uc = 5, 
                             sigma_ui = -1, sigma_umd = -1))
   mdl_fixed_per$set_fit_values(1250, "y", period = fit_per)
-  mdl_fixed_per$solve()
+  mdl_fixed_per$solve(silent = TRUE)
   expect_equal(mdl_fixed_per$get_endo_data(names = "y", period = fit_per),
                regts(rep(1250, 2), period = fit_per), check.attributes = FALSE)
   mdl_fixed_per$get_fit_instruments()

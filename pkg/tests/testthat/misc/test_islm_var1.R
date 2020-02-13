@@ -79,9 +79,12 @@ test_that("solve", {
 
 test_that("solve with Fair-Taylor", {
     mdl2 <- create_solve_mdl(mdl)
+    expect_warning(
+      mdl2$solve(silent = TRUE, control = list(trace = TRUE), 
+                 mode = "backwards"),
+      "Control parameter 'trace' overruled by argument 'silent = TRUE'\\.")
     for (i in 1:80) {
-      mdl2$solve(control = list(silent = TRUE, 
-                              trace = TRUE), mode = "backwards")
+      mdl2$solve(silent = TRUE, mode = "backwards")
     }
     expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
                  dynare_result$endo)

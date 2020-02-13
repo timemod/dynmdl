@@ -128,7 +128,8 @@ test_that("fit procedure", {
   mdl$set_static_endos(c(y1 = 1.8, y2 = 0.8))
   mdl$set_endo_values(names = "y1", value = 1.8)
   mdl$set_fit_values(names = "y1", value = 1.25, period = "2018")
-  mdl$solve(control = list(silent = TRUE, trace = TRUE))
+  expect_warning(mdl$solve(silent = TRUE, control = list(trace = TRUE)),
+                 "Control parameter 'trace' overruled by argument 'silent = TRUE'.")
   expect_equal(mdl$get_solve_status(), "OK")
   #print(mdl$get_endo_data())
   #print(mdl$get_fit_instruments())
@@ -142,9 +143,10 @@ test_that("fit procedure", {
   # now other solution
   mdl$set_endo_values(2, names = "y1")
    
-  mdl$solve(control = list(silent = TRUE, trace = TRUE,
-                            allow_singular = TRUE), 
-                      mode = "stacked_time")
+  expect_warning(mdl$solve(silent = TRUE, control = list(silent = FALSE,
+                                          allow_singular = TRUE), 
+                      mode = "stacked_time"),
+                 "Control parameter 'silent' overruled by argument 'silent = TRUE'\\.")
   
   expect_equal(mdl$get_solve_status(), "OK")
   #print(mdl$get_endo_data())

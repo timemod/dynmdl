@@ -46,7 +46,7 @@ test_that("solve", {
   mdl2 <- mdl$clone()
   mdl2$set_data(dynare_endo[lag_per])
   mdl2$set_data(dynare_exo)
-  mdl2$solve(control = list(silent = TRUE))
+  mdl2$solve(silent = TRUE)
   expect_equal(dynare_endo, mdl2$get_endo_data())
   expect_error(mdl2$solve_perturbation(),
                "No explosive roots. solve_first_order cannot handle this situation yet.")
@@ -56,7 +56,7 @@ test_that("solve with internal method", {
   mdl2 <- mdl_int$clone()
   mdl2$set_data(dynare_endo[lag_per])
   mdl2$set_data(dynare_exo)
-  mdl2$solve(control = list(silent = TRUE))
+  mdl2$solve(silent = TRUE)
   expect_equal(dynare_endo, mdl2$get_endo_data())
   expect_error(mdl2$solve_perturbation(),
                "No explosive roots. solve_first_order cannot handle this situation yet.")
@@ -135,6 +135,6 @@ test_that("non_finite values", {
   expect_known_output(expect_warning(mdl_2$solve(control = list(silent = FALSE)),
                                        "Model solving not succesful"),
                       file = "expected_output/islm_backwards_non_finite_1.txt")
-  expect_silent(expect_warning(mdl_2$solve(control = list(silent = TRUE)),
+  expect_silent(expect_warning(mdl_2$solve(silent = TRUE),
                                      "Model solving not succesful"))
 })

@@ -31,9 +31,9 @@ test_that("solve_steady", {
 
 test_that("solve", {
 
-  mdl_dll$solve(control = list(silent = TRUE))
-  mdl_R$solve(control = list(silent = TRUE))
-  mdl_internal$solve(control = list(silent = TRUE))
+  mdl_dll$solve(silent = TRUE)
+  mdl_R$solve(silent = TRUE)
+  mdl_internal$solve(silent = TRUE)
   
   # check that y2 and y5 are equal
   ed <- mdl_R$get_endo_data()

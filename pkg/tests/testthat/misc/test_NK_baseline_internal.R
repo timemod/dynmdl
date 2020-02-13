@@ -134,7 +134,7 @@ test_that("homotopy", {
   expect_warning(mdl2$solve(control = list(silent = TRUE, trace = FALSE), 
                             homotopy = FALSE))
   expect_equal(mdl2$get_solve_status(), "ERROR")
-  expect_silent(mdl2$solve(control = list(silent = TRUE, trace = FALSE)))
+  expect_silent(mdl2$solve(silent = TRUE))
   expect_equal(mdl2$get_solve_status(), "OK")
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
   

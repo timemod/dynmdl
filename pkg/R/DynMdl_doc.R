@@ -696,7 +696,8 @@ NULL
 #' \describe{
 #' \item{\code{control}}{A named list of control parameters passed to function
 #' \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
-#' depending on argument \code{solver}}
+#' depending on argument \code{solver}. If control parameter \code{trace} has 
+#' not been specified, then that parameter is set to \code{TRUE}.}
 #' \item{\code{solver}}{Specifies the solver employed to solve the model:
 #' \code{umfpackr} (sparse linear algebra) or \code{nleqslv} (dense linear algebra).
 #' For large model, the \code{umfpackr} solve can be much faster.}
@@ -777,7 +778,7 @@ NULL
 #' \preformatted{
 #'  md$solve(control = list(), mode, solver = c("umfpackr", "nleqslv"), 
 #'           start = c("current", "previous"), debug_eqs = FALSE,
-#'           homotopy = FALSE, ...)
+#'           homotopy = FALSE, silent = FALSE,  ...)
 #' }
 #'
 #' \code{mdl} is a \code{\link{DynMdl}} object
@@ -787,7 +788,10 @@ NULL
 #' \describe{
 #' \item{\code{control}}{A named list of control parameters passed to function
 #' \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
-#' depending on argument \code{solver}}
+#' depending on argument \code{solver}. If control parameter \code{trace} has 
+#' not been specified, then that parameter is set to \code{TRUE} when the model
+#' is solved using the stacked time method and  \code{FALSE} when the model
+#' is solved using the backwards method (see also argument \code{mode}).}
 #' \item{\code{mode}}{A character specifying the solve mode. Possible values
 #' are \code{"stacked_time"} and \code{"backwards"}. By default, models
 #' with leads are solved with the stacked time method and models without leads
@@ -810,6 +814,9 @@ NULL
 #' \item{\code{homotopy}}{A logical. If \code{TRUE} (the default), then the 
 #' homotopy approach is used when directly solving the model fails.
 #' Consult the documentation of Dynare for more information about the homotopy aproach.}
+#' \item{\code{silent}}{A logical. If \code{TRUE} then all output is suppressed.
+#' In that case control parameters \code{silent} and \code{trace} 
+#' (see argument \code{control}) are ignored.} 
 #' \item{\code{...}}{Other arguments passed to the solver function (\code{\link{umf_solve_nl}}
 #' when the solver is`"umfpackr"`), Useful arguments for `umf_solve_nl` are 
 #' `global` (select a global strategy) and

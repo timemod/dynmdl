@@ -2,10 +2,10 @@
 #' @importFrom nleqslv nleqslv
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom methods as
-solve_backward_model <- function(model_index, mdldef, calc, solve_period, data_period, 
-                                 endo_data, exo_data, f_dynamic, 
+solve_backward_model <- function(model_index, mdldef, calc, solve_period, 
+                                 data_period, endo_data, exo_data, f_dynamic, 
                                  get_back_jac, control, solver, 
-                                 start_option, debug_eqs, ...) {
+                                 start_option, debug_eqs, silent, ...) {
   
   if (calc == "internal") {
     f <- function(x, lags, leads, period_index, debug_eqs) {
@@ -26,17 +26,10 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period, data_p
   } else {
     jac_fun <- get_back_jac
   }
-
-  if (!control$silent) {
+  
+  if (!silent) {
     cat(sprintf("\nSolving backwards for period %s\n",
                 as.character(solve_period)))
-  }
-  
-  control_ <- control
-  if (solver == "nleqslv") {
-    control_$silent <- NULL
-  } else if (!control$trace) {
-    control_$silent <- TRUE
   }
   
   nper <- nperiod(solve_period)
@@ -62,20 +55,20 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period, data_p
     if (solver == "nleqslv") {
       out <- nleqslv(start, fn = f, jac = jac_fun, method = "Newton",
                      lags = lags, leads = leads, period_index = period_index, 
-                     debug_eqs = debug_eqs, control = control_, ...)
+                     debug_eqs = debug_eqs, control = control, ...)
       error <- out$termcd != 1
     } else {
       out <- umf_solve_nl(start, fn = f, jac = jac_fun, lags = lags,
                           leads = leads, period_index = period_index, 
-                          debug_eqs = debug_eqs, control = control_, ...)
+                          debug_eqs = debug_eqs, control = control, ...)
       error <- !out$solved
     }
     
-    if (!control$silent && control$trace) {
+    if (control$trace) {
       cat("\n")
     }
     
-    if (error && !control$silent) {
+    if (error && !silent) {
       if (grepl("[Ff]unction.*contains non-finite value", out$message)) {
         res <- f(out$x, lags = lags, leads = leads, 
                  period_index = period_index, debug_eqs = FALSE)
@@ -95,7 +88,7 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period, data_p
       }
     }
     
-    if (!control$silent && !error) {
+    if (!silent && !error) {
       cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
                   out$iter))
     }

@@ -101,7 +101,7 @@ test_that("solve with fit procedure (2 targets)", {
   expect_equal(mdl2$get_solve_status(), "ERROR")
  
 
-  expect_silent(mdl2$solve(control = list(silent = TRUE)))
+  expect_silent(mdl2$solve(silent = TRUE))
   expect_equal(mdl2$get_solve_status(), "OK")
   expect_output(mdl$solve(), "Convergence after 0 iterations")
   

@@ -47,7 +47,7 @@ test_that("solve", {
   p1 <- start_period(mdl2$get_period())
   mdl2$set_exo_values(c(245, 250, 260), names = "g", 
                       period = period_range(p1, p1 + 2))
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  expect_warning(mdl2$solve(silent = TRUE, control = list(trace = FALSE)), NA)
   expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
                dynare_result$endo)
  

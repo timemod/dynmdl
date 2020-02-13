@@ -25,7 +25,7 @@ test_that("solve_steady", {
 test_that("solve", {
   
   mdl$set_exo_values(seq(-0.1, 1, length.out = nper))
-  mdl$solve(control = list(silent = TRUE))
+  mdl$solve(silent = TRUE)
   expect_equal(mdl$get_solve_status(), "OK")
   ed <- mdl$get_endo_data()
 
