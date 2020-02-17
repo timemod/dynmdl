@@ -39,7 +39,7 @@ mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
 
 mdl$get_trend_data(pattern, names, period = mdl$get_data_period())
 
-mdl$get_all_endo_data()
+mdl$get_all_endo_data(trend = TRUE)
 
 }
 

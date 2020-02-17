@@ -6,7 +6,9 @@
 \description{
 This method of R6 class \code{\link{DynMdl}} sets the model data period and
 initializes the model variables with static values
-of the exogenous and endogenous model variables.
+of the exogenous and endogenous model variables. Also all fit targets
+are removed. If argument \code{data} has been specified then the steady
+state values are subsequently updated with the timeseries in \code{data}.
 
 If the model period has not yet been specified (in function
 \code{\link{dyn_mdl}} or method \code{\link{set_period}}), then
@@ -50,6 +52,11 @@ by valid (i.e. non-\code{NA}) values in \code{data}). }
 If neither \code{data_period} nor \code{data} have been specified,
 then the data period is determined from the model period (which in that
 case must have been specified before \code{init_data} is called).
+}
+
+\section{Warning}{
+
+Method \code{init_data} removes all fit targets.
 }
 
 \examples{

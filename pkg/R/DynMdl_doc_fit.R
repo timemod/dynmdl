@@ -43,6 +43,9 @@
 #' If \code{data} contains  \code{NA} values, then the variable is not a fit 
 #' target for the corresponding periods, which implies that the variable
 #' will be calculated according to the equations of the model.
+#' 
+#' @section Warning:
+#' Method \code{\link{init_data}} removes all fit targets.
 #'
 #' @examples
 #'

@@ -53,6 +53,11 @@ target for the corresponding periods, which implies that the variable
 will be calculated according to the equations of the model.
 }
 
+\section{Warning}{
+
+Method \code{\link{init_data}} removes all fit targets.
+}
+
 \examples{
 
 mdl <- islm_mdl(period = "2016Q1/2017Q3", fit = TRUE)

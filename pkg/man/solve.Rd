@@ -30,7 +30,7 @@ whether the solve was successfully terminated or not.
 \describe{
 \item{\code{control}}{A named list of control parameters passed to function
 \code{\link[umfpackr]{umf_solve_nl}} or \code{\link[nleqslv]{nleqslv}},
-depending on argument \code{solver}.If control parameter \code{trace} has
+depending on argument \code{solver}. If control parameter \code{trace} has
 not been specified, then that parameter is set to \code{TRUE} when the model
 is solved using the stacked time method and  \code{FALSE} when the model
 is solved using the backwards method (see also argument \code{mode}).}
