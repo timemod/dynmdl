@@ -102,9 +102,19 @@ test_that("solve with max_laglead_1", {
   
   # test get_all_endo_data
   data <- mdl2$get_all_endo_data()
-  expected_result <- cbind(mdl2$get_endo_data(), mdl2$get_fit_instruments(),
-                           mdl2$get_lagrange())
-  expected_result[is.na(expected_result)]  <- 0 # zero instruments
+  p <- mdl2$get_data_period()
+  expected_result <- cbind(mdl2$get_endo_data(), 
+                           mdl2$get_fit_instruments(period = p),
+                           mdl2$get_lagrange(period = p))
+  expect_equal(data, expected_result)
+  
+  # test get_endo_data
+  data <- mdl2$get_all_data()
+  expected_result <- cbind(mdl2$get_endo_data(), 
+                           mdl2$get_fit_instruments(period = p),
+                           mdl2$get_lagrange(period = p),
+                           mdl2$get_exo_data())
+  expected_result <- expected_result[ , order(colnames(expected_result))]
   expect_equal(data, expected_result)
 })
 

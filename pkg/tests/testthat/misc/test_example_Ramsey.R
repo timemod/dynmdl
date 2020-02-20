@@ -177,3 +177,11 @@ test_that("get_all_endo_data", {
   expect_equal(data, mdl$get_endo_data())
   expect_equal(data_no_trend, mdl$get_endo_data(trend = FALSE))
 })
+
+test_that("get_endo_data", {
+  data <- mdl$get_all_data()
+  data_no_trend <- mdl$get_all_data(trend = FALSE)
+  expect_true(tsdif(data, cbind(mdl$get_endo_data(), mdl$get_exo_data()))$equal)
+  expect_true(tsdif(data_no_trend, cbind(mdl$get_endo_data(trend = FALSE), 
+                                         mdl$get_exo_data()))$equal)
+})

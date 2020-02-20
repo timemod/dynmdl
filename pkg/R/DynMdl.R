@@ -626,6 +626,11 @@ DynMdl <- R6Class("DynMdl",
       }
       return(update_ts_labels(data, lbls))
     },
+    get_all_data = function(trend = TRUE) {
+      ret <- cbind(self$get_all_endo_data(trend = trend), self$get_exo_data())
+      ret <- ret[ , order(colnames(ret)), drop = FALSE]
+      return(ret)
+    },
     get_all_endo_data_dynare = function() {
       # Return all endogenous variables, including auxiliary variables,
       # fit instruments and lagrange multipliers, without trend.

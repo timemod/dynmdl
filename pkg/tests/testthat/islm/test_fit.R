@@ -159,9 +159,21 @@ test_that("get_names", {
 
 test_that("get_all_endo_data", {
   data <- mdl$get_all_endo_data()
-  expected_result <- cbind(mdl$get_endo_data(), mdl$get_fit_instruments(),
-                           mdl$get_lagrange())
-  expected_result[is.na(expected_result)]  <- 0 # zero instruments
+  p <- mdl$get_data_period()
+  expected_result <- cbind(mdl$get_endo_data(), 
+                           mdl$get_fit_instruments(period = p),
+                           mdl$get_lagrange(period = p))
+  expect_equal(data, expected_result)
+})
+
+test_that("get_all_data", {
+  data <- mdl$get_all_data()
+  p <- mdl$get_data_period()
+  expected_result <- cbind(mdl$get_endo_data(period = p), 
+                           mdl$get_fit_instruments(period = p),
+                           mdl$get_lagrange(period = p), 
+                           mdl$get_exo_data())
+  expected_result <- expected_result[ , order(colnames(expected_result))]
   expect_equal(data, expected_result)
 })
 

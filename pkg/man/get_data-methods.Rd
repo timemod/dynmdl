@@ -8,6 +8,7 @@
 \alias{get_trend_data,}
 \alias{get_all_endo_data}
 \alias{get_all_exo_data}
+\alias{get_all_data}
 \title{\code{\link{DynMdl}} methods: Retrieve timeseries from the model data}
 \description{
 These methods of R6 class \code{\link{DynMdl}}
@@ -21,7 +22,8 @@ the Lagrange multipliers used in the fit method. Use method
 \code{\link{get_lagrange}} to obtain these Lagrange multipliers.
 \code{\link{get_all_endo_data}} returns all endogenous variables,
 fit instruments and Lagrange multipliers, for the complete data period.
-This function is useful to save the complete solution of a model that
+\code{\link{get_all_data}} also returns all exogenous variables.
+These functions can be useful to save the complete solution of a model that
 be used as initial values for the endogenopus variables in another
 model.
 }
@@ -40,6 +42,8 @@ mdl$get_exo_data(pattern, names, period = mdl$get_data_period())
 mdl$get_trend_data(pattern, names, period = mdl$get_data_period())
 
 mdl$get_all_endo_data(trend = TRUE)
+
+mdl$get_all_data(trend = TRUE)
 
 }
 
@@ -77,6 +81,8 @@ fit instruments.
 \item \code{get_trend_data}: Trend variables (variables declared with
 \code{trend_var} in the mod file).
 \item \code{get_all_endo_data}: All endogenous variables, including
+fit instruments and lagrange multipliers.
+\item \code{get_all_data}: All endogenous and exogenous variables, including
 fit instruments and lagrange multipliers.
 }
 }

@@ -74,6 +74,9 @@ test_that("set_data, set_endo_values and set_exo_values works correctly (1)", {
   expect_equal(mdl3$get_data(names = "g"), data[, "g", drop = FALSE])
   
   expect_equal(mdl3$get_all_endo_data(), mdl3$get_endo_data())
+  
+  expect_true(tsdif(mdl3$get_all_data(), 
+                    cbind(mdl3$get_endo_data(), mdl3$get_exo_data()))$equal)
 })
 
 test_that("mdl2 is a different object than mdl", {
