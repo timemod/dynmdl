@@ -103,7 +103,7 @@ test_that("sigma_uy1 > 0", {
   expect_warning(
     mdl$solve_steady(control = list(silent = TRUE, trace = TRUE, 
                                     allow_singular = TRUE)),
-    paste("The steady state values for the fit instruments and lagrange",
+    paste("The steady state values for the fit instruments and Lagrange",
           "multipliers are significantly different from 0."))
   expect_equal(mdl$get_solve_status(), "OK")
   expect_equal(mdl$get_static_endos(), c(y1 = 2, y2 = 1))
