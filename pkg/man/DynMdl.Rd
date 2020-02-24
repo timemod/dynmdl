@@ -60,6 +60,14 @@ the model variables.}
 \item{\code{\link{get_static_data}}}{Returns the static values of
 the model variables.}
 
+\item{\code{\link{get_all_static_endos}}}{Returns the static values of
+the endogenous model variables, including fit instruments and
+lagrange multupliers.}
+
+#\item{\code{\link{get_all_static_data}}}{Returns the static values of
+the exogenous and endogenous model variables, including fit instruments and
+lagrange multupliers.}
+
 \item{\code{\link{init_data}}}{Initializes the model data}
 
 \item{\code{\link{set_period}}}{Sets the model period}
@@ -87,9 +95,17 @@ variables by applying a function}
 variables by applying a function}
 
 \item{\code{\link{change_data}}}{Changes the values of endogenous and
-exogenous model variables by applying a function}
+exogenous model variables by applying a function.}
 
-\item{\code{\link{get_data}}}{Returns the model data}
+\item{\code{\link{get_data}}}{Returns the model data, including exogenous end exogenous
+variables, fit instruments and trend variables (but excluding Lagrange multipliers).}
+
+\item{\code{\link{get_all_endo_data}}}{Returns all endogenous model variables,
+including exogenous end exogenous
+variables, fit instruments and trend variables (but excluding Lagrange multipliers).}
+
+\item{\code{\link{get_all_data}}}{Returns all endogenous end exogenous model varieables,
+including fit instruments and Lagrange multipliers}
 
 \item{\code{\link{get_endo_data}}}{Returns the endogenous model data}
 
@@ -161,8 +177,14 @@ parameters used in the fit procedure.}
 
 \item{\code{\link{set_fit}}}{Sets the targets for the fit procedure}
 
+\item{\code{\link{set_fit_steady}}}{Sets the targets for the fit procedure
+for the steady state.}
+
 \item{\code{\link{get_fit}}}{Returns the fit targets
 used in the fit procedure}
+
+\item{\code{\link{get_fit}_steady}}{Returns the fit targets
+used in the fit procedure for the steady state.}
 
 \item{\code{\link{get_fit_instruments}}}{Returns all non-zero fit instruments
 used in the fit procedure}

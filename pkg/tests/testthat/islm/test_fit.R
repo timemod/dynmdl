@@ -362,17 +362,17 @@ test_that("set_static_data / get_static_data", {
   
   model_names <- c(mdl$get_endo_names(), mdl$get_exo_names())
   
-  expect_error(mdl2$set_static_data(c(ut  = 2)),
-               '"ut" is not an endogenous or exogenous variable.')  
-  expect_silent(mdl2$set_static_data(c(ut  = 2), name_err = "silent"))
+  expect_error(mdl2$set_static_data(c(utt  = 2)),
+               '"utt" is not a model variable.')  
+  expect_silent(mdl2$set_static_data(c(utt  = 2), name_err = "silent"))
   mdl2$set_static_data(mdl2$get_static_data())
   expect_equal(mdl2$get_static_data()[model_names],
                c(mdl$get_static_endos(), mdl$get_static_exos())[model_names])
   
-  msg <- paste('The following names are no endogenous or exogenous',
-               'variables: "xxx", "ut".')
+  msg <- paste('The following names are no model',
+               'variables: "xxx", "utt".')
   expect_warning(
-    mdl2$set_static_data(c(c = 222, g = 333, xxx = 5, ut = 2), 
+    mdl2$set_static_data(c(c = 222, g = 333, xxx = 5, utt = 2), 
                          name_err = "warn"),
     msg)
   
@@ -384,9 +384,12 @@ test_that("set_static_data / get_static_data", {
   expect_equal(mdl2$get_static_data(pattern = "^[gm]"), 
                expected_result[c("g", "md", "ms")])
   
-  expect_warning(x <- mdl2$get_static_data(pattern = "^u"), 
-                 "No endogenous or exogenous variables match pattern \"\\^u\".")
+  expect_warning(x <- mdl2$get_static_data(pattern = "^uu"), 
+                 "No model variables match pattern \"\\^uu\".")
   expect_equal(length(x), 0)
+  
+  expect_silent(x <- mdl2$get_static_data(pattern = "^u"))
+  expect_equal(x, c(uc = 0, ui = 0, umd = 0., ut = 0))
   
   expect_equal(length(mdl2$get_static_data(names = character(0))), 0)
   expect_equal(length(mdl2$get_static_endos(names = character(0))), 0)
@@ -399,6 +402,10 @@ test_that("set_static_data / get_static_data", {
   mdl2$set_static_data(c(a = 5555, b = 6666), names = c("ms", "md"))
   expect_equal(mdl2$get_static_data(pattern = "^m"),
                c(md = 6666, ms = 5555))
+  
+  mdl2$set_static_data(c(ut  = 222))
+  expect_equal(mdl2$get_static_data(names = "ut"), c(ut = 222))
+    
 })
 
 test_that("get_fit for argument period, pattern and names", {

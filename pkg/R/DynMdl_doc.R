@@ -180,7 +180,7 @@ NULL
 #' fit instruments and Lagrange multipliers, for the complete data period.
 #' \code{\link{get_all_data}} also returns all exogenous variables.
 #' These functions can be useful to save the complete solution of a model that
-#' be used as initial values for the endogenopus variables in another
+#' be used as initial values for the endogenous variables in another
 #' model.
 #' @section Usage:
 #' \preformatted{
@@ -960,7 +960,8 @@ NULL
 #' @aliases set_static_exos set_static_exo_values, set_static_endos 
 #'          set_static_data 
 #'          get_static_endos get_static_exos
-#'          set_static_exo_values get_static_data
+#'          set_static_exo_values get_static_data get_all_static_endos
+#'          get_all_static_data
 #'
 #' @description
 #' 
@@ -980,7 +981,16 @@ NULL
 #' 
 #' The static values are initialized to the values specified in the initval block of 
 #' the mod file, or to zero if they are not specified in the initval block.
-#' The static values can be modified with methods
+#' The static values can be modified with methods \code{set_static_endos},
+#' \code{set_static_endos},  \code{set_static_data} or
+#' \code{set_static_exo_values}.
+#' 
+#' \code{\link{get_all_static_endos}} returns the static values for all 
+#' endogenous variables, fit instruments and Lagrange multipliers.
+#' \code{\link{get_all_data}} also returns all static values of exogenous variables.
+#' These functions can be useful to save the complete solution of a model that
+#' be used as initial values for the endogenous variables in another
+#' model.
 #' 
 #' @section Usage:
 #' \code{DynMdl} method:
@@ -992,6 +1002,8 @@ NULL
 #' mdl$get_static_endos(pattern, names)
 #' mdl$get_static_endos(pattern, names)
 #' mdl$get_static_data(pattern, names)
+#' mdl$get_all_static_endos()
+#' mdl$get_all_static_data()
 #' }
 #'
 #' \code{mdl} is a \code{\link{DynMdl}} object
@@ -1019,21 +1031,25 @@ NULL
 #' @section Methods:
 #' \itemize{
 #' \item \code{set_static_endos}: Set the static values of one or more 
-#' endogenous variables (excluding fit instruments for \code{\link{DynMdl}} objects).
+#' endogenous variables (including static fit instruments and static Lagrange
+#' multipliers).
 #' \item \code{set_static_exos}: Set the static values of one or more 
 #' exogenous variables.
 #' \item \code{set_static_exo_values}: Give more than one exogenous variable 
 #' the same static value.
 #' \item \code{set_static_data}: Set the static values of one or more 
 #' endogenous or exogenous variable  
-#' (excluding fit instruments for \code{\link{DynMdl}} objects).
+#' (including  static fit instruments and static Lagrange multipliers.)
 #' \item \code{get_static_endos}: Returns the static values of one or more 
-#' endogenous variables. For \code{\link{DynMdl}} objects the static values
-#' of the fit instruments are not included (they are always zero). 
+#' endogenous variables, excluding fit instruments and Lagrange multipliers. 
 #' \item \code{get_static_exos}: Returns the static values of one or more 
 #' exogenous variables.
 #' \item \code{get_static_data}: Returns the static values of the model 
-#' variables  (excluding fit instruments for \code{\link{DynMdl}} objects).
+#' variables: exogenous and endogenous model variables and static fit instruments.
+#' \item \code{get_all_static_endos}: Returns all static endogenous variables, 
+#' including fit instruments and lagrange multipliers.
+#' \item \code{get_all_static_data}: Returns all static endogenous and exogenous variables, 
+#' including fit instruments and lagrange multipliers.
 #' }
 #' @examples
 #' mdl <- islm_mdl()

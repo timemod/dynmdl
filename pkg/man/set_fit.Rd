@@ -73,6 +73,6 @@ mdl$set_fit(fit_targets)
 print(mdl$get_fit())
 }
 \seealso{
-\code{\link{get_fit}}, \code{\link{set_fit}}
+\code{\link{get_fit}}, \code{\link{set_fit_steady}},
 and \code{\link{clear_fit}}
 }

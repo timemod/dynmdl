@@ -24,7 +24,7 @@ the Lagrange multipliers used in the fit method. Use method
 fit instruments and Lagrange multipliers, for the complete data period.
 \code{\link{get_all_data}} also returns all exogenous variables.
 These functions can be useful to save the complete solution of a model that
-be used as initial values for the endogenopus variables in another
+be used as initial values for the endogenous variables in another
 model.
 }
 \section{Usage}{

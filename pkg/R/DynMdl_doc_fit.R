@@ -61,7 +61,7 @@
 #' 
 #' print(mdl$get_fit())
 #
-#' @seealso \code{\link{get_fit}}, \code{\link{set_fit}}
+#' @seealso \code{\link{get_fit}}, \code{\link{set_fit_steady}}, 
 #' and \code{\link{clear_fit}}
 NULL
 
@@ -197,6 +197,64 @@ NULL
 #' \code{\link{set_fit_values}} and \code{\link{clear_fit}}.
 NULL
 
+#' \code{\link{DynMdl}} method: get fit targets used in the steady state 
+#' calculation
+#' @name get_fit_steady
+
+#' @description
+#' This methods of R6 class \code{DynMdl} returns the static fit targets,
+#' i.e. the fit targets used when the steady state is solved.
+#' \cr\cr
+#' By default, function `get_fit` only returns fit targets with 
+#' any non-`NA` value.
+#' If all values are `NA`, then the function returns `NULL`.
+#' If `names` or `pattern` has been specified, it always returns a timeseries
+#' with the specified variables.
+#' \cr\cr
+#' For method \code{get_fit_syteady} the is a corresponding \code{\link{set_fit}_steady}
+#' method. There are currently no special
+#' methods to set or change the fit instruments and Lagrange multipliers.
+#' However, since they are internally implemented as endogenous variables
+#' you can use methods \code{\link{set_static_)data}}  to change the static 
+#' fit instruments or Lagrange multipliers.
+#' 
+#' @section Usage:
+#' \preformatted{
+#' 
+#' mdl$get_fit_steady(pattern, names) # fit targets
+#'
+#' }
+#'
+#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{pattern}}{a regular expression}
+#' \item{\code{names}}{a character vector with variable names}
+#' }
+#'
+#' @examples
+#'
+#' mdl <- islm_mdl(period = "2016Q1/2017Q3", fit = TRUE)
+#'
+#' # create a regts with fit targets
+#' y <- regts(c(1250, 1255, 1260), start = "2016Q1")
+#' t <- regts(c(250, 255), start = "2016Q1")
+#' fit_targets <- cbind(y, t)
+#' 
+#' # register the fit targets in the DynMdl object
+#' mdl$set_fit_steady(fit_targets)
+#' 
+#' mdl$solve()
+#' 
+#' print(mdl$get_fit_steady())
+#' 
+#' @seealso \code{\link{set/get_static_endos/exos}}, 
+#' \code{\link{set_fit_steady}},
+#' and \code{\link{clear_fit}}.
+NULL
+
 
 #' \code{\link{DynMdl}} method: removes fit targets and turns off fit
 #' instruments.
@@ -205,7 +263,8 @@ NULL
 #' @description
 #' This method of R6 class \code{DynMdl} removes all fit targets, sets 
 #' the sigma-parameters of the fit-instruments to \code{-1} and sets
-#' all Lagrange multipliers to 0. 
+#' all Lagrange multipliers to 0, for both the dynamic and static version
+#' of the model.
 #' 
 #' By removing the fit targets (which is equivalent to setting all fit targets to
 #' \code{NA}), all endogenous variables are calculated according to the equations
@@ -242,7 +301,8 @@ NULL
 #' # the next statements gives 0 iterations.
 #' mdl$solve()
 #' @seealso \code{\link{get_data-methods}}, \code{\link{set_fit}},
-#' \code{\link{set_fit_values}} and \code{\link{clear_fit}}.
+#' \code{\link{set_fit_steady}}, \code{\link{set_fit_values}} and 
+#' \code{\link{clear_fit}}.
 NULL
 
 #' \code{\link{DynMdl}} methods: Retrieve the 
@@ -273,4 +333,65 @@ NULL
 #' # disable ui as fit instrument by setting sigma_ui to -1:
 #' mdl$set_param(c(sigma_ui = -1))
 #' mdl$get_sigmas()
+NULL
+
+
+#' \code{\link{DynMdl}} method: set fit targets for the steady state
+#' @name set_fit_steady
+#' @description
+#' This method  of R6 class \code{\link{DynMdl}} sets the static
+#' fit targets, i.e. the fit targets used in the steady state calculation.
+#' 
+#' @section Usage:
+#' \preformatted{
+#'
+#' mdl$set_fit_steady(data, names = names(data), 
+#' name_err = c("stop", "warn", "silent"))
+#' }
+#'
+#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{data}}{a named numeric vector with the fit target values. The
+#' names coresspond to the names of the endogenous model variables.}
+#' \item{\code{names}}{a character vector with variable names, with the
+#' same length as the vector  \code{data}. Defaults to the
+#' cnames of \code{data}. If \code{data} does not have  names,
+#' then argument \code{names} is mandatory}
+#' \item{\code{name_err}}{this option specifies the action that should be taken 
+#' when a variable name is not an endogenous model variable.
+#' For \code{"stop"} (the default), the execution of this function is stopped.
+#' For \code{"warn"} and \code{"silent"} the timeseries that are no endogenous 
+#' model variables are skipped. \code{"warn"} does however give a warning.}
+#' }
+
+#' @section Details:
+#'
+#' If \code{data} contains  \code{NA} values, then the corresponding model 
+#' variable is not a fit target.
+#' 
+#' @section Warning:
+#' Method \code{\link{init_data}} removes all fit targets.
+#'
+#' @examples
+#'
+#' mdl <- islm_mdl(fit = TRUE)
+#'
+#' # create a regts with fit targets
+#' y <- regts(c(1250, 1255, 1260), start = "2016Q1")
+#' t <- regts(c(250, 255), start = "2016Q1")
+#' fit_targets <- c(y = 1250 t = 250)
+#' 
+#' # register the static fit targets in the DynMdl object
+#' mdl$set_fit_steady(fit_targets)
+#' 
+#' print(mdl$get_fit())
+#' 
+#' mdl$solve()
+#' 
+#' print(mdl$get_static_endos())
+#
+#' @seealso \code{\link{get_fit_steady}} and \code{\link{clear_fit}}
 NULL

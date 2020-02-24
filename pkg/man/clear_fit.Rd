@@ -7,7 +7,8 @@ instruments.}
 \description{
 This method of R6 class \code{DynMdl} removes all fit targets, sets
 the sigma-parameters of the fit-instruments to \code{-1} and sets
-all Lagrange multipliers to 0.
+all Lagrange multipliers to 0, for both the dynamic and static version
+of the model.
 
 By removing the fit targets (which is equivalent to setting all fit targets to
 \code{NA}), all endogenous variables are calculated according to the equations
@@ -49,5 +50,6 @@ mdl$solve()
 }
 \seealso{
 \code{\link{get_data-methods}}, \code{\link{set_fit}},
-\code{\link{set_fit_values}} and \code{\link{clear_fit}}.
+\code{\link{set_fit_steady}}, \code{\link{set_fit_values}} and
+\code{\link{clear_fit}}.
 }

@@ -158,14 +158,13 @@ test_that("set_static_data / get_static_data", {
   
   model_names <- c(mdl$get_endo_names(), mdl$get_exo_names())
   
-  expect_error(mdl2$set_static_data(c(z  = 2)),
-                                    '"z" is not an endogenous or exogenous variable.')  
+  expect_error(mdl2$set_static_data(c(z  = 2)), '"z" is not a model variable.')  
   expect_silent(mdl2$set_static_data(c(z  = 2), name_err = "silent"))
   mdl2$set_static_data(mdl2$get_static_data())
   expect_equal(mdl2$get_static_data(names = model_names),
                c(mdl$get_static_endos(), mdl$get_static_exos())[sort(model_names)])
   
-  msg <- 'The following names are no endogenous or exogenous variables: "xxx", "yyy".'
+  msg <- 'The following names are no model variables: "xxx", "yyy".'
   expect_warning(
     mdl2$set_static_data(c(c = 222, g = 333, xxx = 5, yyy = 2), 
                          name_err = "warn"),
@@ -177,7 +176,7 @@ test_that("set_static_data / get_static_data", {
   expect_equal(mdl2$get_static_data(), expected_result)
   
   expect_warning(x <- mdl2$get_static_data(pattern = "^x"), 
-                 "No endogenous or exogenous variables match pattern \"\\^x\".")
+                 "No model variables match pattern \"\\^x\".")
   expect_equal(length(x), 0)
   
   expect_equal(mdl2$get_static_data(pattern = "^[gm]"), 
