@@ -1012,7 +1012,11 @@ DynMdl <- R6Class("DynMdl",
         stacked_time <- private$mdldef$max_endo_lead > 0
       }
     
-      if (private$mdldef$fit) private$prepare_fit()
+      if (private$mdldef$fit) {
+        fit_info <- private$prepare_fit()
+        n_fit <- fit_info$n_fit
+        instruments <- fit_info$instruments
+      }
      
       solver <- match.arg(solver)
       start <- match.arg(start)
@@ -1258,6 +1262,43 @@ DynMdl <- R6Class("DynMdl",
       } else {
         private$solve_status <- "OK"
       }
+      
+      #
+      # check fit result
+      #
+      if (private$mdldef$fit && private$solve_status == "OK" && n_fit == 0) {
+        # If there are no fit targets, then the steady state solution for
+        # all fit instruments must be exactly 0, and all Lagrange multipliers
+        # should be zero. However, the values are not exactly equal to zero
+        # because of numerical inaccuracies.  This may cause numerical problems.
+        # Therefore set then to zero and check the maximum static residual
+        indices <- c(private$mdldef$fit_info$l_vars, instruments)
+        mp <- private$model_period
+        old_endos <- private$endo_data[mp, indices, drop = FALSE]
+        private$endo_data[mp, indices] <- 0
+        
+        fmax <- max(abs(self$residual_check(include_all_eqs = TRUE,
+                                            debug_eqs = FALSE)))
+        ftol <- if (is.null(control$ftol)) {
+          1e-8 
+        } else { 
+          control$ftol
+        }
+        if (fmax > ftol) {
+          # restore old solution
+          private$endo_data[mp, indices] <- old_endos
+          warning(paste("The steady state values for the fit instruments",
+                        "and Lagrange multipliers are significantly different",
+                        "from 0."))
+        }
+        
+        # make _exo variables equal to the corresponding static 
+        # endogenous variables
+        exo_idx <- private$mdldef$fit_info$exo_vars
+        endo_idx <- private$mdldef$fit_info$orig_endos
+        private$exo_data[mp, exo_idx] <- private$endo_data[mp, endo_idx]
+      }
+      
       return(invisible(self))
     },
     solve_perturbation = function() {
@@ -2763,23 +2804,29 @@ DynMdl <- R6Class("DynMdl",
       fit_sel <- fit_switches == 1
       
       is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
-      n_fit_targets <- sum(is_fit_var)
+      n_fit <- sum(is_fit_var)
       
-      if (n_fit_targets > 0) {
+      # get all instruments actually used (the sigmas are > 0)
+      sigmas <- private$mdldef$params[private$mdldef$fit_info$sigmas]
+      sel <- sigmas > 0
+      instruments <- private$mdldef$fit_info$instruments[sel]
+      
+      if (n_fit > 0) {
+        
+        n_instruments <- length(instruments)
         
         # check if there are sufficient fit instruments
-        n_sigmas <- length(self$get_sigmas())
-        if (n_sigmas < n_fit_targets) {
+        if (n_instruments < n_fit) {
           stop(sprintf(paste("The number of fit targets (%d) exceeds the",
                              "number of fit instruments (%d)\n."),
-                       n_fit_targets, n_sigmas))
+                       n_fit, n_instruments))
         }
         
         # make endo data equal to fit result.
         private$endo_data[mp, private$mdldef$endo_indices_orig][fit_sel] <-
           private$exo_data[mp, private$mdldef$fit_info$exo_vars][fit_sel]
       }
-      return()
+      return(list(n_fit = n_fit, instruments = instruments))
     },
     set_old_fit_instruments = function() {
       # set old_instruments, these will be used for deactivated 
