@@ -162,7 +162,7 @@ test_that("set_static_data / get_static_data", {
   expect_silent(mdl2$set_static_data(c(z  = 2), name_err = "silent"))
   mdl2$set_static_data(mdl2$get_static_data())
   expect_equal(mdl2$get_static_data(names = model_names),
-               c(mdl$get_static_endos(), mdl$get_static_exos())[sort(model_names)])
+               c(mdl$get_static_endos(), mdl$get_static_exos())[model_names])
   
   msg <- 'The following names are no model variables: "xxx", "yyy".'
   expect_warning(

@@ -14,7 +14,7 @@ fit <- cbind(i, c, y)
 ts_labels(fit) <- c("Investment", "Consumption", "Income")
 
 # an ordered list of fit values without identities:
-fit_ordered <- fit[, order(colnames(fit))]
+fit_ordered <- fit[ , intersect(mdl$get_endo_names(), colnames(fit))]
  
 fit2 <- fit
 fit2["2016q1", "i"] <- NA
@@ -40,7 +40,7 @@ test_that("set_fit for update mode upd (second test)", {
   fit_mdl2 <- fit_mdl$copy()
   fit_mdl2$set_fit(fit2)
 
-  fit_combi <- update_ts(fit, fit2, method = "upd")[, c("c", "y")]
+  fit_combi <- update_ts(fit, fit2, method = "upd")[, c("y", "c")]
   
   expect_equal(fit_mdl2$get_fit(), fit_combi)
   

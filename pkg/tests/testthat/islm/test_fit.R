@@ -414,9 +414,10 @@ test_that("get_fit for argument period, pattern and names", {
   ref_result <- mdl$get_endo_data(period = per)
   ref_result[ , ] <- NA
   ref_result <- update_ts(ref_result, fit_targets)
+  ref_result <- ref_result[ , mdl$get_endo_names()]
   
   expect_equal(mdl$get_fit(period = per, pattern = ".*"), ref_result)
-  expect_equal(mdl$get_fit(period = per), ref_result[, c("t", "y")])
+  expect_equal(mdl$get_fit(period = per), ref_result[, c("y", "t")])
   expect_equal(mdl$get_fit(names = c("c", "y")), 
                ref_result["2016q1/2016q3", c("c", "y")])
   

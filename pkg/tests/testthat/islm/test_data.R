@@ -63,7 +63,7 @@ test_that("set_data, set_endo_values and set_exo_values works correctly (1)", {
   names <- c("g", "c")
   pattern <- "^y.?$"
   expect_equal(mdl3$get_data(names = names, pattern = pattern), 
-               data[, c("c", "g", "y", 'yd')])
+               data[, c("g", "c", "y", 'yd')])
   
   expect_equal(mdl3$get_data(names = "i"), data[, "i", drop = FALSE])
   

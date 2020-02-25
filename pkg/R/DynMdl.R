@@ -417,9 +417,13 @@ DynMdl <- R6Class("DynMdl",
           }
         }
         
+        ret <- c(static_endos, static_exos)
+        if (length(ret) > 0) ret <- ret[order(base::names(ret))]
+        
       } else {
         
-        names <- private$get_names_("all", names, pattern, steady = TRUE)
+        names <- private$get_names_("all", names, pattern, steady = TRUE,
+                                    sort_pattern_names = TRUE)
         if (length(names) == 0) {
           return(NULL)
         }
@@ -433,9 +437,11 @@ DynMdl <- R6Class("DynMdl",
           exo_names <- intersect(names, private$mdldef$exo_names_orig)
           static_exos <- private$mdldef$exos[exo_names]
         }
+        
+        ret <- c(static_endos, static_exos)
+        if (length(ret) > 0) ret <- ret[names]
       }
-      ret <- c(static_endos, static_exos)
-      if (length(ret) > 0) ret <- ret[order(base::names(ret))]
+     
       return(ret)
     },
     get_all_static_endos = function() {
@@ -733,10 +739,14 @@ DynMdl <- R6Class("DynMdl",
         if (!is.null(private$trend_data)) {
           trend_data <- private$trend_data[period]
         }
+        
+        data <- cbind(endo_data, exo_data, trend_data)
+        data <- data[ , order(colnames(data)), drop = FALSE]
          
       } else {
         
-        names <- private$get_names_("all", names, pattern)
+        names <- private$get_names_("all", names, pattern, 
+                                    sort_pattern_names = TRUE)
         if (length(names) == 0) {
           return(NULL)
         }
@@ -753,12 +763,10 @@ DynMdl <- R6Class("DynMdl",
                                    private$mdldef$trend_info$trend_vars$names)
           trend_data <- private$trend_data[period, trend_names]
         }
+        
+        data <- cbind(endo_data, exo_data, trend_data)
+        data <- data[ , names, drop = FALSE]
       }
-    
-      data <- cbind(endo_data, exo_data, trend_data)
-      data <- data[ , order(colnames(data)), drop = FALSE]
-      
-      if (ncol(data) == 0) return(NULL)
       return(update_ts_labels(data, private$mdldef$labels))
     },
     get_endo_data = function(pattern, names, period, trend = TRUE) {
@@ -1743,7 +1751,6 @@ DynMdl <- R6Class("DynMdl",
     if (private$mdldef$trend_info$has_deflated_endos) {
       fit <- private$trend_endo_data(fit)
     }
-    fit <- fit[ , order(colnames(fit)), drop = FALSE]
     fit <- update_ts_labels(fit, private$mdldef$labels)
     return(fit)
   },
@@ -1838,7 +1845,7 @@ DynMdl <- R6Class("DynMdl",
     solve_status = NA_character_,
     get_names_ = function(type, names, pattern,
                           name_err = c("stop", "warn", "silent"),
-                          steady = FALSE) {
+                          steady = FALSE, sort_pattern_names = FALSE) {
       
       # This function selects model variable names from names and pattern.
       # Tt gives an error if names contain any invalid name for the 
@@ -1942,8 +1949,9 @@ DynMdl <- R6Class("DynMdl",
           type_text <- get_type_text(type)
           warning(sprintf("No %ss match pattern \"%s\".\n", type_text, pattern))
         }
+        if (sort_pattern_names) pattern_names <- sort(pattern_names)
         if (!missing(names)) {
-          names <- union(pattern_names, names)
+          names <- union(names, pattern_names)
         } else {
           names <- pattern_names
         }

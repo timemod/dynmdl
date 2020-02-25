@@ -20,7 +20,7 @@ new_fit <- fit[mdl$get_data_period(), ]
 new_fit[ , "t" ] <- 210
 new_fit["2016Q2/2017Q1", c("y", "c")] <- 810:813
 new_fit["2017Q1", "i"] <- 190
-new_fit <- new_fit[, order(colnames(new_fit))]
+new_fit <- new_fit[, intersect(mdl$get_endo_names(), colnames(new_fit))]
 new_fit <- update_ts_labels(new_fit, c(t = "Tax"))
 
 test_that("set_fit_values works correctly", {
@@ -32,9 +32,10 @@ test_that("set_fit_values works correctly", {
   mdl2$set_fit_values(NA, names = "yd")
   expect_equal(mdl2$get_fit(), new_fit)
   mdl2$set_fit_values(NA, names = "t")
-  expect_equal(mdl2$get_fit(), new_fit["2016Q1/2017Q1" , c("c", "i", "y")])
+  expect_equal(mdl2$get_fit(), new_fit["2016Q1/2017Q1" , c("y", "c", "i")])
   mdl2$set_fit_values(NA, period = "2016Q4/")
-  expect_equal(mdl2$get_fit(), new_fit["2016Q1/2016Q3" , c("c", "i", "y")])
+  expect_equal(mdl2$get_fit(names = c("c", "i", "y")), 
+               new_fit["2016Q1/2016Q3" , c("c", "i", "y")])
 })
 
 test_that("set_fit_values handles errors correctly", {
