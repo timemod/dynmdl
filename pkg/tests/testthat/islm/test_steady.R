@@ -80,7 +80,8 @@ test_that("non-finite values", {
   mdl_2 <- mdl$copy()
   mdl_2$set_static_endos(c(t  = NaN))
   mdl_2$set_static_exos(c(g = Inf))
-  expect_silent(expect_warning(mdl_2$solve_steady(control = list(silent = TRUE)),
+  expect_silent(expect_warning(mdl_2$solve_steady(silent = TRUE, 
+                                                  control = list(silent = TRUE)),
                                      "Solving the steady state not succesful"))
   expect_known_output(expect_warning(mdl_2$solve_steady(control = list(silent = FALSE)),
                                      "Solving the steady state not succesful"),

@@ -831,7 +831,7 @@ DynMdl <- R6Class("DynMdl",
     },
     solve_steady = function(control = list(trace = TRUE), 
                             solver = c("umfpackr", "nleqslv"),
-                            debug_eqs = FALSE, ...) {
+                            debug_eqs = FALSE, silent = FALSE, ...) {
     
       solver <- match.arg(solver)
       
@@ -842,6 +842,23 @@ DynMdl <- R6Class("DynMdl",
         n_fit <- fit_info$n_fit
         instruments <- fit_info$instruments
       }
+
+      if (silent) {
+        if (!is.null(control$silent) && !control$silent) {
+          warning(paste("Control parameter 'silent' overruled",
+                        "by argument 'silent = TRUE'."))
+        }
+        if (silent && !is.null(control$trace) && control$trace) {
+          warning(paste("Control parameter 'trace' overruled",
+                        "by argument 'silent = TRUE'."))
+        }
+        if (solver == "umfpackr") {
+          control$silent <- TRUE
+          control$trace <- FALSE
+        } else {
+          control$trace <- 0
+        }
+      }  
     
       private$prepare_static_model()
 
@@ -871,8 +888,8 @@ DynMdl <- R6Class("DynMdl",
       private$mdldef$endos <- out$x
       
       if (error) {
-        if ((is.null(control$silent) || !control$silent) && 
-                grepl("[Ff]unction.*contains non-finite value", out$message)) {
+        if (!silent && 
+            grepl("[Ff]unction.*contains non-finite value", out$message)) {
           res <- private$get_static_residuals(out$x, FALSE)
           names(res) <- paste("eq", seq_along(res))
           res <- res[!is.finite(res)]
@@ -1260,9 +1277,8 @@ DynMdl <- R6Class("DynMdl",
                                   names = private$mdldef$endo_names)
       private$endo_data[private$model_period, ] <- endo_data
       
-      if ((is.null(control$silent) || !control$silent) && 
-          stacked_time && grepl("[Ff]unction.*contains non-finite value", 
-                                message)) {
+      if (!silent && stacked_time && 
+           grepl("[Ff]unction.*contains non-finite value", message)) {
         report_non_finite_residuals(self)
       }
       

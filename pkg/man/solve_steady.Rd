@@ -28,7 +28,7 @@ whether the solve was successfully terminated or not.
 \code{DynMdl} method:
 \preformatted{
 mdl$solve_steady(control = list(), solver = c("umfpackr", "nleqslv"), 
-                debug_eqs = FALSE, ...)
+                debug_eqs = FALSE, silent = FALSE, ...)
 
 }
 
@@ -51,6 +51,10 @@ for the internal calculation mode (\code{calc == "internal"},
 see \code{\link{dyn_mdl}}). If
 \code{TRUE} then numerical problems in evaluation
 of mathematical functions or operators such a \code{log} are reported.}
+\item{\code{silent}}{A logical. If \code{TRUE} then all output is suppressed.
+In that case control parameters \code{silent} and \code{trace}
+(see argument \code{control}) are ignored.}
+
 \item{\code{...}}{Other arguments passed to the solver}
 }
 }

@@ -96,8 +96,7 @@ test_that("solve with fit procedure (2 targets)", {
   mdl2$set_fit_values(0.91234, names = "u", period = fit_per2)
   
   # first solve without homotopy -> should fail
-  expect_warning(mdl2$solve(control = list(silent = TRUE, trace = FALSE), 
-                            homotopy = FALSE))
+  expect_warning(mdl2$solve(silent = TRUE, homotopy = FALSE))
   expect_equal(mdl2$get_solve_status(), "ERROR")
  
 

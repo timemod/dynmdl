@@ -131,7 +131,8 @@ test_that("homotopy", {
   mdl2$put_static_endos()
   p <- start_period(model_period)
   mdl2$set_exo_values(7, names = "epsd", period = p);
-  expect_warning(mdl2$solve(control = list(silent = TRUE, trace = FALSE), 
+  expect_warning(mdl2$solve(silent = TRUE, 
+                            control = list(silent = TRUE, trace = FALSE), 
                             homotopy = FALSE))
   expect_equal(mdl2$get_solve_status(), "ERROR")
   expect_silent(mdl2$solve(silent = TRUE))

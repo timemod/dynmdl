@@ -15,7 +15,7 @@ test_that("solve and residual check", {
                      names = "x")
   
   expect_warning(
-    messages <- capture.output(mdl$solve(control = list(silent = TRUE), 
+    messages <- capture.output(mdl$solve(silent = TRUE, 
                                          debug_eqs = TRUE, 
                                          mode = "stacked_time",
                                          homotopy = FALSE),
@@ -46,12 +46,11 @@ test_that("solve and residual check", {
 test_that("solve_steady", {
   
   expect_warning(
-    messages <- capture.output(mdl$solve_steady(debug = TRUE, 
-                                              control = list(silent = TRUE)),
+    messages <- capture.output(mdl$solve_steady(silent = TRUE, debug = TRUE),
                              type = "message"))
   
   expect_known_output(messages, print = TRUE, 
-                             file = "expected_output/test_debug_eqs_solve_steady.txt")
+                      file = "expected_output/test_debug_eqs_solve_steady.txt")
   
 })
 
