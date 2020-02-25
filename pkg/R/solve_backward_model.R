@@ -5,7 +5,8 @@
 solve_backward_model <- function(model_index, mdldef, calc, solve_period, 
                                  data_period, endo_data, exo_data, f_dynamic, 
                                  get_back_jac, control, solver, 
-                                 start_option, debug_eqs, silent, ...) {
+                                 start_option, debug_eqs, silent, backrep, 
+                                 ...) {
   
   if (calc == "internal") {
     f <- function(x, lags, leads, period_index, debug_eqs) {
@@ -88,7 +89,7 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       }
     }
     
-    if (!silent && !error) {
+    if (!silent && !error && backrep == "period") {
       cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
                   out$iter))
     }
@@ -102,6 +103,17 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
     
     if (error) {
       break
+    }
+  }
+  
+  if (!silent && backrep == "total") {
+    if (error) {
+      cat(sprintf(paste("Backwards solve failed at period %s.",
+                        "Total number of iterations: %d.\n"),
+                  per_txt, itr_tot))
+    } else {
+      cat(sprintf(paste("Backwards solve succesfull. Total number of",
+                        "iterations: %d.\n"), itr_tot))
     }
   }
 

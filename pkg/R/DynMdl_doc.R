@@ -787,7 +787,8 @@ NULL
 #' \preformatted{
 #'  md$solve(control = list(), mode, solver = c("umfpackr", "nleqslv"), 
 #'           start = c("current", "previous"), debug_eqs = FALSE,
-#'           homotopy = FALSE, silent = FALSE,  ...)
+#'           homotopy = FALSE, silent = FALSE, backrep = c("period", "total"),
+#'           ...)
 #' }
 #'
 #' \code{mdl} is a \code{\link{DynMdl}} object
@@ -826,6 +827,11 @@ NULL
 #' \item{\code{silent}}{A logical. If \code{TRUE} then all output is suppressed.
 #' In that case control parameters \code{silent} and \code{trace} 
 #' (see argument \code{control}) are ignored.} 
+#' \item{\code{backrep}}{A character specifying the type of iteration report when
+#' the model is solved using the backwards mode (see argument \code{mode}).
+#' If \code{"period"}, then the number of iterations per period is printed. 
+#' If \code{"total"}, then only the total number of iterations is printed. 
+#' This argument is ignored if argument \code{silent} is \code{TRUE}.}
 #' \item{\code{...}}{Other arguments passed to the solver function (\code{\link{umf_solve_nl}}
 #' when the solver is`"umfpackr"`), Useful arguments for `umf_solve_nl` are 
 #' `global` (select a global strategy) and

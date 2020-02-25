@@ -1007,9 +1007,11 @@ DynMdl <- R6Class("DynMdl",
     },
     solve = function(control = list(), mode , solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
-                     homotopy, silent = FALSE, ...) {
+                     homotopy, silent = FALSE, backrep = c("period", "total"), 
+                     ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
+      backrep <- match.arg(backrep)
       
       private$check_debug_eqs(debug_eqs)
       
@@ -1242,7 +1244,7 @@ DynMdl <- R6Class("DynMdl",
                                     private$f_dynamic, private$get_back_jac,
                                     control = control, solver = solver,
                                     start_option = start, debug_eqs = debug_eqs,
-                                    silent = silent, ...)
+                                    silent = silent, backrep = backrep, ...)
         endos_result <- ret$x
         solved <- ret$solved
         message <- ret$message
