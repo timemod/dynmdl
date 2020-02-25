@@ -1812,7 +1812,7 @@ DynMdl <- R6Class("DynMdl",
   },
   set_fit_steady = function(data, names, name_err = "stop") {
     private$check_fit()
-    data <- private$convert_values_internal(data, names, "endos")
+    data <- private$convert_values_internal(data, names, "data")
     names <- private$get_names_("endo", names = base::names(data), 
                                 name_err = name_err)
     if (length(names) == 0) return(invisible(self))
@@ -2895,7 +2895,7 @@ DynMdl <- R6Class("DynMdl",
         }
         
         # make endo data equal to fit result.
-        private$mdldef$exos[private$mdldef$endo_indices_orig][is_fit_var] <-
+        private$mdldef$endos[private$mdldef$endo_indices_orig][is_fit_var] <-
             private$mdldef$exos[private$mdldef$fit_info$exo_vars][is_fit_var]
       }
       return(list(n_fit = n_fit, instruments = instruments))

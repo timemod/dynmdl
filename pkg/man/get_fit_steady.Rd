@@ -18,7 +18,7 @@ For method \code{get_fit_syteady} the is a corresponding \code{\link{set_fit}_st
 method. There are currently no special
 methods to set or change the fit instruments and Lagrange multipliers.
 However, since they are internally implemented as endogenous variables
-you can use methods \code{\link{set_static_)data}}  to change the static
+you can use methods \code{\link{set_static_data}}  to change the static
 fit instruments or Lagrange multipliers.
 }
 \section{Usage}{
@@ -43,17 +43,14 @@ mdl$get_fit_steady(pattern, names) # fit targets
 
 \examples{
 
-mdl <- islm_mdl(period = "2016Q1/2017Q3", fit = TRUE)
+mdl <- islm_mdl(fit = TRUE)
 
-# create a regts with fit targets
-y <- regts(c(1250, 1255, 1260), start = "2016Q1")
-t <- regts(c(250, 255), start = "2016Q1")
-fit_targets <- cbind(y, t)
+fit_targets <- c(y = 1250, t = 255)
 
 # register the fit targets in the DynMdl object
 mdl$set_fit_steady(fit_targets)
 
-mdl$solve()
+mdl$solve_steady()
 
 print(mdl$get_fit_steady())
 

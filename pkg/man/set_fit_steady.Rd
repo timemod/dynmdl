@@ -55,14 +55,14 @@ mdl <- islm_mdl(fit = TRUE)
 # create a regts with fit targets
 y <- regts(c(1250, 1255, 1260), start = "2016Q1")
 t <- regts(c(250, 255), start = "2016Q1")
-fit_targets <- c(y = 1250 t = 250)
+fit_targets <- c(y = 1250, t = 250)
 
 # register the static fit targets in the DynMdl object
 mdl$set_fit_steady(fit_targets)
 
-print(mdl$get_fit())
+print(mdl$get_fit_steady())
 
-mdl$solve()
+mdl$solve_steady()
 
 print(mdl$get_static_endos())
 }
