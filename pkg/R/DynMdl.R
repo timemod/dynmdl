@@ -1524,6 +1524,7 @@ DynMdl <- R6Class("DynMdl",
     },
     solve_dynare = function(scratch_dir = tempfile(), dynare_path = NULL, 
                             model_options, solve_options,
+                            initval_type = c("m", "xlsx"),
                             use_octave = Sys.which("matlab") == "",
                             exit_matlab = FALSE) {
 
@@ -1540,6 +1541,8 @@ DynMdl <- R6Class("DynMdl",
         solve_options_[names(solve_options)] <- solve_options
       }
       
+      initval_type <- match.arg(initval_type)
+      
       if (private$mdldef$fit) {
         private$set_old_fit_instruments()
         private$prepare_fit()
@@ -1547,7 +1550,8 @@ DynMdl <- R6Class("DynMdl",
       
       solution <- solve_dynare_internal(model_name, self, scratch_dir,
                                         dynare_path, model_options, 
-                                        solve_options_, use_octave, exit_matlab)
+                                        solve_options_, initval_type,
+                                        use_octave, exit_matlab)
       
       private$endo_data[private$model_period, colnames(solution)] <- solution
       

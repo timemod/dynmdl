@@ -13,6 +13,7 @@ Solve the model with Dynare using Matlab or Octave.
 mdl$solve_dynare(scratch_dir = tempfile(), 
                  dynarere_path = NULL, model_options = list(), 
                  solve_options = list(tolf = 1e-8, tolx = 1e-8)),
+                 initval_type = c("m", "xlsx"),
                  use_octave = Sys.which("matlab") == "",
                  exit_matlab = FALSE) 
 }
@@ -43,7 +44,10 @@ options. Specify a \code{NULL} value if the option has no value.
 Consult the documentation of  Dynare for a list of available options.
 Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.
 The default options are list(tolf = 1e-8, tolx = 1e-8)}
-#' \item{\code{use_octave}}{A logical. If \code{TRUE}, then
+\item{\code{initval_type}}{A character specifying the type of initval file used
+in the Matlab/Octave job: \code{"m"} for a Matlab file and \code{"xlsx"}
+for an xlsx-file.}
+\item{\code{use_octave}}{A logical. If \code{TRUE}, then
 Dynare is envoked with Octave, otherwise Matlab is used. By default
 Matlab is used if available.}
 \item{\code{exit_matlab}}{A logical specifying if Matlab

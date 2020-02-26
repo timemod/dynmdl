@@ -1,6 +1,6 @@
 solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path, 
-                                  model_options, solve_options, use_octave,
-                                  exit_matlab) {
+                                  model_options, solve_options, initval_type,
+                                  use_octave, exit_matlab) {
   #
   # create scratch directory
   #
@@ -32,6 +32,7 @@ solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path,
                                 perfect_foresight_solver_options = 
                                                             solve_options,
                                 mod_file_in_scratch_dir = TRUE,
+                                initval_type = initval_type,
                                 use_octave = use_octave,
                                 exit_matlab = exit_matlab)$endo_data
   } else {
@@ -43,6 +44,7 @@ solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path,
                                                             solve_options,
                                rename_aux_vars = FALSE,
                                mod_file_in_scratch_dir = TRUE,
+                               initval_type = initval_type,
                                use_octave = use_octave,
                                exit_matlab = exit_matlab)$endo_data
   } 

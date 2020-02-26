@@ -9,8 +9,8 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
                                  perfect_foresight_solver_options,
                                  rename_aux_vars = TRUE,
                                  mod_file_in_scratch_dir = FALSE,
+                                 initval_type = "m",
                                  use_octave, exit_matlab) {
-  
   
   # if DynMdl is running on CPB, set the appropriate Dynare path
   dynare_path_cpb <- "m:/p_dynare/dynare/4.5.7_optim_only"
@@ -63,7 +63,8 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     tic("writing initval")
     use_initval_file <- !missing(data) || !missing(mdl)
     if (use_initval_file) {
-      initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.m"))
+      initval_file <- file.path(scratch_dir, paste0(model_name, "_initval.",
+                                                    initval_type))
       write_initval_file_internal(initval_file, mdldef, period, 
                                   mdl$get_all_endo_data_dynare(), 
                                   mdl$get_all_exo_data_dynare(),

@@ -14,6 +14,7 @@ run_dynare(
   dynare_path = NULL,
   steady_options,
   perfect_foresight_solver_options,
+  initval_type = c("m", "xlsx"),
   use_octave = Sys.which("matlab") == "",
   exit_matlab = FALSE
 )
@@ -65,6 +66,10 @@ Dynare. This should be a named list, which names corresponding to the Dynare
 options. Specify a \code{NULL} value if the option has no value.
 Consult the documentation of  Dynare for a list of available options.
 Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.}
+
+\item{initval_type}{A character specifying the type of initval file used
+in the Matlab/Octave job: \code{"m"} for a Matlab file and \code{"xlsx"}
+for an xlsx-file.}
 
 \item{use_octave}{A logical. If \code{TRUE}, then
 Dynare is envoked with Octave, otherwise Matlab is used. By default

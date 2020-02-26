@@ -26,6 +26,7 @@ solve_steady_dynare_internal <- function(model_name, mdl, scratch_dir,
                              dynare_path = dynare_path,
                              steady_options = solve_options,
                              mod_file_in_scratch_dir = TRUE,
+                             initval_type = "m",
                              use_octave = use_octave,
                              exit_matlab = exit_matlab,) 
 
