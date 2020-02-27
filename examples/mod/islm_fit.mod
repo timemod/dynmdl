@@ -35,3 +35,5 @@ md = ms;
 yd = y - t;
 i  = y - c - g;
 end;
+
+write_latex_dynamic_model;

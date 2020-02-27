@@ -73,6 +73,9 @@
 #' derived for a fixed period, treating lags and leads as exogenous variables.
 #' If \code{FALSE} (the default), the fit conditions are derived from the
 #' stacked-time equations.
+#' @param latex A logical. If \code{TRUE} (the default), then LaTeX files
+#' are created if the model block contains a \code{write_latex_static_model},
+#' \code{write_latex_dynamic_model} or \code{write_latex_original_model} statement.
 #' @param latex_options a list with options for writing LaTeX files.
 #' See Details.
 #' @param nostrict Obsolete: the logical negation of argument  `strict`. This 
@@ -92,7 +95,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, strict = TRUE,
                     warn_uninit_param = TRUE, fit = TRUE, 
-                    fit_fixed_period = FALSE,
+                    fit_fixed_period = FALSE, latex = TRUE,
                     latex_options, nostrict, silent = FALSE) {
   
   calc <- match.arg(calc)
@@ -206,6 +209,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                instruments, latex_basename, 
                                fixed_period = fit_fixed_period, 
+                               latex = latex, latex_options = latex_options_,
                                silent = silent)
    
     n_fit_derivatives <- length(fit_info$orig_endos) + length(fit_info$sigmas)
@@ -232,7 +236,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     return(compile_model_(mod_file_compile, latex_basename, use_dll, 
                    dll_dir, max_laglead_1, strict, internal_calc,
                    n_fit_derivatives, warn_uninit_param, 
-                   latex_options_))
+                   latex, latex_options_))
   }
    
   if (silent) {
@@ -241,6 +245,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     })
   } else {
     model_info <- call_compile_model_()
+    cat("\n")
   }
   
   if (fit && missing(fit_mod_file)) {

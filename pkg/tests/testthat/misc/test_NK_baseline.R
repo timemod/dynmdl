@@ -20,10 +20,13 @@ expected_equations_file <- "expected_output/expected_equations_NK_baseline.txt"
 
 # compile the model
 model_period <- period_range("2015/2033")
-report <- capture_output({
-  mdl <- dyn_mdl(mod_file)
-  mdl_linlogpow <- dyn_mdl(mod_file_linlogpow)
+mdl <- dyn_mdl(mod_file, silent = TRUE, latex = FALSE)
+mdl_linlogpow <- dyn_mdl(mod_file_linlogpow, silent = TRUE, latex = TRUE)
+
+test_that("no latex directory created", {
+  expect_false(dir.exists("latex"))
 })
+
 mdl$set_period(model_period)
 mdl_linlogpow$set_period(model_period)
 

@@ -5,16 +5,22 @@
 // [[Rcpp::export]]
 Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename,
                                Rcpp::CharacterVector instruments,
-                               bool fixed_period) {
+                               bool fixed_period, bool latex, Rcpp::List latex_options) {
+
+    OutputParameters output_params;
+    double ndigits_latex = latex_options["ndigits"];
+    bool par_as_num = latex_options["par_as_num"];
+    output_params.set_ndigits_latex(ndigits_latex);
+    output_params.set_par_as_num(par_as_num);
+
 
     // Compute the derivatives for the fit procedure (first order conditions).
    
     // The treatement of char in the next statement does not deserve a beauty
     // price
-    OutputParameters dum_output_params;
     ModFile *mod_file = parse((char *) modfile.c_str(), 
                               (char *) latex_basename.c_str(),
-                              false, true, true, 0, false, dum_output_params);
+                              false, true, true, 0, false, latex, output_params);
     
     Rcpp::List retval;
     retval =  mod_file->getDerivativeInfo(instruments, fixed_period);
