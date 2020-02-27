@@ -503,6 +503,8 @@ NULL
 #'
 #' \describe{
 #' \item{\code{file}}{the name of the RDS file}
+#' \item{\code{silent}}{A logical (default \code{FALSE}). It \code{TRUE}, then no
+#' output is written.}
 #' }
 #' @examples
 #' mdl <- islm_mdl("2017Q1/2019Q2")

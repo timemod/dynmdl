@@ -9,13 +9,13 @@ dll_dir <- "islm_dll"
 islm_rds_file <- "islm_model.rds"
 tmp_rds_file <- "mdl.rds"
 
-report <- capture_output(mdl <- read_mdl(islm_rds_file))
+mdl <- read_mdl(islm_rds_file, silent = TRUE)
 
 mdl$set_param(c(c0 = 110))
 mdl$solve(control = list(silent = TRUE))
 
-report <- capture_output(mdl$write_mdl(tmp_rds_file))
-report <- capture_output(mdl2 <- read_mdl(tmp_rds_file))
+mdl$write_mdl(tmp_rds_file, silent = TRUE)
+mdl2 <- read_mdl(tmp_rds_file, silent = TRUE)
 
 test_that("mdl and mdl2 are equal", {
   expect_equal(mdl, mdl2)

@@ -1469,11 +1469,11 @@ DynMdl <- R6Class("DynMdl",
       private$clean_dynamic_model()
       return(invisible(NULL))
     },
-    write_mdl = function(file) {
-      cat(paste("Writing model to", file, " ...\n"))
+    write_mdl = function(file, silent = FALSE) {
+      if (!silent) cat(paste("Writing model to", file, " ...\n"))
       saveRDS(self$serialize(), file)
-      cat("Done\n")
-      return (invisible(self))
+      if (!silent) cat("Done\n")
+      return(invisible(self))
     },
     write_initval_file = function(file) {
       private$prepare_aux_vars()

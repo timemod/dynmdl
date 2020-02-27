@@ -77,6 +77,8 @@
 #' See Details.
 #' @param nostrict Obsolete: the logical negation of argument  `strict`. This 
 #' argument should not be used in new code: use argument `strict` instead.
+#' @param silent A logical (default \code{FALSE}). If \code{TRUE}, then
+#' output of the Dynare parser is suppressed except for warnings.
 #' @return A \code{DynMdl} object.
 #' @export
 #' @importFrom Rcpp sourceCpp
@@ -84,13 +86,14 @@
 #' @importFrom regts range_union
 #' @importFrom regts as.regts
 #' @importFrom tools file_path_sans_ext
+#' @importFrom utils capture.output
 dyn_mdl <- function(mod_file, period, data, base_period = NULL, 
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, strict = TRUE,
                     warn_uninit_param = TRUE, fit = TRUE, 
                     fit_fixed_period = FALSE,
-                    latex_options, nostrict) {
+                    latex_options, nostrict, silent = FALSE) {
   
   calc <- match.arg(calc)
   
@@ -170,8 +173,10 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     preprocessed_mod_file <- tempfile("preproc", fileext = ".mod")
   }
 
-  run_macro(mod_file, preprocessed_mod_file)
-
+  output <- capture.output({
+    run_macro(mod_file, preprocessed_mod_file)
+  })
+  
   mod_text <- read_file(preprocessed_mod_file)
   
   if (fit) instruments <- get_fit_instruments(mod_text)
@@ -200,7 +205,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                instruments, latex_basename, 
-                               fixed_period = fit_fixed_period)
+                               fixed_period = fit_fixed_period, 
+                               silent = silent)
    
     n_fit_derivatives <- length(fit_info$orig_endos) + length(fit_info$sigmas)
   
@@ -222,10 +228,21 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   #
   # Call C++ function compile_model_
   #
-  model_info <- compile_model_(mod_file_compile, latex_basename, use_dll, 
-                               dll_dir, max_laglead_1, strict, internal_calc,
-                               n_fit_derivatives, warn_uninit_param, 
-                               latex_options_)
+  call_compile_model_  <- function() {
+    return(compile_model_(mod_file_compile, latex_basename, use_dll, 
+                   dll_dir, max_laglead_1, strict, internal_calc,
+                   n_fit_derivatives, warn_uninit_param, 
+                   latex_options_))
+  }
+   
+  if (silent) {
+    output <- capture.output({
+      model_info <- call_compile_model_()
+    })
+  } else {
+    model_info <- call_compile_model_()
+  }
+  
   if (fit && missing(fit_mod_file)) {
     unlink(fit_mod_file)
   } 
