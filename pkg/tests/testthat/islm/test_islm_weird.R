@@ -6,7 +6,7 @@ rm(list = ls())
 
 context("islm model with weird mod files")
 
-capture_output(mdl_base <- read_mdl("islm_model.rds"))
+mdl_base <- read_mdl("islm_model.rds", silent = TRUE)
 
 test_that("unused endos", {
   
@@ -19,7 +19,7 @@ test_that("unused endos", {
   
   expect_warning(
     msg <- capture.output(
-      outp <- capture.output(mdl <- dyn_mdl(mod_file, strict = FALSE)),
+      mdl <- dyn_mdl(mod_file, strict = FALSE, silent = TRUE),
       type = "message"),
     "1 warnings encountered in the preprocessor. Check the output")
   expect_equal(msg, paste("WARNING: the following endogenous variable(s) not",

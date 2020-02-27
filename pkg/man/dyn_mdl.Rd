@@ -19,7 +19,8 @@ dyn_mdl(
   fit = TRUE,
   fit_fixed_period = FALSE,
   latex_options,
-  nostrict
+  nostrict,
+  silent = FALSE
 )
 }
 \arguments{
@@ -90,6 +91,9 @@ See Details.}
 
 \item{nostrict}{Obsolete: the logical negation of argument  \code{strict}. This
 argument should not be used in new code: use argument \code{strict} instead.}
+
+\item{silent}{A logical (default \code{FALSE}). If \code{TRUE}, then
+output of the Dynare parser is suppressed except for warnings.}
 }
 \value{
 A \code{DynMdl} object.

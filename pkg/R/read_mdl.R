@@ -6,6 +6,8 @@
 #' @param dll_dir the directory where the dynamically linked library is stored.
 #' Primarily used for testing. Only used if the model
 #' was created with the dll option (see function  \code{\link{dyn_mdl}}). 
+#' @param silent A logical (default \code{FALSE}). It \code{TRUE}, then no
+#' output is written.
 #' @return a \code{\link{DynMdl}} object.
 #' @examples
 #' mdl <- islm_mdl("2017Q1/2019Q2")
@@ -14,13 +16,13 @@
 #' @seealso \code{\link{write_mdl}} 
 #' @importFrom utils unzip
 #' @export
-read_mdl <- function(file, dll_dir) {
+read_mdl <- function(file, dll_dir, silent = FALSE) {
   
   if (!file.exists(file)) {
     stop(sprintf("File %s does not exist.", file))
   }
   
-  cat(paste("Reading model from", file, "\n"))
+  if (!silent) cat(paste("Reading model from", file, " ...\n"))
   
   ser <- readRDS(file)
   
@@ -34,6 +36,6 @@ read_mdl <- function(file, dll_dir) {
   
   mdl <- DynMdl$new()$deserialize(ser, dll_dir)
 
-  cat("Done\n")
+  if (!silent) cat("Done\n")
   return(mdl)
 }

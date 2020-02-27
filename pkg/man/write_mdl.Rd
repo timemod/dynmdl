@@ -14,6 +14,8 @@ to an RDS file. The model can be read back by function
 
 \describe{
 \item{\code{file}}{the name of the RDS file}
+\item{\code{silent}}{A logical (default \code{FALSE}). It \code{TRUE}, then no
+output is written.}
 }
 }
 

@@ -4,7 +4,7 @@
 \alias{read_mdl}
 \title{Reads a model from a RDS file}
 \usage{
-read_mdl(file, dll_dir)
+read_mdl(file, dll_dir, silent = FALSE)
 }
 \arguments{
 \item{file}{the name of the RDS file}
@@ -12,6 +12,9 @@ read_mdl(file, dll_dir)
 \item{dll_dir}{the directory where the dynamically linked library is stored.
 Primarily used for testing. Only used if the model
 was created with the dll option (see function  \code{\link{dyn_mdl}}).}
+
+\item{silent}{A logical (default \code{FALSE}). It \code{TRUE}, then no
+output is written.}
 }
 \value{
 a \code{\link{DynMdl}} object.
