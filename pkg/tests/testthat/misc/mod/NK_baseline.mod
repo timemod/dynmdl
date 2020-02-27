@@ -252,3 +252,5 @@ g1 = 7; g2 = 8; yd = 0.5; mc = 0.9; k = 2.7; vp  = 1; vw = 1; l = 0.3; phi = 1;
 F = 0.04;
 end;
 
+
+write_latex_dynamic_model;

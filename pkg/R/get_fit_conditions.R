@@ -6,23 +6,22 @@
 #' @importFrom stats aggregate
 # @return a list with information about the derivatives
 get_fit_conditions <- function(mod_file,  instruments, latex_basename, 
-                               fixed_period = TRUE, silent) {
+                               fixed_period = TRUE, latex, latex_options,
+                               silent) {
   
   # call C++ function compute_derivatives
   call_compute_derivatives <- function() {
     return(compute_derivatives(mod_file, latex_basename, instruments, 
-                               fixed_period))
+                               fixed_period, latex, latex_options))
   }
   if (silent) {
     output <- capture.output({
       model_info <- call_compute_derivatives()
     })
   } else {
-    cat("\nParsing the mod file to create fit equations\n")
-    cat("----------------------------------------------\n")
+    cat("\n** Parsing the mod file to create fit equations **\n\n")
     model_info <- call_compute_derivatives()
-    cat("\nParsing the fit mod file:\n")
-    cat("--------------------------\n")
+    cat("\n** Parsing the fit mod file **\n\n")
   }
   
   endo_names <- model_info$endo_names

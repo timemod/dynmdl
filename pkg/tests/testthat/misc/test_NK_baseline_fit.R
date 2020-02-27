@@ -17,10 +17,12 @@ start_period <- period("2015")
 
 # compile the model
 model_period <- period_range("2015/2033")
-report <- capture_output({
-  mdl <- dyn_mdl(mod_file, calc = "internal")
-})
+mdl <- dyn_mdl(mod_file, calc = "internal", silent = TRUE, latex = FALSE)
 mdl$set_period(model_period)
+
+test_that("no latex directory created", {
+  expect_false(dir.exists("latex"))
+})
 
 dynare_result <- read_dynare_result(model_name, mdl)
 

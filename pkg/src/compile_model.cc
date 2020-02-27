@@ -12,7 +12,7 @@
 Rcpp::List compile_model_(std::string modfile, std::string latex_basename,
                           bool use_dll, std::string dll_dir, bool max_laglead_1, 
                           bool strict, bool internal_calc, int n_fit_derivatives,
-                          bool warn_uninit_param, Rcpp::List latex_options) {
+                          bool warn_uninit_param, bool latex, Rcpp::List latex_options) {
 
     // the treatement of char in the next statement does not deserve a beauty
     // price
@@ -31,7 +31,7 @@ Rcpp::List compile_model_(std::string modfile, std::string latex_basename,
                               (char *) latex_basename.c_str(),
                               max_laglead_1, !strict, no_tmp_terms, 
                               n_fit_derivatives, warn_uninit_param, 
-                              output_params);
+                              latex, output_params);
     
     Rcpp::List retval;
     retval =  mod_file->getModelListR(internal_calc);

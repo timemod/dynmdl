@@ -18,6 +18,7 @@ dyn_mdl(
   warn_uninit_param = TRUE,
   fit = TRUE,
   fit_fixed_period = FALSE,
+  latex = TRUE,
   latex_options,
   nostrict,
   silent = FALSE
@@ -85,6 +86,10 @@ block while you do not want to use the fit procedure.}
 derived for a fixed period, treating lags and leads as exogenous variables.
 If \code{FALSE} (the default), the fit conditions are derived from the
 stacked-time equations.}
+
+\item{latex}{A logical. If \code{TRUE} (the default), then LaTeX files
+are created if the model block contains a \code{write_latex_static_model},
+\code{write_latex_dynamic_model} or \code{write_latex_original_model} statement.}
 
 \item{latex_options}{a list with options for writing LaTeX files.
 See Details.}
