@@ -425,7 +425,7 @@ DynMdl <- R6Class("DynMdl",
         names <- private$get_names_("all", names, pattern, steady = TRUE,
                                     sort_pattern_names = TRUE)
         if (length(names) == 0) {
-          return(NULL)
+          return(numeric(0))
         }
         
         # endogenous variables:
@@ -829,8 +829,7 @@ DynMdl <- R6Class("DynMdl",
         ret <- ret[order(names(ret))]
         return(ret)
     },
-    solve_steady = function(control = list(trace = TRUE), 
-                            solver = c("umfpackr", "nleqslv"),
+    solve_steady = function(control = list(), solver = c("umfpackr", "nleqslv"),
                             debug_eqs = FALSE, silent = FALSE, ...) {
     
       solver <- match.arg(solver)
@@ -858,7 +857,10 @@ DynMdl <- R6Class("DynMdl",
         } else {
           control$trace <- 0
         }
-      }  
+      } else if (is.null(control$trace)) {
+        control$trace <- TRUE
+        if (solver == "umfpackr") control$trace <- as.integer(control$trace)
+      }
     
       private$prepare_static_model()
 
