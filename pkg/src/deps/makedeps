@@ -92,15 +92,20 @@ ModelTree.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh \
              ExternalFunctionsTable.hh NumericalConstants.hh OutputParameters.hh \
              PolishModel.hh SymbolTable.hh dyn_error.hh
 NumericalConstants.o : NumericalConstants.hh
+NumericalConstants.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh \
+                      ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
+                      NumericalConstants.hh PolishModel.hh SymbolTable.hh
 NumericalInitialization.o : CallRFunction.hh CodeInterpreter.hh \
-                           ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
+                           DataTree.hh ExprNode.hh ExternalFunctionCalc.hh \
+                           ExternalFunctionsTable.hh NumericalConstants.hh \
                            NumericalInitialization.hh PolishModel.hh Statement.hh SymbolList.hh \
                            SymbolTable.hh WarningConsolidation.hh dyn_error.hh dynout.hh \
                            location.hh
 NumericalInitialization.o : CallRFunction.hh CodeInterpreter.hh \
-                           ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
-                           PolishModel.hh Statement.hh SymbolList.hh SymbolTable.hh \
-                           WarningConsolidation.hh location.hh
+                           DataTree.hh ExprNode.hh ExternalFunctionCalc.hh \
+                           ExternalFunctionsTable.hh NumericalConstants.hh PolishModel.hh \
+                           Statement.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh \
+                           location.hh
 OutputParameters.o : dyn_error.hh
 ParsingDriver.o : CallRFunction.hh CodeInterpreter.hh \
                  ComputingTasks.hh ConfigFile.hh DataTree.hh DynamicModel.hh \

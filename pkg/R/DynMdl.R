@@ -1564,6 +1564,26 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(self))
     },
+    run_initval = function(update_endos = TRUE) {
+      
+      data <- as.list(c(private$mdldef$endos,
+                        private$mdldef$exos,
+                        private$mdldef$params))
+      expr <- parse(text = private$mdldef$initval)
+      x <- unlist(within(data, eval(expr)))
+                  
+      exo_names <- intersect(names(x), private$mdldef$exo_names)
+      if (length(exo_names) > 0) { 
+        private$mdldef$exos[exo_names] <- x[exo_names]
+      }
+      
+      endo_names <- intersect(names(x), private$mdldef$endo_names)
+      if (length(endo_names) > 0) { 
+        private$mdldef$endos[endo_names] <- x[endo_names]
+      }
+      
+      return(invisible(self))
+    },
     copy = function() {
       ret <- self$clone(deep = TRUE)
       # We no longer create a new PolishModel object. This is not necessary.

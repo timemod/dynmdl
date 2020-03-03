@@ -418,7 +418,8 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
                  jac_dynamic_size      = dynamic_model$jac_size,
                  jac_dynamic_size_endo = dynamic_model$jac_size_endo,
                  static_functions      = static_model$static_functions,
-                 dynamic_functions     = dynamic_model$dynamic_functions)
+                 dynamic_functions     = dynamic_model$dynamic_functions,
+                 initval               = model_info$initval)
   
   #
   # set row and column names for the lead_lag_incidence

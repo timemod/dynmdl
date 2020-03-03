@@ -1475,6 +1475,16 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
     Rcpp::List trend_info = dynamic_model.get_trend_info();
     Rcpp::CharacterVector equations = dynamic_model.get_equations();
 
+     // initval expressions
+    std::ostringstream initval_block;
+    for (vector<Statement *>::const_iterator it = statements.begin();
+       it != statements.end(); it++) {
+      InitValStatement *ivs = dynamic_cast<InitValStatement *>(*it);
+      if (ivs != NULL) {
+          ivs->writeInitvalEq(initval_block);
+      }
+     }
+
     return Rcpp::List::create(Rcpp::Named("exos") = exos,
                               Rcpp::Named("endos") = endos,
                               Rcpp::Named("params") = params,
@@ -1489,7 +1499,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
                               Rcpp::Named("dynamic_model") = dynmdl,
                               Rcpp::Named("static_model") = statmdl,
                               Rcpp::Named("trend_info") = trend_info, 
-                              Rcpp::Named("equations") = equations);
+                              Rcpp::Named("equations") = equations,
+                              Rcpp::Named("initval") = Rcpp::String(initval_block.str()));
 }
 
 // Return information about the derivatives of the equations

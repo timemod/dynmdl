@@ -29,6 +29,9 @@ using namespace std;
 #include "SymbolTable.hh"
 #include "ExprNode.hh"
 #include "Statement.hh"
+#ifdef USE_R
+#include "DataTree.hh"
+#endif
 
 class InitParamStatement : public Statement
 {
@@ -67,6 +70,9 @@ public:
   set<int> getUninitializedVariables(SymbolType type);
   //! Fill eval context with variables values
   void fillEvalContext(eval_context_t &eval_context) const;
+#ifdef USE_R
+  void writeInitvalEq(ostream &output) const;
+#endif
 protected:
   void writeInitValues(ostream &output) const;
 };
