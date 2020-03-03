@@ -5,6 +5,10 @@ mdl <- dyn_mdl("mod/islm.mod", latex_options = list(par_as_num = TRUE,
                                                     ndigits = 6), calc = "internal")
 print(mdl)
 
+mdl$set_static_endos(c(i = 30000))
+print(mdl$run_initval())
+stop("aap")
+
 print(mdl$get_mdldef())
 
 mdl$solve_steady(control = list(trace = TRUE))

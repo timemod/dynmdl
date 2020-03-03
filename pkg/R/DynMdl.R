@@ -214,6 +214,10 @@ setOldClass("regts")
 #' 
 #' \item{\code{\link{get_lagrange}}}{Returns the Lagrange multipliers
 #' used in the fit procedure.}
+#' 
+#' \item{\code{\link{run_initval}}}{Run the initval equations to obtain
+#' new values for endogenous and exogenous static variables for the current
+#' values or parameters.}
 #' }
 DynMdl <- R6Class("DynMdl",
   public = list(
@@ -1565,6 +1569,11 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     run_initval = function(update_endos = TRUE) {
+
+      if (is.null(private$mdldef$initval)) {
+	stop(paste("Method 'run_initval' not possible because the model file",
+                   "has been created with an old version of dynmdl."))
+      }
       
       data <- as.list(c(private$mdldef$endos,
                         private$mdldef$exos,
@@ -1576,10 +1585,12 @@ DynMdl <- R6Class("DynMdl",
       if (length(exo_names) > 0) { 
         private$mdldef$exos[exo_names] <- x[exo_names]
       }
-      
-      endo_names <- intersect(names(x), private$mdldef$endo_names)
-      if (length(endo_names) > 0) { 
-        private$mdldef$endos[endo_names] <- x[endo_names]
+     
+      if (update_endos) {
+          endo_names <- intersect(names(x), private$mdldef$endo_names)
+          if (length(endo_names) > 0) { 
+              private$mdldef$endos[endo_names] <- x[endo_names]
+          }
       }
       
       return(invisible(self))

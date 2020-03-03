@@ -1544,3 +1544,29 @@ NULL
 #' 
 NULL
 
+#' \code{\link{DynMdl}} method: Evaluate to initval block to obtain new values
+#' for the static endogenous and exogenous variables based on the current 
+#' parameters.
+#' @name run_initval
+#' 
+#' @description
+#' 
+#' This function runs the equations in the initval block using the 
+#' current values of parameters and static model varobales.
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$run_initval(update_endos = TRUE)
+#' }
+#' 
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#' @section Arguments:
+#' \describe{
+#' \item{\code{update_endos}}{A logical. If \code{TRUE}, then the static value
+#' of the endogenous variables are updated with the result of the initval
+#' equation.
+#' }}
+#' 
+NULL
+
