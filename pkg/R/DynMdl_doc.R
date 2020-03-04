@@ -1552,10 +1552,13 @@ NULL
 #' @description
 #' 
 #' This function runs the equations in the initval block using the 
-#' current values of parameters and static model variables.
+#' current values of parameters and static model variables. The static
+#' values of the exogenous and endogenous variables are updated with
+#' the new values calculated using the initval equations. Static endogenous
+#' variables are not updated in argument \code{update_endos = FALSE}.
 #' 
 #' Variables that do not occur at the left hand side of an equation in the
-#' initval block are *not* modified. Thus they are not initialized to 0, in
+#' initval block are *not* modified. Thus they are not initialized to zero, in
 #' contrast to the evaluation of the initval block by the Dynare parser.
 #' 
 #' @section Usage:
@@ -1568,8 +1571,8 @@ NULL
 #' @section Arguments:
 #' \describe{
 #' \item{\code{update_endos}}{A logical. If \code{TRUE}, then the static value
-#' of the endogenous variables are updated with the result of the initval
-#' equation.
+#' of the endogenous variables are updated with the new values computed from 
+#' the initval equations.
 #' }}
 #' 
 NULL
