@@ -1571,7 +1571,7 @@ DynMdl <- R6Class("DynMdl",
     run_initval = function(update_endos = TRUE) {
 
       if (is.null(private$mdldef$initval)) {
-	stop(paste("Method 'run_initval' not possible because the model file",
+	      stop(paste("Method 'run_initval' not possible because the model file",
                    "has been created with an old version of dynmdl."))
       }
       
@@ -1579,17 +1579,17 @@ DynMdl <- R6Class("DynMdl",
                         private$mdldef$exos,
                         private$mdldef$params))
       expr <- parse(text = private$mdldef$initval)
-      x <- unlist(within(data, eval(expr)))
-                  
-      exo_names <- intersect(names(x), private$mdldef$exo_names)
+      result <- unlist(within(data, eval(expr)))
+         
+      exo_names <- intersect(names(result), private$mdldef$exo_names)
       if (length(exo_names) > 0) { 
-        private$mdldef$exos[exo_names] <- x[exo_names]
+        private$mdldef$exos[exo_names] <- result[exo_names]
       }
      
       if (update_endos) {
-          endo_names <- intersect(names(x), private$mdldef$endo_names)
+          endo_names <- intersect(names(result), private$mdldef$endo_names)
           if (length(endo_names) > 0) { 
-              private$mdldef$endos[endo_names] <- x[endo_names]
+              private$mdldef$endos[endo_names] <- result[endo_names]
           }
       }
       
