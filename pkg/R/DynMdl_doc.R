@@ -1552,7 +1552,11 @@ NULL
 #' @description
 #' 
 #' This function runs the equations in the initval block using the 
-#' current values of parameters and static model varobales.
+#' current values of parameters and static model variables.
+#' 
+#' Variables that do not occur at the left hand side of an equation in the
+#' initval block are *not* modified. Thus they are not initialized to 0, in
+#' contrast to the evaluation of the initval block by the Dynare parser.
 #' 
 #' @section Usage:
 #' \code{DynMdl} method:
