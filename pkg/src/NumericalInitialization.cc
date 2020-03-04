@@ -26,6 +26,9 @@
 
 #include "dyn_error.hh"
 #include "dynout.hh"
+#ifdef USE_R
+#include "DataTree.hh"
+#endif
 
 InitParamStatement::InitParamStatement(int symb_id_arg,
                                        const expr_t param_value_arg,
@@ -183,6 +186,21 @@ InitOrEndValStatement::writeInitValues(ostream &output) const
       output << ";" << endl;
     }
 }
+
+#ifdef USE_R
+void InitOrEndValStatement::writeInitvalEq(ostream &output) const {
+  for (init_values_t::const_iterator it = init_values.begin();
+       it != init_values.end(); it++) {
+      const int symb_id = it->first;
+      const expr_t expression = it->second;
+
+      output << symbol_table.getName(symb_id);
+      output << " <- ";
+      expression->writeOutput(output);
+      output << std::endl;
+  }
+}
+#endif
 
 InitValStatement::InitValStatement(const init_values_t &init_values_arg,
                                    const SymbolTable &symbol_table_arg,

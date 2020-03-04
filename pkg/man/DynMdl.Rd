@@ -195,6 +195,10 @@ corresponding fit instrument is not included}
 
 \item{\code{\link{get_lagrange}}}{Returns the Lagrange multipliers
 used in the fit procedure.}
+
+\item{\code{\link{run_initval}}}{Run the initval equations to obtain
+new values for endogenous and exogenous static variables for the current
+values or parameters.}
 }
 }
 

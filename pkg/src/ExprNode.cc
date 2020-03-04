@@ -161,7 +161,11 @@ ExprNode::normalizeEquation(int var_endo, vector<pair<int, pair<expr_t, expr_t> 
 void
 ExprNode::writeOutput(ostream &output) const
 {
+#ifdef USE_R
+  writeOutput(output, oROutsideModel, temporary_terms_t());
+#else 
   writeOutput(output, oMatlabOutsideModel, temporary_terms_t());
+#endif
 }
 
 void
@@ -723,7 +727,7 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
       if (output_type == oMatlabOutsideModel) {
         output << "M_.params" << "(" << tsid + 1 << ")";
 #ifdef USE_R
-      } else if (IS_MOD(output_type)) {
+      } else if (IS_MOD(output_type) || output_type == oROutsideModel) {
          output <<  datatree.symbol_table.getName(symb_id);
 #endif
       } else {
@@ -815,6 +819,11 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
         case oMatlabOutsideModel:
           output << "oo_.steady_state(" << tsid + 1 << ")";
           break;
+#ifdef USE_R
+        case oROutsideModel:
+          output << datatree.symbol_table.getName(symb_id);
+          break;
+#endif
         case oJuliaDynamicSteadyStateOperator:
         case oMatlabDynamicSteadyStateOperator:
         case oMatlabDynamicSparseSteadyStateOperator:
@@ -892,6 +901,12 @@ VariableNode::writeOutput(ostream &output, ExprNodeOutputType output_type,
           assert(lag == 0);
           output <<  "oo_.exo_steady_state(" << i << ")";
           break;
+#ifdef USE_R
+        case oROutsideModel:
+          assert(lag == 0);
+          output << datatree.symbol_table.getName(symb_id);
+          break;
+#endif
         case oMatlabDynamicSteadyStateOperator:
           output <<  "oo_.exo_steady_state(" << i << ")";
           break;

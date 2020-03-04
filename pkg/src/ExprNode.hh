@@ -84,6 +84,7 @@ enum ExprNodeOutputType
     oJuliaSteadyStateFile,                        //!< Julia code, in the generated steady state file
     oRStaticModel,                                //!< R code, static model
     oRDynamicModel,                               //!< R code, dynamic model
+    oROutsideModel,	                          //!  R code, outside model block (for example in initval)
     oModFile,                                     //!< create a new mod file (for example with substituted trend expressions) >
     oModDerivatives                               //!< same as oModFile, but use [] for lags/leads
   };
@@ -105,7 +106,8 @@ enum ExprNodeOutputType
 
 #ifdef USE_R
 #define IS_R(output_type) ((output_type) == oRStaticModel     \
-                          || (output_type) == oRDynamicModel)
+                          || (output_type) == oRDynamicModel \
+                          || (output_type) == oROutsideModel) 
 
 #define IS_MOD(output_type) ((output_type) == oModFile     \
                             || (output_type) == oModDerivatives)

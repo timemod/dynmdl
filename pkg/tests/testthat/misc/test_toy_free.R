@@ -28,8 +28,7 @@ i <- order(apply(eigval_dynare, MARGIN = 1, FUN = function(x) sqrt(sum(x**2))))
 eigval_dynare <- eigval_dynare[i, ]
 
 # compile the model
-report <- capture_output(mdl <- dyn_mdl(mod_file))
-
+mdl <- dyn_mdl(mod_file, silent = TRUE)
 
 test_that("solve_steady", {
   mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
@@ -41,4 +40,11 @@ test_that("eigenvalues", {
   eigval <- mdl$get_eigval()
   expect_equal(Re(eigval), eigval_dynare[, 1])
   expect_equal(Im(eigval), eigval_dynare[, 2])
+})
+
+test_that("run_initval",  {
+  # check run_initval in case that the model has a parameters.
+  mdl2 <- mdl$copy()
+  mdl2$run_initval()
+  expect_equal(mdl2$get_static_data(), c(i =  1, pi = 0.1, u = 0, y = 0.1))
 })

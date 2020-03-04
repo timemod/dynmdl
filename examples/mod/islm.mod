@@ -24,7 +24,7 @@ md = ms;
 end;
 
 initval;
-g  = 240; ms = 230; r  = 3.5; y  = 980; c  = 500; t  = 100;
+g  = 2.4 * c0; ms = 230; r  = 3.5; y  = 980; c  = 500; t  = 100;
 md = ms; yd = y - t; i  = y - c - g;
 end;
 
