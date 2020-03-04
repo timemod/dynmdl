@@ -169,7 +169,7 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
         steady_exo_names <- mdldef$exo_names
       }
       exo_data_steady <- regts(exo_data_steady, names = steady_exo_names, 
-                               period = get_period_range(exo_data))
+                               period = data_period)
     }
     
     if (has_exos) {

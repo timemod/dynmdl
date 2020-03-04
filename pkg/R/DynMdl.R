@@ -1089,6 +1089,7 @@ DynMdl <- R6Class("DynMdl",
         # preparations
      
         nper <- nperiod(private$model_period)
+        nper_data <- nperiod(private$data_period)
         lags <- private$get_endo_lags()
         leads <- private$get_endo_leads()
         endos <- private$get_solve_endo()
@@ -1134,9 +1135,21 @@ DynMdl <- R6Class("DynMdl",
                                    ncol = nlead)
           }
           
-          # create steady state exogenous variables
-          # TODO: this code can be improved
-          exo_info <- private$get_exo_info_homotopy()
+          if (has_exos) {
+            np <- nper_data
+            if (fit) {
+              exo_indices <- c(private$mdldef$fit_info$orig_exos, 
+                               private$mdldef$fit_info$exo_vars)
+              exo_data_steady <- matrix(rep(private$mdldef$exos[exo_indices], 
+                                            each = np), nrow = np)
+              steady_exo_names <- private$mdldef$exo_names[exo_indices]
+            } else {
+              exo_data_steady <- matrix(rep(private$mdldef$exos, each = np), nrow = np)
+              steady_exo_names <- private$mdldef$exo_names
+            }
+            exo_data_steady <- regts(exo_data_steady, names = steady_exo_names, 
+                                     period = private$data_period)
+          }
           
           if (isTRUE(all.equal(endos, endos_steady, 
                                check.attributes = FALSE, tolerance = 1e-4))) {
@@ -1157,7 +1170,7 @@ DynMdl <- R6Class("DynMdl",
             if (!fit) {
               exo_sim <- private$exo_data
             } else {
-              exo_sim <- private$exo_data[ , exo_info$exo_indices, drop = FALSE]
+              exo_sim <- private$exo_data[ , exo_indices, drop = FALSE]
             }
           }
           lags_sim <- lags
@@ -1199,11 +1212,11 @@ DynMdl <- R6Class("DynMdl",
             }
             if (has_exos) {
               if (fit) {
-                private$exo_data[ , exo_info$exo_indices] <- exo_sim * lambda + 
-                                            exo_info$steady_exos * (1 - lambda)
+                private$exo_data[ , exo_indices] <- exo_sim * lambda + 
+                                            exo_data_steady * (1 - lambda)
               } else {
                 private$exo_data <- exo_sim * lambda + 
-                                            exo_info$steady_exos * (1 - lambda)
+                                            exo_data_steady * (1 - lambda)
               }
             }
             
@@ -1250,7 +1263,7 @@ DynMdl <- R6Class("DynMdl",
           # restore original exo_data
           if (has_exos) {
             if (fit) {
-              private$exo_data[ , exo_info$exo_indices] <- exo_sim
+              private$exo_data[ , exo_indices] <- exo_sim
             } else {
               private$exo_data <- exo_sim
             }
@@ -2285,37 +2298,6 @@ DynMdl <- R6Class("DynMdl",
         ret$solved <- ret$termcd == 1
       }
       return(ret)
-    },
-    get_exo_info_homotopy = function() {
-      # Returns a list with information about the exogenous variables needed 
-      # for solving the model with a homotopy approach.
-      if (private$mdldef$fit) {
-        # For FitMdl objects, not all exogenous variables should be modified
-        # in the homotopy approach: the fit switches and _old (old fit instruments)
-        # should not be modified.
-        fit_sel <- private$exo_data[private$model_period, 
-                                    private$mdldef$fit_info$fit_vars, drop = FALSE] == 1
-        is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
-        
-        exo_indices <- c(private$mdldef$fit_info$orig_exos, 
-                         private$mdldef$fit_info$exo_vars[is_fit_var])
-        
-        np <- nrow(private$exo_data)
-        steady_exos <- matrix(rep(private$mdldef$exos[exo_indices], each = np), 
-                              nrow = np)
-        
-        return(list(steady_exos = steady_exos, exo_indices = exo_indices))
-      } else {
-        if (private$mdldef$exo_count > 0) {
-          nper <- nrow(private$exo_data)
-          data_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
-          colnames(data_mat) <- private$mdldef$exo_names_orig
-          steady_exos <- data_mat
-        } else {
-          steady_exos <- NULL
-        }
-        return(list(steady_exos = steady_exos))
-      } 
     },
     check_change_growth_exos = function(names) {
       growth_exos <- intersect(names, private$mdldef$trend_info$growth_exos)
