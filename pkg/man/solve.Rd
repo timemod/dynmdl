@@ -18,7 +18,7 @@ whether the solve was successfully terminated or not.
 \preformatted{
  md$solve(control = list(), mode, solver = c("umfpackr", "nleqslv"), 
           start = c("current", "previous"), debug_eqs = FALSE,
-          homotopy = FALSE, silent = FALSE, backrep = c("period", "total"),
+          homotopy = TRUE, silent = FALSE, backrep = c("period", "total"),
           ...)
 }
 

@@ -3,15 +3,19 @@ Initial value of function contains non-finite values (starting at index=1)
 
 ++++++++++ HOMOTOPY ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
--------> HOMOTOPY iteration = 1, lambda = 0.5 <------
+-------> HOMOTOPY iteration = 1, lambda = 1 <------
 Initial value of function contains non-finite values (starting at index=1)
 
 
--------> HOMOTOPY iteration = 2, lambda = 0.25 <------
+-------> HOMOTOPY iteration = 2, lambda = 0.5 <------
 Initial value of function contains non-finite values (starting at index=1)
 
 
--------> HOMOTOPY iteration = 3, lambda = 0.125 <------
+-------> HOMOTOPY iteration = 3, lambda = 0.25 <------
+Initial value of function contains non-finite values (starting at index=1)
+
+
+-------> HOMOTOPY iteration = 4, lambda = 0.125 <------
 Initial value of function contains non-finite values (starting at index=1)
 
 ++++++++++ HOMOTOPY FAILED (step < 0.1, final lambda = 0.125) ++++++++++++++++++

@@ -1030,7 +1030,7 @@ DynMdl <- R6Class("DynMdl",
     },
     solve = function(control = list(), mode , solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
-                     homotopy, silent = FALSE, backrep = c("period", "total"), 
+                     homotopy = TRUE, silent = FALSE, backrep = c("period", "total"), 
                      ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
@@ -1086,8 +1086,6 @@ DynMdl <- R6Class("DynMdl",
     
       if (stacked_time) {
         
-        if (missing(homotopy)) homotopy <- TRUE
-        
         # preparations
      
         nper <- nperiod(private$model_period)
@@ -1137,7 +1135,22 @@ DynMdl <- R6Class("DynMdl",
           }
           
           # create steady state exogenous variables
+          # TODO: this code can be improved
           exo_info <- private$get_exo_info_homotopy()
+          
+          if (isTRUE(all.equal(endos, endos_steady, 
+                               check.attributes = FALSE, tolerance = 1e-4))) {
+            # if the original values of the endogenous variables are equal to
+            # the steady state values, then the initial homotopy step is 0.5.
+            # Otherwise we use a step of 1. Just setting all endogenous variables
+            # equal to the steady state value often helps.
+            step <- 0.5
+          } else {
+            # just try to set the endogenous variables in the simiulation
+            # period equal to the steady state valuesm keeping the exogenous variables
+            # at the original values.
+            step <- 1
+          }
 
           # save exos/lags/leads needed in the simulation
           if (has_exos) {
@@ -1150,22 +1163,13 @@ DynMdl <- R6Class("DynMdl",
           lags_sim <- lags
           leads_sim <- leads
           endos <- endos_steady
-          
-          if (fit || isTRUE(all.equal(endos, endos_steady, 
-                                      check.attributes = FALSE,
-                                      tolerance = 1e-4))) {
-            # if endogenous variables at steady state, try half the values of
-            # exogenous variables and lags/leads
-            step <- 0.5
-          } else {
-            step <- 1 # try solving with original exos/lags/leads, but with 
-                      # endos at steady state
-          }
          
           LAMBDA_MIN <- 0.1
           lambda_prev <- 0
           iteration <- 0
           success_counter <- 0
+          solved <- FALSE
+          
           while (TRUE) {
             if (step < LAMBDA_MIN) {
               # minimum homotopy step size of 0.1 seems reasonable
@@ -1257,20 +1261,19 @@ DynMdl <- R6Class("DynMdl",
         
         # backward looking 
     
-        if (!missing(homotopy) && homotopy) {
-          warning("homotopy not yet implemented for backward models")
-        }
-        ret <- solve_backward_model(private$model_index, private$mdldef, 
+       ret <- solve_backward_model(private$model_index, private$mdldef, 
                                     private$calc, private$model_period, 
                                     private$data_period,
                                     private$endo_data, private$exo_data, 
                                     private$f_dynamic, private$get_back_jac,
                                     control = control, solver = solver,
-                                    start_option = start, debug_eqs = debug_eqs,
+                                    start_option = start, 
+                                    debug_eqs = debug_eqs,
+                                    homotopy = homotopy,
                                     silent = silent, backrep = backrep, ...)
         endos_result <- ret$x
         solved <- ret$solved
-        message <- ret$message
+        message <- NA_character_
       }
 
       
@@ -1293,42 +1296,6 @@ DynMdl <- R6Class("DynMdl",
         warning(paste0("Model solving not succesful.\n", message))
       } else {
         private$solve_status <- "OK"
-      }
-      
-      #
-      # check fit result
-      #
-      if (private$mdldef$fit && private$solve_status == "OK" && n_fit == 0) {
-        # If there are no fit targets, then the steady state solution for
-        # all fit instruments must be exactly 0, and all Lagrange multipliers
-        # should be zero. However, the values are not exactly equal to zero
-        # because of numerical inaccuracies.  This may cause numerical problems.
-        # Therefore set then to zero and check the maximum static residual
-        indices <- c(private$mdldef$fit_info$l_vars, instruments)
-        mp <- private$model_period
-        old_endos <- private$endo_data[mp, indices, drop = FALSE]
-        private$endo_data[mp, indices] <- 0
-        
-        fmax <- max(abs(self$residual_check(include_all_eqs = TRUE,
-                                            debug_eqs = FALSE)))
-        ftol <- if (is.null(control$ftol)) {
-          1e-8 
-        } else { 
-          control$ftol
-        }
-        if (fmax > ftol) {
-          # restore old solution
-          private$endo_data[mp, indices] <- old_endos
-          warning(paste("The steady state values for the fit instruments",
-                        "and Lagrange multipliers are significantly different",
-                        "from 0."))
-        }
-        
-        # make _exo variables equal to the corresponding static 
-        # endogenous variables
-        exo_idx <- private$mdldef$fit_info$exo_vars
-        endo_idx <- private$mdldef$fit_info$orig_endos
-        private$exo_data[mp, exo_idx] <- private$endo_data[mp, endo_idx]
       }
       
       return(invisible(self))
@@ -1574,7 +1541,6 @@ DynMdl <- R6Class("DynMdl",
 	      stop(paste("Method 'run_initval' not possible because the model file",
                    "has been created with an old version of dynmdl."))
       }
-      
       data <- as.list(c(private$mdldef$endos,
                         private$mdldef$exos,
                         private$mdldef$params))

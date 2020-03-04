@@ -302,8 +302,8 @@ test_that("no fit targets", {
   expect_null(mdl2$get_fit())
   expect_true(max(abs(mdl2$get_fit_instruments())) > 1e-8)
   mdl2$solve(silent = TRUE)
-  expect_identical(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
-  expect_identical(mdl2$get_fit_instruments(), mdl$get_fit_instruments() * 0)
+  expect_equal(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
+  expect_equal(mdl2$get_fit_instruments(), mdl$get_fit_instruments() * 0)
   expect_equal(mdl2$get_endo_data(), mdl_old$get_endo_data())
 })
 
@@ -312,9 +312,9 @@ test_that("no fit targets, removed fit instruments", {
   mdl2$set_fit_values(NA)
   mdl2$set_param_values(-1, names = c("sigma_ut", "sigma_umd"))
   mdl2$solve(silent = TRUE)
-  expect_identical(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
+  expect_equal(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
   inst_names <- c("uc", "ui")
-  expect_identical(mdl2$get_fit_instruments(names = inst_names), 
+  expect_equal(mdl2$get_fit_instruments(names = inst_names), 
                    mdl$get_fit_instruments(names = inst_names) * 0)
   old_inst_names <- c("ut", "umd")
   expect_identical(mdl2$get_fit_instruments(names = old_inst_names), 
