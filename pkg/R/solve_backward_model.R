@@ -143,15 +143,19 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       cat("\n")
       cat_header("HOMOTOPY")
     }
-    
-    # create steady endo data. Note: timeseries are stored rowwise
-    endo_data_mat_steady <- matrix(rep(mdldef$endos, nper), ncol = nper)
-    
-    #
-    # TODO: do something with lags and leads:
-    # lead indiced in endo_data etc.
-    #
-    
+   
+    if (has_lags <- mdldef$max_endo_lag > 0) {
+      maxlag <- mdldef$max_endo_lag
+      lag_per_sel <- seq(start_per_index - maxlag, start_per_index - 1)
+      lags_steady <- matrix(rep(mdldef$endos, maxlag), ncol = maxlag)
+    }
+    if (has_leads <- mdldef$max_endo_lead > 0) {
+      maxlead <- mdldef$max_endo_lead
+      lead_per_sel <- seq(start_per_index + nper, 
+                          start_per_index + nper + maxlead - 1)
+      leads_steady <- matrix(rep(mdldef$endos, maxlead), ncol = maxlead)
+    }
+   
     #
     # now prepare steady values of exogenous variables
     #
@@ -164,26 +168,30 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
         exo_indices <- c(mdldef$fit_info$orig_exos, mdldef$fit_info$exo_vars)
         exo_data_steady <- matrix(rep(mdldef$exos[exo_indices], each = np), 
                                    nrow = np)
-        steady_exo_names <- mdldef$exo_names[exo_indices]
+        colnames(exo_data_steady) <- mdldef$exo_names[exo_indices]
       } else {
         exo_data_steady <- matrix(rep(mdldef$exos, each = np), nrow = np)
-        steady_exo_names <- mdldef$exo_names
+        colnames(exo_data_steady) <- mdldef$exo_names
       }
-      exo_data_steady <- regts(exo_data_steady, names = steady_exo_names, 
-                               period = data_period)
     }
     
     if (has_exos) {
       # save the actual values of exogenous variables that we need
       # in the simulation
-      if (!fit) {
-        exo_sim <- exo_data
-      } else {
+      if (fit) {
         exo_sim <- exo_data[ , exo_indices, drop = FALSE]
+      } else {
+        exo_sim <- exo_data
       }
     }
+    if (has_lags) {
+      lags_sim <- endo_data_mat[ , lag_per_sel, drop = FALSE]
+    }
+    if (has_leads) {
+      leads_sim <- endo_data_mat[ , lag_per_sel, drop = FALSE]
+    }
 
-    endo_data_mat[ , solve_per_sel] <- endo_data_mat_steady
+    endo_data_mat[ , solve_per_sel] <- mdldef$endos
 
     step <- 0.5
     LAMBDA_MIN <- 0.1
@@ -228,17 +236,19 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
           exo_data <- exo_sim * lambda + exo_data_steady * (1 - lambda)
         }
       }
-      
-      # if (has_lags) lags <- lags_sim * lambda + 
-      #   lags_steady * (1 - lambda)
-      # 
-      # if (has_leads) leads <- leads_sim * lambda + 
-      #   leads_steady * (1 - lambda)
-      
       if (calc == "internal") {
         internal_dyn_set_exo(model_index, exo_data, nrow(exo_data))
       }
       
+      if (has_lags) {
+        endo_data_mat[ , lag_per_sel] <- lags_sim * lambda +
+                                         lags_steady * (1 - lambda)
+      }
+      if (has_leads) {
+        endo_data_mat[ , lead_per_sel] <- leads_sim * lambda + 
+                                          leads_steady * (1 - lambda)
+      }
+    
       ret <- slv_back()
  
       if (ret$solved) {

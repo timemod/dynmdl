@@ -140,3 +140,71 @@ test_that("get_names", {
   expect_known_output(mdl$get_par_names(),
                       "expected_output/NK_baseline_par_names.rds")
 })
+
+test_that("homotopy", {
+  mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
+  p <- start_period(model_period)
+  mdl2$set_exo_values(7, names = "epsd", period = p);
+  expect_warning(mdl2$solve(silent = TRUE, 
+                            control = list(silent = TRUE, trace = FALSE), 
+                            homotopy = FALSE),
+                 "Model solving not succesful\\.\nFunction value contains non-finite values ")
+  expect_equal(mdl2$get_solve_status(), "ERROR")
+  expect_silent(mdl2$solve(silent = TRUE))
+  expect_equal(mdl2$get_solve_status(), "OK")
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
+  
+  mdl2$put_static_endos()
+  report <- capture_output(mdl2$solve(control = list(silent = FALSE, 
+                                                     trace = FALSE)))
+  report <- gsub("Convergence after \\d+ iterations", 
+                 "Convergence after XXX iterations", report)
+  expect_known_output(cat(report), 
+                      "expected_output/NK_baseline_homotopy_report.txt")
+  expect_equal(mdl2$get_solve_status(), "OK")
+  
+  #print(tsdif(mdl$get_endo_data(), mdl2$get_endo_data(), fun = cvgdif, tol = 1e-1))
+  #plot(mdl$get_endo_data(names = "f"))
+  #lines(mdl2$get_endo_data(names = "f"), col = "red")
+})
+
+
+
+test_that("homotopy backwards", {
+  
+  # with shock epds = 2
+  mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
+  p <- start_period(model_period)
+  mdl2$set_exo_values(2, names = "epsd", period = p)
+  expect_warning(mdl2$solve(silent = TRUE, homotopy = FALSE,
+                            mode = "backwards", control = list(maxiter = 100)),
+                 "Model solving not succesful\\.\nFunction value contains non-finite values ")
+  expect_equal(mdl2$get_solve_status(), "ERROR")
+  
+  report1 <- capture_output({
+    mdl2$solve(mode = "backwards", control = list(maxiter = 100),
+               homotopy = TRUE, backrep = "total")
+  })
+  expect_equal(mdl2$get_solve_status(), "OK")
+  report1 <- gsub("Total number of iterations: \\d+", 
+                  "Tota number of iterations: XXX", report1)
+  expect_known_output(cat(report1), 
+                      "expected_output/NK_baseline_homotopy_report_back_1.txt")
+  
+  # with shock epds = 5
+  mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
+  p <- start_period(model_period)
+  mdl2$set_exo_values(5, names = "epsd", period = p)
+  report2 <- capture_output({
+    mdl2$solve(mode = "backwards", control = list(maxiter = 100),
+               homotopy = TRUE, backrep = "total", global = "cline")
+  })
+  expect_equal(mdl2$get_solve_status(), "OK")
+  report2 <- gsub("Total number of iterations: \\d+", 
+                  "Tota number of iterations: XXX", report2)
+  expect_known_output(cat(report2), 
+                      "expected_output/NK_baseline_homotopy_report_back_2.txt")
+})

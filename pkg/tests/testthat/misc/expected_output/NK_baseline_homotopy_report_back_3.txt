@@ -1,0 +1,60 @@
+
+Solving backwards for period 2015/2033
+Non-finite values in residuals in period 2015 for the following equations:
+ eq 6  eq 7  eq 8  eq 9 eq 12 eq 15 eq 17 
+  NaN   NaN   NaN   NaN   NaN   NaN   NaN 
+
+Backwards solve failed at period 2015. Total number of iterations: 0.
+
+
+++++++++++ HOMOTOPY ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+-------> HOMOTOPY iteration = 1, lambda = 0.5 <------
+
+Non-finite values in residuals in period 2015 for the following equations:
+ eq 6  eq 7  eq 8  eq 9 eq 15 eq 17 
+  NaN   NaN   NaN   NaN   NaN   NaN 
+
+Backwards solve failed at period 2015. Total number of iterations: 2.
+
+-------> HOMOTOPY iteration = 2, lambda = 0.25 <------
+
+Non-finite values in residuals in period 2015 for the following equations:
+ eq 7 eq 17 
+  NaN   NaN 
+
+Backwards solve failed at period 2015. Total number of iterations: 2.
+
+-------> HOMOTOPY iteration = 3, lambda = 0.125 <------
+
+Backwards solve succesfull. Total number of iterations: 71.
+
+-------> HOMOTOPY iteration = 4, lambda = 0.25 <------
+
+Backwards solve succesfull. Total number of iterations: 78.
+
+-------> HOMOTOPY iteration = 5, lambda = 0.375 <------
+
+Backwards solve succesfull. Total number of iterations: 87.
+
+-------> HOMOTOPY iteration = 6, lambda = 0.5 <------
+
+Backwards solve succesfull. Total number of iterations: 91.
+
+-------> HOMOTOPY iteration = 7, lambda = 0.625 <------
+
+Backwards solve succesfull. Total number of iterations: 97.
+
+-------> HOMOTOPY iteration = 8, lambda = 0.75 <------
+
+Backwards solve succesfull. Total number of iterations: 101.
+
+-------> HOMOTOPY iteration = 9, lambda = 0.875 <------
+
+Backwards solve succesfull. Total number of iterations: 105.
+
+-------> HOMOTOPY iteration = 10, lambda = 1 <------
+
+Backwards solve succesfull. Total number of iterations: 109.
+
+++++++++++ HOMOTOPY SUCCESFUL after 10 iterations ++++++++++++++++++++++++++++++
