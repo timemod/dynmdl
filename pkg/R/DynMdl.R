@@ -1028,10 +1028,11 @@ DynMdl <- R6Class("DynMdl",
       }
       return(residuals)
     },
+    
     solve = function(control = list(), mode , solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
-                     homotopy = TRUE, silent = FALSE, backrep = c("period", "total"), 
-                     ...) {
+                     homotopy = TRUE, silent = FALSE, 
+                     backrep = c("period", "total"), ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       backrep <- match.arg(backrep)

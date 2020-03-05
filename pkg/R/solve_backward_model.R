@@ -42,7 +42,6 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
   var_indices <- get_var_indices_back(mdldef,  start_per_index)
   endo_data_mat <- t(endo_data)
   
-  
   slv_back <- function() {
     itr_tot <- 0
     error   <- FALSE
@@ -133,17 +132,6 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
   
   if (!solved && homotopy) {
     
-    if (!silent) {
-      cat_header <- function(txt) {
-        pre <- paste(rep("+", 10), collapse = "")
-        post <- paste(rep("+", 80 - 10 - nchar(txt) - 2), collapse = "")
-        cat(paste0("\n", pre, " ", txt, " ", post, "\n\n"))
-        return()
-      }
-      cat("\n")
-      cat_header("HOMOTOPY")
-    }
-   
     if (has_lags <- mdldef$max_endo_lag > 0) {
       maxlag <- mdldef$max_endo_lag
       lag_per_sel <- seq(start_per_index - maxlag, start_per_index - 1)
@@ -192,48 +180,16 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
     }
 
     endo_data_mat[ , solve_per_sel] <- mdldef$endos
-
-    step <- 0.5
-    LAMBDA_MIN <- 0.1
-    lambda_prev <- 0
-    iteration <- 0
-    success_counter <- 0
-    homotopy_solved <- FALSE
     
-    while (TRUE) {
-      if (step < LAMBDA_MIN) {
-        # minimum homotopy step size of 0.1 seems reasonable
-        if (!silent) {
-          cat_header(sprintf("HOMOTOPY FAILED (step < %g, final lambda = %g)", 
-                             LAMBDA_MIN, lambda))
-        }
-        break
-      }
-      iteration <- iteration + 1
-      lambda <- lambda_prev + step
-      if (lambda >= 1) {
-        # make sure that lambda does not exceed the target
-        lambda <- 1
-        step <- lambda - lambda_prev
-      }
-      if (!silent) {
-        if (iteration > 1) {
-          if (control$trace) {
-            cat("\n\n")
-          } else {
-            cat("\n")
-          }
-        }
-        cat(sprintf("-------> HOMOTOPY iteration = %d, lambda = %g <------\n\n",
-                    iteration, lambda))
-      }
+    solve_fun_homotopy <- function(lambda) {
+      
       if (has_exos) {
         if (fit) {
-          exo_data[ , exo_indices] <- exo_sim * lambda + 
-                             exo_data_steady * (1 - lambda)
-    
+          exo_data[ , exo_indices] <<- exo_sim * lambda + 
+                                  exo_data_steady * (1 - lambda)
+          
         } else {
-          exo_data <- exo_sim * lambda + exo_data_steady * (1 - lambda)
+          exo_data <<- exo_sim * lambda + exo_data_steady * (1 - lambda)
         }
       }
       if (calc == "internal") {
@@ -241,44 +197,30 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       }
       
       if (has_lags) {
-        endo_data_mat[ , lag_per_sel] <- lags_sim * lambda +
-                                         lags_steady * (1 - lambda)
+        endo_data_mat[ , lag_per_sel] <<- lags_sim * lambda +
+                             lags_steady * (1 - lambda)
       }
       if (has_leads) {
-        endo_data_mat[ , lead_per_sel] <- leads_sim * lambda + 
-                                          leads_steady * (1 - lambda)
+        endo_data_mat[ , lead_per_sel] <<- leads_sim * lambda + 
+                                leads_steady * (1 - lambda)
       }
-    
-      ret <- slv_back()
- 
-      if (ret$solved) {
-        if (lambda == 1) {
-          if (!silent) {
-            cat_header(sprintf("HOMOTOPY SUCCESFUL after %d iterations", 
-                               iteration))
-          }
-          result <- ret$x
-          homotopy_solved <- TRUE
-          message <- "ok"
-          break
-        }
-        lambda_prev <- lambda
-        succes_counter <- success_counter + 1
-        if (success_counter >= 3) {
-          step <- step * 2
-          success_counter <- 0
-        }
-        # update endo_data_mat with new result
-        endo_data_mat[ , solve_per_sel] <- ret$x
-      } else {
-        # failure, step back
-        success_counter <- 0
-        step <- step / 2
-      }
+      
+      return(slv_back())
     }
     
-    solved <- homotopy_solved
-    # end of homotopy approach
+    update_fun_homotopy <- function(x) {
+      endo_data_mat[ , solve_per_sel] <<- x
+    }
+    
+    ret <- solve_homotopy(solve_fun = solve_fun_homotopy, 
+                          update_fun = update_fun_homotopy,
+                          silent = silent,
+                          trace = control$trace)
+    if (ret$solved) {
+      solved <- TRUE
+      message <- "ok"
+      result <- ret$solution
+    }
   }
     
   return(list(solved = solved, message = message, x = as.numeric(result)))
