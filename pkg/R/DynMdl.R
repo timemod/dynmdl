@@ -1151,20 +1151,6 @@ DynMdl <- R6Class("DynMdl",
                                      period = private$data_period)
           }
           
-          if (isTRUE(all.equal(endos, endos_steady, 
-                               check.attributes = FALSE, tolerance = 1e-4))) {
-            # if the original values of the endogenous variables are equal to
-            # the steady state values, then the initial homotopy step is 0.5.
-            # Otherwise we use a step of 1. Just setting all endogenous variables
-            # equal to the steady state value often helps.
-            step <- 0.5
-          } else {
-            # just try to set the endogenous variables in the simiulation
-            # period equal to the steady state valuesm keeping the exogenous variables
-            # at the original values.
-            step <- 1
-          }
-
           # save exos/lags/leads needed in the simulation
           if (has_exos) {
             if (!fit) {
@@ -1177,6 +1163,7 @@ DynMdl <- R6Class("DynMdl",
           leads_sim <- leads
           endos <- endos_steady
          
+          step <- 0.5
           LAMBDA_MIN <- 0.1
           lambda_prev <- 0
           iteration <- 0

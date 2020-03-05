@@ -42,10 +42,6 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
   var_indices <- get_var_indices_back(mdldef,  start_per_index)
   endo_data_mat <- t(endo_data)
   
-  if (homotopy) {
-    endo_data_mat_before <- endo_data_mat[ , solve_per_sel, drop = FALSE]
-  }
-  
   slv_back <- function() {
     itr_tot <- 0
     error   <- FALSE
@@ -182,22 +178,9 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       }
     }
 
-    if (isTRUE(all.equal(endo_data_mat_before, endo_data_mat_steady, 
-                         check.attributes = FALSE, tolerance = 1e-4))) {
-      # if the original values of the endogenous variables are equal to
-      # the steady state values, then the initial homotopy step is 0.5.
-      # Otherwise we use a step of 1. Just setting all endogenous variables
-      # equal to the steady state value often helps.
-      step <- 0.5
-    } else {
-      # just try to set the endogenous variables in the simiulation
-      # period equal to the steady state valuesm keeping the exogenous variables
-      # at the original values.
-      step <- 1
-    }
-    
     endo_data_mat[ , solve_per_sel] <- endo_data_mat_steady
 
+    step <- 0.5
     LAMBDA_MIN <- 0.1
     lambda_prev <- 0
     iteration <- 0

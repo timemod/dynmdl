@@ -3,22 +3,19 @@ Function value contains non-finite values (starting at index=7) at iteration 2
 
 ++++++++++ HOMOTOPY ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
--------> HOMOTOPY iteration = 1, lambda = 1 <------
-Function value contains non-finite values (starting at index=68) at iteration 2
-
--------> HOMOTOPY iteration = 2, lambda = 0.5 <------
+-------> HOMOTOPY iteration = 1, lambda = 0.5 <------
 Function value contains non-finite values (starting at index=650) at iteration 3
 
--------> HOMOTOPY iteration = 3, lambda = 0.25 <------
+-------> HOMOTOPY iteration = 2, lambda = 0.25 <------
 Convergence after XXX iterations
 
--------> HOMOTOPY iteration = 4, lambda = 0.5 <------
+-------> HOMOTOPY iteration = 3, lambda = 0.5 <------
 Convergence after XXX iterations
 
--------> HOMOTOPY iteration = 5, lambda = 0.75 <------
+-------> HOMOTOPY iteration = 4, lambda = 0.75 <------
 Convergence after XXX iterations
 
--------> HOMOTOPY iteration = 6, lambda = 1 <------
+-------> HOMOTOPY iteration = 5, lambda = 1 <------
 Convergence after XXX iterations
 
-++++++++++ HOMOTOPY SUCCESFUL after 6 iterations +++++++++++++++++++++++++++++++
+++++++++++ HOMOTOPY SUCCESFUL after 5 iterations +++++++++++++++++++++++++++++++
