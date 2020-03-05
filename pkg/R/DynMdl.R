@@ -1211,7 +1211,7 @@ DynMdl <- R6Class("DynMdl",
                                     private$calc, private$model_period, 
                                     private$data_period,
                                     private$endo_data, private$exo_data, 
-                                    private$f_dynamic, private$get_back_jac,
+                                    private$get_back_res, private$get_back_jac,
                                     control = control, solver = solver,
                                     start_option = start, 
                                     debug_eqs = debug_eqs,
@@ -1342,8 +1342,8 @@ DynMdl <- R6Class("DynMdl",
       x    <- data[var_indices$curvars]
       
       private$prepare_dynamic_model()
-      jac <- private$get_back_jac(x, lags, leads, period_index, 
-                                  debug_eqs = FALSE)
+      jac <- private$get_back_jac(x, lags, leads, private$exo_data, 
+                                  period_index, debug_eqs = FALSE)
       private$clean_dynamic_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
@@ -2328,15 +2328,29 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values, 
                           dims = as.integer(rep(private$mdldef$endo_count, 2))))
     },
-    get_back_jac = function(x, lags, leads, period_index, debug_eqs) {
+    get_back_res = function(x, lags, leads, exo_data, period_index, debug_eqs) {
+      # private function to obtain the backward residuals at period period_index
+      if (private$calc == "internal") {
+        # NOTE: parameters and exo_data should be set in the C++ version of the 
+        # model using C++ function prepare_internal_dyn or internal_dyn_set_exo.
+        return(get_res_back_dyn(private$model_index, x, lags, leads, 
+                                period_index, debug_eqs))
+      } else {
+        return(private$f_dynamic(c(lags, x, leads), exo_data, 
+                                 private$mdldef$params, period_index))
+      }
+    },
+    get_back_jac = function(x, lags, leads, exo_data, period_index, debug_eqs) {
       # private function to obtain the backward jacobian at period period_index
       jac_cols <- private$mdldef$lead_lag_incidence[, "0"]
       if (private$calc == "internal") {
+        # NOTE: parameters and exo_data should be set in the C++ version of the 
+        # model using C++ function prepare_internal_dyn or internal_dyn_set_exo.
         mat_info <- get_jac_back_dyn(private$model_index, x, lags, 
                                      leads, jac_cols, period_index, debug_eqs)
       } else {
         mat_info <- get_jac_backwards(x, lags, leads, jac_cols, 
-                                      private$exo_data, private$mdldef$params, 
+                                      exo_data, private$mdldef$params, 
                                       private$jac_dynamic, period_index)
       }
       return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,

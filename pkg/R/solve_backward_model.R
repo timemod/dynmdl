@@ -3,31 +3,18 @@
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom methods as
 solve_backward_model <- function(model_index, mdldef, calc, solve_period, 
-                                 data_period, endo_data, exo_data, f_dynamic, 
-                                 get_back_jac, control, solver, 
+                                 data_period, endo_data, exo_data,
+                                 get_back_res, get_back_jac, control, solver, 
                                  start_option, debug_eqs, homotopy, 
                                  silent, backrep, ...) {
-  
-  if (calc == "internal") {
-    f <- function(x, lags, leads, period_index, debug_eqs) {
-      return(get_res_back_dyn(model_index, x, lags, leads, period_index, 
-                              debug_eqs))
-    }
-  } else {
-    f <- function(x, lags, leads, period_index, debug_eqs) {
-      return(f_dynamic(c(lags, x, leads), exo_data, mdldef$params, period_index))
-    }
-  }
-  
   if (solver == "nleqslv") {
-    jac_fun <- function(x, lags, leads, period_index, debug_eqs) {
-      return(as(get_back_jac(x, lags, leads, period_index, debug_eqs), 
-                "matrix"))
+    jac_fun  <- function(...) {
+      return(as(get_back_jac(...), "matrix"))
     }
   } else {
     jac_fun <- get_back_jac
   }
-  
+
   if (!silent) {
     cat(sprintf("\nSolving backwards for period %s\n",
                 as.character(solve_period)))
@@ -57,13 +44,15 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
         start <- endo_data_mat[curvar_indices]
       }
       if (solver == "nleqslv") {
-        out <- nleqslv(start, fn = f, jac = jac_fun, method = "Newton",
-                       lags = lags, leads = leads, period_index = period_index, 
+        out <- nleqslv(start, fn = get_back_res, jac = jac_fun, 
+                       method = "Newton", lags = lags, leads = leads, 
+                       exo_data = exo_data, period_index = period_index, 
                        debug_eqs = debug_eqs, control = control, ...)
         error <- out$termcd != 1
       } else {
-        out <- umf_solve_nl(start, fn = f, jac = jac_fun, lags = lags,
-                            leads = leads, period_index = period_index, 
+        out <- umf_solve_nl(start, fn = get_back_res, jac = jac_fun, 
+                            lags = lags, leads = leads, exo_data = exo_data, 
+                            period_index = period_index, 
                             debug_eqs = debug_eqs, control = control, ...)
         error <- !out$solved
       }
@@ -74,8 +63,9 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       
       if (error && !silent) {
         if (grepl("[Ff]unction.*contains non-finite value", out$message)) {
-          res <- f(out$x, lags = lags, leads = leads, 
-                   period_index = period_index, debug_eqs = FALSE)
+          res <- get_back_res(out$x, lags = lags, leads = leads, 
+                              exo_data = exo_data, period_index = period_index, 
+                              debug_eqs = FALSE)
           names(res) <- paste("eq", seq_along(res))
           res <- res[!is.finite(res)]
           cat(sprintf(paste("Non-finite values in residuals in period %s",
