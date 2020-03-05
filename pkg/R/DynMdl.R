@@ -1273,7 +1273,7 @@ DynMdl <- R6Class("DynMdl",
                                     silent = silent, backrep = backrep, ...)
         endos_result <- ret$x
         solved <- ret$solved
-        message <- NA_character_
+        message <- ret$message
       }
 
       

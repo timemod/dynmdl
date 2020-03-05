@@ -42,9 +42,11 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
   var_indices <- get_var_indices_back(mdldef,  start_per_index)
   endo_data_mat <- t(endo_data)
   
+  
   slv_back <- function() {
     itr_tot <- 0
     error   <- FALSE
+    message <- "ok"
     for (iper in 1:nper) {
       period_index <- start_per_index + iper - 1
       per_txt <- as.character(start_per + (iper - 1))
@@ -97,13 +99,14 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       }
       
       # update data
-      endo_data_mat[curvar_indices] <<- out$x
+      endo_data_mat[curvar_indices] <- out$x
       
       if (start_option == "previous") start <- out$x
       
       itr_tot <- itr_tot + out$iter
       
       if (error) {
+        message <- out$message
         break
       }
     }
@@ -119,12 +122,14 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       }
     }
     
-    return(solved = !error)
+    return(list(solved = !error, message = message,
+                x = endo_data_mat[ , solve_per_sel, drop = FALSE]))
   }
   
-  solved <- slv_back()
-  
-  result <- endo_data_mat[ , solve_per_sel, drop = FALSE]
+  ret <- slv_back()
+  solved <- ret$solved
+  result <- ret$x
+  message <- ret$message
   
   if (!solved && homotopy) {
     
@@ -234,16 +239,17 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
         internal_dyn_set_exo(model_index, exo_data, nrow(exo_data))
       }
       
-      back_solved <- slv_back()
+      ret <- slv_back()
  
-      if (back_solved) {
+      if (ret$solved) {
         if (lambda == 1) {
           if (!silent) {
             cat_header(sprintf("HOMOTOPY SUCCESFUL after %d iterations", 
                                iteration))
           }
-          result <- endo_data_mat[ , solve_per_sel, drop = FALSE]
+          result <- ret$x
           homotopy_solved <- TRUE
+          message <- "ok"
           break
         }
         lambda_prev <- lambda
@@ -252,6 +258,8 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
           step <- step * 2
           success_counter <- 0
         }
+        # update endo_data_mat with new result
+        endo_data_mat[ , solve_per_sel] <- ret$x
       } else {
         # failure, step back
         success_counter <- 0
@@ -263,7 +271,7 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
     # end of homotopy approach
   }
     
-  return(list(solved = solved, x = as.numeric(result)))
+  return(list(solved = solved, message = message, x = as.numeric(result)))
 }
 
 # Returns the indices of the lags, leads and current variables in t(endo_data)
