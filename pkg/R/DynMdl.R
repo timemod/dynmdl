@@ -1010,13 +1010,13 @@ DynMdl <- R6Class("DynMdl",
       x <- cur_endos(endo_data)
       lags <- lag_endos(endo_data)
       leads <- lead_endos(endo_data)
+      nper <- endo_data$nper_cur
       
       residuals <- private$get_residuals(x, lags, leads, private$exo_data, 
                                          nper, debug_eqs)
       
       private$clean_dynamic_model()
       
-      nper <- ncol(x)
       dim(residuals) <- c(private$mdldef$endo_count, nper)
       residuals <- t(residuals)
       colnames(residuals) <- paste0("eq_",  1 : (private$mdldef$endo_count))
@@ -1215,14 +1215,21 @@ DynMdl <- R6Class("DynMdl",
     },
     get_jacob = function(sparse = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
-      lags  <- private$get_endo_lags()
-      leads <- private$get_endo_leads()
-      x <- private$get_solve_endo()
-      nper <- nperiod(private$model_period)
-  
+      
       private$prepare_dynamic_model()
       
-      jac <- private$get_jac(x, lags, leads, nper, debug_eqs = FALSE)
+      endo_data <- endo_data_solve(private$endo_data,
+                                   private$model_period,
+                                   maxlag = private$mdldef$max_endo_lag,
+                                   maxlead = private$mdldef$max_endo_lead)
+      x <- cur_endos(endo_data)
+      lags <- lag_endos(endo_data)
+      leads <- lead_endos(endo_data)
+      nper <- endo_data$nper_cur
+      
+      jac <- private$get_jac(x, lags, leads, private$exo_data, nper, 
+                             debug_eqs = FALSE)
+      
       private$clean_dynamic_model()
       
       if (!sparse) {
@@ -2157,10 +2164,11 @@ DynMdl <- R6Class("DynMdl",
       endos <- cur_endos(endo_data)
       lags <- lag_endos(endo_data)
       leads <- lead_endos(endo_data)
+      nper <- endo_data$nper_cur
       if (solver == "umfpackr") {
         ret <- umf_solve_nl(endos, private$get_residuals, private$get_jac, 
                             lags = lags, leads = leads, exo_data = exo_data, 
-                            ...)
+                            nper = nper, ...)
       } else if (solver == "nleqslv") {
         nper <- ncol(endos)
         jac_fun <- function(...) {
@@ -2168,7 +2176,7 @@ DynMdl <- R6Class("DynMdl",
         }
         ret <- nleqslv(endos, fn = private$get_residuals, jac = jac_fun, 
                        lags = lags, leads = leads, exo_data = exo_data, 
-                       method = "Newton",  ...)
+                       nper = nper, method = "Newton",  ...)
         ret$solved <- ret$termcd == 1
       }
       return(ret)
@@ -2208,7 +2216,6 @@ DynMdl <- R6Class("DynMdl",
     # x is vector of endogenous variables in the solution period
     get_residuals = function(x, lags, leads, exo_data, nper, debug_eqs) {
       endos <- c(lags, x, leads)
-      nper <- nperiod(private$model_period)
       if (private$calc == "internal") {
         # NOTE: parameters and exo_data should be set in the C++ version of the 
         # model using C++ function prepare_internal_dyn or internal_dyn_set_exo.
@@ -2234,7 +2241,6 @@ DynMdl <- R6Class("DynMdl",
     },
     get_jac = function(x, lags, leads, exo_data, nper, debug_eqs) {
       endos <- c(lags, x, leads)
-      nper <- nperiod(private$model_period)
       tshift  <- -private$mdldef$max_endo_lag : private$mdldef$max_endo_lead
       if (private$calc == "internal") {
         # NOTE: parameters and exo_data should be set in the C++ version of the 

@@ -11,7 +11,7 @@ endo_data_solve <- function(endo_data, solve_period, maxlag, maxlead) {
   
   data_mat <- t(endo_data[solve_data_period])
   
-  nper <- nperiod(solve_period)
+  nper_cur <- nperiod(solve_period)
   
   has_lags <- maxlag > 0
   has_leads <- maxlead > 0
@@ -23,16 +23,16 @@ endo_data_solve <- function(endo_data, solve_period, maxlag, maxlead) {
   }
   
   if (has_leads) {
-    lead_cols <- seq(maxlag + nper + 1, nper + maxlag + maxlead )
+    lead_cols <- seq(maxlag + nper_cur + 1, nper_cur + maxlag + maxlead )
   } else {
     lead_cols <- numeric(0)
   }
   
-  cur_cols <- seq(maxlag + 1, maxlag + nper)
+  cur_cols <- seq(maxlag + 1, maxlag + nper_cur)
   
   ret <- list(mat = data_mat, has_lags = has_lags, has_leads = has_leads,
               lag_cols = lag_cols, lead_cols = lead_cols, 
-              cur_cols = cur_cols)
+              cur_cols = cur_cols, nper_cur = nper_cur)
   
   return(structure(ret, class = "endo_data_solve"))
 }
