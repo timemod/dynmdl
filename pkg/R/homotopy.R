@@ -1,5 +1,48 @@
-solve_homotopy <- function(solve_fun, update_fun, silent, trace) {
+homotopy <- function(endo_data, exo_data, solve_fun, mdldef, calc,
+                     model_index, silent, trace, ...) {
+ 
+  #
+  # now prepare steady values of exogenous variables
+  #
+  fit <- mdldef$fit
+  has_exos <- mdldef$exo_count > 0
+  maxlag <- mdldef$max_endo_lag
+  maxlead <- mdldef$max_endo_lead
   
+  if (has_exos) {
+    nper_exo <- nrow(exo_data)
+    if (fit) {
+      exo_indices <- c(mdldef$fit_info$orig_exos, mdldef$fit_info$exo_vars)
+      exo_data_steady <- matrix(rep(mdldef$exos[exo_indices], each = nper_exo), 
+                                nrow = nper_exo)
+      #colnames(exo_data_steady) <- mdldef$exo_names[exo_indices]
+    } else {
+      exo_data_steady <- matrix(rep(mdldef$exos, each = nper_exo), 
+                                nrow = nper_exo)
+      #colnames(exo_data_steady) <- mdldef$exo_names
+    }
+  }
+  
+  if (has_exos) {
+    # save the actual values of exogenous variables that we need
+    # in the simulation
+    if (fit) {
+      exo_sim <- exo_data[ , exo_indices, drop = FALSE]
+    } else {
+      exo_sim <- exo_data
+    }
+  }
+  if (endo_data$has_lags) {
+    lags_sim <- lag_endos(endo_data)
+    lags_steady <- matrix(rep(mdldef$endos, maxlag), ncol = maxlag)
+  }
+  if (endo_data$has_leads) {
+    leads_sim <- lead_endos(endo_data)
+    leads_steady <- matrix(rep(mdldef$endos, maxlead), ncol = maxlead)
+  }
+  
+  cur_endos(endo_data) <- mdldef$endos
+ 
   if (!silent) {
     cat_header <- function(txt) {
       pre <- paste(rep("+", 10), collapse = "")
@@ -46,8 +89,32 @@ solve_homotopy <- function(solve_fun, update_fun, silent, trace) {
       cat(sprintf("-------> HOMOTOPY iteration = %d, lambda = %g <------\n\n",
                   iteration, lambda))
     }
+    
+    #
+    # calculate new exogenous variables and lags/leads
+    # TODO: create a function for this
+    #
+    if (has_exos) {
+      if (fit) {
+        exo_data[ , exo_indices] <- exo_sim * lambda + 
+                                  exo_data_steady * (1 - lambda)
+        
+      } else {
+        exo_data <- exo_sim * lambda + exo_data_steady * (1 - lambda)
+      }
+    }
+    if (calc == "internal") {
+      internal_dyn_set_exo(model_index, exo_data, nrow(exo_data))
+    }
+    
+    if (endo_data$has_lags) {
+      lag_endos(endo_data) <- lags_sim * lambda + lags_steady * (1 - lambda)
+    }
+    if (endo_data$has_leads) {
+      lead_endos(endo_data) <- leads_sim * lambda + leads_steady * (1 - lambda)
+    }
    
-    ret <- solve_fun(lambda)
+    ret <- solve_fun(endo_data, exo_data, ...)
     
     if (ret$solved) {
       if (lambda == 1) {
@@ -66,7 +133,8 @@ solve_homotopy <- function(solve_fun, update_fun, silent, trace) {
         success_counter <- 0
       }
       # update endogenous variables with new solution
-      update_fun(ret$x)
+      cur_endos(endo_data) <- ret$x
+      
     } else {
       # failure, step back
       success_counter <- 0

@@ -187,7 +187,7 @@ test_that("start solution with correct lagrange multipliers", {
   msg <- "The maximum number of iterations \\(1\\) has been reached"
   expect_warning(
     expect_output(
-      mdl2$solve(control = list(maxiter = 1)), msg),
+      mdl2$solve(homotopy = FALSE, control = list(maxiter = 1)), msg),
     msg)
   mdl2$set_data(cbind(endo_data, l, inst))
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
