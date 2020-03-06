@@ -57,7 +57,7 @@ test_that("solve", {
     mdl2$set_exo_values(exp(sigma_A), names = "epsA", period = p);
     mdl2$set_exo_values(exp(sigma_m), names = "epsm", period = p);
   })
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl2$solve(silent = TRUE)
   
   expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })
@@ -79,13 +79,13 @@ test_that("solve linlogpow", {
   
   # TODO: with global = "no" an incorrect solution is found (not the real 
   # solution of the model)
-  mdl2$solve(control = list(silent = TRUE, trace = TRUE, allow_singular = TRUE,
-                            maxiter = 100),  global = "cline")
+  mdl2$solve(silent = TRUE, control = list(allow_singular = TRUE,
+                                           maxiter = 100),  global = "cline")
  
   
   mdl2$set_param(c(eps = -Inf, eps_lp = -Inf))
-  mdl2$solve(control = list(silent = TRUE, trace = TRUE, allow_singular = TRUE,
-                            maxiter = 100))
+  mdl2$solve(silent = TRUE, control = list(allow_singular = TRUE,
+                                           maxiter = 100))
   
   expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })

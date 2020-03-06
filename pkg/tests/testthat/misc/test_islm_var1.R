@@ -61,7 +61,7 @@ test_that("solve_steady and set_static_endos", {
 
 test_that("solve", {
   mdl2 <- create_solve_mdl(mdl)
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl2$solve(silent = TRUE)
   expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
                dynare_result$endo)
   
@@ -128,7 +128,7 @@ test_that("solve with max_laglead_1", {
   p1 <- start_period(mdl2$get_period())
   mdl2$set_exo_values(c(245, 250, 260), names = "g", 
                       period = period_range(p1, p1 + 2))
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl2$solve(silent = TRUE, control = list(silent = TRUE, trace = FALSE))
   expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
                dynare_result$endo)
   
@@ -212,7 +212,7 @@ test_that("solve with max_laglead_1 and dll", {
   p1 <- start_period(mdl2$get_period())
   mdl2$set_exo_values(c(245, 250, 260), names = "g", 
                       period = period_range(p1, p1 + 2))
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl2$solve(silent = TRUE, control = list(silent = TRUE, trace = FALSE))
   expect_equal(mdl2$get_endo_data(period = mdl2$get_period()), 
                dynare_result$endo)
   
@@ -285,7 +285,7 @@ test_that("lag eand lead shocks", {
                           period = "2033/2035")
   mdl3$set_endo_values(c(8062), names = "y", period = "2011")
   
-  mdl3$solve(control = list(silent = TRUE))
+  mdl3$solve(silent = TRUE, control = list(silent = TRUE))
   
   mdl2$set_data(mdl3$get_endo_data())
   expect_output(mdl2$solve(), "Convergence after 0 iterations")

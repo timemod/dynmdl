@@ -995,8 +995,8 @@ DynMdl <- R6Class("DynMdl",
       return(residuals)
     },
     residual_check = function(tol, debug_eqs = FALSE, include_fit_eqs = FALSE,
-                              include_all_eqs = FALSE
-                              ) {
+                              include_all_eqs = FALSE) {
+      
       if (is.null(private$model_period)) stop(private$period_error_msg)
       private$check_debug_eqs(debug_eqs)
 
@@ -1101,6 +1101,11 @@ DynMdl <- R6Class("DynMdl",
     
       if (stacked_time) {
         
+        if (!silent) {
+          cat(sprintf("\nSolving with stacked time method for period %s\n\n",
+                      as.character(private$model_period)))
+        }
+        
         # preparations
      
         ret <- private$solve_stacked_time(endo_data, private$exo_data, 
@@ -1131,29 +1136,41 @@ DynMdl <- R6Class("DynMdl",
       } else {
         
         # backward looking 
+        
+        if (!silent) {
+          cat(sprintf("\nSolving backwards for period %s\n\n",
+                      as.character(private$model_period)))
+        }
     
-       ret <- solve_backward_model(private$model_index, private$mdldef, 
-                                    private$calc, private$model_period, 
-                                    private$data_period,
-                                    endo_data, private$exo_data, 
-                                    private$get_back_res, private$get_back_jac,
-                                    solver = solver,
-                                    start_option = start, 
-                                    homotopy = homotopy,
-                                    silent = silent, backrep = backrep, 
-                                    control = control, 
-                                    debug_eqs = debug_eqs, ...)
-       
-       # solve_backward_model <- function(model_index, mdldef, calc, solve_period, 
-       #                                  data_period, endo_data_mdl, exo_data,
-       #                                  get_back_res, get_back_jac, solver, 
-       #                                  start_option, homotopy, 
-       #                                  silent, backrep, control, ...) {
-       
-       
+        ret <- private$solve_backward_model(endo_data, private$exo_data, 
+                                            solver = solver,
+                                            start_option = start, 
+                                            silent = silent, backrep = backrep, 
+                                            control = control, 
+                                            debug_eqs = debug_eqs, ...)
+        
         result <- ret$x
         solved <- ret$solved
         message <- ret$message
+        
+        if (!solved && homotopy) {
+          
+          ret <- homotopy(endo_data, private$exo_data, 
+                          solve_fun = private$solve_backward_model,
+                          mdldef = private$mdldef, calc = private$calc, 
+                          model_index = private$model_index,
+                          start_option = start,
+                          silent = silent, backrep = backrep, 
+                          trace = control$trace, 
+                          solver = solver, debug_eqs = debug_eqs, 
+                          control = control, ...)
+          
+          if (ret$solved) {
+            solved <- TRUE
+            message <- "ok"
+            result <- ret$solution
+          }
+        }
       }
 
       
@@ -2160,7 +2177,9 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(self))
     },
-    solve_stacked_time = function(endo_data, exo_data, solver, ...) {
+    solve_stacked_time = function(endo_data, exo_data, solver, silent, ...) {
+      # arguments silent is not used here, but solve_stacked_time may be called
+      # with this argument via the homotopy function
       endos <- cur_endos(endo_data)
       lags <- lag_endos(endo_data)
       leads <- lead_endos(endo_data)
@@ -2180,6 +2199,112 @@ DynMdl <- R6Class("DynMdl",
         ret$solved <- ret$termcd == 1
       }
       return(ret)
+    },
+    solve_backward_model = function(endo_data, exo_data, solver, start_option,
+                                    silent, backrep, control, ...) {
+      
+      if (solver == "nleqslv") {
+        jac_fun  <- function(...) {
+          return(as(private$get_back_jac(...), "matrix"))
+        }
+      } else {
+        jac_fun <- private$get_back_jac
+      }
+     
+      
+      nper <- endo_data$nper_cur
+      start_per <- start_period(private$model_period)
+      start_per_index_exo <- start_per - start_period(private$data_period) + 1
+      
+      # TODO: var_indices moet onderdeel zijn van model
+      var_indices <- get_var_indices_back(private$mdldef, 
+                                          period_index = private$mdldef$max_endo_lag + 1)
+      
+      nendo <- private$mdldef$endo_count
+      
+      itr_tot <- 0
+      error   <- FALSE
+      message <- "ok"
+      for (iper in 1:nper) {
+        period_index_exo <- start_per_index_exo + iper - 1
+        per_txt <- as.character(start_per + (iper - 1))
+        shift <- (iper - 1) * nendo
+        lags <- endo_data$mat[var_indices$lags + shift]
+        leads <- endo_data$mat[var_indices$leads + shift]
+        curvar_indices <- var_indices$curvars + shift
+        if (start_option == "current" || iper == 1) {
+          start <- endo_data$mat[curvar_indices]
+        }
+        if (solver == "nleqslv") {
+          out <- nleqslv(start, fn = private$get_back_res, jac = jac_fun, 
+                         method = "Newton", lags = lags, leads = leads, 
+                         exo_data = exo_data, period_index = period_index_exo, 
+                         control = control, ...)
+          error <- out$termcd != 1
+        } else {
+          out <- umf_solve_nl(start, fn = private$get_back_res, jac = jac_fun, 
+                              lags = lags, leads = leads, exo_data = exo_data, 
+                              period_index = period_index_exo,
+                              control = control, ...)
+          error <- !out$solved
+        }
+        
+        if (control$trace) {
+          cat("\n")
+        }
+        
+        if (error && !silent) {
+          if (grepl("[Ff]unction.*contains non-finite value", out$message)) {
+            res <- private$get_back_res(out$x, lags = lags, leads = leads, 
+                                       exo_data = exo_data, 
+                                       period_index = period_index_exo, 
+                                       debug_eqs = FALSE)
+            names(res) <- paste("eq", seq_along(res))
+            res <- res[!is.finite(res)]
+            cat(sprintf(paste("Non-finite values in residuals in period %s",
+                              "for the following equations:\n"), per_txt))
+            n_max <- 50
+            n_res <- length(res)
+            print(res[1:min(n_res, n_max)])
+            if (n_res > n_max) cat("[ -- omitted", n_res - n_max,
+                                   "equations -- ]\n")
+            cat("\n")
+          } else {
+            cat(paste0(sprintf("Error solving model in period %s:\n", per_txt),
+                       out$message))
+          }
+        }
+        
+        if (!silent && !error && backrep == "period") {
+          cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
+                      out$iter))
+        }
+        
+        # update data
+        endo_data$mat[curvar_indices] <- out$x
+        
+        if (start_option == "previous") start <- out$x
+        
+        itr_tot <- itr_tot + out$iter
+        
+        if (error) {
+          message <- out$message
+          break
+        }
+      }
+      
+      if (!silent && backrep == "total") {
+        if (error) {
+          cat(sprintf(paste("Backwards solve failed at period %s.",
+                            "Total number of iterations: %d.\n"),
+                      per_txt, itr_tot))
+        } else {
+          cat(sprintf(paste("Backwards solve succesfull. Total number of",
+                            "iterations: %d.\n"), itr_tot))
+        }
+      }
+      
+      return(list(solved = !error, message = message, x = cur_endos(endo_data)))
     },
     check_change_growth_exos = function(names) {
       growth_exos <- intersect(names, private$mdldef$trend_info$growth_exos)

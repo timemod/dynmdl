@@ -23,7 +23,7 @@ mdl$set_fit(fit_targets)
 dynare_result <- read_dynare_result("islm_fit_exolag1", mdl)
 
 test_that("solve_steady", {
-  mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
+  mdl$solve_steady(silent = TRUE)
   expect_equal(mdl$get_static_endos(), dynare_result$steady)
 })
 
@@ -42,7 +42,7 @@ test_that("eigenvalues", {
 })
 
 test_that("solve", {
-  mdl$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl$solve(silent = TRUE)
   expect_equal(mdl$get_endo_data(period = mdl$get_period()), 
                dynare_result$endo, fun = cvgdif, tol = 1e-8)
 })

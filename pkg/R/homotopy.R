@@ -1,3 +1,4 @@
+# TODO: homotopy naar dynmdl?
 homotopy <- function(endo_data, exo_data, solve_fun, mdldef, calc,
                      model_index, silent, trace, ...) {
  
@@ -114,7 +115,7 @@ homotopy <- function(endo_data, exo_data, solve_fun, mdldef, calc,
       lead_endos(endo_data) <- leads_sim * lambda + leads_steady * (1 - lambda)
     }
    
-    ret <- solve_fun(endo_data, exo_data, ...)
+    ret <- solve_fun(endo_data, exo_data, silent = silent, ...)
     
     if (ret$solved) {
       if (lambda == 1) {

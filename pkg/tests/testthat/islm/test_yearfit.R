@@ -24,7 +24,7 @@ mdl$set_period(model_period)
 mdl$set_fit(regts(1275, start = "2016Q4"), names = "y_year")
 mdl$set_param(c(sigma_umd = 2, sigma_ui = 21))
 
-mdl$solve(control = list(silent = TRUE))
+mdl$solve(silent = TRUE)
 
 dynare_result <- read_dynare_result(model_name, mdl)
 

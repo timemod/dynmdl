@@ -44,7 +44,7 @@ test_that("solve with disabled fit procedure", {
     mdl2$set_endo_values(exp(sigma_A), names = "epsA", period = p);
     mdl2$set_endo_values(exp(sigma_m), names = "epsm", period = p);
   })
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl2$solve(silent = TRUE, control = list(trace = FALSE))
   
   expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })
@@ -59,7 +59,7 @@ test_that("solve with fit procedure but without fit targets", {
      mdl2$set_endo_values(exp(sigma_A), names = "epsA", period = p);
      mdl2$set_endo_values(exp(sigma_m), names = "epsm", period = p);
   })
-  mdl2$solve(control = list(silent = TRUE, trace = TRUE))
+  mdl2$solve(silent = TRUE, control = list(trace = FALSE))
   # the model should converge back to the steady state result
   expect_equal(mdl2$get_endo_data(), mdl$get_endo_data())
 })

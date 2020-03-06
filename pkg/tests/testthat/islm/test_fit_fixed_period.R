@@ -57,12 +57,12 @@ test_that("2 targets and 2 instruments for all periods", {
   mdl$set_param(sigmas)
   mdl$set_fit_values(1250, "y", period = fit_per)
   mdl$set_fit_values(3.5, "r", period = fit_per)
-  mdl$solve(control = list(silent = TRUE))
+  mdl$solve(silent = TRUE)
   
   mdl_fixed_per$init_data()
   mdl_fixed_per$set_param(sigmas)
   mdl_fixed_per$set_fit(mdl$get_fit())
-  mdl_fixed_per$solve(control = list(silent = TRUE))
+  mdl_fixed_per$solve(silent = TRUE)
   
   expect_equal(mdl$get_fit_instruments(), mdl_fixed_per$get_fit_instruments())
 })

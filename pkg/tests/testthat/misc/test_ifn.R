@@ -46,7 +46,7 @@ if (FALSE) {
 test_that("solve", {
   mdl2 <- mdl$clone()
   mdl2$set_data(input)
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl2$solve(silent = TRUE)
   expect_equal(dynare_result$endo, mdl2$get_endo_data(period = model_period))
 })
 
@@ -62,7 +62,7 @@ test_that("solve_steady, check and solve_perturb give an error", {
    wmsg)
   
   expect_warning(
-    expect_output(mdl$solve_steady(control = list(silent = TRUE)), NA),
+    expect_output(mdl$solve_steady(silent = TRUE), NA),
     wmsg)
   
   emsg <- "No steady state ... checking model is not possible"

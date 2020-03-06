@@ -30,7 +30,7 @@ test_that("solve_perturb", {
   mdl2 <- mdl$clone()
   mdl2$set_data(regts(1200, period = lag_per), names = "y")
   mdl2$set_data(regts(245, period = start_period(model_period)), names = "g")
-  mdl2$solve(control = list(silent = TRUE))
+  mdl2$solve(silent = TRUE)
   mdl3 <- mdl2$clone()
   mdl3$solve_perturbation()
   # note that the results are not exactly equal because of nonlinear terms
@@ -41,13 +41,13 @@ test_that("solve_perturb linear model", {
   mdl2 <- mdl$clone()
   # set all non-linear parameters to 0
   mdl2$set_param(c(c5 = 0, i5 = 0, m3 = 0))
-  mdl2$solve_steady(control = list(silent = TRUE))
+  mdl2$solve_steady(silent = TRUE)
   mdl2$put_static_endos()
   mdl2$set_endo_values(1200, names = "y", period = lag_per)
   # use a large shock, this should not matter if the model
   # is exactly linear
   mdl2$set_exo_values(280, period = start_period(model_period), names = "g")
-  mdl2$solve(control = list(silent = TRUE))
+  mdl2$solve(silent = TRUE)
   mdl3 <- mdl2$clone()
   mdl3$solve_perturbation()
   expect_equal(mdl2$get_endo_data(), mdl3$get_endo_data())
