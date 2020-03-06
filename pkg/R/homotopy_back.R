@@ -1,26 +1,15 @@
 # TODO: merge this function with solve_homotopy
-solve_homotopy_back <- function(endo_data_mat, exo_data, solve_fun, nper, 
+solve_homotopy_back <- function(endo_data, exo_data, solve_fun, nper, 
                                 start_per_index_exo, mdldef, calc, model_index,
                                 silent, trace) {
-  
-
-  if (has_lags <- mdldef$max_endo_lag > 0) {
-    maxlag <- mdldef$max_endo_lag
-    lag_per_sel <- seq(1, maxlag)
-    lags_steady <- matrix(rep(mdldef$endos, maxlag), ncol = maxlag)
-  }
-  if (has_leads <- mdldef$max_endo_lead > 0) {
-    maxlead <- mdldef$max_endo_lead
-    lead_per_sel <- seq(maxlag + nper + 1, nper + maxlag + maxlead )
-    leads_steady <- matrix(rep(mdldef$endos, maxlead), ncol = maxlead)
-  }
-  solve_per_sel <- seq(maxlag + 1, maxlag + nper)
   
   #
   # now prepare steady values of exogenous variables
   #
   fit <- mdldef$fit
   has_exos <- mdldef$exo_count > 0
+  maxlag <- mdldef$max_endo_lag
+  maxlead <- mdldef$max_endo_lead
   
   if (has_exos) {
     nper_exo <- nrow(exo_data)
@@ -45,15 +34,17 @@ solve_homotopy_back <- function(endo_data_mat, exo_data, solve_fun, nper,
       exo_sim <- exo_data
     }
   }
-  if (has_lags) {
-    lags_sim <- endo_data_mat[ , lag_per_sel, drop = FALSE]
+  if (endo_data$has_lags) {
+    lags_sim <- lag_endos(endo_data)
+    lags_steady <- matrix(rep(mdldef$endos, maxlag), ncol = maxlag)
   }
-  if (has_leads) {
-    leads_sim <- endo_data_mat[ , lag_per_sel, drop = FALSE]
+  if (endo_data$has_leads) {
+    leads_sim <- lead_endos(endo_data)
+    leads_steady <- matrix(rep(mdldef$endos, maxlead), ncol = maxlead)
   }
   
-  endo_data_mat[ , solve_per_sel] <- mdldef$endos
-  
+  cur_endos(endo_data) <- mdldef$endos
+ 
   if (!silent) {
     cat_header <- function(txt) {
       pre <- paste(rep("+", 10), collapse = "")
@@ -118,16 +109,14 @@ solve_homotopy_back <- function(endo_data_mat, exo_data, solve_fun, nper,
       internal_dyn_set_exo(model_index, exo_data, nrow(exo_data))
     }
     
-    if (has_lags) {
-      endo_data_mat[ , lag_per_sel] <- lags_sim * lambda +
-                   lags_steady * (1 - lambda)
+    if (endo_data$has_lags) {
+      lag_endos(endo_data) <- lags_sim * lambda + lags_steady * (1 - lambda)
     }
-    if (has_leads) {
-      endo_data_mat[ , lead_per_sel] <- leads_sim * lambda + 
-                            leads_steady * (1 - lambda)
+    if (endo_data$has_leads) {
+      lead_endos(endo_data) <- leads_sim * lambda + leads_steady * (1 - lambda)
     }
    
-    ret <- solve_fun(endo_data_mat, exo_data)
+    ret <- solve_fun(endo_data, exo_data)
     
     if (ret$solved) {
       if (lambda == 1) {
@@ -146,7 +135,7 @@ solve_homotopy_back <- function(endo_data_mat, exo_data, solve_fun, nper,
         success_counter <- 0
       }
       # update endogenous variables with new solution
-      endo_data_mat[ , solve_per_sel] <- ret$x
+      cur_endos(endo_data) <- ret$x
       
     } else {
       # failure, step back

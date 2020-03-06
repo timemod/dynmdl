@@ -3,10 +3,11 @@
 #' @importFrom umfpackr umf_solve_nl
 #' @importFrom methods as
 solve_backward_model <- function(model_index, mdldef, calc, solve_period, 
-                                 data_period, endo_data, exo_data,
-                                 get_back_res, get_back_jac, control, solver, 
-                                 start_option, debug_eqs, homotopy, 
-                                 silent, backrep, ...) {
+                                 data_period, endo_data_mdl, exo_data,
+                                 get_back_res, get_back_jac, solver, 
+                                 start_option, homotopy, 
+                                 silent, backrep, control, ...) {
+  
   if (solver == "nleqslv") {
     jac_fun  <- function(...) {
       return(as(get_back_jac(...), "matrix"))
@@ -20,25 +21,20 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
                 as.character(solve_period)))
   }
 
-  maxlag <- mdldef$max_endo_lag
-  maxlead <- mdldef$max_endo_lead
-  
-  endo_data_period <-  period_range(start_period(solve_period) - maxlag,
-                                    end_period(solve_period) + maxlead)
-  endo_data_mat <- t(endo_data[endo_data_period])
+  endo_data <- endo_data_solve(endo_data_mdl, solve_period,
+                               maxlag = mdldef$max_endo_lag,
+                               maxlead = mdldef$max_endo_lead)
   
   nper <- nperiod(solve_period)
-  nper_data <- nperiod(endo_data_period)
   start_per <- start_period(solve_period)
-  start_per_index <- maxlag + 1
-  start_per_index_exo <- start_period(solve_period) - 
-                          start_period(data_period) + 1
-  solve_per_sel <- seq(start_per_index, nper_data - maxlead)
-  var_indices <- get_var_indices_back(mdldef, start_per_index)
+  start_per_index_exo <- start_per - start_period(data_period) + 1
+  
+  var_indices <- get_var_indices_back(mdldef, 
+                                      period_index = mdldef$max_endo_lag + 1)
   
   nendo <- mdldef$endo_count
- 
-  slv_back <- function(endo_data_mat, exo_data) {
+  
+  slv_back <- function(endo_data, exo_data) {
     # TODO: pass other arguments to slv_back
     itr_tot <- 0
     error   <- FALSE
@@ -47,23 +43,23 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       period_index_exo <- start_per_index_exo + iper - 1
       per_txt <- as.character(start_per + (iper - 1))
       shift <- (iper - 1) * nendo
-      lags <- endo_data_mat[var_indices$lags + shift]
-      leads <- endo_data_mat[var_indices$leads + shift]
+      lags <- endo_data$mat[var_indices$lags + shift]
+      leads <- endo_data$mat[var_indices$leads + shift]
       curvar_indices <- var_indices$curvars + shift
       if (start_option == "current" || iper == 1) {
-        start <- endo_data_mat[curvar_indices]
+        start <- endo_data$mat[curvar_indices]
       }
       if (solver == "nleqslv") {
         out <- nleqslv(start, fn = get_back_res, jac = jac_fun, 
                        method = "Newton", lags = lags, leads = leads, 
                        exo_data = exo_data, period_index = period_index_exo, 
-                       debug_eqs = debug_eqs, control = control, ...)
+                       control = control, ...)
         error <- out$termcd != 1
       } else {
         out <- umf_solve_nl(start, fn = get_back_res, jac = jac_fun, 
                             lags = lags, leads = leads, exo_data = exo_data, 
                             period_index = period_index_exo, 
-                            debug_eqs = debug_eqs, control = control, ...)
+                            control = control, ...)
         error <- !out$solved
       }
       
@@ -99,7 +95,7 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
       }
       
       # update data
-      endo_data_mat[curvar_indices] <- out$x
+      endo_data$mat[curvar_indices] <- out$x
       
       if (start_option == "previous") start <- out$x
       
@@ -123,17 +119,17 @@ solve_backward_model <- function(model_index, mdldef, calc, solve_period,
     }
     
     return(list(solved = !error, message = message,
-                x = endo_data_mat[ , solve_per_sel, drop = FALSE]))
+                x = cur_endos(endo_data)))
   }
   
-  ret <- slv_back(endo_data_mat, exo_data)
+  ret <- slv_back(endo_data, exo_data)
   solved <- ret$solved
   result <- ret$x
   message <- ret$message
   
   if (!solved && homotopy) {
     
-    ret <- solve_homotopy_back(endo_data_mat, exo_data, solve_fun = slv_back,
+    ret <- solve_homotopy_back(endo_data, exo_data, solve_fun = slv_back,
                                nper = nper, 
                                start_per_index_exo = start_per_index_exo, 
                                mdldef = mdldef, calc = calc,

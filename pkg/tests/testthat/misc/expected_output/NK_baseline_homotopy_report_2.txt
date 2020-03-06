@@ -27,34 +27,34 @@ Backwards solve failed at period 2015. Total number of iterations: 2.
 
 -------> HOMOTOPY iteration = 3, lambda = 0.125 <------
 
-Backwards solve succesfull. Total number of iterations: 71.
+Backwards solve succesfull. Total number of iterations: 61.
 
 -------> HOMOTOPY iteration = 4, lambda = 0.25 <------
 
-Backwards solve succesfull. Total number of iterations: 78.
+Backwards solve succesfull. Total number of iterations: 60.
 
 -------> HOMOTOPY iteration = 5, lambda = 0.375 <------
 
-Backwards solve succesfull. Total number of iterations: 87.
+Backwards solve succesfull. Total number of iterations: 61.
 
 -------> HOMOTOPY iteration = 6, lambda = 0.5 <------
 
-Backwards solve succesfull. Total number of iterations: 91.
+Backwards solve succesfull. Total number of iterations: 60.
 
 -------> HOMOTOPY iteration = 7, lambda = 0.625 <------
 
-Backwards solve succesfull. Total number of iterations: 97.
+Backwards solve succesfull. Total number of iterations: 60.
 
 -------> HOMOTOPY iteration = 8, lambda = 0.75 <------
 
-Backwards solve succesfull. Total number of iterations: 101.
+Backwards solve succesfull. Total number of iterations: 60.
 
 -------> HOMOTOPY iteration = 9, lambda = 0.875 <------
 
-Backwards solve succesfull. Total number of iterations: 105.
+Backwards solve succesfull. Total number of iterations: 59.
 
 -------> HOMOTOPY iteration = 10, lambda = 1 <------
 
-Backwards solve succesfull. Total number of iterations: 109.
+Backwards solve succesfull. Total number of iterations: 59.
 
 ++++++++++ HOMOTOPY SUCCESFUL after 10 iterations ++++++++++++++++++++++++++++++

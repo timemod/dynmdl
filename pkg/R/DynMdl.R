@@ -1212,11 +1212,20 @@ DynMdl <- R6Class("DynMdl",
                                     private$data_period,
                                     private$endo_data, private$exo_data, 
                                     private$get_back_res, private$get_back_jac,
-                                    control = control, solver = solver,
+                                    solver = solver,
                                     start_option = start, 
-                                    debug_eqs = debug_eqs,
                                     homotopy = homotopy,
-                                    silent = silent, backrep = backrep, ...)
+                                    silent = silent, backrep = backrep, 
+                                    control = control, 
+                                    debug_eqs = debug_eqs, ...)
+       
+       # solve_backward_model <- function(model_index, mdldef, calc, solve_period, 
+       #                                  data_period, endo_data_mdl, exo_data,
+       #                                  get_back_res, get_back_jac, solver, 
+       #                                  start_option, homotopy, 
+       #                                  silent, backrep, control, ...) {
+       
+       
         result <- ret$x
         solved <- ret$solved
         message <- ret$message

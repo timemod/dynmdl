@@ -1,0 +1,20 @@
+
+Solving backwards for period 2015/2033
+Non-finite values in residuals in period 2016 for the following equations:
+ eq 7 eq 15 eq 17 
+  NaN   NaN   NaN 
+
+Backwards solve failed at period 2016. Tota number of iterations: XXX.
+
+
+++++++++++ HOMOTOPY ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+-------> HOMOTOPY iteration = 1, lambda = 0.5 <------
+
+Backwards solve succesfull. Tota number of iterations: XXX.
+
+-------> HOMOTOPY iteration = 2, lambda = 1 <------
+
+Backwards solve succesfull. Tota number of iterations: XXX.
+
+++++++++++ HOMOTOPY SUCCESFUL after 2 iterations +++++++++++++++++++++++++++++++

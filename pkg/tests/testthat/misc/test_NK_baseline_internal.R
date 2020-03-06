@@ -145,7 +145,7 @@ test_that("homotopy", {
   report <- gsub("Convergence after \\d+ iterations", 
                  "Convergence after XXX iterations", report)
   expect_known_output(cat(report), 
-                      "expected_output/NK_baseline_homotopy_report_1.txt")
+                      "expected_output/NK_baseline_int_homotopy_report.txt")
   expect_equal(mdl2$get_solve_status(), "OK")
   
   #print(tsdif(mdl$get_endo_data(), mdl2$get_endo_data(), fun = cvgdif, tol = 1e-1))
@@ -153,24 +153,6 @@ test_that("homotopy", {
   #lines(mdl2$get_endo_data(names = "f"), col = "red")
 })
 
-test_that("homotopy backward for shock in lag", {
-  mdl2 <- mdl$clone()
-  mdl2$put_static_endos()
-  p <- start_period(model_period)
-  mdl2$set_endo_values(4, names = "PI", period = "2014")
-  expect_warning(mdl2$solve(silent = TRUE, homotopy = FALSE,
-                            control = list(maxiter = 100)),
-                 "Model solving not succesful\\.\nFunction value contains non-finite values ")
-  expect_equal(mdl2$get_solve_status(), "ERROR")
-  report <- capture_output({
-    mdl2$solve(mode = "backwards", control = list(maxiter = 100),
-               homotopy = TRUE, backrep = "total")
-  })
-  expect_equal(mdl2$get_solve_status(), "OK")
-  expect_known_output(cat(report), 
-                      "expected_output/NK_baseline_homotopy_report_2.txt")
-  
-})
 
 
 
@@ -194,7 +176,7 @@ test_that("homotopy backwards", {
   report1 <- gsub("Total number of iterations: \\d+", 
                    "Tota number of iterations: XXX", report1)
   expect_known_output(cat(report1), 
-                      "expected_output/NK_baseline_homotopy_report_back_1.txt")
+                      "expected_output/NK_baseline_int_homotopy_report_back_1.txt")
   
   # with shock epds = 5
   mdl2 <- mdl$clone()
@@ -207,9 +189,9 @@ test_that("homotopy backwards", {
   })
   expect_equal(mdl2$get_solve_status(), "OK")
   report2 <- gsub("Total number of iterations: \\d+", 
-                  "Tota number of iterations: XXX", report2)
+                  "Total number of iterations: XXX", report2)
   expect_known_output(cat(report2), 
-                      "expected_output/NK_baseline_homotopy_report_back_2.txt")
+                      "expected_output/NK_baseline_int_homotopy_report_back_2.txt")
 })
 
 test_that("homotopy backward for shock in lag", {
@@ -227,9 +209,10 @@ test_that("homotopy backward for shock in lag", {
   })
   expect_equal(mdl2$get_solve_status(), "OK")
   expect_known_output(cat(report), 
-                      "expected_output/NK_baseline_homotopy_report_back_3.txt")
+                      "expected_output/NK_baseline_int_homotopy_report_back_3.txt")
   
 })
+
 
 
 
