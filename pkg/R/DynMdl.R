@@ -26,6 +26,7 @@ setOldClass("regts")
 #' @importFrom tictoc toc
 #' @importFrom regts na_trim
 #' @importFrom regts remove_na_columns
+#' @importFrom methods as
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -1037,7 +1038,7 @@ DynMdl <- R6Class("DynMdl",
       return(residuals)
     },
     
-    solve = function(control = list(), mode , solver = c("umfpackr", "nleqslv"),  
+    solve = function(control = list(), mode, solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
                      homotopy = TRUE, silent = FALSE, 
                      backrep = c("period", "total"), ...) {
@@ -1119,9 +1120,10 @@ DynMdl <- R6Class("DynMdl",
       }
       
       ret <- solve_fun(endo_data, private$exo_data, solver = solver,
-                       silent = silent, control = control, 
-                       start_option = start, backrep = backrep, 
-                       debug_eqs = debug_eqs, ...)
+                       silent = silent, start_option = start, backrep = backrep,
+                       # the following arguments are  passed to the 
+                       # solver (umf_solve_nl of nleqslv) in:
+                       control = control, debug_eqs = debug_eqs, ...)
      
       result <- ret$x
       solved <- ret$solved
@@ -2149,7 +2151,7 @@ DynMdl <- R6Class("DynMdl",
     },
     solve_stacked_time = function(endo_data, exo_data, solver, silent,
                                   start_option, backrep, ...) { 
-      # Arguments start_option, silent and backrep are not used here,
+      # Arguments silent, start_option and backrep are not used here,
       # but solve_stacked_time can be called with these arguments by methods
       # solve or homotopy.
       endos <- cur_endos(endo_data)
