@@ -1,10 +1,12 @@
 # Returns the indices of the lags, leads and current variables in t(endo_data)
-# for a specific period. Used to solve the model backwards,
-# and in method get_back_jacob.
+# (the transpose of the endo data, so the columns corrspond to different periods,
+# this can also be the elment mat of endo_data_solve object), for a specific 
+# period specified with argument period_index. 
+# Used in methods solve_backward_model and get_back_jacob.
 #
 # INPUT:
 #  mdldef       : a list with the model definitions as used in the DynMdl object.
-#  period_index : the period index relative to the start of the data period.
+#  period_index : the index relative to the first column of t(endo_data)
 #                 Thus a period_index of 1 corresponds to the first period
 #                 in the data period
 # RETURN:

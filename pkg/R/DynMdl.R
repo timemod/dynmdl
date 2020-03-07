@@ -2190,7 +2190,7 @@ DynMdl <- R6Class("DynMdl",
       start_per_index_exo <- start_per - start_period(private$data_period) + 1
       
       var_indices <- get_var_indices_back(private$mdldef, 
-                            period_index = private$mdldef$max_endo_lag + 1)
+                                          period_index = endo_data$cur_cols[1])
       
       nendo <- private$mdldef$endo_count
       
