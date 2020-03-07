@@ -1,6 +1,5 @@
 
 Solving with stacked time method for period 2015Q2/2016Q3
-
 Initial value of function contains non-finite values (starting at index=1)
 
 
@@ -10,11 +9,9 @@ Initial value of function contains non-finite values (starting at index=1)
 
 Initial value of function contains non-finite values (starting at index=1)
 
-
 -------> HOMOTOPY iteration = 2, lambda = 0.25 <------
 
 Initial value of function contains non-finite values (starting at index=1)
-
 
 -------> HOMOTOPY iteration = 3, lambda = 0.125 <------
 

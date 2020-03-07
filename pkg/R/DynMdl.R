@@ -1102,7 +1102,7 @@ DynMdl <- R6Class("DynMdl",
       if (stacked_time) {
         
         if (!silent) {
-          cat(sprintf("\nSolving with stacked time method for period %s\n\n",
+          cat(sprintf("\nSolving with stacked time method for period %s\n",
                       as.character(private$model_period)))
         }
         
@@ -1111,7 +1111,7 @@ DynMdl <- R6Class("DynMdl",
       } else {
         
         if (!silent) {
-          cat(sprintf("\nSolving backwards for period %s\n\n",
+          cat(sprintf("\nSolving backwards for period %s\n",
                       as.character(private$model_period)))
         }
         
@@ -1130,11 +1130,11 @@ DynMdl <- R6Class("DynMdl",
       if (!solved && homotopy) {
         
         ret <- private$homotopy(endo_data, private$exo_data, 
-                                solve_fun = solve_fun,
-                                silent = silent, control = control,
+                                solve_fun = solve_fun, silent = silent,
                                 # the next arguments are only passed to 
                                 # solve_fun:
-                                solver = solver, start_option = start,
+                                solver = solver, control = control,
+                                start_option = start,
                                 backrep = backrep, debug_eqs = debug_eqs, ...)
         
         
@@ -2148,8 +2148,7 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     solve_stacked_time = function(endo_data, exo_data, solver, silent,
-                                  control, start_option, backrep,
-                                  ...) { 
+                                  start_option, backrep, ...) { 
       # Arguments start_option, silent and backrep are not used here,
       # but solve_stacked_time can be called with these arguments by methods
       # solve or homotopy.
@@ -2160,7 +2159,7 @@ DynMdl <- R6Class("DynMdl",
       if (solver == "umfpackr") {
         ret <- umf_solve_nl(endos, private$get_residuals, private$get_jac, 
                             lags = lags, leads = leads, exo_data = exo_data, 
-                            nper = nper, control = control, ...)
+                            nper = nper, ...)
       } else if (solver == "nleqslv") {
         nper <- ncol(endos)
         jac_fun <- function(...) {
@@ -2168,14 +2167,13 @@ DynMdl <- R6Class("DynMdl",
         }
         ret <- nleqslv(endos, fn = private$get_residuals, jac = jac_fun, 
                        lags = lags, leads = leads, exo_data = exo_data, 
-                       nper = nper, method = "Newton",  control = control, ...)
+                       nper = nper, method = "Newton", ...)
         ret$solved <- ret$termcd == 1
       }
       return(ret)
     },
     solve_backward_model = function(endo_data, exo_data, solver, silent,
-                                    control, start_option, backrep,
-                                    ...) {
+                                    start_option, backrep, ...) {
      
       if (solver == "nleqslv") {
         jac_fun  <- function(...) {
@@ -2211,18 +2209,13 @@ DynMdl <- R6Class("DynMdl",
           out <- nleqslv(start, fn = private$get_back_res, jac = jac_fun, 
                          method = "Newton", lags = lags, leads = leads, 
                          exo_data = exo_data, period_index = period_index_exo, 
-                         control = control, ...)
+                         ...)
           error <- out$termcd != 1
         } else {
           out <- umf_solve_nl(start, fn = private$get_back_res, jac = jac_fun, 
                               lags = lags, leads = leads, exo_data = exo_data, 
-                              period_index = period_index_exo,
-                              control = control, ...)
+                              period_index = period_index_exo, ...)
           error <- !out$solved
-        }
-        
-        if (control$trace) {
-          cat("\n")
         }
         
         if (error && !silent) {
@@ -2278,7 +2271,7 @@ DynMdl <- R6Class("DynMdl",
       
       return(list(solved = !error, message = message, x = cur_endos(endo_data)))
     },
-    homotopy = function(endo_data, exo_data, solve_fun, silent, control, ...) {
+    homotopy = function(endo_data, exo_data, solve_fun, silent, ...) {
       
       #
       # now prepare steady values of exogenous variables
@@ -2360,11 +2353,7 @@ DynMdl <- R6Class("DynMdl",
         }
         if (!silent) {
           if (iteration > 1) {
-            if (control$trace) {
-              cat("\n\n")
-            } else {
-              cat("\n")
-            }
+            cat("\n")
           }
           cat(sprintf("-------> HOMOTOPY iteration = %d, lambda = %g <------\n\n",
                       iteration, lambda))
@@ -2396,8 +2385,7 @@ DynMdl <- R6Class("DynMdl",
             leads_steady * (1 - lambda)
         }
         
-        ret <- solve_fun(endo_data, exo_data, silent = silent, 
-                         control = control, ...)
+        ret <- solve_fun(endo_data, exo_data, silent = silent, ...)
         
         if (ret$solved) {
           if (lambda == 1) {

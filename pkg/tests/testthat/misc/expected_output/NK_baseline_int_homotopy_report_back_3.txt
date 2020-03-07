@@ -1,6 +1,5 @@
 
 Solving backwards for period 2015/2033
-
 Non-finite values in residuals in period 2015 for the following equations:
  eq 6  eq 7  eq 8  eq 9 eq 12 eq 15 eq 17 
   NaN   NaN   NaN   NaN   NaN   NaN   NaN 

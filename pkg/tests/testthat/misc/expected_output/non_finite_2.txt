@@ -1,6 +1,5 @@
 
 Solving with stacked time method for period 2018Q1
-
 Function value contains non-finite values (starting at index=2) at iteration 1
 Non-finite values in residuals for the following equations and periods:
        eq_2

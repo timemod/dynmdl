@@ -1,6 +1,5 @@
 
 Solving with stacked time method for period 2015/2033
-
 Function value contains non-finite values (starting at index=7) at iteration 2
 
 

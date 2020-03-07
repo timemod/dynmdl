@@ -1,6 +1,5 @@
 
 Solving backwards for period 2015/2032
-
 Convergence for 2015 in 0 iterations
 Convergence for 2016 in 0 iterations
 Convergence for 2017 in 0 iterations
