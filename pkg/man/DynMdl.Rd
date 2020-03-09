@@ -189,6 +189,12 @@ used in the fit procedure for the steady state.}
 \item{\code{\link{get_fit_instruments}}}{Returns all non-zero fit instruments
 used in the fit procedure}
 
+\item{\code{\link{set_sigma}}}{Sets one or more sigma parameters used
+in the fit method}
+
+\item{\code{\link{set_sigma_values}}}{Sets the values of sigma parameters
+used in the fit method}
+
 \item{\code{\link{get_sigmas}}}{Returns all sigma parameters >= 0 used in
 the fit procedure. If a sigma parameter is negative, then the
 corresponding fit instrument is not included}

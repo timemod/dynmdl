@@ -35,7 +35,7 @@ test_that("solve_steady", {
 
 test_that("solve with disabled fit procedure", {
   mdl2 <- mdl$clone()
-  mdl2$set_param_values(-1, pattern = "sigma_eps.+")
+  mdl2$set_sigma_values(-1, pattern = "eps.+")
   p <- start_period(model_period)
   with (as.list(mdl2$get_param()), {
     mdl2$set_endo_values(exp(sigma_d), names = "epsd", period = p);

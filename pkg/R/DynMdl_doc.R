@@ -1110,75 +1110,97 @@ NULL
 #' }
 #' @section Methods:
 #' \itemize{
-#' \item \code{get_endo_names}: Names of the endogenous model variables
+#' \item \code{get_endo_names}: Names of the endogenous model variables.
 #'
-#' \item \code{get_exo_names}: Names of the endogenous model variables
+#' \item \code{get_exo_names}: Names of the endogenous model variables.
 #'
-#' \item \code{get_par_names}: Names of the model parameters
+#' \item \code{get_par_names}: Names of the model parameters (including
+#' the sigma parameters used in the fit method).
 #'
 #' }
 #'
 #' @seealso \code{\link{get_instrument_names}} and \code{\link{get_sigma_names}}
 NULL
 
-#' \code{\link{DynMdl}} method: Sets the model parameters
-#' @name set_param
+#' \code{\link{DynMdl}} methods: Set and get model parameters
+#' @name set/get_param
+#' @aliases set_param set_param_values get_param
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMdl}}
-#' sets the model parameters
+#' \code{\link{DynMdl}} methods \code{set_param} and \code{set_param_values} 
+#' can be used to set the model parameters. Method \code{get_param}
+#' returns the model parameters.
+#' 
+#' Currently, all three methods treat the sigma parameters used in the
+#' fit procedure the same as ordinary paramters. However,
+#' the recommended methods to set or get sigma parameters are 
+#' \code{\link{set_sigma}}, 
+#' \code{\link{set_sigma_values}} and \code{\link{get_sigmas}}.
+#' You will get a warming when \code{set_param}, \code{set_param_values} 
+#' and \code{get_param} are applied to sigma parameters. In a future 
+#' release of package \code{dynmdl}, \code{set_param}, 
+#' \code{set_param_values} and \code{get_param} will only set or retrieve
+#' original model parameters.
+#' 
 #' @section Usage:
 #' \preformatted{
-#' mdl$set_param(p, name_err = c("stop", "warn", "silent"))
-#'
-#' }
-#' \code{mdl} is a \code{\link{DynMdl}} object
-#' @section Arguments:
-#'
-#' \describe{
-#' \item{\code{p}}{a named numeric vector with parameter values.
-#' The names are the names of the parameters}
-#' \item{\code{name_err}}{this option specifies the action that should be taken 
-#' when a variable name is not a model variable.
-#' For \code{"stop"} (the default), the execution of this function is stopped.
-#' For \code{"warn"} and \code{"silent"} the names imeseries that are no model
-#' parameters are skipped. \code{"warn"} does however give a warning.}
-#' }
-#' @examples
-#' mdl <- islm_mdl()
-#' mdl$set_param(c(i0 = 101))
-#' @seealso \code{\link{set_param_values}} and \code{\link{get_param}}
-NULL
-
-
-#' \code{\link{DynMdl}} method: Returns model parameters
-#' @name get_param
-#'
-#' @description
-#' This method of R6 class \code{\link{DynMdl}}
-#' returns model parameters
-#' @section Usage:
-#' \preformatted{
+#' mdl$set_param(params, names, name_err = c("stop", "warn", "silent"))
+#' 
+#' mdl$set_param_values(value, names, pattern)
+#' 
 #' mdl$get_param(pattern, names)
-#'
+#' 
 #' }
 #' \code{mdl} is a \code{\link{DynMdl}} object
+#' 
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{pattern}}{a regular expression specifying parameter names}
-#' \item{\code{names}}{a character vector with parameter names}
+#' \item{\code{params}}{a named numeric vector with parameter values.
+#' The names are the names of the parameters.}
+#' \item{\code{names}}{a character vector with names of the parameters.
+#' For method \code{set_param}, this argument *must* be specified if 
+#' \code{params} is a vector without names.}
+#' \item{\code{name_err}}{this option specifies the action that should be taken 
+#' when a specified name is not the name of a model parameter.
+#' For \code{"stop"} (the default), the execution of this function is stopped.
+#' For \code{"warn"} and \code{"silent"} the names that are no model
+#' parameters are skipped. \code{"warn"} does, however, give a warning.}
+#' \item{\code{pattern}}{a regular expression. The action (get or
+#' set parameter values) is applied to all parameters wiht names
+#' matching \code{pattern}.}
 #' }
+#' 
+#' If neither \code{names} nor \code{pattern} has been specified in 
+#' methods \code{set_param_values} or \code{get_param}, then the action
+#' is applied to all model parameters.
+#' 
+#' @section Methods:
+#' \itemize{
+#' \item \code{set_param}: Set the parameters using a named numeric
+#' vector. The names of the vector should be the parameter names.
+#' \item \code{set_param_values}: Give one or more parameter
+#' a specified value.
+#' \item \code{get_param}: Returns the parameters.
+#' }
+#' 
+#' @seealso \code{\link{get_par_names}}, \code{\link{set_sigma}}, 
+#' \code{\link{set_sigma_values}} and \code{\link{get_sigmas}}
+#' 
 #' @examples
 #' mdl <- islm_mdl()
-#'
-#' # print all model parameters
-#' print(mdl$get_param())
-#'
+#' 
 #' # print parameters c0, c1, c2 and c3
 #' print(mdl$get_param(pattern = "^c.*"))
-#' @seealso \code{\link{set_param}}, \code{\link{set_param_values}} 
-#' and \code{\link{get_vars_pars}}
+#' 
+#' # set parameter i0 to 101 and c0 to 110
+#' mdl$set_param(c(i0 = 101, c0 = 110))
+#' 
+#' # set all parameters with names ending with "5" to zero:
+#' mdl$set_param_values(0, pattern = "5$")
+#' 
+#' # print all parameters
+#' print(mdl$get_param())
 NULL
 
 
@@ -1273,48 +1295,6 @@ NULL
 #'    stop("Error solving the model. Check the warnings!")
 #' }
 #' }
-NULL
-
-#' \code{\link{DynMdl}} methods: Sets the values of the model parameters
-#' @name set_param_values
-#' @description
-#' This method of R6 class \code{\link{DynMdl}} 
-#' can be used to set the values of the model data
-#'
-#' @section Usage:
-#' \preformatted{
-#'
-#' mdl$set_param_values(value, names, pattern)
-#'
-#' }
-#'
-#' \code{mdl} is a \code{\link{DynMdl}} object
-#'
-#' @section Arguments:
-#'
-#' \describe{
-#' \item{\code{value}}{a numeric vector of length 1}
-#' \item{\code{names}}{a character vector with parameter names}
-#' \item{\code{pattern}}{a regular expression}
-#' }
-#' 
-#' If neither \code{names} nor \code{pattern} have been specified,
-#' then all model parameters are set to the specified value.
-#'
-#' @seealso \code{\link{set_param}} and \code{\link{get_param}} 
-#' @examples
-#'
-#' mdl <- islm_mdl()
-#' 
-#' # set parameters i4 and i5 to zero
-#' mdl$set_param_values(0, names = c("i4", "c5"))
-#'
-#' # set the values all parameters starting with "i" 
-#' # (i0, i1, i2, i3, i4 and i5) to 0
-#' mdl$set_param_values(0, pattern = "^i")
-#' 
-#' # set all parameters to zero
-#' mdl$set_param_values(0)
 NULL
 
 #' \code{\link{DynMdl}} methods: Returns a list of all model variables and 

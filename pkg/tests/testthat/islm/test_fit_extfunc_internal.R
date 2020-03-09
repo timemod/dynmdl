@@ -48,7 +48,7 @@ report2 <- capture_output(mdl$solve_steady())
 mdl$set_period(model_period)
 mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
 mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")
-mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
+mdl$set_sigma(c(ut = 7, uc = 5, ui = 21, umd = 2))
 
 mdl$solve(control = list(silent = TRUE))
 
