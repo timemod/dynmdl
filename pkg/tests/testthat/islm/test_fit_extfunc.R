@@ -45,9 +45,8 @@ mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
 mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")
 
 test_that("set_param", {
-  expect_warning(
-    mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2)),
-    "Using method 'set_param' to set sigma parameters is obsolete. Use method 'set_sigma' instead\\.")
+  expect_silent(
+    mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2)))
 
   expected_result <- c(ut = 7, uc = 5, umd = 2, ui = 21)
   names(expected_result) <- paste0("sigma_",  names(expected_result))

@@ -22,9 +22,7 @@ test_that("set_sigma", {
                expected_result)
   expect_warning(
     expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
-               expected_result),
-    "Using method 'get_param' to get sigma parameters is obsolete. Use method 'get_sigma' instead.")
-
+               expected_result), NA)
 })
 
 endo_names <- c("y", "yd", "t", "c", "i", "md", "r") 
@@ -538,21 +536,11 @@ test_that("method get_param to obtain sigma values", {
   
   sigmas <- mdl$get_sigmas()
   expect_equal(sigmas, params_and_sigmas[names(sigmas)])
-  expect_silent(
-    expect_equal(mdl$get_param(pattern = "u")[mdl$get_sigma_names()], 
+  expect_equal(mdl$get_param(pattern = "u")[mdl$get_sigma_names()], 
                sigmas)
-  )
-  wmsg <- "Using method 'get_param' to get sigma parameters is obsolete\\. Use method 'get_sigma' instead\\."
-  expect_warning(
-    expect_equal(mdl$get_param(pattern = "sigma")[mdl$get_sigma_names()], 
-                 sigmas),
-    wmsg)
-  expect_warning(
-    expect_equal(mdl$get_param(pattern = "^sigma")[mdl$get_sigma_names()], 
-                 sigmas),
-    wmsg)
   
-  expect_warning(
-    expect_equal(mdl$get_param(names =  "sigma_umd"), sigmas["sigma_umd"]),
-    wmsg)
+  expect_equal(mdl$get_param(pattern = "sigma")[mdl$get_sigma_names()], 
+                 sigmas)
+
+  expect_equal(mdl$get_param(names =  "sigma_umd"), sigmas["sigma_umd"])
 })
