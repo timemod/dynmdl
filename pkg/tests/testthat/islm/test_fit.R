@@ -200,7 +200,7 @@ test_that("start solution with correct lagrange multipliers", {
   msg <- "The maximum number of iterations \\(1\\) has been reached"
   expect_warning(
     expect_output(
-      mdl2$solve(control = list(maxiter = 1)), msg),
+      mdl2$solve(homotopy = FALSE, control = list(maxiter = 1)), msg),
     msg)
   mdl2$set_data(cbind(endo_data, l, inst))
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
@@ -321,8 +321,8 @@ test_that("no fit targets", {
   expect_null(mdl2$get_fit())
   expect_true(max(abs(mdl2$get_fit_instruments())) > 1e-8)
   mdl2$solve(silent = TRUE)
-  expect_identical(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
-  expect_identical(mdl2$get_fit_instruments(), mdl$get_fit_instruments() * 0)
+  expect_equal(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
+  expect_equal(mdl2$get_fit_instruments(), mdl$get_fit_instruments() * 0)
   expect_equal(mdl2$get_endo_data(), mdl_old$get_endo_data())
 })
 
@@ -332,9 +332,9 @@ test_that("no fit targets, removed fit instruments", {
   mdl2$set_sigma_values(-1, pattern = "^u[mt]")
   expect_equal(mdl2$get_sigmas(), c(sigma_uc = 5, sigma_ui = 21))
   mdl2$solve(silent = TRUE)
-  expect_identical(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
+  expect_equal(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
   inst_names <- c("uc", "ui")
-  expect_identical(mdl2$get_fit_instruments(names = inst_names), 
+  expect_equal(mdl2$get_fit_instruments(names = inst_names), 
                    mdl$get_fit_instruments(names = inst_names) * 0)
   old_inst_names <- c("ut", "umd")
   expect_identical(mdl2$get_fit_instruments(names = old_inst_names), 

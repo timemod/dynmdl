@@ -39,7 +39,7 @@ test_that("solve", {
                 period = "2005q1")
   mdl2$set_data(data)
   
-  expect_warning(mdl2$solve(control = list(silent = TRUE)), NA)
+  expect_warning(mdl2$solve(silent = TRUE), NA)
   expect_equal(mdl2$get_solve_status(), "OK")
   expect_equal(dynare_endo, mdl2$get_endo_data(period = model_period))
 })
@@ -66,7 +66,7 @@ test_that("solve_perturb linear model", {
   # use a large shock, this should not matter if the model
   # is exactly linear
   mdl2$set_exo_values(280, period = start_period(model_period), names = "g")
-  mdl2$solve(control = list(silent = TRUE))
+  mdl2$solve(silent = TRUE)
   mdl3 <- mdl2$clone()
   mdl3$solve_perturbation()
   expect_equal(mdl2$get_endo_data(), mdl3$get_endo_data())

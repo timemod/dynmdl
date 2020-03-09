@@ -50,7 +50,7 @@ mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")
 mdl$set_fit(regts(c(250, 255), start = "2016Q1"), names = "t")
 mdl$set_sigma(c(ut = 7, uc = 5, ui = 21, umd = 2))
 
-mdl$solve(control = list(silent = TRUE))
+mdl$solve(silent = TRUE)
 
 dynare_result <- read_dynare_result("islm_fit", mdl)
 

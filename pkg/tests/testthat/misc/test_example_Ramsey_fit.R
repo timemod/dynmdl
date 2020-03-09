@@ -34,7 +34,7 @@ dynare_result <- read_dynare_result(sub("_fit$", "", model_name), mdl)
 
 test_that("steady state and eigenvalues", {
   
-  mdl$solve_steady(control = list(silent = TRUE))
+  mdl$solve_steady(silent = TRUE)
   expect_equal(mdl$get_static_endos(), dynare_result$steady)
   check_report <- capture_output(mdl$check())
   
@@ -61,7 +61,7 @@ test_that("simulation", {
   p <- period("2000")
   k_2000_trended <- 8 * as.numeric(mdl$get_trend_data(names = "x", period = p))
   mdl$set_endo_values(k_2000_trended, names = "k", period = p)
-  mdl$solve(control = list(silent = TRUE))
+  mdl$solve(silent = TRUE)
   
   expect_equal(mdl$get_endo_data(period = per, trend = FALSE), 
                dynare_result$endo, tol = 1e-6)
@@ -71,7 +71,7 @@ test_that("simulation", {
   mdl_fit <- mdl$copy()
   fit_targets <- regts(matrix(c(1.06, 1.07), ncol = 1), start = 2005, names = "c")
   mdl_fit$set_fit(fit_targets)
-  mdl_fit$solve(control = list(silent = TRUE))
+  mdl_fit$solve(silent = TRUE)
   expect_equal(mdl_fit$get_endo_data(period = get_period_range(fit_targets),
                                   names = colnames(fit_targets)), fit_targets, 
                check.attributes = FALSE)

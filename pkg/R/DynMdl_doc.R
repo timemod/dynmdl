@@ -793,7 +793,7 @@ NULL
 #' \preformatted{
 #'  md$solve(control = list(), mode, solver = c("umfpackr", "nleqslv"), 
 #'           start = c("current", "previous"), debug_eqs = FALSE,
-#'           homotopy = FALSE, silent = FALSE, backrep = c("period", "total"),
+#'           homotopy = TRUE, silent = FALSE, backrep = c("period", "total"),
 #'           ...)
 #' }
 #'
@@ -816,7 +816,7 @@ NULL
 #' \code{"umfpackr"} (sparse linear algebra) or \code{"nleqslv"} (dense linear algebra).
 #' For large models, the \code{umfpackr} solve can be much faster.}
 #' \item{\code{start}}{Method used to initialize starting values when solving
-#' the model backwards. For \code{"current"} (the default) the current values 
+#' the model with the backwards method. For \code{"current"} (the default) the current values 
 #' of the endogenous variables are used as starting values. For 
 #' \code{"previous"} the solution of the previous period is used to create 
 #' starting values (except for the first period when the model is solved). 

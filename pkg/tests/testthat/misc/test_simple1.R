@@ -33,12 +33,12 @@ test_that("steady state calculation", {
 test_that("solve", {
   mdl1 <- mdl$clone()
   mdl1$set_data(ref1[lead_per], names = "y")
-  mdl1$solve(control = list(silent = TRUE))
+  mdl1$solve(silent = TRUE)
   mdl2 <- mdl1$clone()
   mdl2$set_data(ref2[lead_per], names = "y")
   mdl2$set_data(regts(1, start = start_period(mdl$get_period())), 
                 names = "x")
-  mdl2$solve(control = list(silent = TRUE))
+  mdl2$solve(silent = TRUE)
   expect_equal(mdl1$get_endo_data(), ref1)
   expect_equal(mdl2$get_endo_data(), ref2)
 })

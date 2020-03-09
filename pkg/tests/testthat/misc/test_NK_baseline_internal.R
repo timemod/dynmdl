@@ -57,7 +57,7 @@ test_that("solve", {
     mdl2$set_exo_values(exp(sigma_A), names = "epsA", period = p);
     mdl2$set_exo_values(exp(sigma_m), names = "epsm", period = p);
   })
-  mdl2$solve(control = list(silent = TRUE, trace = FALSE))
+  mdl2$solve(silent = TRUE)
   
   expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })
@@ -79,13 +79,13 @@ test_that("solve linlogpow", {
   
   # TODO: with global = "no" an incorrect solution is found (not the real 
   # solution of the model)
-  mdl2$solve(control = list(silent = TRUE, trace = TRUE, allow_singular = TRUE,
-                            maxiter = 100),  global = "cline")
+  mdl2$solve(silent = TRUE, control = list(allow_singular = TRUE,
+                                           maxiter = 100),  global = "cline")
  
   
   mdl2$set_param(c(eps = -Inf, eps_lp = -Inf))
-  mdl2$solve(control = list(silent = TRUE, trace = TRUE, allow_singular = TRUE,
-                            maxiter = 100))
+  mdl2$solve(silent = TRUE, control = list(allow_singular = TRUE,
+                                           maxiter = 100))
   
   expect_equal(mdl2$get_endo_data(period = model_period), dynare_result$endo)
 })
@@ -132,7 +132,8 @@ test_that("homotopy", {
   mdl2$set_exo_values(7, names = "epsd", period = p);
   expect_warning(mdl2$solve(silent = TRUE, 
                             control = list(silent = TRUE, trace = FALSE), 
-                            homotopy = FALSE))
+                            homotopy = FALSE),
+    "Model solving not succesful\\.\nFunction value contains non-finite values ")
   expect_equal(mdl2$get_solve_status(), "ERROR")
   expect_silent(mdl2$solve(silent = TRUE))
   expect_equal(mdl2$get_solve_status(), "OK")
@@ -144,10 +145,74 @@ test_that("homotopy", {
   report <- gsub("Convergence after \\d+ iterations", 
                  "Convergence after XXX iterations", report)
   expect_known_output(cat(report), 
-                      "expected_output/NK_baseline_homotopy_report.txt")
+                      "expected_output/NK_baseline_int_homotopy_report.txt")
   expect_equal(mdl2$get_solve_status(), "OK")
   
   #print(tsdif(mdl$get_endo_data(), mdl2$get_endo_data(), fun = cvgdif, tol = 1e-1))
   #plot(mdl$get_endo_data(names = "f"))
   #lines(mdl2$get_endo_data(names = "f"), col = "red")
 })
+
+
+
+
+test_that("homotopy backwards", {
+  
+  # with shock epds = 2
+  mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
+  p <- start_period(model_period)
+  mdl2$set_exo_values(2, names = "epsd", period = p)
+  expect_warning(mdl2$solve(silent = TRUE, homotopy = FALSE,
+                            mode = "backwards", control = list(maxiter = 100)),
+    "Model solving not succesful\\.\nFunction value contains non-finite values ")
+  expect_equal(mdl2$get_solve_status(), "ERROR")
+  
+  report1 <- capture_output({
+    mdl2$solve(mode = "backwards", control = list(maxiter = 100),
+               homotopy = TRUE, backrep = "total")
+  })
+  expect_equal(mdl2$get_solve_status(), "OK")
+  report1 <- gsub("Total number of iterations: \\d+", 
+                   "Tota number of iterations: XXX", report1)
+  expect_known_output(cat(report1), 
+                      "expected_output/NK_baseline_int_homotopy_report_back_1.txt")
+  
+  # with shock epds = 5
+  mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
+  p <- start_period(model_period)
+  mdl2$set_exo_values(5, names = "epsd", period = p)
+  report2 <- capture_output({
+    mdl2$solve(mode = "backwards", control = list(maxiter = 100),
+               homotopy = TRUE, backrep = "total", global = "cline")
+  })
+  expect_equal(mdl2$get_solve_status(), "OK")
+  report2 <- gsub("Total number of iterations: \\d+", 
+                  "Total number of iterations: XXX", report2)
+  expect_known_output(cat(report2), 
+                      "expected_output/NK_baseline_int_homotopy_report_back_2.txt")
+})
+
+test_that("homotopy backward for shock in lag", {
+  mdl2 <- mdl$clone()
+  mdl2$put_static_endos()
+  p <- start_period(model_period)
+  mdl2$set_endo_values(4, names = "PI", period = "2014")
+  expect_warning(mdl2$solve(silent = TRUE, homotopy = FALSE,
+                            mode = "backwards", control = list(maxiter = 100)),
+                 "Model solving not succesful\\.\nFunction value contains non-finite values ")
+  expect_equal(mdl2$get_solve_status(), "ERROR")
+  report <- capture_output({
+    mdl2$solve(mode = "backwards", control = list(maxiter = 100),
+               homotopy = TRUE, backrep = "total")
+  })
+  expect_equal(mdl2$get_solve_status(), "OK")
+  expect_known_output(cat(report), 
+                      "expected_output/NK_baseline_int_homotopy_report_back_3.txt")
+  
+})
+
+
+
+

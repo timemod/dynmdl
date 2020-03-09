@@ -29,7 +29,7 @@ test_that("steady state result is correct", {
                as.numeric(mdl_steady1$get_static_endos()))
   
   # after solving the model the result should not change
-  mdl_solve <- mdl_steady1$copy()$solve(control = list(silent = TRUE))
+  mdl_solve <- mdl_steady1$copy()$solve(silent = TRUE)
   expect_equal(mdl_solve$get_endo_data(), mdl_steady1$get_endo_data())
   
   expect_equal(mdl_steady2$get_endo_data(), mdl_period$get_endo_data())

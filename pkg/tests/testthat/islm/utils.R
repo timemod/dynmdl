@@ -34,6 +34,6 @@ simul_islm <- function(mdl) {
   mdl$set_endo_values(1200, names = "y", period = mdl$get_lag_period())
   mdl$set_endo_values(1210.381827, names = "y", 
                        period = mdl$get_lead_period())
-  mdl$solve(control = list(silent = TRUE))
+  mdl$solve(silent = TRUE)
   return(mdl)
 }

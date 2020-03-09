@@ -54,7 +54,7 @@ test_that("set_param", {
   expect_equal(mdl$get_sigmas(), expected_result)
 })
 
-mdl$solve(control = list(silent = TRUE))
+mdl$solve(silent = TRUE)
 
 dynare_result <- read_dynare_result("islm_fit", mdl)
 

@@ -4,3 +4,30 @@ Non-finite values in residuals in period 2011Q3 for the following equations:
 eq 1 eq 2 eq 3 
   NA  NaN  NaN 
 
+
+
+++++++++++ HOMOTOPY ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+-------> HOMOTOPY iteration = 1, lambda = 0.5 <------
+
+Non-finite values in residuals in period 2011Q3 for the following equations:
+eq 1 
+  NA 
+
+
+-------> HOMOTOPY iteration = 2, lambda = 0.25 <------
+
+Non-finite values in residuals in period 2011Q3 for the following equations:
+eq 1 
+  NA 
+
+
+-------> HOMOTOPY iteration = 3, lambda = 0.125 <------
+
+Non-finite values in residuals in period 2011Q3 for the following equations:
+eq 1 
+  NA 
+
+
+++++++++++ HOMOTOPY FAILED (step < 0.1, final lambda = 0.125) ++++++++++++++++++
+

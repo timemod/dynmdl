@@ -26,6 +26,7 @@ setOldClass("regts")
 #' @importFrom tictoc toc
 #' @importFrom regts na_trim
 #' @importFrom regts remove_na_columns
+#' @importFrom methods as
 #' @export
 #' @keywords data
 #' @return Object of \code{\link{R6Class}} containing a macro-economic model,
@@ -1023,18 +1024,26 @@ DynMdl <- R6Class("DynMdl",
       return(residuals)
     },
     residual_check = function(tol, debug_eqs = FALSE, include_fit_eqs = FALSE,
-                              include_all_eqs = FALSE
-                              ) {
+                              include_all_eqs = FALSE) {
+      
       if (is.null(private$model_period)) stop(private$period_error_msg)
       private$check_debug_eqs(debug_eqs)
-    
-      nper <- nperiod(private$model_period)
-      lags <- private$get_endo_lags()
-      leads <- private$get_endo_leads()
-      
+
       private$prepare_dynamic_model()
-      x <- private$get_solve_endo()
-      residuals <- private$get_residuals(x, lags, leads, nper, debug_eqs)
+      
+      endo_data <- endo_data_solve(private$endo_data,
+                                   private$model_period,
+                                   maxlag = private$mdldef$max_endo_lag,
+                                   maxlead = private$mdldef$max_endo_lead)
+      
+      x <- cur_endos(endo_data)
+      lags <- lag_endos(endo_data)
+      leads <- lead_endos(endo_data)
+      nper <- endo_data$nper_cur
+      
+      residuals <- private$get_residuals(x, lags, leads, private$exo_data, 
+                                         nper, debug_eqs)
+      
       private$clean_dynamic_model()
       
       dim(residuals) <- c(private$mdldef$endo_count, nper)
@@ -1056,10 +1065,11 @@ DynMdl <- R6Class("DynMdl",
       }
       return(residuals)
     },
-    solve = function(control = list(), mode , solver = c("umfpackr", "nleqslv"),  
+    
+    solve = function(control = list(), mode, solver = c("umfpackr", "nleqslv"),  
                      start = c("current", "previous"), debug_eqs = FALSE, 
-                     homotopy, silent = FALSE, backrep = c("period", "total"), 
-                     ...) {
+                     homotopy = TRUE, silent = FALSE, 
+                     backrep = c("period", "total"), ...) {
       
       if (is.null(private$model_period)) stop(private$period_error_msg)
       backrep <- match.arg(backrep)
@@ -1111,252 +1121,78 @@ DynMdl <- R6Class("DynMdl",
       }
       
       private$prepare_dynamic_model()
+      
+      # prepare endo data for solving
+      endo_data <- endo_data_solve(private$endo_data,
+                                   private$model_period,
+                                   maxlag = private$mdldef$max_endo_lag,
+                                   maxlead = private$mdldef$max_endo_lead)
     
       if (stacked_time) {
         
-        if (missing(homotopy)) homotopy <- TRUE
-        
-        # preparations
-     
-        nper <- nperiod(private$model_period)
-        lags <- private$get_endo_lags()
-        leads <- private$get_endo_leads()
-        endos <- private$get_solve_endo()
-        
-        ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
-                                          leads = leads, solver = solver, 
-                                          control = control, 
-                                          debug_eqs = debug_eqs, ...)  
-        endos_result <- ret$x
-        solved <- ret$solved
-        message <- ret$message
-
-        cat_header <- function(txt) {
-          pre <- paste(rep("+", 10), collapse = "")
-          post <- paste(rep("+", 80 - 10 - nchar(txt) - 2), collapse = "")
-          cat(paste0("\n", pre, " ", txt, " ", post, "\n\n"))
-          return()
+        if (!silent) {
+          cat(sprintf("\nSolving with stacked time method for period %s\n",
+                      as.character(private$model_period)))
         }
         
-        if (!ret$solved && homotopy) {
-          if (!silent) {
-            cat("\n")
-            cat_header("HOMOTOPY")
-          }
-          
-          fit <- private$mdldef$fit
-          has_exos <- private$mdldef$exo_count > 0
-          
-          # create endogenous variables in solution period 
-          endos_steady <- matrix(rep(private$mdldef$endos, nper), ncol = nper)
-          
-          # also create steady-state lags and leads
-          has_lags <- !is.null(lags)
-          has_leads <- !is.null(leads)
-          
-          if (has_lags) {
-            nlag <- ncol(lags)
-            lags_steady <- matrix(rep(private$mdldef$endos, nlag), ncol = nlag)
-          }
-          if (has_leads) {
-            nlead <- ncol(leads)
-            leads_steady <- matrix(rep(private$mdldef$endos, nlead), 
-                                   ncol = nlead)
-          }
-          
-          # create steady state exogenous variables
-          exo_info <- private$get_exo_info_homotopy()
-
-          # save exos/lags/leads needed in the simulation
-          if (has_exos) {
-            if (!fit) {
-              exo_sim <- private$exo_data
-            } else {
-              exo_sim <- private$exo_data[ , exo_info$exo_indices, drop = FALSE]
-            }
-          }
-          lags_sim <- lags
-          leads_sim <- leads
-          endos <- endos_steady
-          
-          if (fit || isTRUE(all.equal(endos, endos_steady, 
-                                      check.attributes = FALSE,
-                                      tolerance = 1e-4))) {
-            # if endogenous variables at steady state, try half the values of
-            # exogenous variables and lags/leads
-            step <- 0.5
-          } else {
-            step <- 1 # try solving with original exos/lags/leads, but with 
-                      # endos at steady state
-          }
-         
-          LAMBDA_MIN <- 0.1
-          lambda_prev <- 0
-          iteration <- 0
-          success_counter <- 0
-          while (TRUE) {
-            if (step < LAMBDA_MIN) {
-              # minimum homotopy step size of 0.1 seems reasonable
-              if (!silent) {
-                  cat_header(sprintf("HOMOTOPY FAILED (step < %g, final lambda = %g)", 
-                                     LAMBDA_MIN, lambda))
-              }
-              break
-            }
-            iteration <- iteration + 1
-            lambda <- lambda_prev + step
-            if (lambda >= 1) {
-              # make sure that lambda does not exceed the target
-              lambda <- 1
-              step <- lambda - lambda_prev
-            }
-            if (!silent) {
-                if (iteration > 1) {
-                  if (control$trace) {
-                    cat("\n\n")
-                  } else {
-                    cat("\n")
-                  }
-                }
-                cat(sprintf("-------> HOMOTOPY iteration = %d, lambda = %g <------\n",
-                            iteration, lambda))
-            }
-            if (has_exos) {
-              if (fit) {
-                private$exo_data[ , exo_info$exo_indices] <- exo_sim * lambda + 
-                                            exo_info$steady_exos * (1 - lambda)
-              } else {
-                private$exo_data <- exo_sim * lambda + 
-                                            exo_info$steady_exos * (1 - lambda)
-              }
-            }
-            
-            if (has_lags) lags <- lags_sim * lambda + 
-                                               lags_steady * (1 - lambda)
-            
-            if (has_leads) leads <- leads_sim * lambda + 
-                                              leads_steady * (1 - lambda)
-   
-            if (private$calc == "internal") {
-              internal_dyn_set_exo(private$model_index, private$exo_data,
-                                   nrow(private$exo_data))
-            }
-            
-            ret <- private$solve_stacked_time(endos, nper = nper, lags = lags, 
-                                              leads = leads, solver = solver, 
-                                              control = control, 
-                                              debug_eqs = debug_eqs, ...)
-            if (ret$solved) {
-              if (lambda == 1) {
-                if (!silent) {
-                  cat_header(sprintf("HOMOTOPY SUCCESFUL after %d iterations", 
-                                     iteration))
-                }
-                endos_result <- ret$x
-                solved <- TRUE
-                message <- "ok"
-                break
-              }
-              lambda_prev <- lambda
-              succes_counter <- success_counter + 1
-              if (success_counter >= 3) {
-                step <- step * 2
-                success_counter <- 0
-              }
-              endos <- ret$x
-            } else {
-              # failure, step back
-              success_counter <- 0
-              step <- step / 2
-            }
-          }
-          
-          # restore original exo_data
-          if (has_exos) {
-            if (fit) {
-              private$exo_data[ , exo_info$exo_indices] <- exo_sim
-            } else {
-              private$exo_data <- exo_sim
-            }
-          }
-        }
+        solve_fun <- private$solve_stacked_time
         
       } else {
         
-        # backward looking 
-    
-        if (!missing(homotopy) && homotopy) {
-          warning("homotopy not yet implemented for backward models")
+        if (!silent) {
+          cat(sprintf("\nSolving backwards for period %s\n",
+                      as.character(private$model_period)))
         }
-        ret <- solve_backward_model(private$model_index, private$mdldef, 
-                                    private$calc, private$model_period, 
-                                    private$data_period,
-                                    private$endo_data, private$exo_data, 
-                                    private$f_dynamic, private$get_back_jac,
-                                    control = control, solver = solver,
-                                    start_option = start, debug_eqs = debug_eqs,
-                                    silent = silent, backrep = backrep, ...)
-        endos_result <- ret$x
-        solved <- ret$solved
-        message <- ret$message
+        
+        solve_fun <- private$solve_backward_model
       }
-
       
+      ret <- solve_fun(endo_data, private$exo_data, solver = solver,
+                       silent = silent, start_option = start, backrep = backrep,
+                       # the following arguments are  passed to the 
+                       # solver (umf_solve_nl of nleqslv) in:
+                       control = control, debug_eqs = debug_eqs, ...)
+     
+      result <- ret$x
+      solved <- ret$solved
+      message <- ret$message
+
+      if (!solved && homotopy) {
+        
+        ret <- private$homotopy(endo_data, private$exo_data, 
+                                solve_fun = solve_fun, silent = silent,
+                                # the next arguments are only passed to 
+                                # solve_fun:
+                                solver = solver, control = control,
+                                start_option = start,
+                                backrep = backrep, debug_eqs = debug_eqs, ...)
+        
+        
+        if (ret$solved) {
+          solved <- TRUE
+          message <- "ok"
+          result <- ret$solution
+        }
+      }
+        
       private$clean_dynamic_model()
       
       # update data with new iterate
-      endo_data <- regts(t(matrix(endos_result, 
+      endo_data <- regts(t(matrix(result, 
                                   nrow = private$mdldef$endo_count)),
                                   period = private$model_period, 
                                   names = private$mdldef$endo_names)
       private$endo_data[private$model_period, ] <- endo_data
       
-      if (!silent && stacked_time && 
-           grepl("[Ff]unction.*contains non-finite value", message)) {
-        report_non_finite_residuals(self)
-      }
-      
       if (!solved) {
+        if (stacked_time && !silent &&  
+            grepl("[Ff]unction.*contains non-finite value", message)) {
+          report_non_finite_residuals(self)
+        }
         private$solve_status <- "ERROR"
         warning(paste0("Model solving not succesful.\n", message))
       } else {
         private$solve_status <- "OK"
-      }
-      
-      #
-      # check fit result
-      #
-      if (private$mdldef$fit && private$solve_status == "OK" && n_fit == 0) {
-        # If there are no fit targets, then the steady state solution for
-        # all fit instruments must be exactly 0, and all Lagrange multipliers
-        # should be zero. However, the values are not exactly equal to zero
-        # because of numerical inaccuracies.  This may cause numerical problems.
-        # Therefore set then to zero and check the maximum static residual
-        indices <- c(private$mdldef$fit_info$l_vars, instruments)
-        mp <- private$model_period
-        old_endos <- private$endo_data[mp, indices, drop = FALSE]
-        private$endo_data[mp, indices] <- 0
-        
-        fmax <- max(abs(self$residual_check(include_all_eqs = TRUE,
-                                            debug_eqs = FALSE)))
-        ftol <- if (is.null(control$ftol)) {
-          1e-8 
-        } else { 
-          control$ftol
-        }
-        if (fmax > ftol) {
-          # restore old solution
-          private$endo_data[mp, indices] <- old_endos
-          warning(paste("The steady state values for the fit instruments",
-                        "and Lagrange multipliers are significantly different",
-                        "from 0."))
-        }
-        
-        # make _exo variables equal to the corresponding static 
-        # endogenous variables
-        exo_idx <- private$mdldef$fit_info$exo_vars
-        endo_idx <- private$mdldef$fit_info$orig_endos
-        private$exo_data[mp, exo_idx] <- private$endo_data[mp, endo_idx]
       }
       
       return(invisible(self))
@@ -1396,14 +1232,21 @@ DynMdl <- R6Class("DynMdl",
     },
     get_jacob = function(sparse = FALSE) {
       if (is.null(private$model_period)) stop(private$period_error_msg)
-      lags  <- private$get_endo_lags()
-      leads <- private$get_endo_leads()
-      x <- private$get_solve_endo()
-      nper <- nperiod(private$model_period)
-  
+      
       private$prepare_dynamic_model()
       
-      jac <- private$get_jac(x, lags, leads, nper, debug_eqs = FALSE)
+      endo_data <- endo_data_solve(private$endo_data,
+                                   private$model_period,
+                                   maxlag = private$mdldef$max_endo_lag,
+                                   maxlead = private$mdldef$max_endo_lead)
+      x <- cur_endos(endo_data)
+      lags <- lag_endos(endo_data)
+      leads <- lead_endos(endo_data)
+      nper <- endo_data$nper_cur
+      
+      jac <- private$get_jac(x, lags, leads, private$exo_data, nper, 
+                             debug_eqs = FALSE)
+      
       private$clean_dynamic_model()
       
       if (!sparse) {
@@ -1457,8 +1300,8 @@ DynMdl <- R6Class("DynMdl",
       x    <- data[var_indices$curvars]
       
       private$prepare_dynamic_model()
-      jac <- private$get_back_jac(x, lags, leads, period_index, 
-                                  debug_eqs = FALSE)
+      jac <- private$get_back_jac(x, lags, leads, private$exo_data, 
+                                  period_index, debug_eqs = FALSE)
       private$clean_dynamic_model()
       if (!sparse) {
         jac <- as(jac, "matrix")
@@ -1602,7 +1445,6 @@ DynMdl <- R6Class("DynMdl",
 	      stop(paste("Method 'run_initval' not possible because the model file",
                    "has been created with an old version of dynmdl."))
       }
-      
       data <- as.list(c(private$mdldef$endos,
                         private$mdldef$exos,
                         private$mdldef$params))
@@ -2373,49 +2215,273 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(self))
     },
-    solve_stacked_time = function(endos, solver, ...) {
+    solve_stacked_time = function(endo_data, exo_data, solver, silent,
+                                  start_option, backrep, ...) { 
+      # Arguments silent, start_option and backrep are not used here,
+      # but solve_stacked_time can be called with these arguments by methods
+      # solve or homotopy.
+      endos <- cur_endos(endo_data)
+      lags <- lag_endos(endo_data)
+      leads <- lead_endos(endo_data)
+      nper <- endo_data$nper_cur
       if (solver == "umfpackr") {
-        ret <- umf_solve_nl(endos, private$get_residuals, private$get_jac, ...)
+        ret <- umf_solve_nl(endos, private$get_residuals, private$get_jac, 
+                            lags = lags, leads = leads, exo_data = exo_data, 
+                            nper = nper, ...)
       } else if (solver == "nleqslv") {
-        jac_fun <- function(endos, lags, leads, nper, debug_eqs) {
-          return(as(private$get_jac(endos, lags, leads, nper, debug_eqs), "matrix"))
+        nper <- ncol(endos)
+        jac_fun <- function(...) {
+          return(as(private$get_jac(...), "matrix"))
         }
         ret <- nleqslv(endos, fn = private$get_residuals, jac = jac_fun, 
-                       method = "Newton",  ...)
+                       lags = lags, leads = leads, exo_data = exo_data, 
+                       nper = nper, method = "Newton", ...)
         ret$solved <- ret$termcd == 1
       }
       return(ret)
     },
-    get_exo_info_homotopy = function() {
-      # Returns a list with information about the exogenous variables needed 
-      # for solving the model with a homotopy approach.
-      if (private$mdldef$fit) {
-        # For FitMdl objects, not all exogenous variables should be modified
-        # in the homotopy approach: the fit switches and _old (old fit instruments)
-        # should not be modified.
-        fit_sel <- private$exo_data[private$model_period, 
-                                    private$mdldef$fit_info$fit_vars, drop = FALSE] == 1
-        is_fit_var <- apply(fit_sel, MARGIN = 2, FUN = any)
-        
-        exo_indices <- c(private$mdldef$fit_info$orig_exos, 
-                         private$mdldef$fit_info$exo_vars[is_fit_var])
-        
-        np <- nrow(private$exo_data)
-        steady_exos <- matrix(rep(private$mdldef$exos[exo_indices], each = np), 
-                              nrow = np)
-        
-        return(list(steady_exos = steady_exos, exo_indices = exo_indices))
-      } else {
-        if (private$mdldef$exo_count > 0) {
-          nper <- nrow(private$exo_data)
-          data_mat <- matrix(rep(private$mdldef$exos, each = nper), nrow = nper)
-          colnames(data_mat) <- private$mdldef$exo_names_orig
-          steady_exos <- data_mat
-        } else {
-          steady_exos <- NULL
+    solve_backward_model = function(endo_data, exo_data, solver, silent,
+                                    start_option, backrep, ...) {
+     
+      if (solver == "nleqslv") {
+        jac_fun  <- function(...) {
+          return(as(private$get_back_jac(...), "matrix"))
         }
-        return(list(steady_exos = steady_exos))
-      } 
+      } else {
+        jac_fun <- private$get_back_jac
+      }
+     
+      nper <- endo_data$nper_cur
+      start_per <- start_period(private$model_period)
+      start_per_index_exo <- start_per - start_period(private$data_period) + 1
+      
+      var_indices <- get_var_indices_back(private$mdldef, 
+                                          period_index = endo_data$cur_cols[1])
+      
+      nendo <- private$mdldef$endo_count
+      
+      itr_tot <- 0
+      error   <- FALSE
+      message <- "ok"
+      for (iper in 1:nper) {
+        period_index_exo <- start_per_index_exo + iper - 1
+        per_txt <- as.character(start_per + (iper - 1))
+        shift <- (iper - 1) * nendo
+        lags <- endo_data$mat[var_indices$lags + shift]
+        leads <- endo_data$mat[var_indices$leads + shift]
+        curvar_indices <- var_indices$curvars + shift
+        if (start_option == "current" || iper == 1) {
+          start <- endo_data$mat[curvar_indices]
+        }
+        if (solver == "nleqslv") {
+          out <- nleqslv(start, fn = private$get_back_res, jac = jac_fun, 
+                         method = "Newton", lags = lags, leads = leads, 
+                         exo_data = exo_data, period_index = period_index_exo, 
+                         ...)
+          error <- out$termcd != 1
+        } else {
+          out <- umf_solve_nl(start, fn = private$get_back_res, jac = jac_fun, 
+                              lags = lags, leads = leads, exo_data = exo_data, 
+                              period_index = period_index_exo, ...)
+          error <- !out$solved
+        }
+        
+        if (error && !silent) {
+          if (grepl("[Ff]unction.*contains non-finite value", out$message)) {
+            res <- private$get_back_res(out$x, lags = lags, leads = leads, 
+                                       exo_data = exo_data, 
+                                       period_index = period_index_exo, 
+                                       debug_eqs = FALSE)
+            names(res) <- paste("eq", seq_along(res))
+            res <- res[!is.finite(res)]
+            cat(sprintf(paste("Non-finite values in residuals in period %s",
+                              "for the following equations:\n"), per_txt))
+            n_max <- 50
+            n_res <- length(res)
+            print(res[1:min(n_res, n_max)])
+            if (n_res > n_max) cat("[ -- omitted", n_res - n_max,
+                                   "equations -- ]\n")
+            cat("\n")
+          } else {
+            cat(paste0(sprintf("Error solving model in period %s:\n", per_txt),
+                       out$message))
+          }
+        }
+        
+        if (!silent && !error && backrep == "period") {
+          cat(sprintf("Convergence for %s in %d iterations\n", per_txt,
+                      out$iter))
+        }
+        
+        # update data
+        endo_data$mat[curvar_indices] <- out$x
+        
+        if (start_option == "previous") start <- out$x
+        
+        itr_tot <- itr_tot + out$iter
+        
+        if (error) {
+          message <- out$message
+          break
+        }
+      }
+      
+      if (!silent && backrep == "total") {
+        if (error) {
+          cat(sprintf(paste("Backwards solve failed at period %s.",
+                            "Total number of iterations: %d.\n"),
+                      per_txt, itr_tot))
+        } else {
+          cat(sprintf(paste("Backwards solve succesfull. Total number of",
+                            "iterations: %d.\n"), itr_tot))
+        }
+      }
+      
+      return(list(solved = !error, message = message, x = cur_endos(endo_data)))
+    },
+    homotopy = function(endo_data, exo_data, solve_fun, silent, ...) {
+      
+      #
+      # now prepare steady values of exogenous variables
+      #
+      mdldef <- private$mdldef
+      fit <- mdldef$fit
+      has_exos <- mdldef$exo_count > 0
+      maxlag <- mdldef$max_endo_lag
+      maxlead <- mdldef$max_endo_lead
+      
+      if (has_exos) {
+        nper_exo <- nrow(exo_data)
+        if (fit) {
+          exo_indices <- c(mdldef$fit_info$orig_exos, mdldef$fit_info$exo_vars)
+          exo_data_steady <- matrix(rep(mdldef$exos[exo_indices], each = nper_exo), 
+                                    nrow = nper_exo)
+          #colnames(exo_data_steady) <- mdldef$exo_names[exo_indices]
+        } else {
+          exo_data_steady <- matrix(rep(mdldef$exos, each = nper_exo), 
+                                    nrow = nper_exo)
+          #colnames(exo_data_steady) <- mdldef$exo_names
+        }
+      }
+      
+      if (has_exos) {
+        # save the actual values of exogenous variables that we need
+        # in the simulation
+        if (fit) {
+          exo_sim <- exo_data[ , exo_indices, drop = FALSE]
+        } else {
+          exo_sim <- exo_data
+        }
+      }
+      if (endo_data$has_lags) {
+        lags_sim <- lag_endos(endo_data)
+        lags_steady <- matrix(rep(mdldef$endos, maxlag), ncol = maxlag)
+      }
+      if (endo_data$has_leads) {
+        leads_sim <- lead_endos(endo_data)
+        leads_steady <- matrix(rep(mdldef$endos, maxlead), ncol = maxlead)
+      }
+      
+      cur_endos(endo_data) <- mdldef$endos
+      
+      if (!silent) {
+        cat_header <- function(txt) {
+          pre <- paste(rep("+", 10), collapse = "")
+          post <- paste(rep("+", 80 - 10 - nchar(txt) - 2), collapse = "")
+          cat(paste0("\n", pre, " ", txt, " ", post, "\n\n"))
+          return()
+        }
+        cat("\n")
+        cat_header("HOMOTOPY")
+      }
+      
+      step <- 0.5
+      LAMBDA_MIN <- 0.1
+      lambda_prev <- 0
+      iteration <- 0
+      success_counter <- 0
+      solved <- FALSE
+      solution <- NULL
+      
+      while (TRUE) {
+        if (step < LAMBDA_MIN) {
+          # minimum homotopy step size of 0.1 seems reasonable
+          if (!silent) {
+            cat_header(sprintf("HOMOTOPY FAILED (step < %g, final lambda = %g)", 
+                               LAMBDA_MIN, lambda))
+          }
+          break
+        }
+        iteration <- iteration + 1
+        lambda <- lambda_prev + step
+        if (lambda >= 1) {
+          # make sure that lambda does not exceed the target
+          lambda <- 1
+          step <- lambda - lambda_prev
+        }
+        if (!silent) {
+          if (iteration > 1) {
+            cat("\n")
+          }
+          cat(sprintf("-------> HOMOTOPY iteration = %d, lambda = %g <------\n\n",
+                      iteration, lambda))
+        }
+        
+        #
+        # calculate new exogenous variables and lags/leads for tge given value
+        # of lambda.
+        #
+        if (has_exos) {
+          if (fit) {
+            exo_data[ , exo_indices] <- exo_sim * lambda + 
+              exo_data_steady * (1 - lambda)
+            
+          } else {
+            exo_data <- exo_sim * lambda + exo_data_steady * (1 - lambda)
+          }
+        }
+        if (private$calc == "internal") {
+          internal_dyn_set_exo(private$model_index, exo_data, nrow(exo_data))
+        }
+        
+        if (endo_data$has_lags) {
+          lag_endos(endo_data) <- lags_sim * lambda + 
+                                                lags_steady * (1 - lambda)
+        }
+        if (endo_data$has_leads) {
+          lead_endos(endo_data) <- leads_sim * lambda + 
+            leads_steady * (1 - lambda)
+        }
+        
+        ret <- solve_fun(endo_data, exo_data, silent = silent, ...)
+        
+        if (ret$solved) {
+          if (lambda == 1) {
+            if (!silent) {
+              cat_header(sprintf("HOMOTOPY SUCCESFUL after %d iterations", 
+                                 iteration))
+            }
+            solution <- ret$x
+            solved <- TRUE
+            break
+          }
+          lambda_prev <- lambda
+          succes_counter <- success_counter + 1
+          if (success_counter >= 3) {
+            step <- step * 2
+            success_counter <- 0
+          }
+          # update endogenous variables with new solution
+          cur_endos(endo_data) <- ret$x
+          
+        } else {
+          # failure, step back
+          success_counter <- 0
+          step <- step / 2
+        }
+      }
+      
+      return(list(solved = solved, solution = solution))
     },
     check_change_growth_exos = function(names) {
       growth_exos <- intersect(names, private$mdldef$trend_info$growth_exos)
@@ -2450,10 +2516,11 @@ DynMdl <- R6Class("DynMdl",
     },
     # returns the residual of the stacked-time system
     # x is vector of endogenous variables in the solution period
-    get_residuals = function(x, lags, leads, nper, debug_eqs) {
+    get_residuals = function(x, lags, leads, exo_data, nper, debug_eqs) {
       endos <- c(lags, x, leads)
-      nper <- nperiod(private$model_period)
       if (private$calc == "internal") {
+        # NOTE: parameters and exo_data should be set in the C++ version of the 
+        # model using C++ function prepare_internal_dyn or internal_dyn_set_exo.
         return(get_residuals_dyn(private$model_index, endos,
                                  which(private$mdldef$lead_lag_incidence != 0) - 1,
                                  private$mdldef$endo_count, nper,
@@ -2461,7 +2528,7 @@ DynMdl <- R6Class("DynMdl",
       } else {
         return(get_residuals_(endos,
                               which(private$mdldef$lead_lag_incidence != 0) - 1,
-                              private$exo_data, private$mdldef$params,
+                              exo_data, private$mdldef$params,
                               private$f_dynamic, private$mdldef$endo_count,
                               nper, private$period_shift))
       }
@@ -2474,18 +2541,19 @@ DynMdl <- R6Class("DynMdl",
                                 private$mdldef$params))
       }
     },
-    get_jac = function(x, lags, leads, nper, debug_eqs) {
+    get_jac = function(x, lags, leads, exo_data, nper, debug_eqs) {
       endos <- c(lags, x, leads)
-      nper <- nperiod(private$model_period)
       tshift  <- -private$mdldef$max_endo_lag : private$mdldef$max_endo_lead
       if (private$calc == "internal") {
+        # NOTE: parameters and exo_data should be set in the C++ version of the 
+        # model using C++ function prepare_internal_dyn or internal_dyn_set_exo.
         mat_info <- get_triplet_jac_dyn(private$model_index, endos, 
                           private$mdldef$lead_lag_incidence, tshift, 
                           private$mdldef$endo_count, nper, private$period_shift,
                           debug_eqs)
       } else {
         mat_info <- get_triplet_jac(endos, private$mdldef$lead_lag_incidence,
-                                    tshift, private$exo_data,
+                                    tshift, exo_data,
                                     private$mdldef$params, private$jac_dynamic,
                                     private$mdldef$endo_count, nper,
                                     private$period_shift)
@@ -2513,15 +2581,29 @@ DynMdl <- R6Class("DynMdl",
                           x = mat_info$values, 
                           dims = as.integer(rep(private$mdldef$endo_count, 2))))
     },
-    get_back_jac = function(x, lags, leads, period_index, debug_eqs) {
+    get_back_res = function(x, lags, leads, exo_data, period_index, debug_eqs) {
+      # private function to obtain the backward residuals at period period_index
+      if (private$calc == "internal") {
+        # NOTE: parameters and exo_data should be set in the C++ version of the 
+        # model using C++ function prepare_internal_dyn or internal_dyn_set_exo.
+        return(get_res_back_dyn(private$model_index, x, lags, leads, 
+                                period_index, debug_eqs))
+      } else {
+        return(private$f_dynamic(c(lags, x, leads), exo_data, 
+                                 private$mdldef$params, period_index))
+      }
+    },
+    get_back_jac = function(x, lags, leads, exo_data, period_index, debug_eqs) {
       # private function to obtain the backward jacobian at period period_index
       jac_cols <- private$mdldef$lead_lag_incidence[, "0"]
       if (private$calc == "internal") {
+        # NOTE: parameters and exo_data should be set in the C++ version of the 
+        # model using C++ function prepare_internal_dyn or internal_dyn_set_exo.
         mat_info <- get_jac_back_dyn(private$model_index, x, lags, 
                                      leads, jac_cols, period_index, debug_eqs)
       } else {
         mat_info <- get_jac_backwards(x, lags, leads, jac_cols, 
-                                      private$exo_data, private$mdldef$params, 
+                                      exo_data, private$mdldef$params, 
                                       private$jac_dynamic, period_index)
       }
       return(sparseMatrix(i = mat_info$rows, j = mat_info$cols,
