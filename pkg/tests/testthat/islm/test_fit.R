@@ -20,8 +20,10 @@ test_that("set_sigma", {
   expect_equal(mdl$get_sigmas(), expected_result)
   expect_equal(mdl$get_sigma()[names(expected_result)], 
                expected_result)
-  expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
-               expected_result)
+  expect_warning(
+    expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
+               expected_result),
+    "Using method 'get_param' to get sigma parameters is obsolete. Use method 'get_sigma' instead.")
 
 })
 
@@ -329,7 +331,7 @@ test_that("no fit targets, removed fit instruments", {
   mdl2$set_fit_values(NA)
   mdl2$set_sigma_values(-1, pattern = "^u[mt]")
   expect_equal(mdl2$get_sigmas(), c(sigma_uc = 5, sigma_ui = 21))
-  mdl2$solve(silent = FALSE)
+  mdl2$solve(silent = TRUE)
   expect_identical(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
   inst_names <- c("uc", "ui")
   expect_identical(mdl2$get_fit_instruments(names = inst_names), 
@@ -531,3 +533,26 @@ test_that("more tests for get_sigma and get_sigma_values", {
  expect_equal(mdl2$get_sigmas(), expected_result)
 })
 
+test_that("method get_param to obtain sigma values", {
+  expect_silent(params_and_sigmas <- mdl$get_param())
+  
+  sigmas <- mdl$get_sigmas()
+  expect_equal(sigmas, params_and_sigmas[names(sigmas)])
+  expect_silent(
+    expect_equal(mdl$get_param(pattern = "u")[mdl$get_sigma_names()], 
+               sigmas)
+  )
+  wmsg <- "Using method 'get_param' to get sigma parameters is obsolete\\. Use method 'get_sigma' instead\\."
+  expect_warning(
+    expect_equal(mdl$get_param(pattern = "sigma")[mdl$get_sigma_names()], 
+                 sigmas),
+    wmsg)
+  expect_warning(
+    expect_equal(mdl$get_param(pattern = "^sigma")[mdl$get_sigma_names()], 
+                 sigmas),
+    wmsg)
+  
+  expect_warning(
+    expect_equal(mdl$get_param(names =  "sigma_umd"), sigmas["sigma_umd"]),
+    wmsg)
+})

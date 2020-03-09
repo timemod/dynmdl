@@ -8,16 +8,17 @@ rds_file <- "islm_model_fit.rds"
 model_name <- "islm_fit"
 
 mdl <- read_mdl(rds_file, silent = TRUE)
-mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
 
-test_that("set_param for sigma parameters", {
+test_that("set_paramfor sigma parameters", {
   sigmas <- c(ut = 7, uc = 5, umd = 2, ui = 21)
   names(sigmas) <- paste0("sigma_",  names(sigmas))
-  mdl$set_param(sigmas)
+  expect_warning(mdl$set_param(sigmas))
   expected_result <- sigmas
   expect_equal(mdl$get_sigmas(), expected_result)
-  expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
-               expected_result)
+  expect_warning(
+    expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
+               expected_result),
+    "Using method 'get_param' to get sigma parameters is obsolete\\. Use method 'get_sigma' instead\\.")
 })
 
 endo_names <- c("y", "yd", "t", "c", "i", "md", "r") 
@@ -179,7 +180,9 @@ test_that("no fit targets", {
 test_that("no fit targets, removed fit instruments", {
   mdl2 <- mdl$copy()
   mdl2$set_fit_steady(mdl$get_fit_steady() * NA)
-  mdl2$set_param_values(-1, names = c("sigma_ut", "sigma_umd"))
+  expect_warning(
+    mdl2$set_param_values(-1, names = c("sigma_ut", "sigma_umd")),
+    "Using method 'set_param_values' to set sigma parameters is obsolete\\. Use method 'set_sigma_values' instead\\.")
   mdl2$solve_steady(silent = TRUE)
   expect_identical(get_lagr(mdl2), get_lagr(mdl) * 0)
   inst_names <- c("uc", "ui")

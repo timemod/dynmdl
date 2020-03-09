@@ -354,6 +354,9 @@ DynMdl <- R6Class("DynMdl",
       names <- private$check_param_names(base::names(params), 
                                          name_err = name_err)
       if (length(names) > 0) {
+        if (private$mdldef$fit) {
+          private$check_sigma_names(names, method = "set_param")
+        }
         private$mdldef$params[names] <- params[names]
       }
       return(invisible(self))
@@ -364,12 +367,22 @@ DynMdl <- R6Class("DynMdl",
       }
       names <- private$get_param_names_(pattern, names)
       if (length(names) > 0) {
+        if (private$mdldef$fit) {
+          private$check_sigma_names(names, method = "set_param_values")
+        }
         private$mdldef$params[names] <- value
       }
       return(invisible(self))
     },
     get_param = function(pattern, names) {
+      names_missing <- missing(names)
       names <- private$get_param_names_(pattern, names)
+      if (private$mdldef$fit && 
+          ((!missing(pattern) && grepl("^\\^?sigma", pattern)) ||
+           (!names_missing && any(grepl("^sigma", names))))) {
+        # only give a warning when sigma parameters are explicitly requested
+        private$check_sigma_names(names, method = "get_param")
+      }
       return(private$mdldef$params[names])
     },
     set_static_exos = function(exos, names, name_err = "stop") {
@@ -1766,7 +1779,7 @@ DynMdl <- R6Class("DynMdl",
   clear_fit = function() {
     
     private$check_fit()
-    self$set_param_values(-1, names = private$mdldef$fit_info$sigma_names)
+    self$set_sigma_values(-1, names = private$mdldef$fit_info$instrument_names)
     
     # static fit targets and lagrange multipliers
     endo_names <-  private$mdldef$endo_names_orig
@@ -2777,6 +2790,20 @@ DynMdl <- R6Class("DynMdl",
         return(union(names, self$get_par_names(pattern)))
       } else {
         return(names)
+      }
+    },
+    check_sigma_names = function(names, method) {
+      # This private method is used to check if functions set_param, 
+      # set_param_values or get_param are used to set/get sigma parameters
+      # of the fit procedure. This is currently still allowed, but this may
+      #  change in future releases
+      sigma_names <- intersect(names, 
+                               private$mdldef$fit_info$sigma_names)
+      if (length(sigma_names) > 0) {
+        set_or_get <- substr(method, 1, 3)
+        warning(sprintf(paste("Using method '%s' to %s sigma parameters is",
+                              "obsolete. Use method '%s' instead."),
+                        method, set_or_get, sub("param", "sigma", method)))
       }
     },
     get_trend_data_internal = function() {

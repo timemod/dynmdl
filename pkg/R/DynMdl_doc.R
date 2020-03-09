@@ -1129,8 +1129,18 @@ NULL
 #' @description
 #' \code{\link{DynMdl}} methods \code{set_param} and \code{set_param_values} 
 #' can be used to set the model parameters. Method \code{get_param}
-#' returns the model parameters, including the sigma parameters used in
-#' the fit method.
+#' returns the model parameters.
+#' 
+#' Currently, all three methods treat the sigma parameters used in the
+#' fit procedure the same as ordinary paramters. However,
+#' the recommended methods to set or get sigma parameters are 
+#' \code{\link{set_sigma}}, 
+#' \code{\link{set_sigma_values}} and \code{\link{get_sigmas}}.
+#' You will get a warming when \code{set_param}, \code{set_param_values} 
+#' and \code{get_param} are applied to sigma parameters. In a future 
+#' release of package \code{dynmdl}, \code{set_param}, 
+#' \code{set_param_values} and \code{get_param} will only set or retrieve
+#' original model parameters.
 #' 
 #' @section Usage:
 #' \preformatted{

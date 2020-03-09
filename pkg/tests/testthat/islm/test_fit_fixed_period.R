@@ -27,8 +27,7 @@ test_that("generated fit mod file equal to reference ", {
 
 test_that("single fit target", {
   fit_per <- period_range("2016q1/2016q2")
-  mdl_fixed_per$set_param(c(sigma_ut = 7, sigma_uc = 5, 
-                            sigma_ui = -1, sigma_umd = -1))
+  mdl_fixed_per$set_sigma(c(ut = 7, uc = 5, ui = -1, umd = -1))
   mdl_fixed_per$set_fit_values(1250, "y", period = fit_per)
   mdl_fixed_per$solve(silent = TRUE)
   expect_equal(mdl_fixed_per$get_endo_data(names = "y", period = fit_per),
@@ -54,13 +53,13 @@ test_that("2 targets and 2 instruments for all periods", {
   sigmas <- c(sigma_uc = 5, sigma_umd = 1, sigma_ut = -1, sigma_ui = -1)
   
   mdl$init_data()
-  mdl$set_param(sigmas)
+  expect_warning(mdl$set_param(sigmas))
   mdl$set_fit_values(1250, "y", period = fit_per)
   mdl$set_fit_values(3.5, "r", period = fit_per)
   mdl$solve(control = list(silent = TRUE))
   
   mdl_fixed_per$init_data()
-  mdl_fixed_per$set_param(sigmas)
+  expect_warning(mdl_fixed_per$set_param(sigmas))
   mdl_fixed_per$set_fit(mdl$get_fit())
   mdl_fixed_per$solve(control = list(silent = TRUE))
   
