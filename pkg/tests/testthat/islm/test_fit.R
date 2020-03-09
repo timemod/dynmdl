@@ -82,7 +82,7 @@ test_that("all.equal works correctly for fit models", {
   expect_false(isTRUE(all.equal(mdl, mdl_old)))
 })
 
-mdl$solve(control = list(silent = TRUE))
+mdl$solve(silent = TRUE)
 
 
 dynare_endo <- update_ts_labels(dynare_result$endo, mdl$get_labels())

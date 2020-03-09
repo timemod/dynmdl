@@ -47,13 +47,16 @@ For method \code{set_sigma}, this argument \emph{must} be specified if
 \item{\code{name_err}}{this option specifies the action that should be taken
 when a variable name is not a fit instrument.
 For \code{"stop"} (the default), the execution of this function is stopped.
-For \code{"warn"} and \code{"silent"}, the names timeseries that are no model
-parameters are skipped. \code{"warn"} does however give a warning.}
+For \code{"warn"} and \code{"silent"}, the names that are no fit
+instrument names are skipped. \code{"warn"} does, however, give a warning.}
 \item{\code{value}}{a numeric vector of length 1.}
 \item{\code{pattern}}{a regular expression. The values of the sigma
 parameters corresponding to all fit instruments matching \code{pattern}
 are set to the specified value.}
 }
+If neither \code{names} nor \code{pattern}
+has been specified  in method \code{set_sigma_values} ,
+then all sigma parameters are set to the specified value.
 }
 
 \section{Methods}{
@@ -62,7 +65,7 @@ are set to the specified value.}
 \item \code{set_sigmas}: Set the sigma parameters using a named numeric
 vector. The names of the vector should be the names of the corresponding
 fit instruments.
-\item \code{set_static_exo_values}: Give one or more sigma parameters
+\item \code{set_sigma_values}: Give one or more sigma parameters
 a specified value.
 \item \code{get_sigmas}: Returns all sigma parameters greater than
 or equal to zero.
