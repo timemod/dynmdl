@@ -10,6 +10,16 @@ model_name <- "islm_fit"
 mdl <- read_mdl(rds_file, silent = TRUE)
 mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
 
+test_that("set_param for sigma parameters", {
+  sigmas <- c(ut = 7, uc = 5, umd = 2, ui = 21)
+  names(sigmas) <- paste0("sigma_",  names(sigmas))
+  mdl$set_param(sigmas)
+  expected_result <- sigmas
+  expect_equal(mdl$get_sigmas(), expected_result)
+  expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
+               expected_result)
+})
+
 endo_names <- c("y", "yd", "t", "c", "i", "md", "r") 
 exo_names <- c("g", "ms") 
 inames <- c("ut", "uc", "umd", "ui")

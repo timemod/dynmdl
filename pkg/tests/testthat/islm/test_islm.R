@@ -162,3 +162,18 @@ test_that("residual_check", {
   expect_equal(res2b, expected_res2[p, 1, drop = FALSE])
 })
 
+test_that("fit method not available", {
+  msg <- "This DynMdl object is not a fit model\\."
+  expect_error(mdl$get_sigmas(), msg)
+  expect_error(mdl$set_sigma(c(ui = 2)), msg)
+  expect_error(mdl$set_sigma_values(3), msg)
+  expect_error(mdl$get_fit(), msg)
+  expect_error(mdl$set_fit(mdl$get_endo_data()), msg)
+  expect_error(mdl$set_fit_values(3), msg)
+  expect_error(mdl$get_lagrange(), msg)
+  expect_error(mdl$get_fit_instruments(), msg)
+  expect_error(mdl$get_instrument_names(), msg)
+  expect_error(mdl$get_sigma_names(), msg)
+  expect_error(mdl$clear_fit(), msg)
+})
+
