@@ -1161,7 +1161,7 @@ NULL
 #' matching \code{pattern}.}
 #' }
 #' 
-#' If neither \code{names} nor \code{pattern} have been specified in 
+#' If neither \code{names} nor \code{pattern} has been specified in 
 #' methods \code{set_param_values} or \code{get_param}, then the action
 #' is applied to all model parameters.
 #' 

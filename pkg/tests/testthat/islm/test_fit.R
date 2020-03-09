@@ -18,8 +18,11 @@ test_that("set_sigma", {
   expected_result <- sigmas
   names(expected_result) <- paste0("sigma_",  names(sigmas))
   expect_equal(mdl$get_sigmas(), expected_result)
+  expect_equal(mdl$get_sigma()[names(expected_result)], 
+               expected_result)
   expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
                expected_result)
+
 })
 
 endo_names <- c("y", "yd", "t", "c", "i", "md", "r") 
@@ -474,7 +477,25 @@ test_that("get_fit for argument period, pattern and names", {
 })
 
 test_that("more tests for get_sigma and get_sigma_values", {
+  
  mdl2 <- mdl$copy()
+ 
+ sigmas <- mdl$get_sigmas()
+ expect_equal(mdl2$get_sigma(), sigmas)
+ expect_equal(mdl2$get_sigma(names = c("ui", "uc")), 
+              sigmas[c("sigma_ui", "sigma_uc")])
+ expect_equal(mdl2$get_sigma(pattern = "[ic]$"), 
+              sigmas[c("sigma_uc", "sigma_ui")])
+ expect_equal(mdl2$get_sigma(pattern = "[ic]$", names = "ut"), 
+              sigmas[c("sigma_ut", "sigma_uc", "sigma_ui")])
+ expect_warning(
+   expect_equal(mdl2$get_sigma(pattern = "xxx$"), numeric(0)),
+   "No fit instruments match pattern \"xxx\\$\"\\.")
+ expect_error(
+   mdl2$get_sigma(names = c("x", "y")), 
+   "The following names are no fit instruments: \"x\", \"y\"\\.")
+
+ 
  mdl2$set_sigma_values(-1)
  mdl2$set_sigma(numeric(0))
  expect_true(length(mdl2$get_sigmas()) == 0)
@@ -495,6 +516,9 @@ test_that("more tests for get_sigma and get_sigma_values", {
  mdl2$set_sigma_values(2222,  names = c("ui", "umd"))
  mdl2$set_sigma_values(3333,  pattern = "c$")
  expect_equal(mdl2$get_sigmas(),
+              c(sigma_ut = 1111, sigma_uc = 3333, sigma_umd = 2222, 
+                sigma_ui = 2222))
+ expect_equal(mdl2$get_sigma(),
               c(sigma_ut = 1111, sigma_uc = 3333, sigma_umd = 2222, 
                 sigma_ui = 2222))
  

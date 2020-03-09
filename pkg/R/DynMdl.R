@@ -1900,6 +1900,16 @@ DynMdl <- R6Class("DynMdl",
     }
     return(invisible(self))
   },
+  get_sigma = function(pattern, names) {
+    private$check_fit()
+    inst_names <- private$get_names_("inst", names, pattern)
+    if (length(inst_names) > 0) {
+      sigma_names <- paste0("sigma_", inst_names)
+      return(private$mdldef$params[sigma_names])
+    } else {
+      return(numeric(0))
+    }
+  },
   get_sigmas = function() {
     private$check_fit()
     ret <- private$mdldef$params[private$mdldef$fit_info$sigmas]

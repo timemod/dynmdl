@@ -167,6 +167,7 @@ test_that("fit method not available", {
   expect_error(mdl$get_sigmas(), msg)
   expect_error(mdl$set_sigma(c(ui = 2)), msg)
   expect_error(mdl$set_sigma_values(3), msg)
+  expect_error(mdl$get_sigma(), msg)
   expect_error(mdl$get_fit(), msg)
   expect_error(mdl$set_fit(mdl$get_endo_data()), msg)
   expect_error(mdl$set_fit_values(3), msg)

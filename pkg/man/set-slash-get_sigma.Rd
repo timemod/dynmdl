@@ -29,6 +29,8 @@ mdl$set_sigma(sigmas, names, name_err = c("stop", "warn", "silent"))
 
 mdl$set_sigma_values(value, names, pattern)
 
+mdl$get_sigma(pattern, names)
+
 mdl$get_sigmas()
 }
 \code{mdl} is a \code{\link{DynMdl}} object.
@@ -50,13 +52,15 @@ For \code{"stop"} (the default), the execution of this function is stopped.
 For \code{"warn"} and \code{"silent"}, the names that are no fit
 instrument names are skipped. \code{"warn"} does, however, give a warning.}
 \item{\code{value}}{a numeric vector of length 1.}
-\item{\code{pattern}}{a regular expression. The values of the sigma
-parameters corresponding to all fit instruments matching \code{pattern}
-are set to the specified value.}
+\item{\code{pattern}}{a regular expression.
+The action (get or set sigma parameter values) is applied to all sigma
+parameters wiht names
+matching \code{pattern}.}
+
+If neither \code{names} nor \code{pattern} has
+been specified in methods \code{set_param_values} or \code{get_param},
+then the action is applied to all model parameters.
 }
-If neither \code{names} nor \code{pattern}
-has been specified  in method \code{set_sigma_values} ,
-then all sigma parameters are set to the specified value.
 }
 
 \section{Methods}{
@@ -67,6 +71,7 @@ vector. The names of the vector should be the names of the corresponding
 fit instruments.
 \item \code{set_sigma_values}: Give one or more sigma parameters
 a specified value.
+\item \code{get_sigma}: Return sigma parameters.
 \item \code{get_sigmas}: Returns all sigma parameters greater than
 or equal to zero.
 }
@@ -75,6 +80,9 @@ or equal to zero.
 \examples{
 mdl <- islm_mdl(fit = TRUE)
 mdl$set_sigma(c(umd = 12))
+
+# print the sigma parameter for umd
+print(mdl$get_sigma(names = "umd"))
 
 # disable fit instruments umd and umc
 mdl$set_sigma_values(-1, names = c("umd", "uc"))
