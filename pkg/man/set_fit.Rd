@@ -74,5 +74,6 @@ print(mdl$get_fit())
 }
 \seealso{
 \code{\link{get_fit}}, \code{\link{set_fit_steady}},
-and \code{\link{clear_fit}}
+\code{\link{set_sigma}}, \code{\link{set_sigma_values}},
+\code{\link{get_sigma}} and \code{\link{clear_fit}}
 }

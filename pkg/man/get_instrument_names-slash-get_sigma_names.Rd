@@ -14,12 +14,21 @@ used in the fit method.
 \section{Usage}{
 
 \preformatted{
-mdl$get_instrument_names()
+mdl$get_instrument_names(all = FALSE)
 
 mdl$get_sigma_names()
 
 }
 \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
+}
+
+\section{Arguments}{
+
+\describe{
+\item{\code{all}}{A logical (default \code{FALSE}). If \code{TRUE}, the
+names of all fit instruments are returned, including the inactive
+fit instruments.}
+}
 }
 
 \examples{
@@ -30,5 +39,5 @@ print(mdl$get_sigma_names())
 
 }
 \seealso{
-\code{\link{get_fit_instruments}}
+\code{\link{get_fit_instruments}}, \code{\link{get_sigmas}}
 }

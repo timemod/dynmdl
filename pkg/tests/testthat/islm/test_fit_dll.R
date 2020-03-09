@@ -14,7 +14,7 @@ rep <- capture_output(mdl <- dyn_mdl("mod/islm_fit.mod", calc = "dll",
 mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
 mdl$put_static_endos()
 
-mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
+mdl$set_sigma(c(ut = 7, uc = 5, ui = 21, umd = 2))
 
 mdl_old <- mdl$copy()
 

@@ -8,11 +8,24 @@ source("../tools/read_dynare_result.R")
 rds_file <- "islm_model_fit.rds"
 model_name <- "islm_fit"
 
-report <- capture_output(mdl <- read_mdl(rds_file))
+mdl <- read_mdl(rds_file, silent = TRUE)
 
 dynare_result <- read_dynare_result(model_name, mdl)
 
-mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 2))
+test_that("set_sigma", {
+  sigmas <- c(ut = 7, uc = 5, umd = 2, ui = 21)
+  mdl$set_sigma(sigmas)
+  expected_result <- sigmas
+  names(expected_result) <- paste0("sigma_",  names(sigmas))
+  expect_equal(mdl$get_sigmas(), expected_result)
+  expect_equal(mdl$get_sigma()[names(expected_result)], 
+               expected_result)
+  expect_warning(
+    expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
+               expected_result),
+    "Using method 'get_param' to get sigma parameters is obsolete. Use method 'get_sigma' instead.")
+
+})
 
 endo_names <- c("y", "yd", "t", "c", "i", "md", "r") 
 inames <- c("ut", "uc", "umd", "ui")
@@ -229,7 +242,12 @@ test_that("too many fit targets", {
   
   mdl2 <- mdl$copy()
   
-  mdl2$set_param(c(sigma_umd = -1))
+  mdl2$set_sigma_values(-1, names = "umd")
+  expect_equal(mdl2$get_sigmas(),
+               c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21))
+  expect_equal(mdl2$get_instrument_names(all = TRUE), c("ut", "uc", "umd", "ui"))
+  expect_equal(mdl2$get_instrument_names(), c("ut", "uc", "ui"))
+  
   
   # set fit targets outside model period and with NA values should not mattter
   mdl2$set_fit_values(-999, names = "y", period = "2015q3/2015q4")
@@ -241,7 +259,8 @@ test_that("too many fit targets", {
   expected_result["2015q4", "y"] <- -999
   expect_identical(mdl2$get_fit(), expected_result)
   
-  expect_identical(ncol(mdl2$residual_check(include_fit_eqs = TRUE, tol = 1e-8)), 
+  expect_identical(ncol(mdl2$residual_check(include_fit_eqs = TRUE, 
+                                            tol = 1e-8)), 
                    0L)
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
   
@@ -310,7 +329,8 @@ test_that("no fit targets", {
 test_that("no fit targets, removed fit instruments", {
   mdl2 <- mdl$copy()
   mdl2$set_fit_values(NA)
-  mdl2$set_param_values(-1, names = c("sigma_ut", "sigma_umd"))
+  mdl2$set_sigma_values(-1, pattern = "^u[mt]")
+  expect_equal(mdl2$get_sigmas(), c(sigma_uc = 5, sigma_ui = 21))
   mdl2$solve(silent = TRUE)
   expect_equal(mdl2$get_lagrange(), mdl$get_lagrange() * 0)
   inst_names <- c("uc", "ui")
@@ -455,7 +475,84 @@ test_that("get_fit for argument period, pattern and names", {
                ref_result["2016q1", "c", drop = FALSE])
   
   expect_error(mdl$get_fit(names = c("x", "c")), 
-                   "\"x\" is not an endogenous variable.")
+               "\"x\" is not an endogenous variable.")
 })
 
+test_that("more tests for get_sigma and get_sigma_values", {
+  
+ mdl2 <- mdl$copy()
+ 
+ sigmas <- mdl$get_sigmas()
+ expect_equal(mdl2$get_sigma(), sigmas)
+ expect_equal(mdl2$get_sigma(names = c("ui", "uc")), 
+              sigmas[c("sigma_ui", "sigma_uc")])
+ expect_equal(mdl2$get_sigma(pattern = "[ic]$"), 
+              sigmas[c("sigma_uc", "sigma_ui")])
+ expect_equal(mdl2$get_sigma(pattern = "[ic]$", names = "ut"), 
+              sigmas[c("sigma_ut", "sigma_uc", "sigma_ui")])
+ expect_warning(
+   expect_equal(mdl2$get_sigma(pattern = "xxx$"), numeric(0)),
+   "No fit instruments match pattern \"xxx\\$\"\\.")
+ expect_error(
+   mdl2$get_sigma(names = c("x", "y")), 
+   "The following names are no fit instruments: \"x\", \"y\"\\.")
 
+ 
+ mdl2$set_sigma_values(-1)
+ mdl2$set_sigma(numeric(0))
+ expect_true(length(mdl2$get_sigmas()) == 0)
+ 
+ inst_names <- c("ut", "uc", "umd", "ui") 
+ expect_equal(mdl2$get_instrument_names(all = TRUE), inst_names)
+ expect_equal(mdl2$get_instrument_names(), 
+              character(0))
+ 
+ expect_error(mdl2$set_sigma(c(sigma_ut = 2),
+              "\"sigma_ut\" is not a fit instrument\\."))   
+ mdl2$set_sigma(c(ut = 1111))
+ 
+ expect_warning(
+  mdl2$set_sigma_values(9999, pattern = "^sigma_u"),
+  "No fit instruments match pattern \"\\^sigma_u\"\\.")
+ mdl2$set_sigma_values(666, names = character(0))
+ mdl2$set_sigma_values(2222,  names = c("ui", "umd"))
+ mdl2$set_sigma_values(3333,  pattern = "c$")
+ expect_equal(mdl2$get_sigmas(),
+              c(sigma_ut = 1111, sigma_uc = 3333, sigma_umd = 2222, 
+                sigma_ui = 2222))
+ expect_equal(mdl2$get_sigma(),
+              c(sigma_ut = 1111, sigma_uc = 3333, sigma_umd = 2222, 
+                sigma_ui = 2222))
+ 
+ 
+ mdl2 <- mdl$copy()$clear_fit()
+ mdl2$set_sigma_values(4444, names = c("ui"), pattern = "[dt]$")
+ 
+ expected_result <- rep(4444, 3)
+ names(expected_result) <- paste0("sigma_", c("ut", "umd", "ui"))
+ expect_equal(mdl2$get_sigmas(), expected_result)
+})
+
+test_that("method get_param to obtain sigma values", {
+  expect_silent(params_and_sigmas <- mdl$get_param())
+  
+  sigmas <- mdl$get_sigmas()
+  expect_equal(sigmas, params_and_sigmas[names(sigmas)])
+  expect_silent(
+    expect_equal(mdl$get_param(pattern = "u")[mdl$get_sigma_names()], 
+               sigmas)
+  )
+  wmsg <- "Using method 'get_param' to get sigma parameters is obsolete\\. Use method 'get_sigma' instead\\."
+  expect_warning(
+    expect_equal(mdl$get_param(pattern = "sigma")[mdl$get_sigma_names()], 
+                 sigmas),
+    wmsg)
+  expect_warning(
+    expect_equal(mdl$get_param(pattern = "^sigma")[mdl$get_sigma_names()], 
+                 sigmas),
+    wmsg)
+  
+  expect_warning(
+    expect_equal(mdl$get_param(names =  "sigma_umd"), sigmas["sigma_umd"]),
+    wmsg)
+})

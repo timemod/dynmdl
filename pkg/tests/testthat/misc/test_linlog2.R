@@ -89,7 +89,7 @@ test_that("disable linlog for the first equation", {
 test_that("sigma_uy1 > 0", {
   
   # turn on fit procedure
-  mdl$set_param_values(1, names = "sigma_uy1")
+  mdl$set_sigma_values(1, names = "uy1")
   
   # if sigma_uy1 > 1, there are two solutions:
   #  1)  (y1, y2) = (1, 1)

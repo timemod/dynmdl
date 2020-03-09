@@ -30,7 +30,7 @@ create_solve_mdl <- function(mdl) {
   mdl2$set_endo_values(6000, names = "y", period = mdl$get_lag_period())
   mdl2$set_endo_values(6000, names = "y", period = mdl$get_lead_period())
   mdl2$set_fit_values(6000, names = "c", period = "2015")
-  mdl2$set_param(c(sigma_uc = 1))
+  mdl2$set_sigma(c(uc = 1))
   return(mdl2)
 }
 

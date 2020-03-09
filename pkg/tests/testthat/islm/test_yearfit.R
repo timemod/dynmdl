@@ -22,7 +22,7 @@ report <- capture_output(mdl <- dyn_mdl(mod_file,
 mdl$solve_steady(control = list(silent = TRUE))
 mdl$set_period(model_period)
 mdl$set_fit(regts(1275, start = "2016Q4"), names = "y_year")
-mdl$set_param(c(sigma_umd = 2, sigma_ui = 21))
+mdl$set_sigma(c(umd = 2, ui = 21))
 
 mdl$solve(silent = TRUE)
 

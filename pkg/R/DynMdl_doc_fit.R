@@ -62,7 +62,8 @@
 #' print(mdl$get_fit())
 #
 #' @seealso \code{\link{get_fit}}, \code{\link{set_fit_steady}}, 
-#' and \code{\link{clear_fit}}
+#' \code{\link{set_sigma}}, \code{\link{set_sigma_values}},
+#' \code{\link{get_sigma}} and \code{\link{clear_fit}}
 NULL
 
 #' \code{\link{DynMdl}} method: Sets the values of the fit targets
@@ -112,19 +113,26 @@ NULL
 #'
 #' @section Usage:
 #' \preformatted{
-#' mdl$get_instrument_names()
+#' mdl$get_instrument_names(all = FALSE)
 #'
 #' mdl$get_sigma_names()
 #'
 #' }
 #' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
+#' 
+#' @section Arguments:
+#' \describe{
+#' \item{\code{all}}{A logical (default \code{FALSE}). If \code{TRUE}, the
+#' names of all fit instruments are returned, including the inactive
+#' fit instruments.}
+#' }
 #' @examples
 #'
 #' mdl <- islm_mdl(period = "2017Q1/2018Q3", fit = TRUE)
 #' print(mdl$get_instrument_names())
 #' print(mdl$get_sigma_names())
 #'
-#' @seealso \code{\link{get_fit_instruments}}
+#' @seealso \code{\link{get_fit_instruments}}, \code{\link{get_sigmas}}
 NULL
 
 #' \code{\link{DynMdl}} methods: get variables used in the fit method.
@@ -302,37 +310,6 @@ NULL
 #' \code{\link{clear_fit}}.
 NULL
 
-#' \code{\link{DynMdl}} methods: Retrieve the 
-#' sigma parameters used in the fit method.
-#' @name get_sigmas
-#' @description
-#' This method of R6 class \code{\link{DynMdl}} 
-#' return all sigma parameters for the fit method larger than or 
-#' equal to zero. The fit instruments for which the corresponding
-#' sigma-parameter is \eqn{\ge 0} are used as instruments in the 
-#' fit method. Instruments which a sigma-parameter smaller than 0 are 
-#' fixed at their original value. 
-#' 
-#' The sigma-parameters can be modified with methods
-#' \code{\link{set_param}} and \code{\link{set_param_values}}.
-#'
-#' @section Usage:
-#' \preformatted{
-#' mdl$get_sigmas()
-#' 
-#' \code{mdl} is a \code{\link{DynMdl}} object implementing the fit method.
-#' }
-#' @examples
-#'
-#' mdl <- islm_mdl(period = "2016Q1/2017Q3", fit = TRUE)
-#' mdl$get_sigmas()
-#' 
-#' # disable ui as fit instrument by setting sigma_ui to -1:
-#' mdl$set_param(c(sigma_ui = -1))
-#' mdl$get_sigmas()
-NULL
-
-
 #' \code{\link{DynMdl}} method: set fit targets for the steady state
 #' @name set_fit_steady
 #' @description
@@ -392,3 +369,96 @@ NULL
 #
 #' @seealso \code{\link{get_fit_steady}} and \code{\link{clear_fit}}
 NULL
+
+#' \code{\link{DynMdl}} methods: Set and get the sigma parameters for the
+#' fit method
+#' @name set/get_sigma
+#' @aliases set_sigma set_sigma_values get_sigmas
+#'
+#' @description
+#' \code{DynMdl} methods \code{set_sigma} and \code{set_sigma_values} can be 
+#' used to set the sigma parameters for the fit instruments used in the fit 
+#' method. The names of the sigma parameters are the names
+#' of the instruments suffixed with \code{sigma_}. For example, 
+#' the name of the sigma parameter corresponding to instrument \code{"uc"}
+#' is \code{"sigma_uc"}.
+#' 
+#' If a sigma parameter is smaller than 0, then the corresponding
+#' fit instrument is not active, and is keeped fixed at
+#' the current value, even though it is an endogenous model variable.
+#' 
+#' Method \code{get_sigmas} returns all sigma parameters larger than or equal 
+#' to zero. 
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$set_sigma(sigmas, names, name_err = c("stop", "warn", "silent"))
+#' 
+#' mdl$set_sigma_values(value, names, pattern)
+#' 
+#' mdl$get_sigma(pattern, names)
+#' 
+#' mdl$get_sigmas()
+#' }
+#' \code{mdl} is a \code{\link{DynMdl}} object.
+#' 
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{sigmas}}{a named numeric vector with values of the sigma 
+#' parameters. The names are the name of the instruments (not the names
+#' of the sigma parameters).}
+#' \item{\code{names}}{a character vector with names of fit instruments.
+#' For method \code{set_sigma}, this argument *must* be specified if 
+#' \code{sigmas} is a vector without names.}
+#' \item{\code{name_err}}{this option specifies the action that should be taken 
+#' when a variable name is not a fit instrument.
+#' For \code{"stop"} (the default), the execution of this function is stopped.
+#' For \code{"warn"} and \code{"silent"}, the names that are no fit
+#' instrument names are skipped. \code{"warn"} does, however, give a warning.}
+#' \item{\code{value}}{a numeric vector of length 1.}
+#' \item{\code{pattern}}{a regular expression. 
+#' The action (get or set sigma parameter values) is applied to all sigma 
+#' parameters wiht names
+#' matching \code{pattern}.}
+#' 
+#' If neither \code{names} nor \code{pattern} has
+#' been specified in methods \code{set_param_values} or \code{get_param}, 
+#' then the action is applied to all model parameters.
+#' }
+#' 
+#' @section Methods:
+#' \itemize{
+#' \item \code{set_sigmas}: Set the sigma parameters using a named numeric
+#' vector. The names of the vector should be the names of the corresponding 
+#' fit instruments. 
+#' \item \code{set_sigma_values}: Give one or more sigma parameters
+#' a specified value.
+#' \item \code{get_sigma}: Return sigma parameters.
+#' \item \code{get_sigmas}: Returns all sigma parameters greater than
+#' or equal to zero.
+#' }
+#' 
+#' @examples
+#' mdl <- islm_mdl(fit = TRUE)
+#' mdl$set_sigma(c(umd = 12))
+#' 
+#' # print the sigma parameter for umd
+#' print(mdl$get_sigma(names = "umd"))
+#'
+#' # disable fit instruments umd and umc
+#' mdl$set_sigma_values(-1, names = c("umd", "uc"))
+#' 
+#' # print all sigma parameters for active fit instruments
+#' print(mdl$get_sigmas())
+#' 
+#' # print names of all active instruments (sigma >= 0):
+#' print(mdl$get_instrument_names())
+#' 
+#' # set all sigmas parameters to 1
+#' mdl$set_sigma_values(1)
+#' 
+#' @seealso \code{\link{get_instrument_names}}, \code{\link{get_sigma_names}}, 
+#' \code{\link{set_fit}} and \code{\link{clear_fit}}
+NULL
+

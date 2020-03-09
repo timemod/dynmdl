@@ -44,11 +44,12 @@ respectively. The default is \code{"all"} (all endogenous variables).}
 \section{Methods}{
 
 \itemize{
-\item \code{get_endo_names}: Names of the endogenous model variables
+\item \code{get_endo_names}: Names of the endogenous model variables.
 
-\item \code{get_exo_names}: Names of the endogenous model variables
+\item \code{get_exo_names}: Names of the endogenous model variables.
 
-\item \code{get_par_names}: Names of the model parameters
+\item \code{get_par_names}: Names of the model parameters (including
+the sigma parameters used in the fit method).
 
 }
 }
