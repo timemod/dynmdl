@@ -373,7 +373,7 @@ NULL
 #' \code{\link{DynMdl}} methods: Set and get the sigma parameters for the
 #' fit method
 #' @name set/get_sigma
-#' @aliases set_sigma set_sigma_values get_sigmas
+#' @aliases set_sigma set_sigma_values get_sigma get_sigmas 
 #'
 #' @description
 #' \code{DynMdl} methods \code{set_sigma} and \code{set_sigma_values} can be 

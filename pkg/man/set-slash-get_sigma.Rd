@@ -4,6 +4,7 @@
 \alias{set/get_sigma}
 \alias{set_sigma}
 \alias{set_sigma_values}
+\alias{get_sigma}
 \alias{get_sigmas}
 \title{\code{\link{DynMdl}} methods: Set and get the sigma parameters for the
 fit method}
