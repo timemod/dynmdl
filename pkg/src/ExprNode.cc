@@ -6326,8 +6326,8 @@ void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         }
         break;
     default:
-        dyn_error("Internal error: internal evalution not yet supported"
-                  " for this type of variable");
+        dyn_error("Internal error: generating polish code not yet supported"
+                  " for this type (" + std::to_string(type) + ") of variable");
     }
 }
 
