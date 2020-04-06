@@ -4,7 +4,9 @@
 \name{DynMdl}
 \alias{DynMdl}
 \title{An R6 class for a Dynare model}
-\format{\code{\link{R6Class}} object.}
+\format{
+\code{\link{R6Class}} object.
+}
 \value{
 Object of \code{\link{R6Class}} containing a macro-economic model,
 }

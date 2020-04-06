@@ -1,0 +1,3 @@
+y = c + i + g
+yd = y - t
+md = ms

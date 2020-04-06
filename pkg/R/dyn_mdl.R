@@ -389,6 +389,13 @@ get_equations_orig <- function(mod_text, model_info) {
   equations <- strsplit(model_block, ";")[[1]]
   equations <- unlist(lapply(equations, FUN = trimws))
   
+  # skip equations tagged with static.
+  equations <- grep("\\[(.+,)?\\s*static\\s*(,.+)?\\]", equations, 
+                    invert = TRUE, value = TRUE)
+  
+  # skip local equations
+  equations <- equations[!startsWith(equations, "#")]
+  
   return(equations)
 }
 

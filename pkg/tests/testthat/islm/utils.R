@@ -37,3 +37,13 @@ simul_islm <- function(mdl) {
   mdl$solve(silent = TRUE)
   return(mdl)
 }
+
+# Output a number of equations in a vector to the screen with cat.
+cat_eqs <- function(eqs) {
+  if (.Platform$OS.type == "windows") {
+    eqs <- gsub("\r\n", "\n", eqs)
+  } else {
+    eqs <- eqs
+  }
+  return(cat(paste(eqs, collapse = "\n")))
+}

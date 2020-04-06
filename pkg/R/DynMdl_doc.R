@@ -861,16 +861,17 @@ NULL
 #' }
 NULL
 
-#' \code{\link{DynMdl}} method: Returns a character vector with the model 
-#' equations.
+#' \code{\link{DynMdl}} method: Returns a character vector with the 
+#' dynamic model equations
 #'
 #' @name get_equations
 #' @aliases get_original_equations
 #'
 #' @description
 #' These method of R6 class \code{\link{DynMdl}} returns a character vector 
-#' with the model equations (excluding local equations). \code{get_equations}
-#' returned the parsed equations, where trends (if present) have been removed.
+#' with the model equations (excluding local equations) of the 
+#' dynamic version of the model.  \code{get_equations}
+#' returns the parsed equations, where trends (if present) have been removed.
 #' \code{get_original_equations} returns the equations as defined in the mod 
 #' file. 
 #' @section Usage:

@@ -1,14 +1,14 @@
 Package: dynmdl
 Type: Package
 Title: An R version of Dynare
-Version: 1.2.0
+Version: 1.3.0
 Author: Rob van Harrevelt [aut, cre]
 Maintainer: Rob van Harrevelt <rvanharrevelt@gmail.com>
 Description: An R version of Dynare.
 SystemRequirements: GNU make
 License: GPL (>= 2)
 LazyData: TRUE
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE, r6 = FALSE)
 LinkingTo: Rcpp, BH, Rcereal
 Imports:
