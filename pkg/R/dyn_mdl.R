@@ -382,7 +382,7 @@ get_equations_orig <- function(mod_text, model_info) {
   model_block <- trimws(model_block)
   
   # remove comments
-  model_block <- gsub("%.*\n", "\n", model_block, perl = TRUE, useBytes = TRUE)
+  model_block <- gsub("\\s*%.*\n", "\n", model_block, perl = TRUE, useBytes = TRUE)
   model_block  <- gsub("//.*\n", "\n", model_block, perl = TRUE, useBytes = TRUE)
   
   # split equations
