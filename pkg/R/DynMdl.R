@@ -974,7 +974,7 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(self))
     },
-    check = function() {
+    check = function(tol = sqrt(.Machine$double.eps)) {
 
       self$solve_steady(control = list(silent = TRUE))
       
@@ -987,7 +987,8 @@ DynMdl <- R6Class("DynMdl",
                                       private$model_index, private$mdldef, 
                                       private$jac_dynamic, 
                                       check_only = TRUE, debug = FALSE,
-                                      debug_eqs = FALSE)
+                                      debug_eqs = FALSE,
+                                      check_tol = tol)
       private$clean_dynamic_model()
       return(invisible(self))
     },
@@ -1185,7 +1186,7 @@ DynMdl <- R6Class("DynMdl",
       
       return(invisible(self))
     },
-    solve_perturbation = function() {
+    solve_perturbation = function(check_tol = sqrt(.Machine$double.eps)) {
 
       if (is.null(private$model_period)) stop(private$period_error_msg)
 
@@ -1206,7 +1207,8 @@ DynMdl <- R6Class("DynMdl",
                                       private$model_index, private$mdldef, 
                                       private$jac_dynamic, 
                                       check_only = FALSE, debug = FALSE,
-                                      debug_eqs = FALSE)
+                                      debug_eqs = FALSE,
+                                      check_tol = check_tol)
       
       private$endo_data <- solve_perturbation_(private$ss,
                                                private$mdldef$max_endo_lag,

@@ -930,15 +930,44 @@ NULL
 #' This method of R6 class \code{\link{DynMdl}} computes the steady state,
 #' constructs a linear model around the state steady and finally
 #' computes the eigenvalues of the linearized model around the steady state. It 
-#' also checks if the Blachard and  Kahn conditions are satisfied. 
-#'
+#' also checks if the Blachard and  Kahn conditions are satisfied. The Blanchard
+#' and Kahn conditions state that the number of eigenvalues larger than 1 
+#' should be equal to the number of forward looking variables
+#' (variables with leads).
 #' @section Usage:
-#' \code{DynMdl} method:
+#'
 #' \preformatted{
-#' mdl$check()
+#' mdl$check(tol = sqrt(.Machine$double.eps))
 #' }
 #'
 #' \code{mdl} is a \code{\link{DynMdl}} object
+#' 
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{tol}}{The tolerance parameter used to test if an eigenvalue
+#' is significantly larger than 1 when checking the Blanchard-Kahn 
+#' conditions. The default is the square root of the machine precision 
+#' (typically about 1.5e-8). See Details.}
+#' }
+#' 
+#' @section Details:
+#' 
+#' To test if the Blanchard-Kahn conditions are satisfied, we need to
+#' determine the number of eigenvalues larger than 1. If
+#' an eigenvalue is exactly equal to 1, the actually calculated eigenvalue 
+#' may be slightly larger than 1 because of rounding errors. To check the 
+#' Blanchard-Kahn conditions, we therefore count the number of eigenvalues 
+#' larger than `1 + tol`, where `tol` is a small  number (by default the square 
+#' root of the machine precision). Use argument `tol` to change this tolerance 
+#' parameter.
+#' 
+#' @section Warning:
+#' Method `check` is only possible for models with a maximum lag and lead of 1. 
+#' If the
+#' original model has lags or leads greater than 1, use argument
+#' `max_lag_lead_1 = TRUE` of function `dyn_mdl` to create  a transformed model
+#' with maximum lag and lead 1.
 #'
 #' @examples
 #' mdl <- islm_mdl()

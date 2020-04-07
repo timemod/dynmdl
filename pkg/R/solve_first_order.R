@@ -2,7 +2,8 @@
 # also computes the eigenvalues.
 #' @importFrom regts printobj
 solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic, 
-                              check_only = FALSE, debug = FALSE, debug_eqs) {
+                              check_only = FALSE, debug = FALSE, debug_eqs,
+                              check_tol) {
   
   lead_lag_incidence <- mdldef$lead_lag_incidence
   static_exos <- mdldef$exos
@@ -89,10 +90,9 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
     printobj(E)
     if (!check_only) printobj(qz_result)
   }
-  
-  sdim <- sum(abs(ss$eigval) <= 1)
+  sdim <- sum(abs(ss$eigval) <= (1 + check_tol))
   nba <- ss$nd - sdim
-  
+
   if (check_only) {
     cat("EIGENVALUES:\n")
     cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
@@ -102,17 +102,21 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
     cat("\n")
     cat(sprintf("\nThere are %d eigenvalue(s) larger than 1 in modulus\n", nba))
     cat(sprintf("for %d forward-looking variable(s)\n", ss$nsfwrd))
-    
-    return(ss)
+  
+    err_fun <- function(x) {cat(paste0(x, "\n"), file = stderr())}
+  } else {
+    err_fun <- stop
   }
   
   if (nba > ss$nsfwrd) {
-    stop("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
+    err_fun("Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
   } else if (nba < ss$nsfwrd) {
-    stop("Blanchard & Kahn conditions are not satisfied: indeterminacy")
+    err_fun("Blanchard & Kahn conditions are not satisfied: indeterminacy")
   }
   
- 
+  if (check_only) {
+    return(ss)
+  }
   
   A <- aa[, ss$index_m, drop = FALSE]  # Jacobian matrix for lagged endogeneous variables
   B <- matrix(NA, nrow = nrow(aa), ncol = length(ss$index_c))
