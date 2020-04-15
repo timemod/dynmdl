@@ -1,0 +1,2 @@
+WARNING: Can't find a numeric initial value for parameter c0, using NA
+WARNING: Can't find a numeric initial value for parameter t1, using NA

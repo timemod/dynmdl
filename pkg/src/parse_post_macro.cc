@@ -32,7 +32,8 @@
 #include "parse.hh"
 
 ModFile *parse_post_macro(stringstream &in, string &latex_basename, bool debug, bool clear_all, bool clear_global,
-      bool no_tmp_terms, bool no_log, bool no_warn, bool warn_uninit, bool warn_uninit_param, bool console,
+      bool no_tmp_terms, bool no_log, bool no_warn, bool warn_uninit, bool warn_uninit_param, 
+      bool init_param_na, bool console,
       bool nograph, bool nointeractive, bool parallel, ConfigFile &config_file,
       WarningConsolidation &warnings, bool nostrict, bool check_model_changes,
       bool minimal_workspace, bool compute_xrefs, FileOutputType output_mode,
@@ -54,7 +55,7 @@ ModFile *parse_post_macro(stringstream &in, string &latex_basename, bool debug, 
   mod_file->transformPass(nostrict, compute_xrefs, max_laglead_1, n_fit_derivatives);
 
   // Evaluate parameters initialization, initval, endval and pounds
-  mod_file->evalAllExpressions(warn_uninit, warn_uninit_param);
+  mod_file->evalAllExpressions(warn_uninit, warn_uninit_param, init_param_na);
 
   // Do computations
   mod_file->computingPass(no_tmp_terms, output_mode,  params_derivs_order);

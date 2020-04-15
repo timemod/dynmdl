@@ -64,7 +64,12 @@
 #' are ignored.
 #' @param warn_uninit_param A logical. If \code{TRUE} (the default) then
 #' a warning is given for each parameter that has not been initialized in the
-#' mod file. Uninitialized parameters are always set to zero.
+#' mod file. Uninitialized parameters are set to zero or `NA`, depending
+#' on argument `init_param_na`.
+#' @param init_param_na A logical (default `FALSE`). If `TRUE`, then
+#' the parameters that have not been initialized in the
+#' mod file are set to `NA`. Otherwise these parameters are initialised
+#' with zero.
 #' @param fit a logical (default \code{TRUE}) indicating if the \code{DynMdl} 
 #' object returned by this function should implement the fit procedure if the 
 #' mod file contains a fit block. Specify \code{FALSE} if the mod file  has a fit
@@ -94,8 +99,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                     calc = c("R", "bytecode", "dll", "internal"),
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, strict = TRUE,
-                    warn_uninit_param = TRUE, fit = TRUE, 
-                    fit_fixed_period = FALSE, latex = TRUE,
+                    warn_uninit_param = TRUE, init_param_na = FALSE,
+                    fit = TRUE, fit_fixed_period = FALSE, latex = TRUE,
                     latex_options, nostrict, silent = FALSE) {
   
   calc <- match.arg(calc)
@@ -235,7 +240,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   call_compile_model_  <- function() {
     return(compile_model_(mod_file_compile, latex_basename, use_dll, 
                    dll_dir, max_laglead_1, strict, internal_calc,
-                   n_fit_derivatives, warn_uninit_param, 
+                   n_fit_derivatives, warn_uninit_param, init_param_na,
                    latex, latex_options_))
   }
    

@@ -126,7 +126,8 @@ public:
   //! Evaluate all the statements
   /*! \param warn_uninit Should a warning be displayed for uninitialized endogenous/exogenous/parameters ? */
 #ifdef USE_R
-  void evalAllExpressions(bool warn_uninit, bool warn_uninit_param);
+  void evalAllExpressions(bool warn_uninit, bool warn_uninit_param,
+                          bool init_param_na);
 #else
   void evalAllExpressions(bool warn_uninit);
 #endif

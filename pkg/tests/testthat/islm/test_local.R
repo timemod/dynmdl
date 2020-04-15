@@ -64,7 +64,7 @@ test_that("get_equations", {
   eqs1 <- mdl$get_equations()
   eqs2 <- mdl$get_original_equations()
   expect_equal(eqs1, eqs2)
-  expect_known_output(cat_eqs(eqs1), "expected_output/local_eqs.txt")
+  expect_known_output(cat_lines(eqs1), "expected_output/local_eqs.txt")
 })
 
 

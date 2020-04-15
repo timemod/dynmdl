@@ -16,6 +16,7 @@ dyn_mdl(
   max_laglead_1 = FALSE,
   strict = TRUE,
   warn_uninit_param = TRUE,
+  init_param_na = FALSE,
   fit = TRUE,
   fit_fixed_period = FALSE,
   latex = TRUE,
@@ -75,7 +76,13 @@ are ignored.}
 
 \item{warn_uninit_param}{A logical. If \code{TRUE} (the default) then
 a warning is given for each parameter that has not been initialized in the
-mod file. Uninitialized parameters are always set to zero.}
+mod file. Uninitialized parameters are set to zero or \code{NA}, depending
+on argument \code{init_param_na}.}
+
+\item{init_param_na}{A logical (default \code{FALSE}). If \code{TRUE}, then
+the parameters that have not been initialized in the
+mod file are set to \code{NA}. Otherwise these parameters are initialised
+with zero.}
 
 \item{fit}{a logical (default \code{TRUE}) indicating if the \code{DynMdl}
 object returned by this function should implement the fit procedure if the
