@@ -30,14 +30,13 @@ mdl$set_exo_values(value, names, pattern, period = mdl$get_data_period())
 as the length of the range of \code{period}.
 If the model has trends, then the values should
 include the trends.}
-\item{\code{names}}{a character vector with variable names}
-\item{\code{pattern}}{a regular expression}
+\item{\code{names}}{a character vector with variable names.}
+\item{\code{pattern}}{a regular expression for selecting the names of variables.}
 \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
-object that can be coerced to a \code{period_range}}
-
+object that can be coerced to a \code{period_range}.}
+}
 If neither \code{names} nor \code{pattern} have been specified,
 then all endogenous or exogenous variables are set to the specified value.
-}
 }
 
 \section{Methods}{

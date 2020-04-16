@@ -201,19 +201,20 @@ NULL
 #' 
 #' }
 #'
-#' \code{mdl} is a \code{\link{DynMdl}} object
+#' \code{mdl} is a \code{\link{DynMdl}} object.
 #'
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{pattern}}{a regular expression}
-#' \item{\code{names}}{a character vector with variable names}
+#' \item{\code{pattern}}{a regular expression for selecting the names
+#' of variables.}
+#' \item{\code{names}}{a character vector with variable names.}
 #' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
-#' object that can be coerced to a \code{period_range}}
+#' object that can be coerced to a \code{period_range}.}
 #' \item{\code{trend}}{a logical. This argument is used for model with
 #' trend variables. If \code{TRUE} (the default), then the
 #' endogenous variables are multiplied with their trends (called deflators
-#' in the mod file)}
+#' in the mod file).}
 #' }
 #' 
 #' If neither \code{names} nor \code{pattern} have been specified,
@@ -373,14 +374,13 @@ NULL
 #' as the length of the range of \code{period}. 
 #' If the model has trends, then the values should 
 #' include the trends.}
-#' \item{\code{names}}{a character vector with variable names}
-#' \item{\code{pattern}}{a regular expression}
+#' \item{\code{names}}{a character vector with variable names.}
+#' \item{\code{pattern}}{a regular expression for selecting the names of variables.}
 #' \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
-#' object that can be coerced to a \code{period_range}}
-#' 
+#' object that can be coerced to a \code{period_range}.}
+#' }
 #' If neither \code{names} nor \code{pattern} have been specified,
 #' then all endogenous or exogenous variables are set to the specified value.
-#' }
 #' @section Methods:
 #' \itemize{
 #' \item \code{set_endo_values}: Endogenous model variables
@@ -428,7 +428,8 @@ NULL
 #' \item{\code{fun}}{a function applied each model variable specified with 
 #'  argument \code{names} or \code{pattern}. See Details.}
 #' \item{\code{names}}{a character vector with variable names}
-#' \item{\code{pattern}}{a regular expression}
+#' \item{\code{pattern}}{a regular expression for selecting the names
+#' of variables whose values must be changed}
 #' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
 #' object that can be coerced to a \code{period_range}: the period 
 #' for which the function will be applied}
@@ -1121,11 +1122,11 @@ NULL
 #' 
 #' @section Usage:
 #' \preformatted{
-#' mdl$get_endo_names(type = c("all", "lags", "leads")
+#' mdl$get_endo_names(type = c("all", "lags", "leads"))
 #'
 #' mdl$get_exo_names()
 #'
-#' mdl$get_par_names()
+#' mdl$get_par_names(pattern = ".+")
 #'
 #' }
 #'
@@ -1137,6 +1138,8 @@ NULL
 #' \item{\code{type}}{a character describing the type of the endogenous variables:
 #'  \code{"lags"} or \code{"leads"} for endogenous variables with lags or leads,
 #' respectively. The default is \code{"all"} (all endogenous variables).}
+#'  \item{`pattern`}{A regular expression. If specified, then only names 
+#'  matching the regular expression are returned.}
 #' }
 #' @section Methods:
 #' \itemize{
@@ -1146,9 +1149,16 @@ NULL
 #'
 #' \item \code{get_par_names}: Names of the model parameters (including
 #' the sigma parameters used in the fit method).
-#'
 #' }
 #'
+#' @examples
+#' mdl <- islm_mdl()
+#' 
+#' # print the names of all variables with leads
+#' print(mdl$get_endo_names(type = "lead"))
+#' 
+#' # print parameters starting with "c"
+#' print(mdl$get_par_names(pattern = "^c.*")
 #' @seealso \code{\link{get_instrument_names}} and \code{\link{get_sigma_names}}
 NULL
 

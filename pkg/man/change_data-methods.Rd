@@ -33,7 +33,8 @@ mdl$change_data(fun, names, pattern, period = mdl$get_data_period(), ...)
 \item{\code{fun}}{a function applied each model variable specified with
 argument \code{names} or \code{pattern}. See Details.}
 \item{\code{names}}{a character vector with variable names}
-\item{\code{pattern}}{a regular expression}
+\item{\code{pattern}}{a regular expression for selecting the names
+of variables whose values must be changed}
 \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
 object that can be coerced to a \code{period_range}: the period
 for which the function will be applied}

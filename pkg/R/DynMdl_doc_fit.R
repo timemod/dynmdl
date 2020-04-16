@@ -85,11 +85,12 @@ NULL
 #'
 #' \describe{
 #' \item{\code{value}}{a numeric vector of length 1 or with the same length
-#' as the length of the range of \code{period}}
+#' as the length of the range of \code{period}.}
 #' \item{\code{names}}{a character vector with variable names}
-#' \item{\code{pattern}}{a regular expression}
+#' \item{\code{pattern}}{a regular expression for selecting the names
+#' of fit targets.}
 #' \item{\code{period}}{a \code{\link[regts]{period_range}} object or an
-#' object that can be coerced to a \code{period_range}}
+#' object that can be coerced to a \code{period_range}.}
 #' }
 #' @examples
 #'
@@ -177,7 +178,8 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{pattern}}{a regular expression}
+#' \item{\code{pattern}}{a regular expression for selecting the names
+#' of the variables}
 #' \item{\code{names}}{a character vector with variable names}
 #' \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
 #' object that can be coerced to a \code{period_range}}
@@ -238,8 +240,9 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{pattern}}{a regular expression}
-#' \item{\code{names}}{a character vector with variable names}
+#' \item{\code{pattern}}{a regular expression for selecting the names of
+#' the fit targets.}
+#' \item{\code{names}}{a character vector with variable names.}
 #' }
 #'
 #' @examples
@@ -421,11 +424,10 @@ NULL
 #' The action (get or set sigma parameter values) is applied to all sigma 
 #' parameters wiht names
 #' matching \code{pattern}.}
-#' 
+#' }
 #' If neither \code{names} nor \code{pattern} has
 #' been specified in methods \code{set_param_values} or \code{get_param}, 
 #' then the action is applied to all model parameters.
-#' }
 #' 
 #' @section Methods:
 #' \itemize{

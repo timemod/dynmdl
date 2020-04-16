@@ -47,21 +47,22 @@ mdl$get_all_data(trend = TRUE)
 
 }
 
-\code{mdl} is a \code{\link{DynMdl}} object
+\code{mdl} is a \code{\link{DynMdl}} object.
 }
 
 \section{Arguments}{
 
 
 \describe{
-\item{\code{pattern}}{a regular expression}
-\item{\code{names}}{a character vector with variable names}
+\item{\code{pattern}}{a regular expression for selecting the names
+of variables.}
+\item{\code{names}}{a character vector with variable names.}
 \item{\code{period}}{an \code{\link[regts]{period_range}} object or an
-object that can be coerced to a \code{period_range}}
+object that can be coerced to a \code{period_range}.}
 \item{\code{trend}}{a logical. This argument is used for model with
 trend variables. If \code{TRUE} (the default), then the
 endogenous variables are multiplied with their trends (called deflators
-in the mod file)}
+in the mod file).}
 }
 
 If neither \code{names} nor \code{pattern} have been specified,

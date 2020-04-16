@@ -342,7 +342,7 @@ DynMdl <- R6Class("DynMdl",
     get_tex_names = function() {
       return(private$mdldef$tex_names)
     },
-    get_par_names = function(pattern = ".*") {
+    get_par_names = function(pattern = ".+") {
       names <- private$mdldef$param_names
       if (!missing(pattern)) {
         sel <- grep(pattern, names)

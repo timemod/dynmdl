@@ -4,6 +4,43 @@
 #' contains a fit block, then the \code{DynMdl} object implements the fit 
 #' procedure (except if argument \code{fit} is \code{FALSE}).
 #' 
+#' \subsection{Evaluation of model equations}{
+#' 
+#' There are several methods available for evaluating the model equations and 
+#' the Jacobian. These methods can be specified with argument `calc`.  
+#' The possible methods are
+#' \describe{
+#' \item{`R`}{the model equations and Jacobian are evaluated using R functions . 
+#' This is very slow for large models. This method should therefore only be 
+#' used for small models.}
+#' \item{`bytcode`}{the same as `R`, except that the R function is turned into byte code.
+#' This is usually only slightly faster than using the `R` method}
+#' \item{`dll`}{The model equations and Jacobian are evaluated using a 
+#' shared library created for this specific model.
+#' Function `dyn_mdl` generates C code for evaluating the equations and the Jacobian,
+#' and subsequently compiles the C code to create a shared library. The
+#' evaluation of the equations and Jacobian is much faster than for 
+#' the `R` and `bytecode` methods. However, the compilation of the
+#' C code can take a considerable amount time for large models.}
+#' \item{`internal`}{This methods converts
+#' the equations to internal byte code using reverse Polish notation.
+#' The internal byte code is evaluated using compiled C++ code that is part
+#' of package `dynmdl`.
+#' For this method the evaluation of the equations and Jacobian
+#' is as fast as for the `dll` method, but the compilation time 
+#' is much faster. However, the `internal` method does not yet support 
+#' all features of Dynare models. For example, it cannot handle 
+#' model-local variables and some built-in functions (the only supported
+#' built-in functions are currently  `exp`, `log`, `sqrt`, `abs` and `sign`).}
+#' }
+#' 
+#' If possible, use the `internal` method, because this method is faster than
+#' the other methods for both compiling the model and for evaluating the equations
+#' and Jacobian. However, as explained above, the mod file may contain features not 
+#' yet supported for the `internal` method, in which case another 
+#' method must be selected.
+#' }
+#' 
 #' \subsection{Latex options}{
 #' When the mod file contains a \code{write_latex_static_model},
 #' \code{write_latex_dynamic_model} or \code{write_latex_oiriginal_model} 
@@ -35,7 +72,7 @@
 #' All trend variables will be equal to 1 at the base period.
 #' @param calc Method used to evaluate the model equations. 
 #' Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and 
-#' \code{"internal"}. See details.
+#' \code{"internal"}. See Details.
 #' @param fit_mod_file the name of the generated fit mod file. If not specified,
 #' then the fit mod file is destroyed after the model has been parsed.
 #' This argument should not be specified if the model contains

@@ -57,11 +57,10 @@ instrument names are skipped. \code{"warn"} does, however, give a warning.}
 The action (get or set sigma parameter values) is applied to all sigma
 parameters wiht names
 matching \code{pattern}.}
-
+}
 If neither \code{names} nor \code{pattern} has
 been specified in methods \code{set_param_values} or \code{get_param},
 then the action is applied to all model parameters.
-}
 }
 
 \section{Methods}{

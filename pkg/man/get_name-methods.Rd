@@ -20,11 +20,11 @@ instruments.
 \section{Usage}{
 
 \preformatted{
-mdl$get_endo_names(type = c("all", "lags", "leads")
+mdl$get_endo_names(type = c("all", "lags", "leads"))
 
 mdl$get_exo_names()
 
-mdl$get_par_names()
+mdl$get_par_names(pattern = ".+")
 
 }
 
@@ -38,6 +38,8 @@ mdl$get_par_names()
 \item{\code{type}}{a character describing the type of the endogenous variables:
 \code{"lags"} or \code{"leads"} for endogenous variables with lags or leads,
 respectively. The default is \code{"all"} (all endogenous variables).}
+\item{\code{pattern}}{A regular expression. If specified, then only names
+matching the regular expression are returned.}
 }
 }
 
@@ -50,10 +52,18 @@ respectively. The default is \code{"all"} (all endogenous variables).}
 
 \item \code{get_par_names}: Names of the model parameters (including
 the sigma parameters used in the fit method).
-
 }
 }
 
+\examples{
+mdl <- islm_mdl()
+
+# print the names of all variables with leads
+print(mdl$get_endo_names(type = "lead"))
+
+# print parameters starting with "c"
+print(mdl$get_par_names(pattern = "^c.*")
+}
 \seealso{
 \code{\link{get_instrument_names}} and \code{\link{get_sigma_names}}
 }

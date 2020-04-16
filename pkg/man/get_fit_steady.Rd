@@ -36,8 +36,9 @@ mdl$get_fit_steady(pattern, names) # fit targets
 
 
 \describe{
-\item{\code{pattern}}{a regular expression}
-\item{\code{names}}{a character vector with variable names}
+\item{\code{pattern}}{a regular expression for selecting the names of
+the fit targets.}
+\item{\code{names}}{a character vector with variable names.}
 }
 }
 
