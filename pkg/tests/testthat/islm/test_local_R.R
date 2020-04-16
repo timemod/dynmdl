@@ -8,7 +8,9 @@ source("utils.R")
 
 mod_name <- "islm_local"
 
-mdl <- make_mdl(mod_name)
+expect_error(make_mdl(mod_name),
+             "Internal calculator does not yet support model-local variables")
+mdl <- make_mdl(mod_name, calc = "R")
 model_period <- mdl$get_period()
 lag_per <- mdl$get_lag_period()
 

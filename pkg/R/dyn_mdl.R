@@ -36,7 +36,8 @@
 #' 
 #' If possible, use the `internal` method, because this method is faster than
 #' the other methods for both compiling the model and for evaluating the equations
-#' and Jacobian. However, as explained above, the mod file may contain features not 
+#' and Jacobian. The `internal` method is therefore the default method.
+#' However, as explained above, the mod file may contain features not 
 #' yet supported for the `internal` method, in which case another 
 #' method must be selected.
 #' }
@@ -71,8 +72,8 @@
 #' the base period for the trends. This is used if the model has trend variables.
 #' All trend variables will be equal to 1 at the base period.
 #' @param calc Method used to evaluate the model equations. 
-#' Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and 
-#' \code{"internal"}. See Details.
+#' Possible values are `"internal"`,  \code{"R"}, \code{"bytecode"} and \code{"dll"}.
+#' See Details.
 #' @param fit_mod_file the name of the generated fit mod file. If not specified,
 #' then the fit mod file is destroyed after the model has been parsed.
 #' This argument should not be specified if the model contains
@@ -133,7 +134,7 @@
 #' @importFrom tools file_path_sans_ext
 #' @importFrom utils capture.output
 dyn_mdl <- function(mod_file, period, data, base_period = NULL, 
-                    calc = c("R", "bytecode", "dll", "internal"),
+                    calc = c("internal", "R", "bytecode", "dll"),
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, strict = TRUE,
                     warn_uninit_param = TRUE, init_param_na = FALSE,

@@ -41,7 +41,7 @@ mod_file <- file.path("mod", paste0(model_name, ".mod"))
 p1 <- period("2016Q1")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
-report <- capture_output(mdl <- dyn_mdl(mod_file))
+report <- capture_output(mdl <- dyn_mdl(mod_file, calc = "R"))
 report2 <- capture_output(mdl$solve_steady())
 mdl$set_period(model_period)
 mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")

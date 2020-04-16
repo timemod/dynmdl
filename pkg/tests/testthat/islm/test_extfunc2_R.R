@@ -2,28 +2,21 @@ library(dynmdl)
 library(testthat)
 rm(list = ls())
 
-context("ISLM model with external functions with supplied derivatives (2)")
+context("ISLM model with external functions with supplied derivatives (1)")
 
 source("../tools/read_dynare_result.R")
 source("utils.R")
 
-mod_name <- "islm_extfunc3"
+mod_name <- "islm_extfunc2"
 
 square <<- function(x) {
-  return(x * x)
+  return(list(x * x, 2 * x))
 }
-square_jac <<- function(x) {
-  return(2 * x)
-}
-
 multiply <<- function(x, y) {
-  return(x * y)
-}
-multiply_jac <<- function(x, y) {
-  return(c(y,  x))
+  return(list(x * y, c(y,  x)))
 }
 
-mdl <- make_mdl(mod_name)
+mdl <- make_mdl(mod_name, calc = "R")
 model_period <- mdl$get_period()
 
 dynare_result <- read_dynare_result("islm", mdl)

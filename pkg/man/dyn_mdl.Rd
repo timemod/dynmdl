@@ -9,7 +9,7 @@ dyn_mdl(
   period,
   data,
   base_period = NULL,
-  calc = c("R", "bytecode", "dll", "internal"),
+  calc = c("internal", "R", "bytecode", "dll"),
   fit_mod_file,
   debug = FALSE,
   dll_dir,
@@ -40,8 +40,8 @@ the base period for the trends. This is used if the model has trend variables.
 All trend variables will be equal to 1 at the base period.}
 
 \item{calc}{Method used to evaluate the model equations.
-Possible values are \code{"R"}, \code{"bytecode"}, \code{"dll"} and
-\code{"internal"}. See Details.}
+Possible values are \code{"internal"},  \code{"R"}, \code{"bytecode"} and \code{"dll"}.
+See Details.}
 
 \item{fit_mod_file}{the name of the generated fit mod file. If not specified,
 then the fit mod file is destroyed after the model has been parsed.
@@ -148,7 +148,8 @@ built-in functions are currently  \code{exp}, \code{log}, \code{sqrt}, \code{abs
 
 If possible, use the \code{internal} method, because this method is faster than
 the other methods for both compiling the model and for evaluating the equations
-and Jacobian. However, as explained above, the mod file may contain features not
+and Jacobian. The \code{internal} method is therefore the default method.
+However, as explained above, the mod file may contain features not
 yet supported for the \code{internal} method, in which case another
 method must be selected.
 }

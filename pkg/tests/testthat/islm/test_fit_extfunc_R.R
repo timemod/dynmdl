@@ -37,7 +37,7 @@ multiply_d2 <<- function(x, y) {
   return(x)
 }
 
-report <- capture_output(mdl <- dyn_mdl(mod_file))
+report <- capture_output(mdl <- dyn_mdl(mod_file, calc = "R"))
 report2 <- capture_output(mdl$solve_steady())
 
 mdl$set_period(model_period)

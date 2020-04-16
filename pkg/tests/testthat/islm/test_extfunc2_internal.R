@@ -31,7 +31,7 @@ multiply_d2 <<- function(x, y) {
 }
 
 
-mdl <- make_mdl(mod_name, calc = "internal")
+mdl <- make_mdl(mod_name)
 model_period <- mdl$get_period()
 
 dynare_result <- read_dynare_result("islm", mdl)

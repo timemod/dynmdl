@@ -6325,9 +6325,11 @@ void VariableNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
             mdl.add_exo(i, 0);
         }
         break;
+    case eModelLocalVariable:
+        dyn_error("Internal calculator does not yet support model-local variables");
     default:
-        dyn_error("Internal error: generating polish code not yet supported"
-                  " for this type (" + std::to_string(type) + ") of variable");
+        dyn_error("Internal calculator does not yet support"
+                  " this type (" + std::to_string(type) + ") of variable");
     }
 }
 
@@ -6354,7 +6356,8 @@ void UnaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
       mdl.add_op(SIGN);
       break;
     default:
-      dyn_error("genPolishCode not implemented for unary operator");
+      dyn_error("Internal calculator does not yet support"
+                  " this type (" + std::to_string(op_code) + ") of unary function");
     }
 }
 
@@ -6380,7 +6383,7 @@ void BinaryOpNode::genPolishCode(PolishModel &mdl, bool dynamic) const {
         break;
     case oPowerDeriv:
         if (powerDerivOrder != 1) {
-            dyn_error("genPolishCode not implemented for power deriv order != 1");
+            dyn_error("Internal calculator not implemented for power deriv order != 1");
         }
         mdl.add_op(POW_DERIV);
         break;
@@ -6477,7 +6480,7 @@ void FirstDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, bool dynami
 
 void SecondDerivExternalFunctionNode::genPolishCode(PolishModel &mdl, 
                                              bool dynamic) const {
-    dyn_error("genPolishCode not implemented for this type");
+    dyn_error("Internal calculator not implemented for SecondDerivExternalFunctionNode");
 }
 
 #endif
