@@ -109,7 +109,7 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
                   n_close_to_1, check_tol))
     }
     
-    err_fun <- function(x) {cat(paste0(x, "\n"), file = stderr())}
+    err_fun <- function(x) {cat(paste0("\n", x, "\n\n"), file = stderr())}
   } else {
     err_fun <- stop
   }

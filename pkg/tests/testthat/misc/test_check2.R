@@ -12,6 +12,9 @@ mdl$solve_steady(silent = TRUE)
 
 params <- as.list(mdl$get_param())
 
+BB_msgs <- c("", "Blanchard & Kahn conditions are not satisfied: no stable equilibrium",
+            "")
+
 test_that("steady state", {
   # calculate analytial steady state
   expect_equal(mdl$get_static_endos(), c(c = 0, d = 0))
@@ -26,7 +29,7 @@ run_check <- function(...) {
 
 test_that("eigenvalues", {
   ret <- run_check()
-  expect_equal(ret$messages, "Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
+  expect_equal(ret$messages, BB_msgs)
   expect_known_output(cat(ret$output), "expected_output/check2_1.txt")
   eigvals <- mdl$get_eigval()
   expect_equal(eigvals, c(1, 4))
@@ -40,10 +43,10 @@ test_that("parameter close to 1", {
   expect_known_output(cat(ret1$output), "expected_output/check2_2.txt")
   
   ret2 <- run_check(tol = eps / 2)
-  expect_equal(ret2$messages, "Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
+  expect_equal(ret2$messages, BB_msgs)
   expect_known_output(cat(ret2$output), "expected_output/check2_3.txt")
   
   ret3 <- run_check(tol = 1e-12)
-  expect_equal(ret2$messages, "Blanchard & Kahn conditions are not satisfied: no stable equilibrium")
+  expect_equal(ret2$messages, BB_msgs)
   expect_known_output(cat(ret2$output), "expected_output/check2_4.txt")
 })

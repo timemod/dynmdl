@@ -39,8 +39,9 @@ test_that("eigenvalues", {
   check_output <- capture_output({
     check_message <- capture.output(mdl$check(), type = "message")
   })
-  expect_equal(check_message, 
-               "Blanchard & Kahn conditions are not satisfied: indeterminacy")
+  BB_msgs <- c("", "Blanchard & Kahn conditions are not satisfied: indeterminacy",
+               "")
+  expect_equal(check_message, BB_msgs)
   eigval <- mdl$get_eigval()
   expect_equal(Re(eigval), eigval_dynare[, 1])
   expect_equal(Im(eigval), eigval_dynare[, 2])
