@@ -62,7 +62,7 @@ mdl <- islm_mdl()
 print(mdl$get_endo_names(type = "lead"))
 
 # print parameters starting with "c"
-print(mdl$get_par_names(pattern = "^c.*")
+print(mdl$get_par_names(pattern = "^c.*"))
 }
 \seealso{
 \code{\link{get_instrument_names}} and \code{\link{get_sigma_names}}
