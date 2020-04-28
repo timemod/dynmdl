@@ -1,0 +1,10 @@
+EIGENVALUES:
+         Modulus            Real       Imaginary
+               1               1               0
+               4               4               0
+
+
+There are 1 eigenvalue(s) larger than 1 in modulus
+for 0 forward-looking variable(s)
+
+1 eigenvalue(s) are within tolerance 1.5e-08 equal to 1
