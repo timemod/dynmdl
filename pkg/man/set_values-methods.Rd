@@ -43,8 +43,9 @@ then all endogenous or exogenous variables are set to the specified value.
 
 \itemize{
 \item \code{set_endo_values}: Endogenous model variables
+(including fit instruments and Lagrange multipliers for the fit method).
 
-\item \code{set_exo_values}: Exogenous model variables
+\item \code{set_exo_values}: Exogenous model variables.
 
 }
 }

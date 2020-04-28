@@ -383,9 +383,10 @@ NULL
 #' then all endogenous or exogenous variables are set to the specified value.
 #' @section Methods:
 #' \itemize{
-#' \item \code{set_endo_values}: Endogenous model variables
+#' \item \code{set_endo_values}: Endogenous model variables 
+#' (including fit instruments and Lagrange multipliers for the fit method).
 #'
-#' \item \code{set_exo_values}: Exogenous model variables
+#' \item \code{set_exo_values}: Exogenous model variables.
 #'
 #' }
 #'
@@ -1147,7 +1148,7 @@ NULL
 #'
 #' \item \code{get_exo_names}: Names of the endogenous model variables.
 #'
-#' \item \code{get_par_names}: Names of the model parameters (including
+#' \item \code{get_par_names}: Names of the model parameters (excluding
 #' the sigma parameters used in the fit method).
 #' }
 #'
@@ -1164,15 +1165,16 @@ NULL
 
 #' \code{\link{DynMdl}} methods: Set and get model parameters
 #' @name set/get_param
-#' @aliases set_param set_param_values get_param
+#' @aliases set_param set_param_values get_param get_all_param
 #'
 #' @description
 #' \code{\link{DynMdl}} methods \code{set_param} and \code{set_param_values} 
 #' can be used to set the model parameters. Method \code{get_param}
-#' returns the model parameters.
+#' returns model parameters (excluding sigma parameters used in the fit method),
+#' and method `get_all_param` returns parameters including the sigma parameters.
 #' 
-#' All three methods treat the sigma parameters used in the
-#' fit procedure the same as ordinary parameters. However,
+#' Methods `set_param` and `set_param_values` treat the sigma parameters 
+#' used in the fit procedure the same as ordinary parameters. However,
 #' the recommended methods to set or get sigma parameters are 
 #' \code{\link{set_sigma}}, 
 #' \code{\link{set_sigma_values}} and \code{\link{get_sigmas}}.
@@ -1184,6 +1186,8 @@ NULL
 #' mdl$set_param_values(value, names, pattern)
 #' 
 #' mdl$get_param(pattern, names)
+#' 
+#' mdl$get_all_param(pattern, names)
 #' 
 #' }
 #' \code{mdl} is a \code{\link{DynMdl}} object
@@ -1216,7 +1220,10 @@ NULL
 #' vector. The names of the vector should be the parameter names.
 #' \item \code{set_param_values}: Give one or more parameter
 #' a specified value.
-#' \item \code{get_param}: Returns the parameters.
+#' \item \code{get_param}: Returns the parameters (excluding the sigma parameters
+#' used in the fit method)
+#' \item `get_all_param`: Returns parameters including the sigma parameters
+#' used in the fit method.
 #' }
 #' 
 #' @seealso \code{\link{get_par_names}}, \code{\link{set_sigma}}, 

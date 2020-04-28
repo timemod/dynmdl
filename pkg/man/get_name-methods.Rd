@@ -50,7 +50,7 @@ matching the regular expression are returned.}
 
 \item \code{get_exo_names}: Names of the endogenous model variables.
 
-\item \code{get_par_names}: Names of the model parameters (including
+\item \code{get_par_names}: Names of the model parameters (excluding
 the sigma parameters used in the fit method).
 }
 }

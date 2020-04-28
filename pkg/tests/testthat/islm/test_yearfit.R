@@ -16,8 +16,7 @@ p1 <- period("2016Q1")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
 unlink(fit_mod_file)
-report <- capture_output(mdl <- dyn_mdl(mod_file,
-                                        fit_mod_file = fit_mod_file))
+mdl <- dyn_mdl(mod_file, fit_mod_file = fit_mod_file, silent = TRUE)
 
 mdl$solve_steady(control = list(silent = TRUE))
 mdl$set_period(model_period)
@@ -47,8 +46,11 @@ test_that("get_names", {
   
   expect_equal(mdl$get_exo_names(), c("g", "ms"))
   
-  par_names <- c(paste0("sigma_u", c("i", "md", "t", "c")),
-                 paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
+  par_names <- c(paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
                  paste0("t", 0:1))
   expect_equal(mdl$get_par_names(), par_names)
+  
+  sigma_names <- paste0("sigma_u", c("t", "c", "i", "md"))
+  expect_equal(mdl$get_sigma_names(), sigma_names)
+  
 })

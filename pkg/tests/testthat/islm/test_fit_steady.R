@@ -9,14 +9,19 @@ model_name <- "islm_fit"
 
 mdl <- read_mdl(rds_file, silent = TRUE)
 
-test_that("set_paramfor sigma parameters", {
+test_that("set_param for sigma parameters", {
   sigmas <- c(ut = 7, uc = 5, umd = 2, ui = 21)
   names(sigmas) <- paste0("sigma_",  names(sigmas))
   expect_silent(mdl$set_param(sigmas))
   expected_result <- sigmas
   expect_equal(mdl$get_sigmas(), expected_result)
+  
   expect_warning(
-    expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
+    expect_equal(mdl$get_param(pattern = "sigma_"), sigmas[character(0)]),
+    "No parameters match pattern \"sigma_\"\\.")
+  
+  expect_warning(
+    expect_equal(mdl$get_sigma(pattern = ".+")[names(expected_result)], 
                expected_result),
     NA)
 })

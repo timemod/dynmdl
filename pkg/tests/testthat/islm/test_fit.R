@@ -20,8 +20,14 @@ test_that("set_sigma", {
   expect_equal(mdl$get_sigmas(), expected_result)
   expect_equal(mdl$get_sigma()[names(expected_result)], 
                expected_result)
+  
   expect_warning(
-    expect_equal(mdl$get_param(pattern = "sigma_")[names(expected_result)], 
+    expect_equal(mdl$get_param(pattern = "sigma_"),  
+                 expected_result[character(0)]), 
+    "No parameters match pattern \"sigma_\"\\.")
+  
+  expect_warning(
+    expect_equal(mdl$get_sigma()[names(expected_result)], 
                expected_result), NA)
 })
 
@@ -160,10 +166,12 @@ test_that("get_names", {
   
   expect_equal(mdl$get_exo_names(), c("g", "ms"))
   
-  par_names <- c(paste0("sigma_u", c("t", "c", "i", "md")),
-                 paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
+  par_names <- c(paste0("c", 0:5), paste0("i", 0:5), paste0("m", 0:3),
                  paste0("t", 0:1))
   expect_equal(mdl$get_par_names(), par_names)
+  
+  sigma_names <- paste0("sigma_u", c("t", "c", "md", "i"))
+  expect_equal(mdl$get_sigma_names(), sigma_names)
   
   expect_equal(mdl$get_sigma_names(), paste0("sigma_", inames))
 })
@@ -531,16 +539,26 @@ test_that("more tests for get_sigma and get_sigma_values", {
  expect_equal(mdl2$get_sigmas(), expected_result)
 })
 
-test_that("method get_param to obtain sigma values", {
-  expect_silent(params_and_sigmas <- mdl$get_param())
+test_that("method get_all_param to obtain sigma values", {
+  
+  expect_silent(params_and_sigmas <- mdl$get_all_param())
   
   sigmas <- mdl$get_sigmas()
   expect_equal(sigmas, params_and_sigmas[names(sigmas)])
-  expect_equal(mdl$get_param(pattern = "u")[mdl$get_sigma_names()], 
+  
+  expect_warning(
+    expect_equal(mdl$get_param(pattern = "u"), params_and_sigmas[character(0)]), 
+    "No parameters match pattern \"u\"")
+  
+  expect_equal(mdl$get_all_param(pattern = "u")[mdl$get_sigma_names()], 
                sigmas)
   
-  expect_equal(mdl$get_param(pattern = "sigma")[mdl$get_sigma_names()], 
+  expect_equal(mdl$get_all_param(pattern = "sigma")[mdl$get_sigma_names()], 
                  sigmas)
 
-  expect_equal(mdl$get_param(names =  "sigma_umd"), sigmas["sigma_umd"])
+  expect_equal(mdl$get_all_param(names =  "sigma_umd"), sigmas["sigma_umd"])
+  
+  expect_warning(
+    expect_equal(mdl$get_all_param(pattern = "uuu"), params_and_sigmas[character(0)]), 
+    "No \\(sigma\\) parameters match pattern \"uuu\"")
 })

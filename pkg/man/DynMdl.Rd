@@ -41,6 +41,9 @@ variables and parameters}
 
 \item{\code{\link{get_param}}}{Returns the parameters of the model.}
 
+\item{\code{\link{get_all_param}}}{Returns the parameters of the model,
+including the sigma parameters used in the fit method.}
+
 \item{\code{\link{set_static_exos}}}{Sets the static values of
 the exogenous variables used to compute the steady state.}
 

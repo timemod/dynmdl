@@ -5,14 +5,16 @@
 \alias{set_param}
 \alias{set_param_values}
 \alias{get_param}
+\alias{get_all_param}
 \title{\code{\link{DynMdl}} methods: Set and get model parameters}
 \description{
 \code{\link{DynMdl}} methods \code{set_param} and \code{set_param_values}
 can be used to set the model parameters. Method \code{get_param}
-returns the model parameters.
+returns model parameters (excluding sigma parameters used in the fit method),
+and method \code{get_all_param} returns parameters including the sigma parameters.
 
-All three methods treat the sigma parameters used in the
-fit procedure the same as ordinary parameters. However,
+Methods \code{set_param} and \code{set_param_values} treat the sigma parameters
+used in the fit procedure the same as ordinary parameters. However,
 the recommended methods to set or get sigma parameters are
 \code{\link{set_sigma}},
 \code{\link{set_sigma_values}} and \code{\link{get_sigmas}}.
@@ -25,6 +27,8 @@ mdl$set_param(params, names, name_err = c("stop", "warn", "silent"))
 mdl$set_param_values(value, names, pattern)
 
 mdl$get_param(pattern, names)
+
+mdl$get_all_param(pattern, names)
 
 }
 \code{mdl} is a \code{\link{DynMdl}} object
@@ -61,7 +65,10 @@ is applied to all model parameters.
 vector. The names of the vector should be the parameter names.
 \item \code{set_param_values}: Give one or more parameter
 a specified value.
-\item \code{get_param}: Returns the parameters.
+\item \code{get_param}: Returns the parameters (excluding the sigma parameters
+used in the fit method)
+\item \code{get_all_param}: Returns parameters including the sigma parameters
+used in the fit method.
 }
 }
 

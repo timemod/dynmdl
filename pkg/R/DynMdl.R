@@ -58,6 +58,9 @@ setOldClass("regts")
 #' \item{\code{\link{set_param_values}}}{Sets the values of one or more model parameters.}
 #'
 #' \item{\code{\link{get_param}}}{Returns the parameters of the model.}
+#' 
+#' \item{\code{\link{get_all_param}}}{Returns the parameters of the model, 
+#' including the sigma parameters used in the fit method.}
 #'
 #' \item{\code{\link{set_static_exos}}}{Sets the static values of
 #' the exogenous variables used to compute the steady state.}
@@ -343,17 +346,12 @@ DynMdl <- R6Class("DynMdl",
       return(private$mdldef$tex_names)
     },
     get_par_names = function(pattern = ".+") {
-      names <- private$mdldef$param_names
-      if (!missing(pattern)) {
-        sel <- grep(pattern, names)
-        names <- names[sel]
-      }
-      return(names)
+      return(private$get_par_names_(pattern = pattern, include_sigmas = FALSE))
     },
     set_param = function(params, names, name_err = "stop") {
       params <- private$convert_values_internal(params, names, "params")
-      names <- private$check_param_names(base::names(params), 
-                                         name_err = name_err)
+      names <- private$get_par_names_(names = base::names(params), 
+                                      name_err = name_err)
       if (length(names) > 0) {
         private$mdldef$params[names] <- params[names]
       }
@@ -363,15 +361,18 @@ DynMdl <- R6Class("DynMdl",
       if (!is.numeric(value) && length(value) != 1) {
         stop("Argument value should be a scalar numeric")
       }
-      names <- private$get_param_names_(pattern, names)
+      names <- private$get_par_names_(names, pattern)
       if (length(names) > 0) {
         private$mdldef$params[names] <- value
       }
       return(invisible(self))
     },
     get_param = function(pattern, names) {
-      names_missing <- missing(names)
-      names <- private$get_param_names_(pattern, names)
+      names <- private$get_par_names_(names, pattern, include_sigmas = FALSE)
+      return(private$mdldef$params[names])
+    },
+    get_all_param = function(pattern, names) {
+      names <- private$get_par_names_(names, pattern, include_sigmas = TRUE)
       return(private$mdldef$params[names])
     },
     set_static_exos = function(exos, names, name_err = "stop") {
@@ -1800,7 +1801,7 @@ DynMdl <- R6Class("DynMdl",
                           steady = FALSE, sort_pattern_names = FALSE) {
       
       # This function selects model variable names from names and pattern.
-      # Tt gives an error if names contain any invalid name for the 
+      # It gives an error if names contain any invalid name for the 
       # specified type of model variable.
       
       #   type
@@ -2828,41 +2829,60 @@ DynMdl <- R6Class("DynMdl",
         return(period_range(startp, endp))
       }
     },
-    check_param_names = function(names, 
-                                 name_err = c("stop", "warn", "silent")) {
+    get_par_names_ = function(names, pattern,
+                              name_err = c("stop", "warn", "silent"),
+                              include_sigmas = TRUE) {
+      # This function selects model parameter variable names from names and 
+      # pattern. It gives an error if names contain any invalid name. 
+      
       name_err <- match.arg(name_err)
-      # check if names are parameter names
-      no_params <- setdiff(names, private$mdldef$param_names)
-      if (length(no_params) > 0) {
-        if (name_err != "silent") {
-          no_params <- paste0("\"", no_params, "\"")
-          if (length(no_params) == 1) {
-            msg <- paste0(no_params, " is not a parameter.")
-          } else { 
-            msg <- paste0("The following names are no parameters: ",
-                          paste(no_params, collapse = ", "), ".")
-          }
-          fun <- if (name_err == "stop") stop else warning
-          fun(msg)
-        }
-        return(intersect(names, private$mdldef$param_names))
-      } else {
-        return(names)
+
+      pnames <- private$mdldef$param_names
+      if (!include_sigmas && private$mdldef$fit) {
+        pnames <- setdiff(pnames, private$mdldef$fit_info$sigma_names)
       }
-    },
-    get_param_names_ = function(pattern, names) {
+
+      get_type_text <- function(include_sigmas) {
+        txt <- "parameter"
+        if (include_sigmas && private$mdldef$fit) txt <- paste("(sigma)", txt)
+        return(txt)
+      }
+      
       if (!missing(names)) {
-        names <- private$check_param_names(names)
+        no_params <- setdiff(names, pnames)
+        if (length(no_params) > 0) {
+          names <- intersect(names, pnames)
+          error_names <- paste0("'", no_params, "'")
+          if (name_err != "silent") {
+            type_text <- get_type_text(include_sigmas)
+            if (length(no_params) == 1) {
+              msg <- paste0(error_names, sprintf(" is not a %s.", type_text))
+            } else { 
+              msg <- paste0(sprintf("The following names are no %ss: ",
+                                    type_text),
+                            paste(error_names, collapse = ", "), ".")
+            }
+            fun <- if (name_err == "stop") stop else warning
+            fun(msg)
+          }
+        }
       }
+      
       if (missing(pattern) && missing(names)) {
-        return(private$mdldef$param_names)
-      } else if (missing(names)) {
-        return(self$get_par_names(pattern))
+        names <- pnames
       } else if (!missing(pattern)) {
-        return(union(names, self$get_par_names(pattern)))
-      } else {
-        return(names)
+        pattern_names <- grep(pattern, pnames, value = TRUE)
+        if (length(pattern_names) == 0) {
+          type_text <- get_type_text(include_sigmas)
+          warning(sprintf("No %ss match pattern \"%s\".\n", type_text, pattern))
+        }
+        if (!missing(names)) {
+          names <- union(names, pattern_names)
+        } else {
+          names <- pattern_names
+        }
       }
+      return(names)
     },
     get_trend_data_internal = function() {
       #
