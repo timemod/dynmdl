@@ -964,6 +964,10 @@ NULL
 #' root of the machine precision). Use argument `tol` to change this tolerance 
 #' parameter.
 #' 
+#' Method `check` also prints the number of eigenvalues with absolute values
+#' between `1 - tol` and `1 + tol`.  Thus the values of these eigenvalues are not
+#' significantly different from 1.
+#' 
 #' @section Warning:
 #' Method `check` is only possible for models with a maximum lag and lead of 1. 
 #' If the

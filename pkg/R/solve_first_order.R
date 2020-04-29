@@ -2,7 +2,7 @@
 # also computes the eigenvalues.
 #' @importFrom regts printobj
 solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic, 
-                              check_only = FALSE, debug = FALSE, debug_eqs,
+                              check = FALSE, debug = FALSE, debug_eqs,
                               check_tol) {
   
   lead_lag_incidence <- mdldef$lead_lag_incidence
@@ -76,7 +76,7 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
   D[ss$row_indx_de_2, ss$index_d2] <- diag(ss$nboth)
   E[ss$row_indx_de_1, ss$index_e1] <- -aa[ss$row_indx, ss$index_e]
   E[ss$row_indx_de_2, ss$index_e2] <- diag(ss$nboth)
-  if (check_only) {
+  if (check) {
     ss$eigval <- geigen::geigen(E, D, only.values = TRUE)$values
   } else {
     qz_result <- geigen::gqz(E, D, sort = 'S')
@@ -88,12 +88,12 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
   if (debug) {
     printobj(D)
     printobj(E)
-    if (!check_only) printobj(qz_result)
+    if (!check) printobj(qz_result)
   }
   sdim <- sum(abs(ss$eigval) <= (1 + check_tol))
   nba <- ss$nd - sdim
 
-  if (check_only) {
+  if (check) {
     cat("EIGENVALUES:\n")
     cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
     for (eigv in ss$eigval) {
@@ -102,8 +102,14 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
     cat("\n")
     cat(sprintf("\nThere are %d eigenvalue(s) larger than 1 in modulus\n", nba))
     cat(sprintf("for %d forward-looking variable(s)\n", ss$nsfwrd))
-  
-    err_fun <- function(x) {cat(paste0(x, "\n"), file = stderr())}
+    
+    n_close_to_1 <-  sum(abs(Mod(ss$eigval) - 1) <= check_tol)
+    if (n_close_to_1 > 0) {
+      cat(sprintf("\n%d eigenvalue(s) are within tolerance %.2g equal to 1\n", 
+                  n_close_to_1, check_tol))
+    }
+    
+    err_fun <- function(x) {cat(paste0("\n", x, "\n\n"), file = stderr())}
   } else {
     err_fun <- stop
   }
@@ -114,7 +120,7 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
     err_fun("Blanchard & Kahn conditions are not satisfied: indeterminacy")
   }
   
-  if (check_only) {
+  if (check) {
     return(ss)
   }
   

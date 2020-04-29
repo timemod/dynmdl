@@ -6,6 +6,10 @@ order_eigval <- function(eigval) {
   # first order eigenvalues with increasing modulus
   eigval <- eigval[order(Mod(eigval))]
   
+  if (length(eigval) == 1) {
+    return(eigval)
+  }
+  
   # check if the modulus of an eigenvalue if close to their 
   # neigbours, if so set the modulus equal
   mod <- Mod(eigval)

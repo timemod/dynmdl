@@ -45,6 +45,10 @@ Blanchard-Kahn conditions, we therefore count the number of eigenvalues
 larger than \code{1 + tol}, where \code{tol} is a small  number (by default the square
 root of the machine precision). Use argument \code{tol} to change this tolerance
 parameter.
+
+Method \code{check} also prints the number of eigenvalues with absolute values
+between \code{1 - tol} and \code{1 + tol}.  Thus the values of these eigenvalues are not
+significantly different from 1.
 }
 
 \section{Warning}{

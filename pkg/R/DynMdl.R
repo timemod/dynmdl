@@ -987,7 +987,7 @@ DynMdl <- R6Class("DynMdl",
       private$ss <- solve_first_order(private$ss, private$calc, 
                                       private$model_index, private$mdldef, 
                                       private$jac_dynamic, 
-                                      check_only = TRUE, debug = FALSE,
+                                      check = TRUE, debug = FALSE,
                                       debug_eqs = FALSE,
                                       check_tol = tol)
       private$clean_dynamic_model()
@@ -1207,7 +1207,7 @@ DynMdl <- R6Class("DynMdl",
       private$ss <- solve_first_order(private$ss, private$calc, 
                                       private$model_index, private$mdldef, 
                                       private$jac_dynamic, 
-                                      check_only = FALSE, debug = FALSE,
+                                      check = FALSE, debug = FALSE,
                                       debug_eqs = FALSE,
                                       check_tol = check_tol)
       
