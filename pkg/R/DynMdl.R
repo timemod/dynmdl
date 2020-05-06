@@ -65,6 +65,9 @@ setOldClass("regts")
 #' \item{\code{\link{set_static_exos}}}{Sets the static values of
 #' the exogenous variables used to compute the steady state.}
 #' 
+#' \item{\code{\link{set_static_endo_values}}}{Sets the values of one or more
+#' static endogenous variables}
+#' 
 #' \item{\code{\link{set_static_exo_values}}}{Sets the values of one or more
 #' static exogenous variables}
 #'
@@ -391,6 +394,14 @@ DynMdl <- R6Class("DynMdl",
       if (length(exo_names) > 0) {
         private$mdldef$exos[exo_names] <- exos[exo_names]
       }
+      return(invisible(self))
+    },
+    set_static_endo_values = function(value, names, pattern) {
+      if (!is.numeric(value) && length(value) != 1) {
+        stop("Argument value should be a scalar numeric")
+      }
+      names <- private$get_names_("all_endo", names, pattern)
+      private$mdldef$endos[names] <- value
       return(invisible(self))
     },
     set_static_exo_values = function(value, names, pattern) {

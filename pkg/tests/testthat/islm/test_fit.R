@@ -141,7 +141,7 @@ test_that("get_data", {
 })
 
 
-test_that("set_exo_values", {
+test_that("set_static_exo_values", {
   mdl2 <- mdl$copy()
   mdl2$set_static_exo_values(0)
   expect_identical(mdl2$get_static_exos(), c(g = 0, ms = 0))
@@ -156,6 +156,24 @@ test_that("set_exo_values", {
   expect_error(mdl2$set_static_exo_values(0, names = c("ui", "l_1")),  msg)
 })
 
+test_that("set_static_endo_values", {
+  mdl2 <- mdl$copy()
+  static_endos <- mdl$get_all_static_endos()
+  
+  mdl2$set_static_endo_values(0)
+  expected_result <- static_endos * 0
+  expect_identical(mdl2$get_all_static_endos(), static_endos * 0)
+  
+  
+  mdl2$set_static_endo_values(2, pattern = "md$")
+  expected_result["md"] <- 2
+  expected_result["umd"] <- 2
+  expect_identical(mdl2$get_all_static_endos(), expected_result)
+  
+  mdl2$set_static_endo_values(3, names = "y", pattern = "_6$")
+  expected_result[c("y", "l_6")] <- 3
+  expect_identical(mdl2$get_all_static_endos(), expected_result)
+})
 
 test_that("get_names", {
   

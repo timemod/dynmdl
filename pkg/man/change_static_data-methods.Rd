@@ -77,6 +77,6 @@ print(mdl$get_static_exos())
 
 }
 \seealso{
-\code{\link{set-slash-get_static_endos}}, \code{\link{set_static_data}} and
-\code{\link{set_static_exo_values}}
+\code{\link{set_static_data}} and
+\code{\link{set_static_values-methods}}
 }

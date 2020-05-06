@@ -47,6 +47,9 @@ including the sigma parameters used in the fit method.}
 \item{\code{\link{set_static_exos}}}{Sets the static values of
 the exogenous variables used to compute the steady state.}
 
+\item{\code{\link{set_static_endo_values}}}{Sets the values of one or more
+static endogenous variables}
+
 \item{\code{\link{set_static_exo_values}}}{Sets the values of one or more
 static exogenous variables}
 
