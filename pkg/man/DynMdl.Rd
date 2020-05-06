@@ -62,6 +62,15 @@ the endogenous variables.}
 \item{\code{\link{set_static_data}}}{Sets the static values of
 the model variables.}
 
+\item{\code{\link{change_static_endos}}}{Changes the static values of endogenous model
+variables by applying a function}
+
+\item{\code{\link{change_static_exos}}}{Changes the static values of exogenous model
+variables by applying a function}
+
+\item{\code{\link{change_data}}}{Changes the static values of endogenous and
+exogenous model variables by applying a function.}
+
 \item{\code{\link{get_static_data}}}{Returns the static values of
 the model variables.}
 

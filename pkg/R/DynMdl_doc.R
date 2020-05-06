@@ -469,7 +469,9 @@ NULL
 #' 
 #' @section Methods:
 #' \describe{
-#' \item{\code{changes_endo_data}}{Changes endogenous model variables}
+#' \item{\code{change_endo_data}}{Changes endogenous model variables, 
+#' including fit instruments and Lagrange multipliers used in the fit method 
+#' (if present).}
 #' \item{\code{change_exo_data}}{Changes exogenous model variables}
 #' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables,
 #' including fit instruments and Lagrange multipliers used in the fit method 
@@ -1601,5 +1603,73 @@ NULL
 #' the initval equations.
 #' }}
 #' 
+NULL
+
+#' \code{\link{DynMdl}} methods: changes static values of the endogenous or exogenous
+#' model data by applying a function.
+#' @name change_static_data-methods
+#' @aliases change_static_data change_static_endos change_static_exos
+#' @description
+#' These methods of R6 class \code{\link{DynMdl}} changes the static values
+#' of the endogenous and/or exogenous model data by applying a function.
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$change_static_endos(fun, names, pattern, ...)
+#'
+#' mdl$change_static_exos(fun names, pattern, ...)
+#' 
+#' mdl$change_static_data(fun, names, pattern, ...)
+#' }
+#'
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{fun}}{a function applied each model variable specified with 
+#'  argument \code{names} or \code{pattern}. See Details.}
+#' \item{\code{names}}{a character vector with variable names}
+#' \item{\code{pattern}}{a regular expression for selecting the names
+#' of variables whose values must be changed}
+#' \item{\code{...}}{arguments passed to \code{fun}}
+#' }
+#' If neither \code{names} nor \code{pattern} have been specified,
+#' then the function is applied to all endogenous or exogenous variables.
+#' 
+#' @section Details:
+#' 
+#' The function specified with argument `fun` should be a function
+#' with at least one argument, for example `fun = function(x) {x + 0.1}`.
+#' The first argument (named `x` in the example) will be the model
+#' variable. The function is evaluated for each model variable separately. 
+#' 
+#'  The function result must be a vector of length one.
+#' 
+#' @section Methods:
+#' \describe{
+#' \item{\code{change_static_endos}}{Changes the static values of endogenous model variables, 
+#' including fit instruments and Lagrange multipliers used in the fit method 
+#' (if present).}
+#' \item{\code{change_static_exos}}{Changes the static values of exogenous model variables}
+#' \item{\code{change_static_data}}{Changes the static values of endogenous and/or exogenous model variables,
+#' including fit instruments and Lagrange multipliers used in the fit method 
+#' (if present).}
+#' }
+#' @examples
+#' mdl <- islm_mdl()
+#'
+#' # increase y the static values of y and yd with 10% for the full data period
+#' mdl$change_static_endos(pattern = "^y.?$", fun = function(x) {x * 1.1})
+#' print(mdl$get_static_endos())
+#'
+#' # increase ms with 10
+#' mdl$change_static_exos(names = "ms", fun = function(x, dx) {x + dx},
+#'                 dx = 10)
+#' print(mdl$get_static_exos())
+#'
+#' @seealso \code{\link{set-slash-get_static_endos}}, \code{\link{set_static_data}} and
+#' \code{\link{set_static_exo_values}}
+#'
 NULL
 
