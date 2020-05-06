@@ -2211,34 +2211,38 @@ DynMdl <- R6Class("DynMdl",
                         private$data_period))
         return(invisible(self))
       }
+      
+      nper <- nperiod(period)
+      
+      #
+      # check function fun
+      #
       if (!is.function(fun)) {
         stop("Argument 'fun' is not a function.")
+      }
+      fun_result <- fun(rep(0, nper), ...)
+      result_len <- length(fun_result)
+      if (result_len != 1 && result_len != nper) {
+        stop(sprintf(paste("The function result has length %d but should have",
+                           "length 1 or %d."), result_len, nper))
       }
       
       # remove duplicate names
       names <- unique(names)
-      
-      nper <- nperiod(period)
       if (length(names) == 0) return(invisible(self))
+      
+      
       if (type == "endo") {
         data <- private$get_endo_data_internal(names, period, trend = TRUE)
-      } else  { 
+      } else { 
+        # exogenous variables. Check if these variables can be changed
         if (private$mdldef$trend_info$has_deflated_endos) {
           private$check_change_growth_exos(names)
         }
         data <- private$exo_data[period, names, drop = FALSE]
       }
       
-      # now apply function to each timeseries independently
-      for (c in seq_len(ncol(data))) {
-        fun_result <- fun(as.numeric(data[ , c]), ...)
-        result_len <- length(fun_result)
-        if (result_len != 1 && result_len != nper) {
-          stop(sprintf(paste("The function result has length %d but should have",
-                             "length 1 or %d."), result_len, nper))
-        }
-        data[ , c] <- fun_result
-      }
+      data[] <- apply(data, MARGIN = 2, FUN = fun, ...)
       
       data <- data[upd_per]
       

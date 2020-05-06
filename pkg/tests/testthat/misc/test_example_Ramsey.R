@@ -185,3 +185,12 @@ test_that("get_endo_data", {
   expect_true(tsdif(data_no_trend, cbind(mdl$get_endo_data(trend = FALSE), 
                                          mdl$get_exo_data()))$equal)
 })
+
+test_that("errors changing growth exo", {
+  msg <- paste("It is not allowed to modify growth exos gx\nwith functions",
+               "set_values, set_data or change_data.\nGrowth exos can only be",
+               "set with function init_data.")
+  expect_error(mdl$set_exo_values(0, names = "gx"), msg)
+  expect_error(mdl$change_exo_data(names = "gx", fun = identity), msg)
+  expect_error(mdl$set_data(mdl$get_exo_data()), msg)
+})
