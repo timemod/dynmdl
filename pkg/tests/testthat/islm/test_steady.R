@@ -153,6 +153,28 @@ test_that("set_static_exo_values", {
                "\"xxx\" is not an exogenous variable")
 })
 
+test_that("set_static_endo_values", {
+  mdl2 <- mdl$copy()
+  static_endos <- mdl$get_static_endos()
+  
+  mdl2$set_static_endo_values(0)
+  expected_result <- static_endos * 0
+  expect_identical(mdl2$get_static_endos(), static_endos * 0)
+  
+  
+  mdl2$set_static_endo_values(2, pattern = "^m")
+  expected_result["md"] <- 2
+  expect_identical(mdl2$get_static_endos(), expected_result)
+  
+  mdl2$set_static_endo_values(3, names = "y", pattern = "i$")
+  expected_result[c("y", "i")] <- 3
+  expect_identical(mdl2$get_static_endos(), expected_result)
+  
+  expect_error(mdl2$set_static_endo_values(0, names = "g"), 
+               "\"g\" is not an endogenous variable")
+})
+
+
 test_that("set_static_data / get_static_data", {
   
   mdl2 <- mdl$copy()

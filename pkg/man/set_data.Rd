@@ -109,6 +109,6 @@ mdl$set_data(shock, fun = `+`)
 }
 \seealso{
 \code{\link{get_data-methods}},
-\code{\link{set_values-methods}} and
-\code{\link{change_data-methods}}
+\code{\link{set_values-methods}},
+\code{\link{change_data-methods}} and \code{\link{put_static_endos}}.
 }

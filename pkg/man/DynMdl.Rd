@@ -47,6 +47,9 @@ including the sigma parameters used in the fit method.}
 \item{\code{\link{set_static_exos}}}{Sets the static values of
 the exogenous variables used to compute the steady state.}
 
+\item{\code{\link{set_static_endo_values}}}{Sets the values of one or more
+static endogenous variables}
+
 \item{\code{\link{set_static_exo_values}}}{Sets the values of one or more
 static exogenous variables}
 
@@ -61,6 +64,15 @@ the endogenous variables.}
 
 \item{\code{\link{set_static_data}}}{Sets the static values of
 the model variables.}
+
+\item{\code{\link{change_static_endos}}}{Changes the static values of endogenous model
+variables by applying a function}
+
+\item{\code{\link{change_static_exos}}}{Changes the static values of exogenous model
+variables by applying a function}
+
+\item{\code{\link{change_data}}}{Changes the static values of endogenous and
+exogenous model variables by applying a function.}
 
 \item{\code{\link{get_static_data}}}{Returns the static values of
 the model variables.}

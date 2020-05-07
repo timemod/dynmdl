@@ -2,9 +2,11 @@ library(utils)
 library(dynmdl)
 library(testthat)
 
+rm(list = ls())
+
 context("change_endo_data and change_exo_data for the ISLM model")
 
-capture_output(mdl <- read_mdl("islm_model.rds"))
+mdl <- read_mdl("islm_model.rds", silent = TRUE)
 
 c_multipliers <- seq(0.8, 1.0, length.out = nperiod(mdl$get_data_period()))
 ms_g_additions <- seq(10, 40, length.out = 4)
@@ -121,3 +123,25 @@ test_that("test with period partially outside period range", {
   new_endos <- mdl2$get_endo_data(period = "2016q3/", names = c("c", "y"))
   expect_equal(new_endos, old_endos + 1:2)
 })
+
+test_that("fit", {
+  
+  mdl_fit <- read_mdl("islm_model_fit.rds", silent = TRUE)
+  mdl_fit$set_period("2019q1")
+  mdl_fit$init_data(data_period = c("2018q4/2019q2"))
+
+  data <- mdl_fit$get_all_data()
+  mdl_fit$change_endo_data(pattern = "i$", fun = function(x) {x + 10})
+  mdl_fit$change_data(names = c("l_3", "g", "c"), fun = function(x) {x + 100})
+  expected_result <- data
+  expected_result[ , "i"] <- expected_result[ , "i"] + 10
+  expected_result[ , "ui"] <- expected_result[ ,  "ui"] + 10
+  expected_result[ , "l_3"] <- expected_result[ , "l_3"] + 100
+  expected_result[ , "g"] <- expected_result[ , "g"] + 100
+  expected_result[ , "c"] <- expected_result[ , "c"] + 100
+  expect_equal(expected_result, mdl_fit$get_all_data())
+  
+  # errors
+  expect_error(mdl_fit$change_exo_data(names = "fit_c", fun = identity),
+               "\"fit_c\" is not an exogenous variable\\.")
+})  

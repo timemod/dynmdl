@@ -72,7 +72,9 @@ the same length as the number of periods in the period range \code{period}.
 \section{Methods}{
 
 \describe{
-\item{\code{changes_endo_data}}{Changes endogenous model variables}
+\item{\code{change_endo_data}}{Changes endogenous model variables,
+including fit instruments and Lagrange multipliers used in the fit method
+(if present).}
 \item{\code{change_exo_data}}{Changes exogenous model variables}
 \item{\code{change_data}}{Changes endogenous and/or exogenous model variables,
 including fit instruments and Lagrange multipliers used in the fit method
@@ -94,6 +96,6 @@ print(mdl$get_exo_data())
 
 }
 \seealso{
-\code{\link{get_data-methods}}, \code{\link{set_data}} and
-\code{\link{set_values-methods}}
+\code{\link{get_data-methods}}, \code{\link{set_data}},
+\code{\link{set_values-methods}} and \verb{\link{change_static_data-methods}}.
 }

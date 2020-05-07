@@ -345,8 +345,8 @@ NULL
 #' #`+` is a primitive function that adds its two arguments.
 #'
 #' @seealso \code{\link{get_data-methods}}, 
-#' \code{\link{set_values-methods}} and
-#' \code{\link{change_data-methods}}
+#' \code{\link{set_values-methods}},
+#' \code{\link{change_data-methods}} and \code{\link{put_static_endos}}.
 NULL
 
 #' \code{\link{DynMdl}} methods: Sets the values of the model data
@@ -469,7 +469,9 @@ NULL
 #' 
 #' @section Methods:
 #' \describe{
-#' \item{\code{changes_endo_data}}{Changes endogenous model variables}
+#' \item{\code{change_endo_data}}{Changes endogenous model variables, 
+#' including fit instruments and Lagrange multipliers used in the fit method 
+#' (if present).}
 #' \item{\code{change_exo_data}}{Changes exogenous model variables}
 #' \item{\code{change_data}}{Changes endogenous and/or exogenous model variables,
 #' including fit instruments and Lagrange multipliers used in the fit method 
@@ -487,8 +489,8 @@ NULL
 #'                 dx = c(10, 20), period = "2017Q1/2017Q2")
 #' print(mdl$get_exo_data())
 #'
-#' @seealso \code{\link{get_data-methods}}, \code{\link{set_data}} and
-#' \code{\link{set_values-methods}}
+#' @seealso \code{\link{get_data-methods}}, \code{\link{set_data}},
+#' \code{\link{set_values-methods}} and `\link{change_static_data-methods}`.
 #'
 NULL
 
@@ -1005,16 +1007,16 @@ NULL
 #' \code{\link{DynMdl}} methods: set and get the static values of the
 #' model variables
 #' @name set/get_static_endos/exos
-#' @aliases set_static_exos set_static_exo_values, set_static_endos 
+#' @aliases set_static_exos set_static_endos 
 #'          set_static_data 
 #'          get_static_endos get_static_exos
-#'          set_static_exo_values get_static_data get_all_static_endos
+#'          get_static_data get_all_static_endos
 #'          get_all_static_data
 #'
 #' @description
 #' 
-#' \code{set_static_exos}, \code{set_static_exo_values}, 
-#' \code{set_static_endos} and  \code{set_static_data} can be used to set one or 
+#' \code{set_static_exos},  \code{set_static_endos} and  \code{set_static_data} 
+#' can be used to set one or 
 #' more static values of the endogenous and/or exogenous model variables.
 #' The corresponding \code{get} methods can be used to retrieve them.
 #' 
@@ -1045,7 +1047,6 @@ NULL
 #' \preformatted{
 #' mdl$set_static_endos(endos, names = names(endos), name_err = c("stop", "warn", "silent"))
 #' mdl$set_static_exos(exos, names = names(endos), name_err = c("stop", "warn", "silent"))
-#' mdl$set_static_exo_values(value, names, pattern)
 #' mdl$set_static_data(data, names = names(data), name_err = c("stop", "warn", "silent"))
 #' mdl$get_static_endos(pattern, names)
 #' mdl$get_static_endos(pattern, names)
@@ -1067,7 +1068,6 @@ NULL
 #'  \item{\code{data}}{A (named) numerical vector with new static values of 
 #'  both endogenous and exogenous variables.  If the vector has no names, than argument
 #' \code{names} must be specified.}
-#' \item{\code{value}}{a numeric vector of length 1}
 #' \item{\code{names}}{a character vector with names of model variables}
 #' \item{\code{pattern}}{a regular expression}
 #' \item{\code{name_err}}{this option specifies the action that should be taken 
@@ -1083,8 +1083,6 @@ NULL
 #' multipliers).
 #' \item \code{set_static_exos}: Set the static values of one or more 
 #' exogenous variables.
-#' \item \code{set_static_exo_values}: Give more than one exogenous variable 
-#' the same static value.
 #' \item \code{set_static_data}: Set the static values of one or more 
 #' endogenous or exogenous variable  
 #' (including  static fit instruments and static Lagrange multipliers.)
@@ -1108,7 +1106,9 @@ NULL
 #' mdl$set_static_exo_values(333, pattern = "^m")
 #' 
 #' print(mdl$get_static_endos())
-#' @seealso \code{\link{solve_steady}}, \code{\link{check}}
+#' @seealso \code{\link{set_static_values-methods}},
+#' \code{\link{change_static_data-methods}}, \code{\link{solve_steady}}, 
+#' \code{\link{check}}
 NULL
 
 #' \code{\link{DynMdl}} methods: Retrieve the names of model variables or
@@ -1603,3 +1603,118 @@ NULL
 #' 
 NULL
 
+#' \code{\link{DynMdl}} methods: changes static values of the endogenous or exogenous
+#' model data by applying a function.
+#' @name change_static_data-methods
+#' @aliases change_static_data change_static_endos change_static_exos
+#' @description
+#' These methods of R6 class \code{\link{DynMdl}} changes the static values
+#' of the endogenous and/or exogenous model data by applying a function.
+#'
+#' @section Usage:
+#' \preformatted{
+#' mdl$change_static_endos(fun, names, pattern, ...)
+#'
+#' mdl$change_static_exos(fun names, pattern, ...)
+#' 
+#' mdl$change_static_data(fun, names, pattern, ...)
+#' }
+#'
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{fun}}{a function applied each model variable specified with 
+#'  argument \code{names} or \code{pattern}. See Details.}
+#' \item{\code{names}}{a character vector with variable names}
+#' \item{\code{pattern}}{a regular expression for selecting the names
+#' of variables whose values must be changed}
+#' \item{\code{...}}{arguments passed to \code{fun}}
+#' }
+#' If neither \code{names} nor \code{pattern} have been specified,
+#' then the function is applied to all endogenous or exogenous variables.
+#' 
+#' @section Details:
+#' 
+#' The function specified with argument `fun` should be a function
+#' with at least one argument, for example `fun = function(x) {x + 0.1}`.
+#' The first argument (named `x` in the example) will be the model
+#' variable. The function is evaluated for each model variable separately. 
+#' 
+#'  The function result must be a vector of length one.
+#' 
+#' @section Methods:
+#' \describe{
+#' \item{\code{change_static_endos}}{Changes the static values of endogenous model variables, 
+#' including fit instruments and Lagrange multipliers used in the fit method 
+#' (if present).}
+#' \item{\code{change_static_exos}}{Changes the static values of exogenous model variables}
+#' \item{\code{change_static_data}}{Changes the static values of endogenous and/or exogenous model variables,
+#' including fit instruments and Lagrange multipliers used in the fit method 
+#' (if present).}
+#' }
+#' @examples
+#' mdl <- islm_mdl()
+#'
+#' # increase y the static values of y and yd with 10% for the full data period
+#' mdl$change_static_endos(pattern = "^y.?$", fun = function(x) {x * 1.1})
+#' print(mdl$get_static_endos())
+#'
+#' # increase ms with 10
+#' mdl$change_static_exos(names = "ms", fun = function(x, dx) {x + dx},
+#'                 dx = 10)
+#' print(mdl$get_static_exos())
+#'
+#' @seealso \code{\link{set_static_data}},
+#' \code{\link{set_static_values-methods}} and \code{\link{change_data-methods}}
+NULL
+
+#' \code{\link{DynMdl}} methods: Sets the values of the static model data
+#' @name set_static_values-methods
+#' @aliases set_static_endo_values set_static_exo_values
+#' @description
+#' This method of R6 class \code{\link{DynMdl}} 
+#' can be used to set the static values of the model data.
+#'
+#' @section Usage:
+#' \preformatted{
+#'
+#' mdl$set_static_endo_values(value, names, pattern)
+#'
+#' mdl$set_static_exo_values(value, names, pattern)
+#'
+#' }
+#'
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#'
+#' @section Arguments:
+#'
+#' \describe{
+#' \item{\code{value}}{a numeric vector of length 1}
+#' \item{\code{names}}{a character vector with variable names.}
+#' \item{\code{pattern}}{a regular expression for selecting the names of variables.}
+#' }
+#' If neither \code{names} nor \code{pattern} have been specified,
+#' then the static values of all endogenous or exogenous variables are set to the specified value.
+#' @section Methods:
+#' \itemize{
+#' \item \code{set_static_endo_values}: Endogenous model variables 
+#' (including fit instruments and Lagrange multipliers for the fit method).
+#'
+#' \item \code{set_static_exo_values}: Exogenous model variables.
+#'
+#' }
+#'
+#' @seealso \code{\link{set_static_data}} and 
+#' \code{\link{change_static_data-methods}} and  
+#' @examples
+#'
+#' mdl <- islm_mdl()
+#'
+#' # set the static value of ms
+#' mdl$set_static_exo_values(205, names = "ms")
+#' 
+#' # set the static values for y and yd to 1000
+#' mdl$set_static_endo_values(1000, pattern = "^yd?$")
+NULL

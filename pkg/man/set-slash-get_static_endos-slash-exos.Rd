@@ -3,20 +3,18 @@
 \name{set/get_static_endos/exos}
 \alias{set/get_static_endos/exos}
 \alias{set_static_exos}
-\alias{set_static_exo_values,}
 \alias{set_static_endos}
 \alias{set_static_data}
 \alias{get_static_endos}
 \alias{get_static_exos}
-\alias{set_static_exo_values}
 \alias{get_static_data}
 \alias{get_all_static_endos}
 \alias{get_all_static_data}
 \title{\code{\link{DynMdl}} methods: set and get the static values of the
 model variables}
 \description{
-\code{set_static_exos}, \code{set_static_exo_values},
-\code{set_static_endos} and  \code{set_static_data} can be used to set one or
+\code{set_static_exos},  \code{set_static_endos} and  \code{set_static_data}
+can be used to set one or
 more static values of the endogenous and/or exogenous model variables.
 The corresponding \code{get} methods can be used to retrieve them.
 
@@ -48,7 +46,6 @@ model.
 \preformatted{
 mdl$set_static_endos(endos, names = names(endos), name_err = c("stop", "warn", "silent"))
 mdl$set_static_exos(exos, names = names(endos), name_err = c("stop", "warn", "silent"))
-mdl$set_static_exo_values(value, names, pattern)
 mdl$set_static_data(data, names = names(data), name_err = c("stop", "warn", "silent"))
 mdl$get_static_endos(pattern, names)
 mdl$get_static_endos(pattern, names)
@@ -72,7 +69,6 @@ exogenous variables. If the vector has no names, than argument
 \item{\code{data}}{A (named) numerical vector with new static values of
 both endogenous and exogenous variables.  If the vector has no names, than argument
 \code{names} must be specified.}
-\item{\code{value}}{a numeric vector of length 1}
 \item{\code{names}}{a character vector with names of model variables}
 \item{\code{pattern}}{a regular expression}
 \item{\code{name_err}}{this option specifies the action that should be taken
@@ -91,8 +87,6 @@ endogenous variables (including static fit instruments and static Lagrange
 multipliers).
 \item \code{set_static_exos}: Set the static values of one or more
 exogenous variables.
-\item \code{set_static_exo_values}: Give more than one exogenous variable
-the same static value.
 \item \code{set_static_data}: Set the static values of one or more
 endogenous or exogenous variable
 (including  static fit instruments and static Lagrange multipliers.)
@@ -120,5 +114,7 @@ mdl$set_static_exo_values(333, pattern = "^m")
 print(mdl$get_static_endos())
 }
 \seealso{
-\code{\link{solve_steady}}, \code{\link{check}}
+\code{\link{set_static_values-methods}},
+\code{\link{change_static_data-methods}}, \code{\link{solve_steady}},
+\code{\link{check}}
 }

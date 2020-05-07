@@ -65,6 +65,9 @@ setOldClass("regts")
 #' \item{\code{\link{set_static_exos}}}{Sets the static values of
 #' the exogenous variables used to compute the steady state.}
 #' 
+#' \item{\code{\link{set_static_endo_values}}}{Sets the values of one or more
+#' static endogenous variables}
+#' 
 #' \item{\code{\link{set_static_exo_values}}}{Sets the values of one or more
 #' static exogenous variables}
 #'
@@ -79,6 +82,15 @@ setOldClass("regts")
 #' 
 #'  \item{\code{\link{set_static_data}}}{Sets the static values of
 #' the model variables.}
+#' 
+#' \item{\code{\link{change_static_endos}}}{Changes the static values of endogenous model 
+#' variables by applying a function}
+#'
+#' \item{\code{\link{change_static_exos}}}{Changes the static values of exogenous model 
+#' variables by applying a function}
+#' 
+#' \item{\code{\link{change_data}}}{Changes the static values of endogenous and 
+#' exogenous model variables by applying a function.}
 #'
 #' \item{\code{\link{get_static_data}}}{Returns the static values of
 #' the model variables.} 
@@ -384,6 +396,14 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(self))
     },
+    set_static_endo_values = function(value, names, pattern) {
+      if (!is.numeric(value) && length(value) != 1) {
+        stop("Argument value should be a scalar numeric")
+      }
+      names <- private$get_names_("all_endo", names, pattern)
+      private$mdldef$endos[names] <- value
+      return(invisible(self))
+    },
     set_static_exo_values = function(value, names, pattern) {
       if (!is.numeric(value) && length(value) != 1) {
         stop("Argument value should be a scalar numeric")
@@ -493,6 +513,32 @@ DynMdl <- R6Class("DynMdl",
       }
       if (length(exo_names) > 0) {
         private$mdldef$exos[exo_names] <- data[exo_names]
+      }
+      return(invisible(self))
+    },
+    change_static_endos = function(fun, names, pattern, ...) {
+      names <- private$get_names_("all_endo", names, pattern)
+      if (length(names) > 0) {
+        private$change_static_endos_(fun, names, ...)
+      }
+      return(invisible(self))
+    },
+    change_static_exos = function(fun, names, pattern, ...) {
+      names <- private$get_names_("exo", names, pattern)
+      if (length(names) > 0) {
+        private$change_static_exos_(fun, names, ...)
+      }
+      return(invisible(self))
+    },
+    change_static_data = function(fun, names, pattern, ...) {
+      names <- private$get_names_("all_endo_exo", names, pattern)
+      endo_names <- intersect(names, private$mdldef$endo_names)
+      exo_names <- intersect(names, private$mdldef$exo_names_orig)
+      if (length(endo_names) > 0) {
+        private$change_static_endos_(fun, endo_names, ...)
+      }
+      if (length(exo_names) > 0) {
+        private$change_static_exos_(fun, exo_names, ...)
       }
       return(invisible(self))
     },
@@ -2165,34 +2211,38 @@ DynMdl <- R6Class("DynMdl",
                         private$data_period))
         return(invisible(self))
       }
+      
+      nper <- nperiod(period)
+      
+      #
+      # check function fun
+      #
       if (!is.function(fun)) {
         stop("Argument 'fun' is not a function.")
       }
+      fun_result <- fun(rep(0, nper), ...)
+      result_len <- length(fun_result)
+      if (result_len != 1 && result_len != nper) {
+        stop(sprintf(paste("The function result has length %d but should have",
+                           "length 1 or %d."), result_len, nper))
+      }
       
-      # remove duplicated names
+      # remove duplicate names
       names <- unique(names)
-      
-      nper <- nperiod(period)
       if (length(names) == 0) return(invisible(self))
+      
+      
       if (type == "endo") {
         data <- private$get_endo_data_internal(names, period, trend = TRUE)
-      } else  { 
+      } else { 
+        # exogenous variables. Check if these variables can be changed
         if (private$mdldef$trend_info$has_deflated_endos) {
           private$check_change_growth_exos(names)
         }
         data <- private$exo_data[period, names, drop = FALSE]
       }
       
-      # now apply function to each timeseries independently
-      for (c in seq_len(ncol(data))) {
-        fun_result <- fun(as.numeric(data[ , c]), ...)
-        result_len <- length(fun_result)
-        if (result_len != 1 && result_len != nper) {
-          stop(sprintf(paste("The function result has length %d but should have",
-                             "length 1 or %d."), result_len, nper))
-        }
-        data[ , c] <- fun_result
-      }
+      data[] <- apply(data, MARGIN = 2, FUN = fun, ...)
       
       data <- data[upd_per]
       
@@ -2205,6 +2255,30 @@ DynMdl <- R6Class("DynMdl",
         private$exo_data[upd_per, names] <- data
       }
       return(invisible(self))
+    },
+    check_change_static_fun = function(fun, ...) {
+      if (!is.function(fun)) {
+        stop("Argument 'fun' is not a function.")
+      }
+      result <- fun(1, ...)
+      if (!is.numeric(result) || length(result) != 1) {
+        stop("'fun' should be a function that returns a numeric vector of length 1.")  
+      }
+      return()
+    },
+    change_static_endos_ =  function(fun, names, ...) {
+      private$check_change_static_fun(fun, ...)
+      private$mdldef$endos[names] <- sapply(private$mdldef$endos[names], 
+                                            FUN = fun, USE.NAMES = FALSE,
+                                            ...)
+      return(invisible(NULL))
+    },
+    change_static_exos_ =  function(fun, names, ...) {
+      private$check_change_static_fun(fun, ...)
+      private$mdldef$exos[names] <- sapply(private$mdldef$exos[names], 
+                                            FUN = fun, USE.NAMES = FALSE,
+                                            ...)
+      return(invisible(NULL))
     },
     solve_stacked_time = function(endo_data, exo_data, solver, silent,
                                   start_option, backrep, ...) { 
