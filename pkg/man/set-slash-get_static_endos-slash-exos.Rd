@@ -7,7 +7,6 @@
 \alias{set_static_data}
 \alias{get_static_endos}
 \alias{get_static_exos}
-\alias{set_static_exo_values}
 \alias{get_static_data}
 \alias{get_all_static_endos}
 \alias{get_all_static_data}

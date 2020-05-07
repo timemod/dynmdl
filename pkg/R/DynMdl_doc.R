@@ -345,8 +345,8 @@ NULL
 #' #`+` is a primitive function that adds its two arguments.
 #'
 #' @seealso \code{\link{get_data-methods}}, 
-#' \code{\link{set_values-methods}} and
-#' \code{\link{change_data-methods}}
+#' \code{\link{set_values-methods}},
+#' \code{\link{change_data-methods}} and \code{\link{put_static_endos}}.
 NULL
 
 #' \code{\link{DynMdl}} methods: Sets the values of the model data
@@ -489,8 +489,8 @@ NULL
 #'                 dx = c(10, 20), period = "2017Q1/2017Q2")
 #' print(mdl$get_exo_data())
 #'
-#' @seealso \code{\link{get_data-methods}}, \code{\link{set_data}} and
-#' \code{\link{set_values-methods}}
+#' @seealso \code{\link{get_data-methods}}, \code{\link{set_data}},
+#' \code{\link{set_values-methods}} and `\link{change_static_data-methods}`.
 #'
 NULL
 
@@ -1010,7 +1010,7 @@ NULL
 #' @aliases set_static_exos set_static_endos 
 #'          set_static_data 
 #'          get_static_endos get_static_exos
-#'          set_static_exo_values get_static_data get_all_static_endos
+#'          get_static_data get_all_static_endos
 #'          get_all_static_data
 #'
 #' @description
@@ -1666,9 +1666,8 @@ NULL
 #'                 dx = 10)
 #' print(mdl$get_static_exos())
 #'
-#' @seealso \code{\link{set_static_data}} and
-#' \code{\link{set_static_values-methods}}
-#'
+#' @seealso \code{\link{set_static_data}},
+#' \code{\link{set_static_values-methods}} and \code{\link{change_data-methods}}
 NULL
 
 #' \code{\link{DynMdl}} methods: Sets the values of the static model data

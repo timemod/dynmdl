@@ -77,6 +77,6 @@ print(mdl$get_static_exos())
 
 }
 \seealso{
-\code{\link{set_static_data}} and
-\code{\link{set_static_values-methods}}
+\code{\link{set_static_data}},
+\code{\link{set_static_values-methods}} and \code{\link{change_data-methods}}
 }

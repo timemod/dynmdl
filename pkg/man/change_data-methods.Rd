@@ -96,6 +96,6 @@ print(mdl$get_exo_data())
 
 }
 \seealso{
-\code{\link{get_data-methods}}, \code{\link{set_data}} and
-\code{\link{set_values-methods}}
+\code{\link{get_data-methods}}, \code{\link{set_data}},
+\code{\link{set_values-methods}} and \verb{\link{change_static_data-methods}}.
 }
