@@ -8,7 +8,7 @@ mod_name <- "islm_trend_anchor"
 mod_file <- file.path("mod", paste0(mod_name, ".mod"))
 fit_mod_file <- file.path("fmod", paste0(mod_name, "_fit.mod"))
 
-mdl <- dyn_mdl(mod_file, fit = TRUE, strict = FALSE)
+mdl <- dyn_mdl(mod_file, fit = TRUE, strict = FALSE, fit_fixed_period = FALSE, debug = TRUE)
 mdl$set_param(c(sigma_ut = 7, sigma_uc = 5, sigma_ui = 21, sigma_umd = 21))
 
 mdl$solve_steady(control = list(trace = TRUE))

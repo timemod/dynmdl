@@ -52,6 +52,26 @@ convert_mod <- function(input_file, output_file, fit_cond) {
   model_block_found <- FALSE
   in_model <- FALSE
   
+  write_first_order_eqs <- function(stat_eqs, dyn_eqs, is_instr_eq,  output) {
+    neq <- length(stat_eqs)
+    txt <- if (is_instr_eq) "Instrument" else "Fit"
+    for (i in seq_len(neq)) {
+      stat_eq <- stat_eqs[i]
+      dyn_eq <- dyn_eqs[i]
+      if (dyn_eq == stat_eq) {
+        writeLines(sprintf("// %s Equation %d", txt, i), con = output)
+        writeLines(strwrap(dyn_eq, width = 80, exdent = 4), con = output)
+      } else {
+        writeLines(sprintf("[static] // %s Equation %d", txt, i), con = output)
+        writeLines(strwrap(stat_eq, width = 80, exdent = 4), con = output)
+        writeLines(sprintf("[dynamic] // %s Equation %d", txt, i), con = output)
+        writeLines(strwrap(dyn_eq, width = 80, exdent = 4), con = output)
+      }
+      writeLines("", con = output)
+    } 
+    return(invisible())
+  }
+  
   while (TRUE) {
     line <- readLines(input, n = 1)
     if (length(line) == 0 ) {
@@ -104,12 +124,12 @@ convert_mod <- function(input_file, output_file, fit_cond) {
       writeLines(gsub("end;", "", line), con = output)
       writeLines(c("% First order conditions fit instruments:", ""),
                  con = output)
-      writeLines(strwrap(fit_cond$instr_equations, width = 80),
-                 con = output)
+      write_first_order_eqs(fit_cond$stat_fit_eqs$instr_equations,
+                            fit_cond$dyn_fit_eqs$instr_equations, TRUE, output)
       writeLines(c("", "% First order conditions endogenous variables:",
                    ""), con = output)
-      writeLines(strwrap(fit_cond$endo_equations, width = 80, exdent = 4),
-                 con = output)
+      write_first_order_eqs(fit_cond$stat_fit_eqs$endo_equations,
+                            fit_cond$dyn_fit_eqs$endo_equations, FALSE, output)
       writeLines("end;", con = output)
       in_model <- FALSE
     } else {
