@@ -587,9 +587,14 @@ ModFile::transformPass(bool nostrict, bool compute_xrefs)
         }
 }
 
+#ifdef USE_R
+void ModFile::computingPass(bool no_tmp_terms, FileOutputType output, 
+                            int params_derivs_order, bool fit_deriv) {
+#else
 void
 ModFile::computingPass(bool no_tmp_terms, FileOutputType output, int params_derivs_order)
 {
+#endif
   // Mod file may have no equation (for example in a standalone BVAR estimation)
   if (dynamic_model.equation_number() > 0)
     {
@@ -615,8 +620,16 @@ ModFile::computingPass(bool no_tmp_terms, FileOutputType output, int params_deri
           int paramsDerivsOrder = 0;
           if (mod_file_struct.identification_present || mod_file_struct.estimation_analytic_derivation)
             paramsDerivsOrder = params_derivs_order;
+#ifdef USE_R
+          // if the derivatives are computed for constructing fit derivatives, then
+          // we should calculate the derivatives w.r.t. the exogenous variables
+          bool jacobianExo = fit_deriv;
+          static_model.computingPass(jacobianExo, global_eval_context, no_tmp_terms, static_hessian,
+                                     false, paramsDerivsOrder, block, byte_code);
+#else
           static_model.computingPass(global_eval_context, no_tmp_terms, static_hessian,
                                      false, paramsDerivsOrder, block, byte_code);
+#endif
         }
 
 #ifdef USE_R
@@ -1545,9 +1558,13 @@ Rcpp::List ModFile::getDerivativeInfo(Rcpp::CharacterVector instruments,
                                                          instr_index_exo,
                                                          fixed_period);
     
+    Rcpp::List statmdl = static_model.getDerivativeInfoR(instruments.size(), 
+                                                         instr_index_exo);
+    
     return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,
                               Rcpp::Named("endo_names") = endo_names,
                               Rcpp::Named("param_names") = param_names,
+                              Rcpp::Named("static_model") = statmdl,
                               Rcpp::Named("dynamic_model") = dynmdl);
 }
 

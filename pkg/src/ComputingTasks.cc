@@ -1286,7 +1286,11 @@ PlannerObjectiveStatement::getPlannerObjective() const
 void
 PlannerObjectiveStatement::computingPass()
 {
+#ifdef USE_R
+  model_tree->computingPass(false, eval_context_t(), false, true, true, none, false, false);
+#else
   model_tree->computingPass(eval_context_t(), false, true, true, none, false, false);
+#endif
 }
 
 void

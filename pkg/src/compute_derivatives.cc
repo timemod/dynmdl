@@ -20,7 +20,7 @@ Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename,
     // price
     ModFile *mod_file = parse((char *) modfile.c_str(), 
                               (char *) latex_basename.c_str(),
-                              false, true, true, 0, false, false, latex, output_params);
+                              false, true, true, true, 0, false, false, latex, output_params);
     
     Rcpp::List retval;
     retval =  mod_file->getDerivativeInfo(instruments, fixed_period);

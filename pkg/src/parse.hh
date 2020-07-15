@@ -1,7 +1,7 @@
 #include "ModFile.hh"
 
 ModFile *parse(char * modfile, char *latex_basename, bool max_laglead_1, 
-               bool nostrict, bool no_tmp_terms, int n_fit_derivatives, 
+               bool nostrict, bool no_tmp_terms, bool fit_deriv, int n_fit_derivatives, 
                bool warn_uninit_param, bool init_param_na, bool latex, 
                const OutputParameters &output_params);
 
@@ -18,7 +18,8 @@ ModFile *parse_post_macro(stringstream &in, string &latex_basename, bool debug,
       WarningConsolidation &warnings, bool nostrict, bool check_model_changes,
       bool minimal_workspace, bool compute_xrefs, FileOutputType output_mode,
       LanguageOutputType language, int params_derivs_order, bool max_laglead_1,
-      int n_fit_derivatives, const bool latex, const OutputParameters &output_params
+      bool fit_deriv, int n_fit_derivatives, const bool latex, 
+      const OutputParameters &output_params
 #if defined(_WIN32) || defined(__CYGWIN32__)
       , bool cygwin, bool msvc
 #endif

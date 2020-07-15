@@ -144,7 +144,12 @@ public:
   //! Execute computations
   /*! \param no_tmp_terms if true, no temporary terms will be computed in the static and dynamic files */
   /*! \param params_derivs_order compute this order of derivs wrt parameters */
+#ifdef USE_R
+  void computingPass(bool no_tmp_terms, FileOutputType output, int params_derivs_order, 
+                     bool fit_deriv);
+#else
   void computingPass(bool no_tmp_terms, FileOutputType output, int params_derivs_order);
+#endif
   //! Writes Matlab/Octave output files
   /*!
     \param basename The base name used for writing output files. Should be the name of the mod file without its extension

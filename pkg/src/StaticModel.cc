@@ -1047,9 +1047,15 @@ StaticModel::collect_first_order_derivatives_endogenous()
   return endo_derivatives;
 }
 
+#ifdef USE_R
+void StaticModel::computingPass(bool jacobianExo, const eval_context_t &eval_context, 
+                                bool no_tmp_terms, bool hessian, bool thirdDerivatives, 
+                                int paramsDerivsOrder, bool block, bool bytecode) {
+#else
 void
 StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms, bool hessian, bool thirdDerivatives, int paramsDerivsOrder, bool block, bool bytecode)
 {
+#endif
   initializeVariablesAndEquations();
 
   vector<BinaryOpNode *> neweqs;
@@ -1069,13 +1075,20 @@ StaticModel::computingPass(const eval_context_t &eval_context, bool no_tmp_terms
   copy(neweqs.begin(), neweqs.end(), back_inserter(equations));
   // Compute derivatives w.r. to all endogenous, and possibly exogenous and exogenous deterministic
   set<int> vars;
-
   for (int i = 0; i < symbol_table.endo_nbr(); i++)
     {
       int id = symbol_table.getID(eEndogenous, i);
       //      if (!symbol_table.isAuxiliaryVariableButNotMultiplier(id))
       vars.insert(getDerivID(id, 0));
     }
+#ifdef USE_R
+  if (jacobianExo) {
+      for (int i = 0; i < symbol_table.exo_nbr(); i++) {
+          int id = symbol_table.getID(eExogenous, i);
+          vars.insert(getDerivID(id, 0));
+      }
+  }
+#endif
 
   // Launch computations
   DynOut << "Computing static model derivatives:" << endl
@@ -1244,10 +1257,8 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
 #ifdef USE_R
   int ideriv = 0;
   for (first_derivatives_t::const_iterator it = first_derivatives.begin();
-       it != first_derivatives.end(); it++)
-    {
+       it != first_derivatives.end(); it++) {
       int eq = it->first.first;
-      int symb_id = getSymbIDByDerivID(it->first.second);
       int var = it->first.second;
       expr_t d1 = it->second;
       jacobianHelper(jacobian_output, ideriv, eq, var, output_type);
@@ -1258,7 +1269,7 @@ StaticModel::writeStaticModel(ostream &StaticOutput,
       }
       jacobian_output << endl;
       ideriv++;
-    }
+  }
 #else
     for (first_derivatives_t::const_iterator it = first_derivatives.begin();
        it != first_derivatives.end(); it++)
@@ -1997,8 +2008,17 @@ StaticModel::getDerivID(int symb_id, int lag) const throw (UnknownDerivIDExcepti
 {
   if (symbol_table.getType(symb_id) == eEndogenous)
     return symbol_table.getTypeSpecificID(symb_id);
-  else if (symbol_table.getType(symb_id) == eParameter)
+#ifdef USE_R
+  else if (symbol_table.getType(symb_id) == eExogenous)
+   /* how about eExogenousDet ? */
     return symbol_table.getTypeSpecificID(symb_id) + symbol_table.endo_nbr();
+#endif
+  else if (symbol_table.getType(symb_id) == eParameter)
+#ifdef USE_R
+    return symbol_table.getTypeSpecificID(symb_id) + symbol_table.endo_nbr() + symbol_table.exo_nbr();
+#else
+    return symbol_table.getTypeSpecificID(symb_id) + symbol_table.endo_nbr();
+#endif
   else
     return -1;
 }
@@ -2513,6 +2533,93 @@ Rcpp::List StaticModel::getStaticModelR(bool internal_calc) const {
     return Rcpp::List::create(
              Rcpp::Named("jac_size") = (int) first_derivatives.size(),
              Rcpp::Named("static_functions")  = static_functions);
+}
+
+
+
+Rcpp::List StaticModel::getDerivativeInfoR(int n_instr, 
+                                           Rcpp::IntegerVector instr_index_exo) const { 
+    // return the first derivative equations, used to construct the
+    // first order condition for the fit procedure.
+    // ARGUMENTS:
+    //   n_instr          the number of fit instruments
+    //   instr_index_exo  the indices of the fit instruments in the list of
+    //                    exogenous variables (in other words, instr_index_exo[1] is the
+    //                    instrument index of the first exogenous varianble. This is equal to NA 
+    //                    if the exogenous variable is not a fit instrument.
+
+
+    temporary_terms_t temp_term_union = temporary_terms_res;
+    deriv_node_temp_terms_t tef_terms;
+
+    int nendo = symbol_table.endo_nbr();
+    int nexo = symbol_table.endo_nbr();
+    int nderiv = first_derivatives.size(); 
+
+    // first count the number of non-zero entries for the derivatives of
+    // endogenous variables and fit instruments
+    int nnz_endo = 0, nnz_instr = 0;
+    bool *skip = new bool[nderiv];
+    int i = 0;
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+        int col = it->first.second;
+        if (col < nendo) {
+            skip[i++] = false;
+            nnz_endo++;
+        } else if (instr_index_exo[col - nendo] != NA_INTEGER) {
+            skip[i++] = false;
+            nnz_instr++;
+        } else {
+            skip[i++] = true;
+        }
+    }
+
+    Rcpp::CharacterVector endo_expr(nnz_endo);
+    Rcpp::IntegerVector endo_eq(nnz_endo), endo_index(nnz_endo);
+    Rcpp::CharacterVector instr_expr(nnz_instr);
+    Rcpp::IntegerVector instr_eq(nnz_instr), instr_index(nnz_instr);
+
+    int i_endo = 0, i_instr = 0;
+    i = 0;
+    for (first_derivatives_t::const_iterator it = first_derivatives.begin();
+         it != first_derivatives.end(); it++) {
+
+      if (skip[i++]) continue;
+      
+      int eq = it->first.first;
+      int col = it->first.second;
+
+      ostringstream txt;
+      expr_t d1 = it->second;
+      d1->writeOutput(txt, oModDerivatives, temp_term_union, tef_terms);
+
+      if (col < nendo) {
+          endo_eq[i_endo] = eq + 1;
+          endo_index[i_endo] = col + 1;
+          endo_expr[i_endo++] = Rcpp::String(txt.str());
+      } else {
+          instr_eq[i_instr] = eq + 1;
+          instr_index[i_instr]  = instr_index_exo[col - nendo];
+          instr_expr[i_instr++] = Rcpp::String(txt.str());
+      }
+    }
+
+   Rcpp::DataFrame endo_deriv =
+        Rcpp::DataFrame::create(Rcpp::Named("eq") = endo_eq,
+        Rcpp::Named("endo_index") = endo_index,
+        Rcpp::Named("expressions") = endo_expr,
+        Rcpp::Named("stringsAsFactors") = false);
+
+    Rcpp::DataFrame instr_deriv =
+        Rcpp::DataFrame::create(Rcpp::Named("eq") = instr_eq,
+        Rcpp::Named("instr_index") = instr_index,
+        Rcpp::Named("expressions") = instr_expr,
+        Rcpp::Named("stringsAsFactors") = false);
+
+
+    return Rcpp::List::create(Rcpp::Named("endo_deriv")    = endo_deriv,
+                              Rcpp::Named("instr_deriv")   = instr_deriv);
 }
 
 PolishModel* StaticModel::makePolishModel(ExternalFunctionCalc *ext_calc) const {

@@ -172,7 +172,13 @@ public:
     \param hessian whether 2nd derivatives w.r. to exo, exo_det and endo should be computed
     \param paramsDerivsOrder order of derivatives w.r. to a pair (endo/exo/exo_det, parameter) to be computed
   */
+#ifdef USE_R
+  void computingPass(bool jacobianExo, const eval_context_t &eval_context,
+                     bool no_tmp_terms, bool hessian, bool thirdDerivatives,
+                     int paramsDerivsOrder, bool block, bool bytecode);
+#else 
   void computingPass(const eval_context_t &eval_context, bool no_tmp_terms, bool hessian, bool thirdDerivatices, int paramsDerivsOrder, bool block, bool bytecode);
+#endif
 
   //! Adds informations for simulation in a binary file for a block decomposed model
   void Write_Inf_To_Bin_File_Block(const string &static_basename, const string &bin_basename, const int &num,
@@ -333,6 +339,7 @@ public:
     return -1;
   };
 #ifdef USE_R
+  Rcpp::List getDerivativeInfoR(int n_instr, Rcpp::IntegerVector instr_index_exo) const;
   Rcpp::List getStaticModelR(bool internal_calc) const;
   PolishModel* makePolishModel(ExternalFunctionCalc *ext_calc) const;
 #endif
