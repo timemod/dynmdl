@@ -5795,6 +5795,23 @@ Rcpp::List DynamicModel::getDerivativeInfoR(int n_instr, Rcpp::IntegerVector ins
                              );
 }
 
+Rcpp::LogicalVector DynamicModel::has_static_version() const {
+
+  int n = (int) equations.size();
+  Rcpp::LogicalVector result(n, false);
+
+  for (int i = 0; i < n; i++) {
+      // Detect if equation is marked [dynamic]
+      for (vector<pair<int, pair<string, string> > >::const_iterator it = equation_tags.begin();
+           it != equation_tags.end(); ++it) {
+           if (it->first == i && it->second.first == "dynamic") {
+              result(i) = true;
+              break;
+           }
+      }
+   }
+   return result;
+}
 
 void DynamicModel::writeLatexFile(const string &dirname, const string &basename, 
                                   const bool write_equation_tags, const bool fit,

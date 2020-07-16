@@ -24,6 +24,8 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
     cat("\n** Parsing the fit mod file **\n\n")
   }
   
+  #printobj(model_info)
+  
   endo_names <- model_info$endo_names
   exo_names <- model_info$exo_names
   param_names <- model_info$param_names
@@ -53,6 +55,7 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   sigmas <- paste("sigma", instruments, sep = "_")
   old_instruments <- paste0(instruments, "_old")
   initialized_sigmas <- intersect(sigmas, param_names)
+  has_static_version <- model_info$has_static_version
   
   # TODO: check that the intersection of fit_vars, exo_vars,
   # l_vars and sigmas with endo_names and exo_names is zero.
@@ -62,16 +65,22 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
                                    endo_names, instruments, sigmas, l_vars,
                                    fit_vars, old_instruments, exo_vars,
                                    fixed_period, dynamic = TRUE)
-  stat_fit_eqs <- get_fit_equations(static_model$instr_deriv, 
+  
+  if (any(has_static_version)) {
+    stat_fit_eqs <- get_fit_equations(static_model$instr_deriv, 
                                     static_model$endo_deriv,
                                     endo_names, instruments, sigmas, l_vars,
                                     fit_vars, old_instruments, exo_vars,
                                     fixed_period, dynamic = FALSE)
-
+  } else {
+    stat_fit_eqs <- NULL
+  }
+  
   fit_cond <- list(vars = endo_names, l_vars = l_vars, fit_vars = fit_vars,
                    exo_vars = exo_vars, instruments = instruments, 
                    old_instruments = old_instruments, sigmas = sigmas,
                    orig_exos = setdiff(exo_names, instruments),
+                   has_static_version = has_static_version,
                    dyn_fit_eqs = dyn_fit_eqs, stat_fit_eqs = stat_fit_eqs,
                    initialized_sigmas = initialized_sigmas)
   

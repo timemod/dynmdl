@@ -1560,10 +1560,13 @@ Rcpp::List ModFile::getDerivativeInfo(Rcpp::CharacterVector instruments,
     
     Rcpp::List statmdl = static_model.getDerivativeInfoR(instruments.size(), 
                                                          instr_index_exo);
+
+    Rcpp::LogicalVector has_static_version = dynamic_model.has_static_version();
     
     return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,
                               Rcpp::Named("endo_names") = endo_names,
                               Rcpp::Named("param_names") = param_names,
+                              Rcpp::Named("has_static_version") = has_static_version,
                               Rcpp::Named("static_model") = statmdl,
                               Rcpp::Named("dynamic_model") = dynmdl);
 }

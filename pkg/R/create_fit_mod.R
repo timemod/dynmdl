@@ -24,7 +24,7 @@ create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename,
                                  fixed_period, latex = latex, 
                                  latex_options = latex_options,
                                  silent = silent)
-
+  
   # finally, create the mod file for the fit procedure
   convert_mod(mod_file, fit_mod, fit_cond = fit_cond)
   
@@ -52,19 +52,29 @@ convert_mod <- function(input_file, output_file, fit_cond) {
   model_block_found <- FALSE
   in_model <- FALSE
   
+  add_empty_string <- function(x) {
+    d <- data.frame(x, "")
+    return(as.character(t(d)))
+  }
+  
+  has_static_version <- fit_cond$has_static_version
   write_first_order_eqs <- function(stat_eqs, dyn_eqs, is_instr_eq,  output) {
-    neq <- length(stat_eqs)
-    txt <- if (is_instr_eq) "Instrument" else "Fit"
+    neq <- length(dyn_eqs)
+    if (!any(has_static_version)) {
+      eqs <- add_empty_string(dyn_eqs)
+      writeLines(strwrap(eqs, width = 80, exdent = 4), con = output)
+      return(invisible())
+    }
+    stop("we cannot handle this situation yet")
     for (i in seq_len(neq)) {
       stat_eq <- stat_eqs[i]
       dyn_eq <- dyn_eqs[i]
-      if (dyn_eq == stat_eq) {
-        writeLines(sprintf("// %s Equation %d", txt, i), con = output)
+      if (!has_static_version[i] || dyn_eq == stat_eq) {
         writeLines(strwrap(dyn_eq, width = 80, exdent = 4), con = output)
       } else {
-        writeLines(sprintf("[static] // %s Equation %d", txt, i), con = output)
+        writeLines("[static]", con = output)
         writeLines(strwrap(stat_eq, width = 80, exdent = 4), con = output)
-        writeLines(sprintf("[dynamic] // %s Equation %d", txt, i), con = output)
+        writeLines("[dynamic]", con = output)
         writeLines(strwrap(dyn_eq, width = 80, exdent = 4), con = output)
       }
       writeLines("", con = output)

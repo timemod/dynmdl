@@ -557,6 +557,7 @@ public:
                                  bool fixed_period) const;
    Rcpp::List get_trend_info() const;
    Rcpp::CharacterVector get_equations() const;
+   Rcpp::LogicalVector has_static_version() const;
 #endif
 
 };

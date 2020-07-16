@@ -39,52 +39,35 @@ md = ms;
 
 % First order conditions fit instruments:
 
-// Instrument Equation 1
 (sigma_ut >= 0) * (ut / sigma_ut^2 + l_1 * ((-1))) + (sigma_ut < 0) * (ut -
     ut_old) = 0;
 
-// Instrument Equation 2
 (sigma_uc >= 0) * (uc / sigma_uc^2 + l_4 * ((-1))) + (sigma_uc < 0) * (uc -
     uc_old) = 0;
 
-// Instrument Equation 3
 (sigma_umd >= 0) * (umd / sigma_umd^2 + l_6 * ((-1))) + (sigma_umd < 0) * (umd
     - umd_old) = 0;
 
-// Instrument Equation 4
 (sigma_ui >= 0) * (ui / sigma_ui^2 + l_5 * ((-1))) + (sigma_ui < 0) * (ui -
     ui_old) = 0;
 
 
 % First order conditions endogenous variables:
 
-[static] // Fit Equation 1
-fit_y * (y - y_exo) + (1 - fit_y) * (l_1 * ((-t1)) + l_2 * (1) + l_3 * ((-1)) +
-    l_5 * ((-(i3 + i1 + i2))) + l_6 * ((-m1))) = 0;
-[dynamic] // Fit Equation 1
 fit_y * (y - y_exo) + (1 - fit_y) * (l_1 * ((-t1)) + l_2 * (1) + l_3 * ((-1)) +
     l_5 * ((-i2)) + l_6 * ((-m1))) = 0;
 
-[static] // Fit Equation 2
-fit_yd * (yd - yd_exo) + (1 - fit_yd) * (l_3 * (1) + l_4 * ((-(c3 + c1 + c2))))
-    = 0;
-[dynamic] // Fit Equation 2
 fit_yd * (yd - yd_exo) + (1 - fit_yd) * (l_3 * (1) + l_4 * ((-c2))) = 0;
 
-// Fit Equation 3
 fit_c * (c - c_exo) + (1 - fit_c) * (l_2 * ((-1)) + l_4 * (1)) = 0;
 
-// Fit Equation 4
 fit_i * (i - i_exo) + (1 - fit_i) * (l_2 * ((-1)) + l_5 * (1)) = 0;
 
-// Fit Equation 5
 fit_md * (md - md_exo) + (1 - fit_md) * (l_6 * (1) + l_7 * (1)) = 0;
 
-// Fit Equation 6
 fit_r * (r - r_exo) + (1 - fit_r) * (l_4 * ((-(c4 + c5 * 2 * r))) + l_5 *
     ((-(i4 + i5 * 2 * r))) + l_6 * ((-(m2 + m3 * 2 * r)))) = 0;
 
-// Fit Equation 7
 fit_t * (t - t_exo) + (1 - fit_t) * (l_1 * (1) + l_3 * (1)) = 0;
 
 end;
