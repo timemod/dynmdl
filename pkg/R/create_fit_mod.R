@@ -61,23 +61,42 @@ convert_mod <- function(input_file, output_file, fit_cond, fixed_period,
   }
   
   has_static_version <- fit_cond$has_static_version
-  write_first_order_eqs <- function(stat_eqs, dyn_eqs, is_instr_eq,  output) {
+  lag_pattern <- "\\[(-?\\d+)\\]"
+  convert_lags <- function(expression) {
+    repl_fun <- function(x) {
+      i <- as.integer(x) 
+      if (i == 0) {
+        return ("")
+      } else {
+        return (paste0("(", i, ")"))
+      }
+    }
+    return(gsubfn(lag_pattern, repl_fun, expression))
+  }
+  write_first_order_eqs <- function(stat_eqs, dyn_eqs, output) {
     if (!check_static_fit || !any(has_static_version)) {
-      eqs <- add_empty_string(dyn_eqs)
+      eqs <- convert_lags(dyn_eqs)
+      eqs <- add_empty_string(eqs)
       writeLines(strwrap(eqs, width = 80, exdent = 4), con = output)
       return(invisible())
     }
     neq <- length(dyn_eqs)
+    stat_eqs_conv <- convert_lags(stat_eqs)
+    dyn_eqs_conv <- convert_lags(dyn_eqs) 
     for (i in seq_len(neq)) {
       stat_eq <- stat_eqs[i]
       dyn_eq <- dyn_eqs[i]
-      if (dyn_eq == stat_eq) {
-        writeLines(strwrap(dyn_eq, width = 80, exdent = 4), con = output)
+      dyn_eq_stat <- gsub(lag_pattern, "", dyn_eq)
+      if (stat_eq == dyn_eq_stat) {
+        writeLines(strwrap(dyn_eqs_conv[i], width = 80, exdent = 4), 
+                   con = output)
       } else {
         writeLines("[static]", con = output)
-        writeLines(strwrap(stat_eq, width = 80, exdent = 4), con = output)
+        writeLines(strwrap(stat_eqs_conv[i], width = 80, exdent = 4), 
+                   con = output)
         writeLines("[dynamic]", con = output)
-        writeLines(strwrap(dyn_eq, width = 80, exdent = 4), con = output)
+        writeLines(strwrap(dyn_eqs_conv[i], width = 80, exdent = 4), 
+                   con = output)
       }
       writeLines("", con = output)
     } 
@@ -137,11 +156,11 @@ convert_mod <- function(input_file, output_file, fit_cond, fixed_period,
       writeLines(c("% First order conditions fit instruments:", ""),
                  con = output)
       write_first_order_eqs(fit_cond$stat_fit_eqs$instr_equations,
-                            fit_cond$dyn_fit_eqs$instr_equations, TRUE, output)
+                            fit_cond$dyn_fit_eqs$instr_equations, output)
       writeLines(c("", "% First order conditions endogenous variables:",
                    ""), con = output)
       write_first_order_eqs(fit_cond$stat_fit_eqs$endo_equations,
-                            fit_cond$dyn_fit_eqs$endo_equations, FALSE, output)
+                            fit_cond$dyn_fit_eqs$endo_equations, output)
       writeLines("end;", con = output)
       in_model <- FALSE
     } else {

@@ -101,17 +101,17 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   # several function definitions
   #
   
-  convert_lags <- function(expression, shift = 0) {
-    # This function converts lags specified with square brackests (e.g. x[-3]) 
+  shift_lags <- function(expression, shift) {
+    # This function shift lags specified with square brackests (e.g. x[-3]). 
     # in expressions to lags with () (e.g. x(3)). Lag zero ([0]) is disregarded.
-    # If argument shift has been specified, then the lags are shifted 
-    # with -shift.
+    # The lags are shifted  with -shift.
+    if (shift == 0) return(expression)
     repl_fun <- function(x) {
       i <- as.integer(x) - shift
       if (i == 0) {
         return ("")
       } else {
-        return (paste0("(", i, ")"))
+        return (paste0("[", i, "]"))
       }
     }
     lag_pattern <- "\\[(-?\\d+)\\]"
@@ -130,8 +130,6 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   #
   
   # multiply all derivatives with the Lagrange multipliers   
-  
-  instr_deriv$expressions <- convert_lags(instr_deriv$expressions)
   instr_deriv <- mult_lagrange(instr_deriv, l_vars)
   
   # sum the expressions of all entries with the same fit instrument
@@ -142,9 +140,10 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   if (nrow(deriv_eq) < length(instruments)) {
     problem_instruments <- instruments[setdiff(seq_along(instruments), 
                                                deriv_eq$instr_index)]
-    stop(paste0("The following fit instruments do not occur in the model",
-                " equations: ", paste(problem_instruments, collapse = ", "), 
-                "."))
+    txt <- if (dynamic) "dynamic" else "static"
+    stop(paste0("The following fit instruments do not occur in the ", txt, 
+                " model equations: ", 
+                paste(problem_instruments, collapse = ", "), "."))
   }
   deriv_eq <- deriv_eq$x
   
@@ -162,9 +161,7 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   if (dynamic && !fixed_period) l_names <- paste0(l_vars, "[0]")
   endo_deriv <- mult_lagrange(endo_deriv, l_names)
   
-  if (fixed_period || !dynamic) {
-    endo_deriv$expressions <- convert_lags(endo_deriv$expressions)
-  } else {
+  if (dynamic && !fixed_period) {
     endo_deriv$expressions <- mapply(FUN = convert_lags, 
                                      endo_deriv$expressions, 
                                      endo_deriv$endo_lag)
