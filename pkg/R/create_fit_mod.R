@@ -58,7 +58,7 @@ convert_mod <- function(input_file, output_file, fit_cond) {
     for (i in seq_len(neq)) {
       stat_eq <- stat_eqs[i]
       dyn_eq <- dyn_eqs[i]
-      if (dyn_eq == stat_eq) {
+      if (dyn_eq == stat_eq || TRUE) {
         writeLines(sprintf("// %s Equation %d", txt, i), con = output)
         writeLines(strwrap(dyn_eq, width = 80, exdent = 4), con = output)
       } else {
