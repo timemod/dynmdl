@@ -138,7 +138,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, strict = TRUE,
                     warn_uninit_param = TRUE, init_param_na = FALSE,
-                    fit = TRUE, fit_fixed_period = FALSE, latex = TRUE,
+                    fit = TRUE, fit_fixed_period = FALSE, 
+                    check_static_fit = TRUE, latex = TRUE,
                     latex_options, nostrict, silent = FALSE) {
   
   calc <- match.arg(calc)
@@ -252,6 +253,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                instruments, latex_basename, 
                                fixed_period = fit_fixed_period, 
+                               check_static_fit = check_static_fit,
                                latex = latex, latex_options = latex_options_,
                                silent = silent)
    

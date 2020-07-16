@@ -12,7 +12,8 @@
 # @return a list with the names of the auxiliary variables
 #' @importFrom stringi stri_split_fixed
 create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename, 
-                           fixed_period, latex, latex_options, silent) {
+                           fixed_period, check_static_fit, latex, 
+                           latex_options, silent) {
   
   if (file.exists(fit_mod)) {
     unlink(fit_mod)
@@ -21,12 +22,13 @@ create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename,
   # run the Dynare parser to obtain the first order 
   # conditions for the fit procedure
   fit_cond <- get_fit_conditions(mod_file, instruments, latex_basename, 
-                                 fixed_period, latex = latex, 
+                                 fixed_period, check_static_fit, latex = latex, 
                                  latex_options = latex_options,
                                  silent = silent)
   
   # finally, create the mod file for the fit procedure
-  convert_mod(mod_file, fit_mod, fit_cond = fit_cond)
+  convert_mod(mod_file, fit_mod, fit_cond = fit_cond, 
+              fixed_period = fixed_period, check_static_fit = check_static_fit)
   
   # return information about the fit variables
   with (fit_cond, {
@@ -39,7 +41,8 @@ create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename,
 }
 
 
-convert_mod <- function(input_file, output_file, fit_cond) {
+convert_mod <- function(input_file, output_file, fit_cond, fixed_period,
+                        check_static_fit) {
   
   fit_command <- "%$fit$"
   fit_end     <- "%$endfit$"
@@ -59,17 +62,16 @@ convert_mod <- function(input_file, output_file, fit_cond) {
   
   has_static_version <- fit_cond$has_static_version
   write_first_order_eqs <- function(stat_eqs, dyn_eqs, is_instr_eq,  output) {
-    neq <- length(dyn_eqs)
-    if (!any(has_static_version)) {
+    if (!check_static_fit || !any(has_static_version)) {
       eqs <- add_empty_string(dyn_eqs)
       writeLines(strwrap(eqs, width = 80, exdent = 4), con = output)
       return(invisible())
     }
-    stop("we cannot handle this situation yet")
+    neq <- length(dyn_eqs)
     for (i in seq_len(neq)) {
       stat_eq <- stat_eqs[i]
       dyn_eq <- dyn_eqs[i]
-      if (!has_static_version[i] || dyn_eq == stat_eq) {
+      if (dyn_eq == stat_eq) {
         writeLines(strwrap(dyn_eq, width = 80, exdent = 4), con = output)
       } else {
         writeLines("[static]", con = output)
