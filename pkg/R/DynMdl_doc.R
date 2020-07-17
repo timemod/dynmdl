@@ -51,7 +51,7 @@
 #' For \code{"updval"}, the static model variables are only replaced
 #' by valid (i.e. non-\code{NA}) values in \code{data}). }
 #' }
-#' If neither \code{data_period} nor \code{data} have been specified,
+#' If neither \code{data_period} nor \code{data} has been specified,
 #' then the data period is unchanged. In that case the data period must have been
 #' set before with method `init_data` or `set_period`.
 #' @section Warning:
