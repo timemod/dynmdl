@@ -1532,7 +1532,7 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
 // Return information about the derivatives of the equations
 // for the fit procedure.
 Rcpp::List ModFile::getDerivativeInfo(Rcpp::CharacterVector instruments,
-                                      bool fixed_period) const {
+                                      bool fixed_period, bool check_stat_eqs) const {
 
 
     int exo_count = symbol_table.exo_nbr();
@@ -1558,10 +1558,18 @@ Rcpp::List ModFile::getDerivativeInfo(Rcpp::CharacterVector instruments,
                                                          instr_index_exo,
                                                          fixed_period);
     
-    Rcpp::List statmdl = static_model.getDerivativeInfoR(instruments.size(), 
-                                                         instr_index_exo);
+    Rcpp::LogicalVector has_static_version;
+    if (check_stat_eqs) {
+        has_static_version = dynamic_model.has_static_version();
+    }
 
-    Rcpp::LogicalVector has_static_version = dynamic_model.has_static_version();
+    Rcpp::List statmdl;
+    if (check_stat_eqs && Rcpp::is_true(Rcpp::any(has_static_version))) {
+        statmdl = static_model.getDerivativeInfoR(instruments.size(), 
+                                                         instr_index_exo);
+    } else {
+	statmdl = R_NilValue;
+    }
     
     return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,
                               Rcpp::Named("endo_names") = endo_names,

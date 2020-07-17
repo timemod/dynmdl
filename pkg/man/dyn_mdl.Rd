@@ -19,7 +19,7 @@ dyn_mdl(
   init_param_na = FALSE,
   fit = TRUE,
   fit_fixed_period = FALSE,
-  check_static_fit = TRUE,
+  check_static_eqs = TRUE,
   latex = TRUE,
   latex_options,
   nostrict,
@@ -94,6 +94,13 @@ block while you do not want to use the fit procedure.}
 derived for a fixed period, treating lags and leads as exogenous variables.
 If \code{FALSE} (the default), the fit conditions are derived from the
 stacked-time equations.}
+
+\item{check_static_eqs}{a logical. If \code{TRUE} (the default), then we check
+if the mod file contains separate static and dynamic equations (i.e.
+equations tagged with \code{static} and \code{dynamic}). If this is the case,
+separate static and dynamic fit equations are generated when necessary
+(separate equations are not generated if the static version is simply
+equal to the dynamic version when lags and leads are removed).}
 
 \item{latex}{A logical. If \code{TRUE} (the default), then LaTeX files
 are created if the model block contains a \code{write_latex_static_model},

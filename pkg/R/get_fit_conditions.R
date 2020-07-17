@@ -6,14 +6,14 @@
 #' @importFrom stats aggregate
 # @return a list with information about the derivatives
 get_fit_conditions <- function(mod_file,  instruments, latex_basename, 
-                               fixed_period, check_static_fit,
-                               latex, latex_options,
-                               silent) {
+                               fixed_period, check_static_eqs,
+                               latex, latex_options, silent) {
   
   # call C++ function compute_derivatives
   call_compute_derivatives <- function() {
     return(compute_derivatives(mod_file, latex_basename, instruments, 
-                               fixed_period, latex, latex_options))
+                               fixed_period, check_static_eqs, latex, 
+                               latex_options))
   }
   if (silent) {
     output <- capture.output({
@@ -68,7 +68,7 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
                                    fixed_period, dynamic = TRUE,
                                    contains_static)
   
-  if (check_static_fit && contains_static) {
+  if (check_static_eqs && contains_static) {
     if (fixed_period) {
       # For those equations that do no have a separate static and dynamic
       # equation, replace the static equations with the dynamic derivatives.

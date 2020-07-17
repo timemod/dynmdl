@@ -185,7 +185,7 @@ public:
   void writeCFilesForR(const string &basename) const;
   Rcpp::List getModelListR(bool internal_calc);
   Rcpp::List getDerivativeInfo(Rcpp::CharacterVector instruments,
-                               bool fixed_period) const;
+                               bool fixed_period, bool check_stat_eqs) const;
   int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
   void writeLatexFiles(const string &basename, const bool fit, const OutputParameters &output_params);
