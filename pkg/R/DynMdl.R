@@ -579,8 +579,9 @@ DynMdl <- R6Class("DynMdl",
           endp <- end_period(mp) + private$mdldef$max_lead_orig
           if (start_period(data_period) > startp || 
               end_period(data_period)  < endp) {
-            stop(paste("The data period should include the range", 
-                      as.character(mp), "."))
+            p <- period_range(startp, endp)
+            stop(paste0("The data period should include the range ", 
+                      as.character(p), "."))
           }
         }
       }
