@@ -19,6 +19,7 @@ dyn_mdl(
   init_param_na = FALSE,
   fit = TRUE,
   fit_fixed_period = FALSE,
+  check_static_fit = TRUE,
   latex = TRUE,
   latex_options,
   nostrict,

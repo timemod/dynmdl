@@ -31,7 +31,7 @@
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{data_period}}{\code{\link[regts]{period_range}}
+#' \item{\code{data_period}}{a \code{\link[regts]{period_range}}
 #' object, or an object that can be coerced to 
 #' \code{\link[regts]{period_range}}. The (new) data period, i.e. the period
 #' range of all model timeseries. If not specified, then the data period
