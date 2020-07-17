@@ -59,13 +59,16 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   # TODO: check that the intersection of fit_vars, exo_vars,
   # l_vars and sigmas with endo_names and exo_names is zero.
   
+  contains_static <- any(has_static_version)
+  
   dyn_fit_eqs <- get_fit_equations(dynamic_deriv$instr_deriv, 
                                    dynamic_deriv$endo_deriv,
                                    endo_names, instruments, sigmas, l_vars,
                                    fit_vars, old_instruments, exo_vars,
-                                   fixed_period, dynamic = TRUE)
+                                   fixed_period, dynamic = TRUE,
+                                   contains_static)
   
-  if (check_static_fit && any(has_static_version)) {
+  if (check_static_fit && contains_static) {
     if (fixed_period) {
       # For those equations that do no have a separate static and dynamic
       # equation, replace the static equations with the dynamic derivatives.
@@ -76,7 +79,8 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
                                     static_deriv$endo_deriv,
                                     endo_names, instruments, sigmas, l_vars,
                                     fit_vars, old_instruments, exo_vars,
-                                    fixed_period, dynamic = FALSE)
+                                    fixed_period, dynamic = FALSE, 
+                                    contains_static)
   } else {
     stat_fit_eqs <- NULL
   }
@@ -95,7 +99,8 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
 
 get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments, 
                               sigmas, l_vars, fit_vars, old_instruments, 
-                              exo_vars, fixed_period, dynamic) {
+                              exo_vars, fixed_period, dynamic, 
+                              contains_static) {
   
   # 
   # several function definitions
@@ -140,9 +145,13 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   if (nrow(deriv_eq) < length(instruments)) {
     problem_instruments <- instruments[setdiff(seq_along(instruments), 
                                                deriv_eq$instr_index)]
-    txt <- if (dynamic) "dynamic" else "static"
-    stop(paste0("The following fit instruments do not occur in the ", txt, 
-                " model equations: ", 
+    if (contains_static) {
+      txt <- if (dynamic) " dynamic " else " static "
+     } else {
+      txt <- " " 
+    }
+    stop(paste0("The following fit instruments do not occur in the", txt, 
+                "model equations: ", 
                 paste(problem_instruments, collapse = ", "), "."))
   }
   deriv_eq <- deriv_eq$x
@@ -162,7 +171,7 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   endo_deriv <- mult_lagrange(endo_deriv, l_names)
   
   if (dynamic && !fixed_period) {
-    endo_deriv$expressions <- mapply(FUN = convert_lags, 
+    endo_deriv$expressions <- mapply(FUN = shift_lags, 
                                      endo_deriv$expressions, 
                                      endo_deriv$endo_lag)
   }
