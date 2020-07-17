@@ -42,8 +42,15 @@ multiply_d1_d1 <<- function(x, y) {
   return(0);
 }
 
-report <- capture_output(mdl <- dyn_mdl(mod_file, calc = "internal"))
-report2 <- capture_output(mdl$solve_steady())
+mdl <- dyn_mdl(mod_file, calc = "internal", silent = TRUE)
+mdl$solve_steady(silent = TRUE)
+
+test_that("init_data gives an error if the data period has not been set", {
+  msg <- paste("If neither data_period nor data have been specified,", 
+               "then the data period\nshould have been set before",
+               "with method init_data or set_period.")
+  expect_error(mdl$init_data(), msg)
+})
 
 mdl$set_period(model_period)
 mdl$set_fit(regts(c(1250, 1255, 1260), start = "2016Q1"), names = "y")

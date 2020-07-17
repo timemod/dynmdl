@@ -1,7 +1,7 @@
 Package: dynmdl
 Type: Package
 Title: An R version of Dynare
-Version: 1.3.0
+Version: 1.4.0
 Author: Rob van Harrevelt [aut, cre]
 Maintainer: Rob van Harrevelt <rvanharrevelt@gmail.com>
 Description: An R version of Dynare.

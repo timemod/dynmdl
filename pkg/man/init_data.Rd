@@ -4,16 +4,23 @@
 \alias{init_data}
 \title{\code{\link{DynMdl}} method: initializes the model data.}
 \description{
-This method of R6 class \code{\link{DynMdl}} sets the model data period and
-initializes the model variables with static values
-of the exogenous and endogenous model variables. Also all fit targets
-are removed. If argument \code{data} has been specified then the steady
-state values are subsequently updated with the timeseries in \code{data}.
+This method of R6 class \code{\link{DynMdl}} initializes all model variables
+with static values for the whole data period. All endogenous and exogenous variables,
+fit instruments and lagrange multipliers are set to the static values.
+Fit targets specified for the dynamic model are removed. If static fit targets
+have been specified with method \code{\link{set_fit_steady}}, then the
+dynamic fit targets are set to the static fit targets for the whole data period.
+
+If argument \code{data} has been specified, then the model data
+are subsequently updated with the timeseries in \code{data}.
+For models implementing the fit method, \code{data} may include fit instruments
+and lagrange multipliers. All timeseries in data that are no model variables,
+fit instruments or lagrange multipliers are silently skipped.
 
 If the model period has not yet been specified (in function
 \code{\link{dyn_mdl}} or method \code{\link{set_period}}), then
 this method also sets the model period, the standard period
-for which the model will be solved. The model period
+for which the model is solved. The model period
 is obtained from the data period by subtracting the lag and lead periods.
 }
 \section{Usage}{
@@ -32,7 +39,8 @@ mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"))
 \describe{
 \item{\code{data_period}}{\code{\link[regts]{period_range}}
 object, or an object that can be coerced to
-\code{\link[regts]{period_range}}. If not specified, then the data period
+\code{\link[regts]{period_range}}. The (new) data period, i.e. the period
+range of all model timeseries. If not specified, then the data period
 is based on the period range of argument \code{data} (if this argument
 has been specified) and  the model period.}
 \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
@@ -49,9 +57,9 @@ exogenous and endogenous model variables.
 For \code{"updval"}, the static model variables are only replaced
 by valid (i.e. non-\code{NA}) values in \code{data}). }
 }
-If neither \code{data_period} nor \code{data} have been specified,
-then the data period is determined from the model period (which in that
-case must have been specified before \code{init_data} is called).
+If neither \code{data_period} nor \code{data} has been specified,
+then the data period is unchanged. In that case the data period must have been
+set before with method \code{init_data} or \code{set_period}.
 }
 
 \section{Warning}{
@@ -62,4 +70,12 @@ Method \code{init_data} removes all fit targets.
 \examples{
 mdl <- islm_mdl()
 mdl$init_data("2017Q2/2021Q3")
+print(mdl)
+
+# since are variables have the steady state values, a subsequent solve will
+# converge in 0 iterations
+mdl$solve()
+}
+\seealso{
+\code{\link{set_period}}
 }
