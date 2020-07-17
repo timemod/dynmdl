@@ -89,5 +89,6 @@ islm$solve(control = list(trace = TRUE),
 }
 }
 \seealso{
-\code{\link{solve_steady}} and \code{\link{get_solve_status}}
+\code{\link{residual_check}}, \code{\link{solve_steady}}
+and \code{\link{get_solve_status}}
 }

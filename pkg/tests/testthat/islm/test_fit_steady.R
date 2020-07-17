@@ -195,3 +195,15 @@ test_that("no fit targets, removed fit instruments", {
   expect_identical(mdl2$get_all_static_data()[old_inst_names], 
                    mdl$get_all_static_data()[old_inst_names])
 })
+
+test_that("init data and steady fit targets", {
+  mdl2 <- mdl$copy()    
+  mdl2$set_period("2019q3")
+  datap <- period_range("2019q1/2020q1")
+  mdl2$init_data(data_period <- datap)
+  expect_equal(ncol(mdl2$residual_check(tol = 1e-7)), 0)
+  mdl2$set_fit_values(NA)
+  mdl2$init_data()
+  expect_equal(mdl2$get_data_period(), datap)
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
+})

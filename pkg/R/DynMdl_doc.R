@@ -2,16 +2,23 @@
 #' @name init_data
 #'
 #' @description
-#' This method of R6 class \code{\link{DynMdl}} sets the model data period and 
-#' initializes the model variables with static values
-#' of the exogenous and endogenous model variables. Also all fit targets
-#' are removed. If argument \code{data} has been specified then the steady
-#' state values are subsequently updated with the timeseries in \code{data}.
+#' This method of R6 class \code{\link{DynMdl}} initializes all model variables
+#' with static values for the whole data period. All endogenous and exogenous variables, 
+#' fit instruments and lagrange multipliers are set to the static values.
+#' Fit targets specified for the dynamic model are removed. If static fit targets 
+#' have been specified with method \code{\link{set_fit_steady}}, then the 
+#' dynamic fit targets are set to the static fit targets for the whole data period.
+#'
+#' If argument \code{data} has been specified, then the model data
+#' are subsequently updated with the timeseries in \code{data}.
+#' For models implementing the fit method, `data` may include fit instruments
+#' and lagrange multipliers. All timeseries in data that are no model variables,
+#' fit instruments or lagrange multipliers are silently skipped.
 #'
 #' If the model period has not yet been specified (in function 
 #' \code{\link{dyn_mdl}} or method \code{\link{set_period}}), then 
 #' this method also sets the model period, the standard period
-#' for which the model will be solved. The model period
+#' for which the model is solved. The model period
 #' is obtained from the data period by subtracting the lag and lead periods.
 #' @section Usage:
 #' \preformatted{
@@ -26,7 +33,8 @@
 #' \describe{
 #' \item{\code{data_period}}{\code{\link[regts]{period_range}}
 #' object, or an object that can be coerced to 
-#' \code{\link[regts]{period_range}}. If not specified, then the data period
+#' \code{\link[regts]{period_range}}. The (new) data period, i.e. the period
+#' range of all model timeseries. If not specified, then the data period
 #' is based on the period range of argument \code{data} (if this argument 
 #' has been specified) and  the model period.}
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
@@ -43,14 +51,20 @@
 #' For \code{"updval"}, the static model variables are only replaced
 #' by valid (i.e. non-\code{NA}) values in \code{data}). }
 #' }
-#' If neither \code{data_period} nor \code{data} have been specified,
-#' then the data period is determined from the model period (which in that
-#' case must have been specified before \code{init_data} is called).
+#' If neither \code{data_period} nor \code{data} has been specified,
+#' then the data period is unchanged. In that case the data period must have been
+#' set before with method `init_data` or `set_period`.
 #' @section Warning:
 #' Method \code{init_data} removes all fit targets.
+#' @seealso \code{\link{set_period}}
 #' @examples
 #' mdl <- islm_mdl()
 #' mdl$init_data("2017Q2/2021Q3")
+#' print(mdl)
+#' 
+#' # since are variables have the steady state values, a subsequent solve will
+#' # converge in 0 iterations
+#' mdl$solve()
 NULL
 
 #' \code{\link{DynMdl}} method: sets the model period
@@ -767,7 +781,7 @@ NULL
 #' coerced to a \code{period_range}, specifying the period for which the 
 #' endogenous model data will be updated with the static endogenous variables.}
 #' }
-#' @seealso \code{\link{solve_steady}}, \code{\link{set_static_endos}} 
+#' @seealso  \code{\link{solve_steady}}, \code{\link{set_static_endos}} 
 #' and \code{\link{get_static_endos}}.
 #' @examples
 #' mdl <- islm_mdl(period = "2018Q1/2040Q3")
@@ -849,7 +863,8 @@ NULL
 #' method, see the example below). See the documentation of 
 #' \code{\link[umfpackr]{umf_solve_nl}} for more details.}
 #' }
-#' @seealso \code{\link{solve_steady}} and \code{\link{get_solve_status}}
+#' @seealso \code{\link{residual_check}}, \code{\link{solve_steady}} 
+#' and \code{\link{get_solve_status}}
 #' @examples
 #' islm <- islm_mdl(period = "2018Q1/2023Q3")
 #' islm$set_exo_values(260, period = "2018q1", names = "g")
