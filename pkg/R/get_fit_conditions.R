@@ -28,15 +28,15 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   endo_names <- deriv_info$endo_names
   exo_names <- deriv_info$exo_names
   param_names <- deriv_info$param_names
-  dynamic_deriv <- deriv_info$dynamic_model
-  static_deriv <- deriv_info$static_model
+  deriv_dyn <- deriv_info$deriv_dyn
+  deriv_stat <- deriv_info$deriv_stat
   
   # Check if there are lags/leads on instruments. Dynare ignores lags and 
   # leads on exogeneous variables when computing the derivatives, therefore
   # the fit procedure cannot handle this situation (actually it would be fine
   # if fixed_period = TRUE, but for the moment we still does not accept 
   # fit instruments with lags and leads).
-  instr_has_lag <- dynamic_deriv$instr_has_lag
+  instr_has_lag <- deriv_dyn$instr_has_lag
   if (any(instr_has_lag)) {
     stop(paste0("Fit instruments with lags or leads are not allowed.\n",
                 "The following fit instruments have lags or leads: ",
@@ -54,42 +54,46 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
   sigmas <- paste("sigma", instruments, sep = "_")
   old_instruments <- paste0(instruments, "_old")
   initialized_sigmas <- intersect(sigmas, param_names)
-  has_static_version <- deriv_info$has_static_version
+  equation_has_static <- deriv_info$equation_has_static
   
   # TODO: check that the intersection of fit_vars, exo_vars,
   # l_vars and sigmas with endo_names and exo_names is zero.
   
-  contains_static <- any(has_static_version)
-  
-  dyn_fit_eqs <- get_fit_equations(dynamic_deriv$instr_deriv, 
-                                   dynamic_deriv$endo_deriv,
+  if (check_static_eqs) {
+    write_static_eqs <- any(equation_has_static)
+  } else {
+    write_static_eqs <- FALSE
+  }
+  dyn_fit_eqs <- get_fit_equations(deriv_dyn$instr_deriv, 
+                                   deriv_dyn$endo_deriv,
                                    endo_names, instruments, sigmas, l_vars,
                                    fit_vars, old_instruments, exo_vars,
-                                   fixed_period, dynamic = TRUE,
-                                   contains_static)
-  
-  if (check_static_eqs && contains_static) {
+                                   fixed_period, dynamic = TRUE)
+
+  if (write_static_eqs) {
     if (fixed_period) {
       # For those equations that do no have a separate static and dynamic
-      # equation, replace the static equations with the dynamic derivatives.
-      static_deriv <- convert_static_deriv(static_deriv, dynamic_deriv, 
-                                           has_static_version)
+      # equation, convert the dynamic derivatives to static derivatives
+      # by removing lags and leads. This is not necessary if fixed_period is FALSE,
+      # because in that case the static derivatives are the same as the dynamic
+      # derivatives (with lags and leads replaced).
+      deriv_stat <- convert_deriv_stat(deriv_stat, deriv_dyn, 
+                                           equation_has_static)
     }
-    stat_fit_eqs <- get_fit_equations(static_deriv$instr_deriv, 
-                                    static_deriv$endo_deriv,
+    stat_fit_eqs <- get_fit_equations(deriv_stat$instr_deriv, 
+                                    deriv_stat$endo_deriv,
                                     endo_names, instruments, sigmas, l_vars,
                                     fit_vars, old_instruments, exo_vars,
-                                    fixed_period, dynamic = FALSE, 
-                                    contains_static)
+                                    fixed_period, dynamic = FALSE)
   } else {
-    stat_fit_eqs <- NULL
+    stat_fit_eqs <- NULL  
   }
   
   fit_cond <- list(vars = endo_names, l_vars = l_vars, fit_vars = fit_vars,
                    exo_vars = exo_vars, instruments = instruments, 
                    old_instruments = old_instruments, sigmas = sigmas,
                    orig_exos = setdiff(exo_names, instruments),
-                   has_static_version = has_static_version,
+                   write_static_eqs = write_static_eqs,
                    dyn_fit_eqs = dyn_fit_eqs, stat_fit_eqs = stat_fit_eqs,
                    initialized_sigmas = initialized_sigmas)
   
@@ -99,9 +103,9 @@ get_fit_conditions <- function(mod_file,  instruments, latex_basename,
 
 get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments, 
                               sigmas, l_vars, fit_vars, old_instruments, 
-                              exo_vars, fixed_period, dynamic, 
-                              contains_static) {
+                              exo_vars, fixed_period, dynamic) {
   
+  lag_pattern <- "\\[(-?\\d+)\\]"
   # 
   # several function definitions
   #
@@ -110,7 +114,6 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
     # This function shift lags specified with square brackests (e.g. x[-3]). 
     # in expressions to lags with () (e.g. x(3)). Lag zero ([0]) is disregarded.
     # The lags are shifted  with -shift.
-    if (shift == 0) return(expression)
     repl_fun <- function(x) {
       i <- as.integer(x) - shift
       if (i == 0) {
@@ -119,7 +122,6 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
         return (paste0("[", i, "]"))
       }
     }
-    lag_pattern <- "\\[(-?\\d+)\\]"
     return(gsubfn(lag_pattern, repl_fun, expression))
   }
   
@@ -137,6 +139,8 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   # multiply all derivatives with the Lagrange multipliers   
   instr_deriv <- mult_lagrange(instr_deriv, l_vars)
   
+  instr_deriv$expressions <- gsub("\\[0\\]", "", instr_deriv$expressions)
+  
   # sum the expressions of all entries with the same fit instrument
   deriv_eq <- aggregate(instr_deriv$expressions, 
                         by = list(instr_index = instr_deriv$instr_index),
@@ -145,11 +149,7 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   if (nrow(deriv_eq) < length(instruments)) {
     problem_instruments <- instruments[setdiff(seq_along(instruments), 
                                                deriv_eq$instr_index)]
-    if (contains_static) {
-      txt <- if (dynamic) " dynamic " else " static "
-     } else {
-      txt <- " " 
-    }
+    txt <- if (dynamic) " " else " static "
     stop(paste0("The following fit instruments do not occur in the", txt, 
                 "model equations: ", 
                 paste(problem_instruments, collapse = ", "), "."))
@@ -174,6 +174,8 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
     endo_deriv$expressions <- mapply(FUN = shift_lags, 
                                      endo_deriv$expressions, 
                                      endo_deriv$endo_lag)
+  } else {
+    endo_deriv$expressions <- gsub("\\[0\\]", "", endo_deriv$expressions)
   }
   
   # first sum for each equation and endogenous variable over derivatives with respect
@@ -204,33 +206,32 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
               endo_equations = endo_equations))
 }
 
-convert_static_deriv <- function(static_deriv, dynamic_deriv, 
-                                 has_static_version) { 
+convert_deriv_stat <- function(deriv_stat, deriv_dyn, equation_has_static) { 
   
   # For those equations that do no have a separate static and dynamic
   # equation, replace the static derivatives with the dynamic derivatives
-  # with removed lags/leads.
-  # This is needed when the dynamic derivatives are derived with 
-  # fixed_period = TRUE 
+  # with removed lags/leads. This is needed when fixed_period = TRUE. 
+  # This is not necessary if fixed_period is FALSE,
+  # because in that case the static derivatives are the same as the dynamic
+  # derivatives (with lags and leads replaced).
   
   lag_pattern <- "\\[(-?\\d+)\\]"
   
-  convert_internal <- function(stat_deriv, dyn_deriv) {
-    dyn_deriv$endo_lag <- NULL
-    stat_deriv$expressions <- gsub(lag_pattern, "", stat_deriv$expressions)
-    dyn_deriv$expressions <- gsub(lag_pattern, "", dyn_deriv$expressions)
+  convert_deriv_internal <- function(stat, dyn) {
+    dyn$endo_lag <- NULL
+    dyn$expressions <- gsub(lag_pattern, "", dyn$expressions)
     
-    stat_deriv <- stat_deriv[has_static_version[stat_deriv$eq], , drop = FALSE]
-    dyn_deriv <- dyn_deriv[!has_static_version[dyn_deriv$eq], , drop = FALSE]
+    stat <- stat[equation_has_static[stat$eq], , drop = FALSE]
+    dyn <- dyn[!equation_has_static[dyn$eq], , drop = FALSE]
     
-    deriv <- rbind(dyn_deriv, stat_deriv)
+    deriv <- rbind(dyn, stat)
     deriv <- deriv[order(deriv$eq), , drop = FALSE]
     return(deriv)
   }
   
-  static_deriv$endo_deriv <- convert_internal(static_deriv$endo_deriv, 
-                                            dynamic_deriv$endo_deriv)
-  static_deriv$instr_deriv <- convert_internal(static_deriv$instr_deriv, 
-                                             dynamic_deriv$instr_deriv)
-  return(static_deriv)
+  deriv_stat$endo_deriv <- convert_deriv_internal(deriv_stat$endo_deriv, 
+                                                  deriv_dyn$endo_deriv)
+  deriv_stat$instr_deriv <- convert_deriv_internal(deriv_stat$instr_deriv, 
+                                                   deriv_dyn$instr_deriv)
+  return(deriv_stat)
 }

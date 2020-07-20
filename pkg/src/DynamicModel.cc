@@ -5795,7 +5795,10 @@ Rcpp::List DynamicModel::getDerivativeInfoR(int n_instr, Rcpp::IntegerVector ins
                              );
 }
 
-Rcpp::LogicalVector DynamicModel::has_static_version() const {
+Rcpp::LogicalVector DynamicModel::equation_has_static() const {
+  
+  /* Return a logical vector; each element is TRUE if the corresponding
+     equation has a separate static version */
 
   int n = (int) equations.size();
   Rcpp::LogicalVector result(n, false);

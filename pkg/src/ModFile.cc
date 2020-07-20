@@ -1554,29 +1554,29 @@ Rcpp::List ModFile::getDerivativeInfo(Rcpp::CharacterVector instruments,
 
     Rcpp::IntegerVector instr_index_exo = Rcpp::match(exo_names, instruments);
 
-    Rcpp::List dynmdl = dynamic_model.getDerivativeInfoR(instruments.size(), 
+    Rcpp::List deriv_dyn = dynamic_model.getDerivativeInfoR(instruments.size(), 
                                                          instr_index_exo,
                                                          fixed_period);
     
-    Rcpp::LogicalVector has_static_version;
+    Rcpp::LogicalVector equation_has_static;
     if (check_stat_eqs) {
-        has_static_version = dynamic_model.has_static_version();
+        equation_has_static = dynamic_model.equation_has_static();
     }
 
-    Rcpp::List statmdl;
-    if (check_stat_eqs && Rcpp::is_true(Rcpp::any(has_static_version))) {
-        statmdl = static_model.getDerivativeInfoR(instruments.size(), 
+    Rcpp::List deriv_stat;
+    if (check_stat_eqs && Rcpp::is_true(Rcpp::any(equation_has_static))) {
+        deriv_stat = static_model.getDerivativeInfoR(instruments.size(), 
                                                          instr_index_exo);
     } else {
-	statmdl = R_NilValue;
+	deriv_stat = R_NilValue;
     }
     
     return Rcpp::List::create(Rcpp::Named("exo_names") = exo_names,
                               Rcpp::Named("endo_names") = endo_names,
                               Rcpp::Named("param_names") = param_names,
-                              Rcpp::Named("has_static_version") = has_static_version,
-                              Rcpp::Named("static_model") = statmdl,
-                              Rcpp::Named("dynamic_model") = dynmdl);
+                              Rcpp::Named("equation_has_static") = equation_has_static,
+                              Rcpp::Named("deriv_stat") = deriv_stat,
+                              Rcpp::Named("deriv_dyn") = deriv_dyn);
 }
 
 int ModFile::get_warning_count() const {

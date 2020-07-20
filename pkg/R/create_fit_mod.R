@@ -54,48 +54,33 @@ convert_mod <- function(input_file, output_file, fit_cond, fixed_period,
   fit_block_found <- FALSE
   model_block_found <- FALSE
   in_model <- FALSE
+
+  write_static_eqs <- fit_cond$write_static_eqs
   
-  add_empty_string <- function(x) {
-    d <- data.frame(x, "")
-    return(as.character(t(d)))
-  }
-  
-  has_static_version <- fit_cond$has_static_version
   lag_pattern <- "\\[(-?\\d+)\\]"
   convert_lags <- function(expression) {
-    repl_fun <- function(x) {
-      i <- as.integer(x) 
-      if (i == 0) {
-        return ("")
-      } else {
-        return (paste0("(", i, ")"))
-      }
-    }
-    return(gsubfn(lag_pattern, repl_fun, expression))
+    # replace square brackets with normal parentheses
+    return(gsub(lag_pattern, "(\\1)", expression))
   }
   write_first_order_eqs <- function(stat_eqs, dyn_eqs, output) {
-    if (!check_static_eqs || !any(has_static_version)) {
-      eqs <- convert_lags(dyn_eqs)
-      eqs <- add_empty_string(eqs)
-      writeLines(strwrap(eqs, width = 80, exdent = 4), con = output)
-      return(invisible())
-    }
+    # Write first order conditions for the fit instruments or 
+    # endogenous variables.
     neq <- length(dyn_eqs)
-    stat_eqs_conv <- convert_lags(stat_eqs)
-    dyn_eqs_conv <- convert_lags(dyn_eqs) 
+    if (write_static_eqs) {
+      dyn_eqs_stat <- gsub(lag_pattern, "", dyn_eqs)
+      write_stat_dyn <- dyn_eqs_stat != stat_eqs
+    } else {
+      write_stat_dyn <- rep(FALSE, neq)
+    }
+    dyn_eqs <- convert_lags(dyn_eqs)
     for (i in seq_len(neq)) {
-      stat_eq <- stat_eqs[i]
-      dyn_eq <- dyn_eqs[i]
-      dyn_eq_stat <- gsub(lag_pattern, "", dyn_eq)
-      if (stat_eq == dyn_eq_stat) {
-        writeLines(strwrap(dyn_eqs_conv[i], width = 80, exdent = 4), 
-                   con = output)
-      } else {
+      if (write_stat_dyn[i]) {
         writeLines("[static]", con = output)
-        writeLines(strwrap(stat_eqs_conv[i], width = 80, exdent = 4), 
-                   con = output)
+        writeLines(strwrap(stat_eqs[i], width = 80, exdent = 4), con = output)
         writeLines("[dynamic]", con = output)
-        writeLines(strwrap(dyn_eqs_conv[i], width = 80, exdent = 4), 
+        writeLines(strwrap(dyn_eqs[i], width = 80, exdent = 4), con = output)
+      } else {
+        writeLines(strwrap(dyn_eqs[i], width = 80, exdent = 4), 
                    con = output)
       }
       writeLines("", con = output)
