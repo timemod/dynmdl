@@ -25,31 +25,27 @@ i0 = 100; i1 = 0.12; i2 = 0.08; i3 = 0.04; i4 = -40; i5 = -1.5;
 m0 = 75; m1 = 0.23; m2 = -35; m3 = -1.5;
 t0 = -15; t1 = 0.22;
 
-parameters ms_anchor;
-ms_anchor = 230;
+parameters p_ms;
+p_ms = 230;
 
 model;
 t = t0 * gr + t1 * y + ut * gr;
 y = c + i + g * gr;
 yd = y - t;
-c = c0 *gr + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + (c4 * r + c5 * r^2 + uc) * gr;
-i = i0 *gr + i1 * y(-1) + i2 * y + i3 * y(+1) + (i4 * r + i5 * r^2 + ui) *gr;
+c = c0 *gr + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + (c4 * r + c5 * r^2 + uc) * y(-1);
+i = i0 *gr + i1 * y(-1) + i2 * y + i3 * y(+1) + (i4 * r + i5 * r^2 + ui) * y(-1);
 md = m0 + m1 * y / gr + m2 * r + m3 * r^2 + umd;
 md = ms;
 [static]
-ms = ms_anchor;
+ms = p_ms;
 [dynamic]
 ms = ms(-1);
 end;
 
 initval;
 growth = 0.02;
-g  = 240; ms = ms_anchor; r  = 3.5; y  = 980; c  = 500; t = 100;
+g  = 240; ms = p_ms; r  = 3.5; y  = 980; c  = 500; t = 100;
 md = ms;
 yd = y - t;
 i  = y - c - g;
 end;
-
-write_latex_static_model;
-write_latex_original_model;
-write_latex_dynamic_model;

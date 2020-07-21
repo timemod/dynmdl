@@ -115,7 +115,10 @@
 #' @param fit_fixed_period a logical. If \code{TRUE}, then the fit conditions are
 #' derived for a fixed period, treating lags and leads as exogenous variables.
 #' If \code{FALSE} (the default), the fit conditions are derived from the
-#' stacked-time equations.
+#' stacked-time equations. This option is particularly useful for backward 
+#' looking models (models without leads). If `fit_fixed_period` is `TRUE`, then
+#' the fit equations will not contain lags or leads. If `fit_fixed_period` is 
+#' `TRUE`, then some fit equation may contain leads.
 #' @param check_static_eqs a logical. If \code{TRUE} (the default), then we check
 #' if the mod file contains separate static and dynamic equations (i.e. 
 #' equations tagged with `static` and `dynamic`). If this is the case,
