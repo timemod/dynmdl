@@ -12,7 +12,8 @@
 # @return a list with the names of the auxiliary variables
 #' @importFrom stringi stri_split_fixed
 create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename, 
-                           fixed_period, latex, latex_options, silent) {
+                           fixed_period, check_static_eqs, latex, 
+                           latex_options, silent) {
   
   if (file.exists(fit_mod)) {
     unlink(fit_mod)
@@ -21,12 +22,13 @@ create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename,
   # run the Dynare parser to obtain the first order 
   # conditions for the fit procedure
   fit_cond <- get_fit_conditions(mod_file, instruments, latex_basename, 
-                                 fixed_period, latex = latex, 
+                                 fixed_period, check_static_eqs, latex = latex, 
                                  latex_options = latex_options,
                                  silent = silent)
-
+  
   # finally, create the mod file for the fit procedure
-  convert_mod(mod_file, fit_mod, fit_cond = fit_cond)
+  convert_mod(mod_file, fit_mod, fit_cond = fit_cond, 
+              fixed_period = fixed_period, check_static_eqs = check_static_eqs)
   
   # return information about the fit variables
   with (fit_cond, {
@@ -39,7 +41,8 @@ create_fit_mod <- function(mod_file, fit_mod, instruments, latex_basename,
 }
 
 
-convert_mod <- function(input_file, output_file, fit_cond) {
+convert_mod <- function(input_file, output_file, fit_cond, fixed_period,
+                        check_static_eqs) {
   
   fit_command <- "%$fit$"
   fit_end     <- "%$endfit$"
@@ -51,6 +54,39 @@ convert_mod <- function(input_file, output_file, fit_cond) {
   fit_block_found <- FALSE
   model_block_found <- FALSE
   in_model <- FALSE
+
+  write_static_eqs <- fit_cond$write_static_eqs
+  
+  lag_pattern <- "\\[(-?\\d+)\\]"
+  convert_lags <- function(expression) {
+    # replace square brackets with normal parentheses
+    return(gsub(lag_pattern, "(\\1)", expression))
+  }
+  write_first_order_eqs <- function(stat_eqs, dyn_eqs, output) {
+    # Write first order conditions for the fit instruments or 
+    # endogenous variables.
+    neq <- length(dyn_eqs)
+    if (write_static_eqs) {
+      dyn_eqs_stat <- gsub(lag_pattern, "", dyn_eqs)
+      write_stat_dyn <- dyn_eqs_stat != stat_eqs
+    } else {
+      write_stat_dyn <- rep(FALSE, neq)
+    }
+    dyn_eqs <- convert_lags(dyn_eqs)
+    for (i in seq_len(neq)) {
+      if (write_stat_dyn[i]) {
+        writeLines("[static]", con = output)
+        writeLines(strwrap(stat_eqs[i], width = 80, exdent = 4), con = output)
+        writeLines("[dynamic]", con = output)
+        writeLines(strwrap(dyn_eqs[i], width = 80, exdent = 4), con = output)
+      } else {
+        writeLines(strwrap(dyn_eqs[i], width = 80, exdent = 4), 
+                   con = output)
+      }
+      writeLines("", con = output)
+    } 
+    return(invisible())
+  }
   
   while (TRUE) {
     line <- readLines(input, n = 1)
@@ -104,12 +140,12 @@ convert_mod <- function(input_file, output_file, fit_cond) {
       writeLines(gsub("end;", "", line), con = output)
       writeLines(c("% First order conditions fit instruments:", ""),
                  con = output)
-      writeLines(strwrap(fit_cond$instr_equations, width = 80),
-                 con = output)
+      write_first_order_eqs(fit_cond$stat_fit_eqs$instr_equations,
+                            fit_cond$dyn_fit_eqs$instr_equations, output)
       writeLines(c("", "% First order conditions endogenous variables:",
                    ""), con = output)
-      writeLines(strwrap(fit_cond$endo_equations, width = 80, exdent = 4),
-                 con = output)
+      write_first_order_eqs(fit_cond$stat_fit_eqs$endo_equations,
+                            fit_cond$dyn_fit_eqs$endo_equations, output)
       writeLines("end;", con = output)
       in_model <- FALSE
     } else {

@@ -144,7 +144,12 @@ public:
   //! Execute computations
   /*! \param no_tmp_terms if true, no temporary terms will be computed in the static and dynamic files */
   /*! \param params_derivs_order compute this order of derivs wrt parameters */
+#ifdef USE_R
+  void computingPass(bool no_tmp_terms, FileOutputType output, int params_derivs_order, 
+                     bool fit_deriv);
+#else
   void computingPass(bool no_tmp_terms, FileOutputType output, int params_derivs_order);
+#endif
   //! Writes Matlab/Octave output files
   /*!
     \param basename The base name used for writing output files. Should be the name of the mod file without its extension
@@ -180,7 +185,7 @@ public:
   void writeCFilesForR(const string &basename) const;
   Rcpp::List getModelListR(bool internal_calc);
   Rcpp::List getDerivativeInfo(Rcpp::CharacterVector instruments,
-                               bool fixed_period) const;
+                               bool fixed_period, bool check_stat_eqs) const;
   int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
   void writeLatexFiles(const string &basename, const bool fit, const OutputParameters &output_params);

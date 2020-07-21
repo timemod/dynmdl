@@ -115,7 +115,16 @@
 #' @param fit_fixed_period a logical. If \code{TRUE}, then the fit conditions are
 #' derived for a fixed period, treating lags and leads as exogenous variables.
 #' If \code{FALSE} (the default), the fit conditions are derived from the
-#' stacked-time equations.
+#' stacked-time equations. This option is particularly useful for backward 
+#' looking models (models without leads). If `fit_fixed_period` is `TRUE`, then
+#' the fit equations will not contain lags or leads. If `fit_fixed_period` is 
+#' `TRUE`, then some fit equation may contain leads.
+#' @param check_static_eqs a logical. If \code{TRUE} (the default), then we check
+#' if the mod file contains separate static and dynamic equations (i.e. 
+#' equations tagged with `static` and `dynamic`). If this is the case,
+#' separate static and dynamic fit equations are generated when necessary
+#' (separate equations are not generated if the static version is simply
+#' equal to the dynamic version when lags and leads are removed).
 #' @param latex A logical. If \code{TRUE} (the default), then LaTeX files
 #' are created if the model block contains a \code{write_latex_static_model},
 #' \code{write_latex_dynamic_model} or \code{write_latex_original_model} statement.
@@ -138,7 +147,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, strict = TRUE,
                     warn_uninit_param = TRUE, init_param_na = FALSE,
-                    fit = TRUE, fit_fixed_period = FALSE, latex = TRUE,
+                    fit = TRUE, fit_fixed_period = FALSE, 
+                    check_static_eqs = TRUE, latex = TRUE,
                     latex_options, nostrict, silent = FALSE) {
   
   calc <- match.arg(calc)
@@ -252,6 +262,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
                                instruments, latex_basename, 
                                fixed_period = fit_fixed_period, 
+                               check_static_eqs = check_static_eqs,
                                latex = latex, latex_options = latex_options_,
                                silent = silent)
    

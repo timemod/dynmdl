@@ -31,7 +31,7 @@ Rcpp::List compile_model_(std::string modfile, std::string latex_basename,
 
     ModFile *mod_file = parse((char *) modfile.c_str(), 
                               (char *) latex_basename.c_str(),
-                              max_laglead_1, !strict, no_tmp_terms, 
+                              max_laglead_1, !strict, no_tmp_terms, false,
                               n_fit_derivatives, warn_uninit_param, 
                               init_param_na, latex, output_params);
     

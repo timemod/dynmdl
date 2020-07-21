@@ -5,7 +5,8 @@
 // [[Rcpp::export]]
 Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename,
                                Rcpp::CharacterVector instruments,
-                               bool fixed_period, bool latex, Rcpp::List latex_options) {
+                               bool fixed_period, bool check_stat_eqs, bool latex, 
+                               Rcpp::List latex_options) {
 
     OutputParameters output_params;
     double ndigits_latex = latex_options["ndigits"];
@@ -20,10 +21,10 @@ Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename,
     // price
     ModFile *mod_file = parse((char *) modfile.c_str(), 
                               (char *) latex_basename.c_str(),
-                              false, true, true, 0, false, false, latex, output_params);
+                              false, true, true, true, 0, false, false, latex, output_params);
     
     Rcpp::List retval;
-    retval =  mod_file->getDerivativeInfo(instruments, fixed_period);
+    retval =  mod_file->getDerivativeInfo(instruments, fixed_period, check_stat_eqs);
 
     delete mod_file;
 

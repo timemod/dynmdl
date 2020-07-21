@@ -27,12 +27,15 @@ model;
 % First order conditions fit instruments:
 
 (sigma_uy1 >= 0) * (uy1 / sigma_uy1^2 + l_1 * ((-1))) + (sigma_uy1 < 0) * (uy1
-- uy1_old) = 0;
+    - uy1_old) = 0;
+
 
 % First order conditions endogenous variables:
 
 fit_y1 * (y1 - y1_exo) + (1 - fit_y1) * (l_1 * (0.5 - 1 / max(y1, eps))) = 0;
+
 fit_y2 * (y2 - y2_exo) + (1 - fit_y2) * (l_2 * (2 - 1 / max(y2, 0.0001))) = 0;
+
 end;
 
 initval;
