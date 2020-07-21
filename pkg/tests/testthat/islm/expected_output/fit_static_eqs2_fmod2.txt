@@ -1,0 +1,124 @@
+%Declaring variables
+
+% endogenous variables
+var y $Y$ (long_name = 'Income')
+    yd $Y_d$ (long_name = 'Disposable income')
+    t $T$ (long_name = 'Tax')
+    c $C$ (long_name = 'Consumption')
+    i $I$ (long_name = 'Investment')
+    md $M_d$ (long_name = 'Monet demand')
+    ms $M_s$ (long_name = 'Money supply')
+    r $r$ (long_name = 'Interest rate');
+
+% exogenous variables
+varexo g $G$ (long_name = 'Government spending');
+
+
+% Parameters for the standard deviation for the fit procedure:
+var    ut uc umd ui;       % residuals
+parameters sigma_ut sigma_uc sigma_ui sigma_umd;
+sigma_ut = 7; sigma_uc = 5; sigma_ui = 21; sigma_umd = 21;
+
+
+%Setting parameter values
+parameters c0 c1 c2 c3 c4 c5;
+parameters i0 i1 i2 i3 i4 i5;
+parameters m0 m1 m2 m3;
+parameters t0 t1;
+
+c0 = 100; c1 = 0.28; c2 = 0.32; c3 = 0.10; c4 = -20; c5 = 1;
+i0 = 100; i1 = 0.12; i2 = 0.08; i3 = 0.04; i4 = -40; i5 = -1.5;
+m0 = 75; m1 = 0.23; m2 = -35; m3 = -1.5;
+t0 = -15; t1 = 0.22;
+
+parameters p_ms;
+p_ms = 230;
+
+parameters zero;
+zero = 0;
+
+var l_1 l_2 l_3 l_4 l_5 l_6 l_7 l_8 ;
+varexo fit_y fit_yd fit_t fit_c fit_i fit_md fit_ms fit_r ;
+varexo y_exo yd_exo t_exo c_exo i_exo md_exo ms_exo r_exo ;
+varexo ut_old uc_old umd_old ui_old ;
+
+model;
+
+% Model equations
+
+y = c + i + g;
+yd = y - t;
+t = t0 + t1 * y + ut + zero * y(-1)^2 * y;
+
+[static]
+c = c0 + (c1 + c2 + c3) * yd + c4 * r + c5 * r^2 + uc;
+[dynamic]
+c = c0 + c1 * yd(-1) + c2 * yd + c3 * yd(+1) + c4 * r + c5 * r^2 + uc;
+
+[static]
+i = i0 + i1 * y + i2 * y + i3 * y + i4 * r + i5 * r^2 + ui * (1 + zero);
+[dynamic]
+i = i0 + i1 * y(-1) + i2 * y + i3 * y(+1) + i4 * r + i5 * r^2 + ui;
+md = m0 + m1 * y + m2 * r + m3 * r^2 + umd;
+md = ms;
+[static]
+ms = p_ms;
+[dynamic]
+ms = ms(-1);
+
+% First order conditions fit instruments:
+
+(sigma_ut >= 0) * (ut / sigma_ut^2 + l_3 * ((-1))) + (sigma_ut < 0) * (ut -
+    ut_old) = 0;
+
+(sigma_uc >= 0) * (uc / sigma_uc^2 + l_4 * ((-1))) + (sigma_uc < 0) * (uc -
+    uc_old) = 0;
+
+(sigma_umd >= 0) * (umd / sigma_umd^2 + l_6 * ((-1))) + (sigma_umd < 0) * (umd
+    - umd_old) = 0;
+
+[static]
+(sigma_ui >= 0) * (ui / sigma_ui^2 + l_5 * ((-(1 + zero)))) + (sigma_ui < 0) *
+    (ui - ui_old) = 0;
+[dynamic]
+(sigma_ui >= 0) * (ui / sigma_ui^2 + l_5 * ((-1))) + (sigma_ui < 0) * (ui -
+    ui_old) = 0;
+
+
+% First order conditions endogenous variables:
+
+[static]
+fit_y * (y - y_exo) + (1 - fit_y) * (l_1 * (1) + l_2 * ((-1)) + l_3 * ((-(t1 +
+    zero * y ^ 2))) + l_5 * ((-(i3 + i1 + i2))) + l_6 * ((-m1))) = 0;
+[dynamic]
+fit_y * (y - y_exo) + (1 - fit_y) * (l_1 * (1) + l_2 * ((-1)) + l_3 * ((-(t1 +
+    zero * y(-1) ^ 2))) + l_5 * ((-i2)) + l_6 * ((-m1))) = 0;
+
+[static]
+fit_yd * (yd - yd_exo) + (1 - fit_yd) * (l_2 * (1) + l_4 * ((-(c1 + c2 + c3))))
+    = 0;
+[dynamic]
+fit_yd * (yd - yd_exo) + (1 - fit_yd) * (l_2 * (1) + l_4 * ((-c2))) = 0;
+
+fit_t * (t - t_exo) + (1 - fit_t) * (l_2 * (1) + l_3 * (1)) = 0;
+
+fit_c * (c - c_exo) + (1 - fit_c) * (l_1 * ((-1)) + l_4 * (1)) = 0;
+
+fit_i * (i - i_exo) + (1 - fit_i) * (l_1 * ((-1)) + l_5 * (1)) = 0;
+
+fit_md * (md - md_exo) + (1 - fit_md) * (l_6 * (1) + l_7 * (1)) = 0;
+
+fit_ms * (ms - ms_exo) + (1 - fit_ms) * (l_7 * ((-1)) + l_8 * (1)) = 0;
+
+fit_r * (r - r_exo) + (1 - fit_r) * (l_4 * ((-(c4 + c5 * 2 * r))) + l_5 *
+    ((-(i4 + i5 * 2 * r))) + l_6 * ((-(m2 + m3 * 2 * r)))) = 0;
+
+end;
+
+initval;
+g  = 240; ms = p_ms; r  = 3.5; y  = 980; c  = 500; t = 100;
+md = ms;
+yd = y - t;
+i  = y - c - g;
+end;
+
