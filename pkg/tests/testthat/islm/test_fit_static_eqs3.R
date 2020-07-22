@@ -5,7 +5,6 @@ context("ISLM model fit with static equations (3)")
 
 source("../tools/read_file.R")
 rds_file <- "islm_model_fit.rds"
-model_name <- "islm_fit"
 
 mdl_ref <- read_mdl(rds_file, silent = TRUE)
 
@@ -27,4 +26,15 @@ test_that("two models are equivalent", {
   mdl_fixper$set_fit_steady(fit_steady)
   mdl_fixper$solve_steady(silent = TRUE)
   expect_equal(mdl$get_all_static_data(), mdl_fixper$get_all_static_data())
+})
+
+test_that("error", {
+  
+  model_name <- "islm_fit_static_eqs3_err"
+  mod_file <- file.path("mod", paste0(model_name, ".mod"))
+  
+  expect_silent(mdl <- dyn_mdl(mod_file, silent = TRUE, check_static_eqs = FALSE))
+  
+  expect_error(mdl <- dyn_mdl(mod_file, silent = TRUE, check_static_eqs = TRUE),
+               "The following fit instruments do not occur in the static model equations: uc, ui.")
 })

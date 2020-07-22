@@ -5,7 +5,6 @@ context("ISLM model fit with static equations (1)")
 
 source("../tools/read_file.R")
 rds_file <- "islm_model_fit.rds"
-model_name <- "islm_fit"
 
 mdl_ref <- read_mdl(rds_file, silent = TRUE)
 
