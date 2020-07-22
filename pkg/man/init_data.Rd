@@ -26,7 +26,8 @@ is obtained from the data period by subtracting the lag and lead periods.
 \section{Usage}{
 
 \preformatted{
-mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"))
+mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"),
+              base_period = NULL)
 
 }
 
@@ -56,6 +57,13 @@ in \code{data} are used to replace the steady state values of the
 exogenous and endogenous model variables.
 For \code{"updval"}, the static model variables are only replaced
 by valid (i.e. non-\code{NA}) values in \code{data}). }
+\item{\code{base_period}}{a \code{\link[regts]{period}} object specifying
+the (new) base period for the trends. This is used if the model has trend variables.
+All trend variables will be equal to 1 at the base period. This argument is
+ignored for models without trends. If this argument is not specified, then
+the base period is unchanged if it has already been specified in
+function \code{dyn_mdl} or a previous  call of \code{init_data}, otherwise it is set
+to the start period of the model period.}
 }
 If neither \code{data_period} nor \code{data} has been specified,
 then the data period is unchanged. In that case the data period must have been

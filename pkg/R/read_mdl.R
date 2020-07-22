@@ -34,6 +34,11 @@ read_mdl <- function(file, dll_dir, silent = FALSE) {
     stop(paste("File", file, "does not contain a serialized DynMdl object."))
   }
   
+  # TODO: only do this for packge version < 1.4.0.
+  if (!ser$mdldef$trend_info$has_deflated_endos) {
+    ser$base_period <- NULL
+  }
+  
   mdl <- DynMdl$new()$deserialize(ser, dll_dir)
 
   if (!silent) cat("Done\n")

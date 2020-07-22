@@ -70,7 +70,9 @@
 #' names
 #' @param base_period a \code{\link[regts]{period}} object specifying
 #' the base period for the trends. This is used if the model has trend variables.
-#' All trend variables will be equal to 1 at the base period.
+#' All trend variables will be equal to 1 at the base period. This argument is
+#' ignored for models without trend. If note specified  the `base_period` is
+#' set to the start period of the model period.
 #' @param calc Method used to evaluate the model equations. 
 #' Possible values are `"internal"`,  \code{"R"}, \code{"bytecode"} and \code{"dll"}.
 #' See Details.
@@ -331,36 +333,63 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   }
   
   model_index <- model_info$model_index
+  
+  if (!missing(base_period)) {
+    if (!mdldef$trend_info$has_deflated_endos) {
+      warning("Argument 'base_period' is ignored because the model does ",
+              "not have trends.")
+      base_period <- NULL
+    } else {
+      base_period <- as.period(base_period)
+    }
+  } 
   mdl <- DynMdl$new(model_index, mdldef, base_period, calc,  dll_dir, dll_file)
 
   if (!debug) {
     unlink(preprocessed_mod_file)
   }
   
-  if (!missing(data)) {
-    data <- as.regts(data)
-    if (is.null(colnames(data))) {
-      stop("data has no column names")
+  #
+  #  initialize data if argument period and/or data have been specified
+  #
+  period_miss <- missing(period)
+  data_miss <- missing(data)
+  if (!period_miss || !data_miss) {
+    if (!data_miss) {
+      data <- as.regts(data)
+      data_period_data <- get_period_range(data)
     }
-    data_period <- get_period_range(data)
-    
-    if (!missing(period)) {
-      # data_period should be the union of the period_range of data
-      # and the supplied period extended with a lag and lead period.
+    if (!period_miss) {
       period <- as.period_range(period)
-      data_period_2 <- period_range(
+      data_period_solve <- period_range(
         start_period(period) - mdl$get_max_lag(),
         end_period(period)   + mdl$get_max_lead())
-      data_period <- range_union(data_period, data_period_2)
     }
-  
+    if (!data_miss && !period_miss) {
+      if (frequency(period) != frequency(data_period_data)) {
+        stop("Argument 'period' and 'data' have different frequencies.")
+      }
+      data_period <- range_union(data_period_data, data_period_solve)
+    } else if (data_miss && !period_miss) {
+      data_period <- data_period_solve
+    } else {
+      data_period <- data_period_data
+    }
+    # check base period
+    if (!is.null(base_period)) { 
+      if (frequency(base_period) != frequency(data_period)) {
+        stop("The base period has a different frequency",
+             "than argument 'period' or 'data.")
+      }
+      data_period <- range_union(data_period,
+                                 period_range(base_period, base_period))
+    }
+    
     mdl$init_data(data_period = data_period, data = data)
   }
   
-  if (!missing(period)) {
-    mdl$set_period(period)
-  }
-  
+  if (!period_miss) mdl$set_period(period)
+
   return(mdl)
 }
 

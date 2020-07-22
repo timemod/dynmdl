@@ -38,7 +38,9 @@ names}
 
 \item{base_period}{a \code{\link[regts]{period}} object specifying
 the base period for the trends. This is used if the model has trend variables.
-All trend variables will be equal to 1 at the base period.}
+All trend variables will be equal to 1 at the base period. This argument is
+ignored for models without trend. If note specified  the \code{base_period} is
+set to the start period of the model period.}
 
 \item{calc}{Method used to evaluate the model equations.
 Possible values are \code{"internal"},  \code{"R"}, \code{"bytecode"} and \code{"dll"}.
