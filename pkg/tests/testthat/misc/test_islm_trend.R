@@ -86,7 +86,7 @@ test_that("base period", {
                                                period = 2020),
                                type = "message")
   )
-  expect_equal(mdl$get_base_period(), period(2020))
+  expect_equal(mdl2$get_base_period(), period(2020))
   expect_warning(
     messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
                                                base_period = 2016),
@@ -112,4 +112,27 @@ test_that("base period", {
                                                period = "2020q2"),
                                type = "message"),
     "Argument 'base_period' has a different frequency than argument 'period'.")
+  
+  
+  expect_warning(
+  expect_error(
+    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
+                                               data = mdl$get_data(period = 2020)),
+                               type = "message"),
+    "The data period is too short. It should contain at least 3 periods"))
+  
+  expect_warning(
+    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE, base_period = 2015,
+                                               data = mdl$get_data(period = 2020)),
+                               type = "message"))
+  expect_equal(mdl2$get_base_period(), period(2015))
+  expect_equal(mdl2$get_data_period(), period_range(2015, 2020))
+  
+  expect_warning(
+    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE),
+                               type = "message")
+  )
+  expect_null(mdl2$get_base_period())
+  expect_null(mdl2$get_period())
+  expect_null(mdl2$get_data_period())
 })

@@ -4,6 +4,27 @@
 #' contains a fit block, then the \code{DynMdl} object implements the fit 
 #' procedure (except if argument \code{fit} is \code{FALSE}).
 #' 
+#' \subsection{Initialization of the model data}{
+#' 
+#' If argument `period` and/or `data` have been specified, then the model data
+#' is initialized with the static values for a certain period range, the
+#' so called "model data period". The 
+#' model data period is determined from arguments `period`, `data` and 
+#' `base_period`. If all three arguments are specified, then the data period
+#' is the union of three period ranges: 
+#' \describe{
+#' \item{1}{the model period (`period`) extended with a lag and lead period.}
+#' \item{2}{the period range of `data`.}
+#' \item{3}{the base period `base_period`.}
+#' }
+#' If not all three arguments are specified, then the model data period is set
+#' of the union of the period ranges corresponding to the the arguments that
+#' have been specified. For example, if only `data` and `base_period` have been
+#' specified, then the data period is the union of the period range of `data`
+#' and the base period. Note that for models without trends argument `base_period`
+#' is ignored.
+#' }
+#' 
 #' \subsection{Evaluation of model equations}{
 #' 
 #' There are several methods available for evaluating the model equations and 
@@ -65,14 +86,17 @@
 #' @param mod_file the name of the model file (including extension .mod)
 #' @param period a \code{\link[regts]{period_range}} object specifying the
 #' model period, i.e. the period range for which the model will be solved. Thus
-#' this period range excludes the lag and lead period.
+#' this period range excludes the lag and lead period.  If this argument has
+#' not been specified while `data` has been specified, then the model period
+#' is set to the dat aperiod exlcluding a lag and lead period. See also section
+#' "Initialization of the Model Data".
 #' @param data the model data as a  \code{\link[regts]{regts}} object with column
-#' names
+#' names. See also section "Initialization of the Model Data".
 #' @param base_period a \code{\link[regts]{period}} object specifying
 #' the base period for the trends. This is used if the model has trend variables.
 #' All trend variables will be equal to 1 at the base period. This argument is
-#' ignored for models without trend. If note specified  the `base_period` is
-#' set to the start period of the model period.
+#' ignored for models without trend. If not specified, `base_period` is
+#' set to the start period of the model period
 #' @param calc Method used to evaluate the model equations. 
 #' Possible values are `"internal"`,  \code{"R"}, \code{"bytecode"} and \code{"dll"}.
 #' See Details.
@@ -144,7 +168,7 @@
 #' @importFrom regts as.regts
 #' @importFrom tools file_path_sans_ext
 #' @importFrom utils capture.output
-dyn_mdl <- function(mod_file, period, data, base_period = NULL, 
+dyn_mdl <- function(mod_file, period, data, base_period,
                     calc = c("internal", "R", "bytecode", "dll"),
                     fit_mod_file, debug = FALSE, dll_dir, 
                     max_laglead_1 = FALSE, strict = TRUE,
@@ -193,7 +217,7 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   
   # check argument period, base_period and data
   period_present <- !missing(period) && !is.null(period)
-  data_present <- !missing(data) && (!is.null(data))
+  data_present <- !missing(data) && !is.null(data)
   base_period_present <- !missing(base_period) && !is.null(base_period)
   if (period_present) period <- as.period_range(period)
   if (base_period_present) base_period <- as.period(base_period)
@@ -205,8 +229,8 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
            " than argument 'period'.")
   } else if (period_present && data_present && 
              frequency(period) != frequency(data)) {
-      stop("Argument 'period' has a different frequency",
-           " than argument 'data'.")
+      stop("Argument 'data' has a different frequency",
+           " than argument 'period'.")
   } else if (base_period_present && data_present && 
       frequency(base_period) != frequency(data)) {
       stop("Argument 'base_period' has a different frequency",
@@ -367,27 +391,9 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
     unlink(preprocessed_mod_file)
   }
   
-  #
   #  initialize data if argument period and/or data have been specified
-  #
   if (period_present || data_present) {
-    if (data_present) data_period_data <- get_period_range(data)
-    if (period_present) {
-      data_period_solve <- period_range(
-        start_period(period) - mdl$get_max_lag(),
-        end_period(period)   + mdl$get_max_lead())
-    }
-    if (data_present && period_present) {
-      data_period <- range_union(data_period_data, data_period_solve)
-    } else if (data_present && !period_present) {
-      data_period <- data_period_data  
-    } else {
-      data_period <- data_period_solve
-    }
-    if (base_period_present) {
-      data_period <- range_union(data_period,
-                                 period_range(base_period, base_period))
-    }
+    data_period <- get_data_period(data, period, base_period, mdldef) 
     mdl$init_data(data_period = data_period, data = data)
   }
   

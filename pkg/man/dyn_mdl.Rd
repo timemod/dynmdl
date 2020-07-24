@@ -8,7 +8,7 @@ dyn_mdl(
   mod_file,
   period,
   data,
-  base_period = NULL,
+  base_period,
   calc = c("internal", "R", "bytecode", "dll"),
   fit_mod_file,
   debug = FALSE,
@@ -31,16 +31,19 @@ dyn_mdl(
 
 \item{period}{a \code{\link[regts]{period_range}} object specifying the
 model period, i.e. the period range for which the model will be solved. Thus
-this period range excludes the lag and lead period.}
+this period range excludes the lag and lead period.  If this argument has
+not been specified while \code{data} has been specified, then the model period
+is set to the dat aperiod exlcluding a lag and lead period. See also section
+"Initialization of the Model Data".}
 
 \item{data}{the model data as a  \code{\link[regts]{regts}} object with column
-names}
+names. See also section "Initialization of the Model Data".}
 
 \item{base_period}{a \code{\link[regts]{period}} object specifying
 the base period for the trends. This is used if the model has trend variables.
 All trend variables will be equal to 1 at the base period. This argument is
-ignored for models without trend. If note specified  the \code{base_period} is
-set to the start period of the model period.}
+ignored for models without trend. If not specified, \code{base_period} is
+set to the start period of the model period}
 
 \item{calc}{Method used to evaluate the model equations.
 Possible values are \code{"internal"},  \code{"R"}, \code{"bytecode"} and \code{"dll"}.
@@ -129,6 +132,27 @@ contains a fit block, then the \code{DynMdl} object implements the fit
 procedure (except if argument \code{fit} is \code{FALSE}).
 }
 \details{
+\subsection{Initialization of the model data}{
+
+If argument \code{period} and/or \code{data} have been specified, then the model data
+is initialized with the static values for a certain period range, the
+so called "model data period". The
+model data period is determined from arguments \code{period}, \code{data} and
+\code{base_period}. If all three arguments are specified, then the data period
+is the union of three period ranges:
+\describe{
+\item{1}{the model period (\code{period}) extended with a lag and lead period.}
+\item{2}{the period range of \code{data}.}
+\item{3}{the base period \code{base_period}.}
+}
+If not all three arguments are specified, then the model data period is set
+of the union of the period ranges corresponding to the the arguments that
+have been specified. For example, if only \code{data} and \code{base_period} have been
+specified, then the data period is the union of the period range of \code{data}
+and the base period. Note that for models without trends argument \code{base_period}
+is ignored.
+}
+
 \subsection{Evaluation of model equations}{
 
 There are several methods available for evaluating the model equations and

@@ -252,7 +252,7 @@ DynMdl <- R6Class("DynMdl",
       
       private$model_index <- model_index
       private$mdldef <- mdldef
-      private$base_period <- base_period
+      private$base_period <- if (missing(base_period)) NULL else base_period
       private$calc <- calc
       private$dll_dir <- dll_dir
       private$dll_file <- dll_file
@@ -542,14 +542,14 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(self))
     },
-    init_data = function(data_period, data, upd_mode = c("upd", "updval"),
-                         base_period = NULL)  {
+    init_data = function(data_period, data = NULL, 
+                         upd_mode = c("upd", "updval"), base_period = NULL)  {
       
       upd_mode <- match.arg(upd_mode)
       
       # check argument period, base_period and data
       data_period_present <- !missing(data_period) && !is.null(data_period)
-      data_present <- !missing(data) && (!is.null(data))
+      data_present <- !missing(data) && !is.null(data)
       base_period_present <- !missing(base_period) && !is.null(base_period)
       model_period_set <- !is.null(private$model_period)
       if (data_period_present) {
@@ -585,7 +585,7 @@ DynMdl <- R6Class("DynMdl",
       if (base_period_present && data_period_present &&
           frequency(base_period) != frequency(data_period)) {
         stop("Argument 'base_period' has a different frequency",
-             " than argument 'period'.")
+             " than argument 'data_period'.")
       } else if (data_period_present && data_present && 
                  frequency(data_period) != frequency(data)) {
         stop("Argument 'data_period' has a different frequency",
@@ -601,33 +601,23 @@ DynMdl <- R6Class("DynMdl",
       if (!data_period_present) {
         if (data_present) {
           # determine the data period from data and the model period (if known)
-          p_data <- get_period_range(data)
-          if (is.null(private$model_period)) {
-            data_period <- p_data
-          } else {
-            p <- private$model_period
-            data_period <- period_range(
-              min(start_period(p) - private$mdldef$max_lag_orig, 
-                  start_period(p_data)),
-              max(end_period(p) + private$mdldef$max_lead_orig, 
-                  end_period(p_data)))
-          }
-          
+          data_period <- get_data_period(data, private$model_period, 
+                                         private$base_period, private$mdldef)
         } else {
           # neither data_period nor data specified.
           if (is.null(private$data_period)) {
             stop("If neither 'data_period' nor 'data' have been specified,", 
                  " then the model and data period\nshould have been set before",
                  " with method init_data or set_period.")
-          } else {
-            data_period <- private$data_period
+          } 
+          data_period <- private$data_period
+          if (!is.null(basep <- private$base_period)) {
+            # make sure that the base period is within the data period
+            data_period <- range_union(data_period,
+                                       period_range(basep, basep))
           }
         } 
-        if (!is.null(basep <- private$base_period)) {
-          # make sure that the base period is within the data period
-          data_period <- range_union(data_period,
-                                     period_range(basep, basep))
-        }
+        
       } else {
         # data_period specified. Check if model_period is inside data_period
         # (taking into account lags and leads) and if base_period is inside

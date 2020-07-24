@@ -42,8 +42,8 @@ mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"),
 object, or an object that can be coerced to
 \code{\link[regts]{period_range}}. The (new) data period, i.e. the period
 range of all model timeseries. If not specified, then the data period
-is based on the period range of argument \code{data} (if this argument
-has been specified), the model period, and the base period (if the model
+is based on the model period, the period range of argument \code{data}
+(if this argument has been specified), and the base period (if the model
 has trend variables)}
 \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 object with values for endogogenous and exogenous model variables,
