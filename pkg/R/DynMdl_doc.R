@@ -37,7 +37,8 @@
 #' \code{\link[regts]{period_range}}. The (new) data period, i.e. the period
 #' range of all model timeseries. If not specified, then the data period
 #' is based on the period range of argument \code{data} (if this argument 
-#' has been specified) and  the model period.}
+#' has been specified), the model period, and the base period (if the model
+#' has trend variables)}
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 #' object with values for endogogenous and exogenous model variables, 
 #' including fit instruments and Lagrange multipliers used in the fit method.

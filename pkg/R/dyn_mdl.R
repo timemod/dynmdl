@@ -191,10 +191,28 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   use_dll <- calc == "dll"
   internal_calc <- calc == "internal"
   
-  # if (calc == "internal") {
-  #   warning("The internal calc method is still experimental.")
-  # }
+  # check argument period, base_period and data
+  period_present <- !missing(period) && !is.null(period)
+  data_present <- !missing(data) && (!is.null(data))
+  base_period_present <- !missing(base_period) && !is.null(base_period)
+  if (period_present) period <- as.period_range(period)
+  if (base_period_present) base_period <- as.period(base_period)
+  if (data_present) data <- as.regts(data)
   
+  if (base_period_present && period_present &&
+      frequency(base_period) != frequency(period)) {
+      stop("Argument 'base_period' has a different frequency",
+           " than argument 'period'.")
+  } else if (period_present && data_present && 
+             frequency(period) != frequency(data)) {
+      stop("Argument 'period' has a different frequency",
+           " than argument 'data'.")
+  } else if (base_period_present && data_present && 
+      frequency(base_period) != frequency(data)) {
+      stop("Argument 'base_period' has a different frequency",
+           " than argument 'data'.")
+  }
+
   if (!file.exists(mod_file)) {
     stop(paste("ERROR: Could not open file:", mod_file))
   }
@@ -334,15 +352,15 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   
   model_index <- model_info$model_index
   
-  if (!missing(base_period)) {
+  if (base_period_present) {
     if (!mdldef$trend_info$has_deflated_endos) {
       warning("Argument 'base_period' is ignored because the model does ",
               "not have trends.")
+      base_period_present <- FALSE
       base_period <- NULL
-    } else {
-      base_period <- as.period(base_period)
-    }
+    } 
   } 
+  
   mdl <- DynMdl$new(model_index, mdldef, base_period, calc,  dll_dir, dll_file)
 
   if (!debug) {
@@ -352,43 +370,28 @@ dyn_mdl <- function(mod_file, period, data, base_period = NULL,
   #
   #  initialize data if argument period and/or data have been specified
   #
-  period_miss <- missing(period)
-  data_miss <- missing(data)
-  if (!period_miss || !data_miss) {
-    if (!data_miss) {
-      data <- as.regts(data)
-      data_period_data <- get_period_range(data)
-    }
-    if (!period_miss) {
-      period <- as.period_range(period)
+  if (period_present || data_present) {
+    if (data_present) data_period_data <- get_period_range(data)
+    if (period_present) {
       data_period_solve <- period_range(
         start_period(period) - mdl$get_max_lag(),
         end_period(period)   + mdl$get_max_lead())
     }
-    if (!data_miss && !period_miss) {
-      if (frequency(period) != frequency(data_period_data)) {
-        stop("Argument 'period' and 'data' have different frequencies.")
-      }
+    if (data_present && period_present) {
       data_period <- range_union(data_period_data, data_period_solve)
-    } else if (data_miss && !period_miss) {
-      data_period <- data_period_solve
+    } else if (data_present && !period_present) {
+      data_period <- data_period_data  
     } else {
-      data_period <- data_period_data
+      data_period <- data_period_solve
     }
-    # check base period
-    if (!is.null(base_period)) { 
-      if (frequency(base_period) != frequency(data_period)) {
-        stop("The base period has a different frequency",
-             "than argument 'period' or 'data.")
-      }
+    if (base_period_present) {
       data_period <- range_union(data_period,
                                  period_range(base_period, base_period))
     }
-    
     mdl$init_data(data_period = data_period, data = data)
   }
   
-  if (!period_miss) mdl$set_period(period)
+  if (period_present) mdl$set_period(period)
 
   return(mdl)
 }
