@@ -194,7 +194,6 @@ protected:
   void writeModelLocalVariables(ostream &output, ExprNodeOutputType output_type, deriv_node_temp_terms_t &tef_terms) const;
   //! Writes model equations
   void writeModelEquations(ostream &output, ExprNodeOutputType output_type) const;
-  void genPolishEquations(PolishModel &mdl, bool dynamic) const;
   //! Compiles model equations
   void compileModelEquations(ostream &code_file, unsigned int &instruction_number, const temporary_terms_t &tt, const map_idx_t &map_idx, bool dynamic, bool steady_dynamic) const;
 
@@ -313,6 +312,7 @@ protected:
   //! Initialize equation_reordered & variable_reordered
   void initializeVariablesAndEquations();
 #ifdef USE_R
+  void genPolishEquations(PolishModel &mdl, bool dynamic) const;
   vector<pair<string, string>> getEquationTags(int eq_number) const;
 #endif
 public:
