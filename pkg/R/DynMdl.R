@@ -543,7 +543,7 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     init_data = function(data_period, data = NULL, 
-                         upd_mode = c("upd", "updval"), base_period = NULL)  {
+                         upd_mode = c("upd", "updval"), base_period)  {
       
       upd_mode <- match.arg(upd_mode)
       

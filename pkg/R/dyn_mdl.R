@@ -145,8 +145,8 @@
 #' looking models (models without leads). If `fit_fixed_period` is `TRUE`, then
 #' the fit equations will not contain lags or leads. If `fit_fixed_period` is 
 #' `TRUE`, then some fit equation may contain leads.
-#' @param check_static_eqs a logical. If \code{TRUE} (the default), then we check
-#' if the mod file contains separate static and dynamic equations (i.e. 
+#' @param check_static_eqs a logical. If \code{TRUE} (the default), then 
+#' `dyn_mdl` checks if the mod file contains separate static and dynamic equations (i.e. 
 #' equations tagged with `static` and `dynamic`). If this is the case,
 #' separate static and dynamic fit equations are generated when necessary
 #' (separate equations are not generated if the static version is simply

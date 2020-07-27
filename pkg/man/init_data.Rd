@@ -26,8 +26,8 @@ is obtained from the data period by subtracting the lag and lead periods.
 \section{Usage}{
 
 \preformatted{
-mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"),
-              base_period = NULL)
+mdl$init_data(data_period, data = NULL, upd_mode = c("upd", "updval"),
+              base_period)
 
 }
 

@@ -23,7 +23,7 @@
 #' @section Usage:
 #' \preformatted{
 #' mdl$init_data(data_period, data = NULL, upd_mode = c("upd", "updval"),
-#'               base_period = NULL)
+#'               base_period)
 #'
 #' }
 #'
