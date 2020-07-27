@@ -556,7 +556,6 @@ public:
    Rcpp::List getDerivativeInfoR(int n_instr, Rcpp::IntegerVector instr_index_exo, 
                                  bool fixed_period) const;
    Rcpp::List get_trend_info() const;
-   Rcpp::CharacterVector get_equations() const;
    Rcpp::LogicalVector equation_has_static() const;
 #endif
 

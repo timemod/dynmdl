@@ -31,6 +31,7 @@ using namespace std;
 #include "DataTree.hh"
 #include "ExtendedPreprocessorTypes.hh"
 #ifdef USE_R
+#include <Rcpp.h>
 #include "OutputParameters.hh"
 #endif
 
@@ -421,6 +422,9 @@ public:
         break;
       }
   };
+#ifdef USE_R
+  Rcpp::CharacterVector get_equations() const;
+#endif
 };
 
 #endif
