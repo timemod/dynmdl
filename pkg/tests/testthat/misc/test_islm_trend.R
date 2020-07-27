@@ -113,6 +113,21 @@ test_that("base period", {
                                type = "message"),
     "Argument 'base_period' has a different frequency than argument 'period'.")
   
+  data <- regts(matrix(1:10, ncol = 2), start = "2018q1", names = c("c", "i"))
+  expect_error(
+    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
+                                               base_period = 2016,
+                                               period = "2020",
+                                               data = data),
+                               type = "message"),
+    "Argument 'data' has a different frequency than argument 'period'.")
+  expect_error(
+    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
+                                               base_period = "2016",
+                                               data = data),
+                               type = "message"),
+    "Argument 'data' has a different frequency than argument 'base_period'.")
+  
   
   expect_warning(
   expect_error(
@@ -135,4 +150,15 @@ test_that("base period", {
   expect_null(mdl2$get_base_period())
   expect_null(mdl2$get_period())
   expect_null(mdl2$get_data_period())
+  expect_error(
+    mdl2$init_data(base_period = "2018m1", data_period = "2018/2022"),
+    "Argument 'base_period' has a different frequency than argument 'data_period'.")
+  expect_error(
+    mdl2$init_data(data_period = "2018/2022", 
+                   data = regts(matrix(1:10, ncol = 2), start = "2018q1", names = c("c", "i"))),
+    "Argument 'data' has a different frequency than argument 'data_period'.")
+  expect_error(
+    mdl2$init_data(base_period = "2018", 
+                   data = regts(matrix(1:10, ncol = 2), start = "2018q1", names = c("c", "i"))),
+    "Argument 'data' has a different frequency than argument 'base_period'.")
 })

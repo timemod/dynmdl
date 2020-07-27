@@ -233,8 +233,8 @@ dyn_mdl <- function(mod_file, period, data, base_period,
            " than argument 'period'.")
   } else if (base_period_present && data_present && 
       frequency(base_period) != frequency(data)) {
-      stop("Argument 'base_period' has a different frequency",
-           " than argument 'data'.")
+      stop("Argument 'data' has a different frequency",
+           " than argument 'base_period'.")
   }
 
   if (!file.exists(mod_file)) {

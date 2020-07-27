@@ -592,8 +592,8 @@ DynMdl <- R6Class("DynMdl",
              " than argument 'data_period'.")
       } else if (base_period_present && data_present && 
                  frequency(base_period) != frequency(data)) {
-        stop("Argument 'base_period' has a different frequency",
-             " than argument 'data'.")
+        stop("Argument 'data' has a different frequency",
+             " than argument 'base_period'.")
       }
       
       if (base_period_present) private$base_period <- base_period
@@ -611,10 +611,10 @@ DynMdl <- R6Class("DynMdl",
                  " with method init_data or set_period.")
           } 
           data_period <- private$data_period
-          if (!is.null(basep <- private$base_period)) {
+          if (base_period_present) {
             # make sure that the base period is within the data period
             data_period <- range_union(data_period,
-                                       period_range(basep, basep))
+                                       period_range(base_period, base_period))
           }
         } 
         
