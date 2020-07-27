@@ -4,6 +4,7 @@ rm(list = ls())
 context("ISLM model with local variables")
 
 source("../tools/read_dynare_result.R")
+source("../tools/cat_lines.R")
 source("utils.R")
 
 mod_name <- "islm_local"

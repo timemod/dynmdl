@@ -342,6 +342,7 @@ public:
   Rcpp::List getDerivativeInfoR(int n_instr, Rcpp::IntegerVector instr_index_exo) const;
   Rcpp::List getStaticModelR(bool internal_calc) const;
   PolishModel* makePolishModel(ExternalFunctionCalc *ext_calc) const;
+  Rcpp::CharacterVector get_equations() const;
 #endif
 
 };
