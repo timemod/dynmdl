@@ -16,9 +16,10 @@
 #' object with values for endogogenous and exogenous model variables used in
 #' the perfect foresight solver. If the model has trends, then the timeseries 
 #' in \code{data} should include the trends.
-#' @param steady A logical, indicating wether the steady state should be 
-#' calculated (default is \code{TRUE}). If the steady state is calculated
-#' then also the eigenvalues are calculated.
+#' @param steady A logical, indicating whether the steady state should be 
+#' calculated (default is \code{TRUE}). 
+#' @param check A logical (default `TRUE`), indicating whether the eigenvalues
+#' should also be calculated.
 #' @param perfect_foresight A logical, indicating wether the perfect foresight
 #' solver should be called.  The default is \code{TRUE} if argument 
 #' \code{period} or \code{data} have been specified and \code{FALSE} otherwise.
@@ -58,7 +59,7 @@
 #' @return A list with the following components
 #' \item{steady_endos}{(only if \code{steady == TRUE}): a steady state 
 #' endogenous variables} 
-#' \item{eigval}{(only if \code{steady == TRUE}): the eigenvalues of  the steady 
+#' \item{eigval}{(only if \code{check == TRUE}): the eigenvalues of  the steady 
 #' state} 
 #' \item{endo_data}{(only if \code{perfect_foresight_solver == TRUE}): the 
 #' endogenous variables for the solution of the perfect foresight solver}
@@ -75,7 +76,7 @@
 #'
 #' }
 #' @export
-run_dynare <- function(mod_file, period, data, steady = TRUE,  
+run_dynare <- function(mod_file, period, data, steady = TRUE, check = TRUE,
                        perfect_foresight = !missing(period) || !missing(data),
                        scratch_dir = tempfile(), dynare_path = NULL, 
                        steady_options,
@@ -101,7 +102,7 @@ run_dynare <- function(mod_file, period, data, steady = TRUE,
   dir.create(scratch_dir)
   
   return(run_dynare_internal(model_name, mod_file, period = period, data = data, 
-                             steady = steady, 
+                             steady = steady, check = check,
                              perfect_foresight = perfect_foresight,
                              scratch_dir = scratch_dir, 
                              dynare_path = dynare_path,

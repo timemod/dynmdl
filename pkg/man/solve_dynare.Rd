@@ -68,3 +68,7 @@ open a seperate console: all output appears in the same console used by R.}
  islm$solve_dynare()
 }
 }
+\seealso{
+\code{\link{solve}},  \code{\link{solve_steady_dynare}}
+and \code{\link{check_dynare}}.
+}

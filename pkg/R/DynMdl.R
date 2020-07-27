@@ -181,7 +181,8 @@ setOldClass("regts")
 #' backward looking model at a specific period}
 #'
 #' \item{\code{\link{get_eigval}}}{Returns the eigenvalues computed with 
-#' method \code{\link{check}} or \code{solve_perturbation}}
+#' method \code{\link{check}}, \code{\link{check_dynare}} or 
+#' \code{solve_perturbation}}
 #' 
 #' \item{\code{\link{get_equations}}}{Returns a character vector with the 
 #' parsed equations of the model.}
@@ -1513,7 +1514,7 @@ DynMdl <- R6Class("DynMdl",
         warning("Dynare did not find a solution.")
       }
       
-      return(ret$eigval)
+      return(invisible(self))
     },
     solve_dynare = function(scratch_dir = tempfile(), dynare_path = NULL, 
                             model_options, solve_options,
@@ -1553,6 +1554,30 @@ DynMdl <- R6Class("DynMdl",
       if (is.na(fmax) || fmax > 2 * solve_options_$tolf) {
         warning("Dynare did not find a solution.")
       }
+      return(invisible(self))
+    },
+    check_dynare = function(scratch_dir = tempfile(),  dynare_path = NULL,
+                             model_options,
+                             use_octave = Sys.which("matlab") == "",
+                              exit_matlab = FALSE) {
+      
+      # create mode name based on the name of the DynMdl object
+      z <- sys.call()[[1]]
+      if (z[[1]] == "$") {
+        model_name <- as.character(z[[2]])
+      } else {
+        model_name <- "mdl"
+      }
+      
+      self$solve_steady(control = list(silent = TRUE))
+      if (private$solve_status != "OK") {
+        stop("No steady state ... checking model is not possible")
+      }
+      
+      ret <- check_dynare_internal(model_name, self, scratch_dir,
+                                   dynare_path, model_options, 
+                                   use_octave, exit_matlab)
+      private$ss <- list(eigval = ret$eigval)
       return(invisible(self))
     },
     run_initval = function(update_endos = TRUE) {

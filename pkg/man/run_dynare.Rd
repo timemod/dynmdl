@@ -9,6 +9,7 @@ run_dynare(
   period,
   data,
   steady = TRUE,
+  check = TRUE,
   perfect_foresight = !missing(period) || !missing(data),
   scratch_dir = tempfile(),
   dynare_path = NULL,
@@ -36,9 +37,11 @@ object with values for endogogenous and exogenous model variables used in
 the perfect foresight solver. If the model has trends, then the timeseries
 in \code{data} should include the trends.}
 
-\item{steady}{A logical, indicating wether the steady state should be
-calculated (default is \code{TRUE}). If the steady state is calculated
-then also the eigenvalues are calculated.}
+\item{steady}{A logical, indicating whether the steady state should be
+calculated (default is \code{TRUE}).}
+
+\item{check}{A logical (default \code{TRUE}), indicating whether the eigenvalues
+should also be calculated.}
 
 \item{perfect_foresight}{A logical, indicating wether the perfect foresight
 solver should be called.  The default is \code{TRUE} if argument
@@ -88,7 +91,7 @@ open a seperate console: all output appears in the same console used by R.}
 A list with the following components
 \item{steady_endos}{(only if \code{steady == TRUE}): a steady state
 endogenous variables}
-\item{eigval}{(only if \code{steady == TRUE}): the eigenvalues of  the steady
+\item{eigval}{(only if \code{check == TRUE}): the eigenvalues of  the steady
 state}
 \item{endo_data}{(only if \code{perfect_foresight_solver == TRUE}): the
 endogenous variables for the solution of the perfect foresight solver}

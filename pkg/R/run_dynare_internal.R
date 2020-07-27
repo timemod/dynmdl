@@ -4,7 +4,7 @@
 #' @importFrom tictoc toc
 #' @importFrom utils read.csv
 run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data, 
-                                 steady, perfect_foresight, scratch_dir, 
+                                 steady, check, perfect_foresight, scratch_dir, 
                                  dynare_path, steady_options,
                                  perfect_foresight_solver_options,
                                  rename_aux_vars = TRUE,
@@ -94,10 +94,11 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
       writeLines(paste0("steady(",  get_dynare_option_string(steady_options), 
                         ");"), con = output)
     }
-    writeLines("check;", con = output)
   }
   
-  
+  if (check) writeLines("check;", con = output)
+
+
   if (perfect_foresight) {
     writeLines(sprintf("initval_file(filename = %s_initval);", model_name), 
                con = output)
@@ -127,13 +128,15 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   writeLines("")
   writeLines(sprintf("dlmwrite('output/%s_endo_names.txt', M_.endo_names, 'delimiter', '')",
                      model_name), con = output)
+  
   if (steady) {
+    writeLines(sprintf("dlmwrite('output/%s_steady.csv', oo_.steady_state, 'precision', 16)",
+                       model_name), con = output)
+  }
+  if (check) {
     writeLines("eigval = [real(oo_.dr.eigval), imag(oo_.dr.eigval)];", 
                con = output)
-    
     writeLines(sprintf("dlmwrite('output/%s_eigval.csv', eigval, 'precision', 16)",
-                     model_name), con = output)
-    writeLines(sprintf("dlmwrite('output/%s_steady.csv', oo_.steady_state, 'precision', 16)",
                        model_name), con = output)
   }
   if (perfect_foresight) {
@@ -180,14 +183,14 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
   result <- list()
   
   if (steady) {
-    
     steady_file <- file.path(output_dir, paste0(model_name, "_steady.csv"))
-    eigval_file <- file.path(output_dir, paste0(model_name, "_eigval.csv"))
-    
     steady <- read.csv(steady_file, header = FALSE, sep = "")[[1]]
     names(steady) <- endo_names_dynare
     result$steady_endos <- steady
-    
+  }
+  
+  if (check) {
+    eigval_file <- file.path(output_dir, paste0(model_name, "_eigval.csv"))
     eigval_data <- read.csv(eigval_file, header = FALSE, sep = ",")
     eigval <- complex(real = eigval_data[, 1], imaginary = eigval_data[ , 2])
     result$eigval <- order_eigval(eigval) 

@@ -162,7 +162,8 @@ static version of the model}
 backward looking model at a specific period}
 
 \item{\code{\link{get_eigval}}}{Returns the eigenvalues computed with
-method \code{\link{check}} or \code{solve_perturbation}}
+method \code{\link{check}}, \code{\link{check_dynare}} or
+\code{solve_perturbation}}
 
 \item{\code{\link{get_equations}}}{Returns a character vector with the
 parsed equations of the model.}

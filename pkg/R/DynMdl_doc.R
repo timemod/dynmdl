@@ -1452,8 +1452,7 @@ NULL
 #' @name solve_steady_dynare
 #' 
 #' @description
-#' Solve the steady state and calculate the eigenvalues 
-#' with Dynare using Matlab or Octave.
+#' Solve the steady state with Dynare using Matlab or Octave.
 #' 
 #' @section Usage:
 #' \code{DynMdl} method:
@@ -1487,7 +1486,7 @@ NULL
 #' corresponding to the Dynare options. Specify a \code{NULL} value if the 
 #' option has no value. Consult the documentation of  Dynare for a list of 
 #' available options.
-#' Example: \code{steady_options = list(tolf = 1e-7, no_homotopy = NULL)}.
+#' Example: \code{solve_options = list(tolf = 1e-7, no_homotopy = NULL)}.
 #' The default is \code{list(tolf = 1e-8)}}
 #' \item{\code{use_octave}}{A logical. If \code{TRUE}, then
 #' Dynare is envoked with Octave, otherwise Matlab is used. By default 
@@ -1499,16 +1498,73 @@ NULL
 #' this console, or entered \code{exit} in the console. Otherwise the console 
 #' is automatically closed at the end of the calculation and all output is lost.
 #' This argument is ignored if Dynare is run with Octave. Octave does not 
-#' open a seperate console: all output appears in the same console used by R.}
+#' open a separate console: all output appears in the same console used by R.}
 #' }
-#' 
-#' @section Value:
-#'  The eigenvalues of the steady state.
 #' @importFrom tools file_path_sans_ext
+#' @seealso \code{\link{solve_steady}},  \code{\link{check_dynare}} 
+#' and \code{\link{solve_dynare}}.
 #' @examples
 #' \dontrun{
 #' islm <- islm_mdl()
 #' islm$solve_steady_dynare(solve_options = list(tolf = 1e-8))
+#' }
+NULL
+
+
+#' \code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model 
+#' around the steady state with Dynare
+#' @name check_dynare
+#' 
+#' @description
+#' Compute the eigenvalues of the linearized model around the steady state with 
+#' Dynare using Matlab or Octave.
+#' 
+#' @section Usage:
+#' \code{DynMdl} method:
+#' \preformatted{
+#' mdl$check_dynare(scratch_dir = tempfile(), dynare_path = NULL,
+#'                   model_options = list(), 
+#'                   use_octave = Sys.which("matlab") == "",
+#'                   exit_matlab = FALSE)
+#' }
+#' 
+#' \code{mdl} is a \code{\link{DynMdl}} object
+#' 
+#' @section Arguments:
+#' \describe{
+#' \item{\code{scratch_dir}}{Directory where the Matlablab and Dynare scripts are 
+#' created.  By default this is a temporary directory that is automatically
+#' deleted when the R session terminates.}
+#' \item{\code{dynare_path}}{Character string specifying the name of the 
+#' directory of the Dynare installation. On Linux it is usually not necessary 
+#' to the specify this argument. On Windows it is necessary to specify the path 
+#' of the Dynare installation. In you are running R in the  CPB 
+#' environment the path to Dynare is set automatically.}
+#' \item{\code{model_options}}{Options passed to the \code{model} command of
+#' Dynare. This should be a named list, which names corresponding to the Dynare
+#' options. Specify a \code{NULL} value if the option has no value.
+#' Consult the documentation of  Dynare for a list of available options.
+#' Example: \code{model_options = list(block = NULL, mfs = 2)}}
+#' \item{\code{use_octave}}{A logical. If \code{TRUE}, then
+#' Dynare is envoked with Octave, otherwise Matlab is used. By default 
+#' Matlab is used if available.}
+#' \item{\code{exit_matlab}}{A logical specifying if Matlab
+#' should immediately  exit when the calcultions have finished 
+#' Matlab writes the output to a separate console. If \code{exit_matlab} is 
+#' \code{FALSE} (the default), then the R job waits until the user has closed 
+#' this console, or entered \code{exit} in the console. Otherwise the console 
+#' is automatically closed at the end of the calculation and all output is lost.
+#' This argument is ignored if Dynare is run with Octave. Octave does not 
+#' open a separate console: all output appears in the same console used by R.}
+#' }
+#' @importFrom tools file_path_sans_ext
+#' @seealso \code{\link{check}},  \code{\link{solve_steady_dynare}} 
+#' and \code{\link{solve_dynare}}.
+#' @examples
+#' \dontrun{
+#' islm <- islm_mdl()
+#' islm$check_dynare()
+#' print(islm$get_eigval())
 #' }
 NULL
 
@@ -1569,6 +1625,8 @@ NULL
 #' open a seperate console: all output appears in the same console used by R.}
 #' }
 #' @importFrom tools file_path_sans_ext
+#' @seealso \code{\link{solve}},  \code{\link{solve_steady_dynare}} 
+#' and \code{\link{check_dynare}}.
 #' @examples
 #' \dontrun{
 #'  islm <- islm_mdl(period = "2018Q1/2023Q3")

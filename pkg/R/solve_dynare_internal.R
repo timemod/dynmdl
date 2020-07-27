@@ -26,7 +26,8 @@ solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path,
                                 period = mdl$get_period(), 
                                 data = cbind(mdl$get_all_endo_data_dynare(),
                                              mdl$get_all_exo_data_dynare()),
-                                steady = FALSE, perfect_foresight = TRUE,
+                                steady = FALSE, check = FALSE,
+                                perfect_foresight = TRUE,
                                 scratch_dir = scratch_dir, 
                                 dynare_path = dynare_path,
                                 perfect_foresight_solver_options = 
@@ -37,7 +38,8 @@ solve_dynare_internal <- function(model_name, mdl, scratch_dir, dynare_path,
                                 exit_matlab = exit_matlab)$endo_data
   } else {
     sol <- run_dynare_internal(model_name, mod_file, mdl = mdl,
-                               steady = FALSE, perfect_foresight = TRUE,
+                               steady = FALSE, check = FALSE,
+                               perfect_foresight = TRUE,
                                scratch_dir = scratch_dir, 
                                dynare_path = dynare_path,
                                perfect_foresight_solver_options = 

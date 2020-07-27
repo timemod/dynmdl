@@ -5,3 +5,4 @@
 latex
 fitmod.mod
 preprocessed.mod
+tmp/*
