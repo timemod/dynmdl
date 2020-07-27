@@ -563,8 +563,10 @@ create_mdldef <- function(model_info, equations_orig, fit_info) {
         # split equations over multiple lines if necessary:
   split_lines <- function(eq) {
       paste(strwrap(eq, width = 80, exdent = 4), collapse = "\n")}
+  mdldef$stat_equations <- sapply(model_info$stat_equations, 
+                             FUN = split_lines, USE.NAMES = FALSE)
   mdldef$equations <- sapply(model_info$equations, 
-                                    FUN = split_lines, USE.NAMES = FALSE)
+                            FUN = split_lines, USE.NAMES = FALSE)
   mdldef$equations_orig <- equations_orig
   
   #

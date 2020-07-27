@@ -1499,7 +1499,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
     }
 
     Rcpp::List trend_info = dynamic_model.get_trend_info();
-    Rcpp::CharacterVector equations = dynamic_model.get_equations();
+    Rcpp::CharacterVector dyn_equations = dynamic_model.get_equations();
+    Rcpp::CharacterVector stat_equations = static_model.get_equations();
 
      // initval expressions
     std::ostringstream initval_block;
@@ -1525,7 +1526,8 @@ Rcpp::List ModFile::getModelListR(bool internal_calc) {
                               Rcpp::Named("dynamic_model") = dynmdl,
                               Rcpp::Named("static_model") = statmdl,
                               Rcpp::Named("trend_info") = trend_info, 
-                              Rcpp::Named("equations") = equations,
+                              Rcpp::Named("equations") = dyn_equations,
+                              Rcpp::Named("stat_equations") = stat_equations,
                               Rcpp::Named("initval") = Rcpp::String(initval_block.str()));
 }
 

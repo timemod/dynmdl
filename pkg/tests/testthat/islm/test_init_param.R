@@ -4,7 +4,7 @@ rm(list = ls())
 context("ISLM model parameter initialisation")
 
 source("../tools/read_dynare_result.R")
-source("utils.R")
+source("../tools/cat_lines.R")
 
 mod_name <- "islm_init_param"
 mod_file <- file.path("mod", paste0(mod_name, ".mod"))

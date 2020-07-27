@@ -5883,15 +5883,4 @@ Rcpp::List DynamicModel::get_trend_info() const {
           Rcpp::Named("deflated_endos") = get_deflated_endos(),
           Rcpp::Named("trend_vars") = get_trend_vars());
 }
-
-Rcpp::CharacterVector DynamicModel::get_equations() const {
-    int neq = equations.size();
-    Rcpp::CharacterVector eqns(neq);
-    for (int eq = 0; eq < neq; eq++) {
-        ostringstream txt;
-        dynamic_cast<ExprNode *>(equations[eq])->writeOutput(txt, oModFile);
-        eqns[eq] = Rcpp::String(txt.str());
-    }
-    return(eqns);
-}
 #endif

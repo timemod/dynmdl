@@ -5,7 +5,7 @@ rm(list = ls())
 
 context("ISLM model get_equations")
 
-source("utils.R")
+source("../tools/cat_lines.R")
 
 mdl <- read_mdl("islm_model.rds", silent = TRUE)
 mdl_fit <- read_mdl("islm_model_fit.rds", silent = TRUE)
@@ -27,6 +27,11 @@ test_that("example with static and dynamic tags", {
                       "expected_output/eqs_static_tags.txt")
   expect_known_output(cat_lines(mdl$get_original_equations()), 
                       "expected_output/eqs_orig_static_tags.txt")
+  
+  stat_eqs <- mdl$get_static_equations()
+  expect_known_output(cat_lines(stat_eqs), 
+                      "expected_output/static_eqs.txt")
+  expect_equal(stat_eqs[3], mdl$get_static_equations(3))
 })
 
 

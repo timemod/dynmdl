@@ -19,7 +19,8 @@ solve_steady_dynare_internal <- function(model_name, mdl, scratch_dir,
   # write mod file
   #
   mod_file <- file.path(scratch_dir, paste0(model_name, ".mod"))
-  write_mod_file_internal(mod_file, mdldef, mdl$get_equations(), model_options)
+  write_mod_file_internal(mod_file, mdldef, mdl$get_static_equations(), 
+                          model_options)
 
   ret <- run_dynare_internal(model_name, mod_file, scratch_dir = scratch_dir, 
                              steady = TRUE, perfect_foresight = FALSE,

@@ -2652,5 +2652,4 @@ void StaticModel::writeLatexFile(const string &dirname, const string &basename,
   writeLatexModelFile(dirname, basename, model_type, oLatexStaticModel, output_params,
                       eval_context);
 }
-
 #endif

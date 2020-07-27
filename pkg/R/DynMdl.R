@@ -1415,6 +1415,16 @@ DynMdl <- R6Class("DynMdl",
       colnames(jac) <- private$mdldef$endo_names
       return(jac)
     },
+    get_static_equations = function(i) {
+      if (missing(i)) {
+        return(private$mdldef$stat_equations)
+      } else {
+        if (!is.numeric(i)) {
+          stop("Argument i should be a numeric")
+        }
+        return(private$mdldef$stat_equations[i])
+      }
+    },
     get_equations = function(i) {
       if (missing(i)) {
         return(private$mdldef$equations)

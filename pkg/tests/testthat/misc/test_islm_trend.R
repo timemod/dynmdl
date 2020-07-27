@@ -4,6 +4,7 @@ rm(list = ls())
 context("ISLM model with trends")
 
 source("../tools/read_file.R")
+source("../tools/cat_lines.R")
 
 model_name <- "islm_fit"
 
@@ -161,4 +162,14 @@ test_that("base period", {
     mdl2$init_data(base_period = "2018", 
                    data = regts(matrix(1:10, ncol = 2), start = "2018q1", names = c("c", "i"))),
     "Argument 'data' has a different frequency than argument 'base_period'.")
+})
+
+test_that("get_equations", {
+  expect_known_output(cat_lines(mdl$get_static_equations()), 
+                      "expected_output/islm_trend_stat_eqs.txt")
+  expect_known_output(cat_lines(mdl$get_equations()), 
+                      "expected_output/islm_trend_eqs.txt")
+  expect_known_output(cat_lines(mdl$get_original_equations()), 
+                     "expected_output/islm_trend_orig_eqs.txt")
+  
 })

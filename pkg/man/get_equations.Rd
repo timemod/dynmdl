@@ -3,13 +3,16 @@
 \name{get_equations}
 \alias{get_equations}
 \alias{get_original_equations}
+\alias{get_static_equations}
 \title{\code{\link{DynMdl}} method: Returns a character vector with the
 dynamic model equations}
 \description{
 These method of R6 class \code{\link{DynMdl}} returns a character vector
-with the model equations (excluding local equations) of the
-dynamic version of the model.  \code{get_equations}
-returns the parsed equations, where trends (if present) have been removed.
+with the model equations (excluding local equations) of the static or
+dynamic version of the model.  \code{get_static_equations} and
+\code{get_equations} return the parsed equations of the static and dynamic model,
+respectively. For models with trends, these function return the detrended
+equations, the equations that are actually used when solving the model.
 \code{get_original_equations} returns the equations as defined in the mod
 file.
 }
@@ -17,7 +20,8 @@ file.
 
 \code{DynMdl} method:
 \preformatted{
- md$get_equations(i)
+ mdl$get_static_equations(i)
+ mdl$get_equations(i)
  mdl$get_original_equations(i)
 }
 

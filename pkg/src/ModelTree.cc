@@ -2064,4 +2064,14 @@ vector<pair<string, string>>  ModelTree::getEquationTags(int eq_number) const {
     return eq_tags;
 }
 
+Rcpp::CharacterVector ModelTree::get_equations() const {
+    int neq = equations.size();
+    Rcpp::CharacterVector eqns(neq);
+    for (int eq = 0; eq < neq; eq++) {
+        ostringstream txt;
+        dynamic_cast<ExprNode *>(equations[eq])->writeOutput(txt, oModFile);
+        eqns[eq] = Rcpp::String(txt.str());
+    }
+    return(eqns);
+}
 #endif
