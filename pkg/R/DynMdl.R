@@ -588,8 +588,8 @@ DynMdl <- R6Class("DynMdl",
              " than argument 'data_period'.")
       } else if (data_period_present && data_present && 
                  frequency(data_period) != frequency(data)) {
-        stop("Argument 'data_period' has a different frequency",
-             " than argument 'data'.")
+        stop("Argument 'data' has a different frequency",
+             " than argument 'data_period'.")
       } else if (base_period_present && data_present && 
                  frequency(base_period) != frequency(data)) {
         stop("Argument 'base_period' has a different frequency",
