@@ -22,7 +22,8 @@
 #' is obtained from the data period by subtracting the lag and lead periods.
 #' @section Usage:
 #' \preformatted{
-#' mdl$init_data(data_period = NULL, data = NULL, upd_mode = c("upd", "updval"))
+#' mdl$init_data(data_period, data = NULL, upd_mode = c("upd", "updval"),
+#'               base_period)
 #'
 #' }
 #'
@@ -35,8 +36,9 @@
 #' object, or an object that can be coerced to 
 #' \code{\link[regts]{period_range}}. The (new) data period, i.e. the period
 #' range of all model timeseries. If not specified, then the data period
-#' is based on the period range of argument \code{data} (if this argument 
-#' has been specified) and  the model period.}
+#' is based on the model period, the period range of argument \code{data} 
+#' (if this argument has been specified), and the base period (if the model
+#' has trend variables)}
 #' \item{\code{data}}{a \code{\link[stats]{ts}} or \code{\link[regts]{regts}}
 #' object with values for endogogenous and exogenous model variables, 
 #' including fit instruments and Lagrange multipliers used in the fit method.
@@ -50,6 +52,13 @@
 #' exogenous and endogenous model variables.
 #' For \code{"updval"}, the static model variables are only replaced
 #' by valid (i.e. non-\code{NA}) values in \code{data}). }
+#' \item{\code{base_period}}{a \code{\link[regts]{period}} object specifying
+#' the (new) base period for the trends. This is used if the model has trend variables.
+#' All trend variables will be equal to 1 at the base period. This argument is
+#' ignored for models without trends. If this argument is not specified, then
+#' the base period is unchanged if it has already been specified in 
+#' function `dyn_mdl` or a previous  call of `init_data`, otherwise it is set 
+#' to the start period of the model period.}
 #' }
 #' If neither \code{data_period} nor \code{data} has been specified,
 #' then the data period is unchanged. In that case the data period must have been

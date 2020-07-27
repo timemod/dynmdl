@@ -46,8 +46,8 @@ mdl <- dyn_mdl(mod_file, calc = "internal", silent = TRUE)
 mdl$solve_steady(silent = TRUE)
 
 test_that("init_data gives an error if the data period has not been set", {
-  msg <- paste("If neither data_period nor data have been specified,", 
-               "then the data period\nshould have been set before",
+  msg <- paste("If neither 'data_period' nor 'data' have been specified,", 
+               "then the model and data period\nshould have been set before",
                "with method init_data or set_period.")
   expect_error(mdl$init_data(), msg)
 })
