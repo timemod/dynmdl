@@ -261,7 +261,7 @@ DynMdl <- R6Class("DynMdl",
       # now create the functions for evaluating the model
       private$make_functions()
     },
-    print = function(short = TRUE) {
+    print = function() {
       cat(paste(class(self)[1], "object\n"))
       cat(sprintf("%-60s%s\n", "Fit:", as.character(private$mdldef$fit)))
       cat(sprintf("%-60s%s\n", "Calc method:", private$calc))
