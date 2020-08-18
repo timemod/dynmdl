@@ -19,3 +19,15 @@ test_that("undefined variable in initval", {
     expect_error(mdl1 <- dyn_mdl("mod/islm_error2.mod"), msg)
   )          
 })
+
+test_that("endogenous variables only with lags/leads", {
+  msg <-  paste("The following endogenous variable\\(s\\) only appear\\(s\\) with",
+                "lags/leads\nin the model equations and not as current",
+                 "period variables:\n'yd'.")    
+  expect_error(mdl1 <- dyn_mdl("mod/islm_error3.mod", silent = TRUE), msg)
+  
+  msg <-  paste("The following endogenous variable\\(s\\) only appear\\(s\\) with",
+                "lags/leads\nin the model equations and not as current",
+                "period variables:\n'md', 'yd'.")    
+  expect_error(mdl1 <- dyn_mdl("mod/islm_error4.mod", silent = TRUE), msg)  
+})

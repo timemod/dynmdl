@@ -366,6 +366,18 @@ dyn_mdl <- function(mod_file, period, data, base_period,
   mdldef <- create_mdldef(model_info, equations_orig, fit_info)
   
   #
+  # check if all endogenous variables appear as current period variables
+  #
+  problem_endo_indices <- which(mdldef$lead_lag_incidence[ , "0"] == 0)
+  if (length(problem_endo_indices) > 0) {
+    problem_endos <- mdldef$endo_names[problem_endo_indices]
+    problem_endos <- paste0("'", sort(problem_endos), "'")
+    stop("The following endogenous variable(s) only appear(s) with lags/leads\n",
+         "in the model equations and not as current period variables:\n",
+         paste(problem_endos, collapse = ", "), ".")
+  }
+  
+  #
   # create the dll file
   #
   if (calc == "dll") {
