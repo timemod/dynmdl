@@ -24,10 +24,19 @@ test_that("endogenous variables only with lags/leads", {
   msg <-  paste("The following endogenous variable\\(s\\) only appear\\(s\\) with",
                 "lags/leads\nin the model equations and not as current",
                  "period variables:\n'yd'.")    
-  expect_error(mdl1 <- dyn_mdl("mod/islm_error3.mod", silent = TRUE), msg)
+  expect_error(dyn_mdl("mod/islm_error3.mod", silent = TRUE), msg)
   
   msg <-  paste("The following endogenous variable\\(s\\) only appear\\(s\\) with",
                 "lags/leads\nin the model equations and not as current",
                 "period variables:\n'md', 'yd'.")    
-  expect_error(mdl1 <- dyn_mdl("mod/islm_error4.mod", silent = TRUE), msg)  
+  expect_error(dyn_mdl("mod/islm_error4.mod", silent = TRUE), msg)  
+})
+
+test_that("purely static model", {
+  expect_silent(mdl <- dyn_mdl("mod/islm_error5.mod", silent = TRUE))  
+  msg <-  paste("Methods 'check' and 'solve_perturbation' do not allow", 
+                "purely static models\\.")
+  expect_error(mdl$check(), msg)  
+  mdl$set_period("1")
+  expect_error(mdl$solve_perturbation(), msg)  
 })

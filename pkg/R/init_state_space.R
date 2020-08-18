@@ -49,9 +49,9 @@ init_state_space <- function(nexo, lead_lag_incidence, debug = FALSE) {
                                              drop = FALSE])
   } else {
     if (max_lead == 0) {
-      # in this case lead_lag_incidence has no entry max_lag+2
-      stop(paste("Dynare currently does not allow to solve",
-                 "purely static models in a stochastic context."))
+      # in this case lead_lag_incidence has no entry max_lag + 2
+      stop("Methods 'check' and 'solve_perturbation' do not allow",
+           " purely static models.")
     }
     kmask <- lead_lag_incidence[ss$order_var, max_lag + 2,
                                 drop = FALSE]
