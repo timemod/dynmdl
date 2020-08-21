@@ -10,18 +10,22 @@
 fit method}
 \description{
 \code{DynMdl} methods \code{set_sigma} and \code{set_sigma_values} can be
-used to set the sigma parameters for the fit instruments used in the fit
-method. The names of the sigma parameters are the names
-of the instruments suffixed with \code{sigma_}. For example,
-the name of the sigma parameter corresponding to instrument \code{"uc"}
-is \code{"sigma_uc"}.
+used to set the sigma parameters of the fit instruments used in the fit
+method. Method \code{set_sigma} can be used to set individual sigma parameters,
+while \code{set_sigma_values} is a convenient method to give more than one sigma
+parameter the same value.
 
 If a sigma parameter is smaller than 0, then the corresponding
-fit instrument is not active, and is keeped fixed at
+fit instrument is not active, and is kept fixed at
 the current value, even though it is an endogenous model variable.
 
-Method \code{get_sigmas} returns all sigma parameters larger than or equal
+Methods \code{get_sigma} can be used to retrieve specific sigma parameters,
+and \code{get_sigmas} returns all sigma parameters larger than or equal
 to zero.
+
+The names of the sigma parameters are the names of the fit instruments
+prefixed  with \code{sigma_}. For example, the name of the sigma parameter
+for fit instrument \code{"uc"} is \code{"sigma_uc"}.
 }
 \section{Usage}{
 
@@ -41,26 +45,27 @@ mdl$get_sigmas()
 
 
 \describe{
-\item{\code{sigmas}}{a named numeric vector with values of the sigma
+\item{\code{sigmas}}{A (named) numeric vector with values of the sigma
 parameters. The names are the name of the instruments (not the names
-of the sigma parameters).}
-\item{\code{names}}{a character vector with names of fit instruments.
+of the sigma parameters themselves). In \code{sigmas} does not have a \code{names}
+attribute, then argument \code{names} has to be specified.}
+\item{\code{names}}{A character vector with names of fit instruments.
 For method \code{set_sigma}, this argument \emph{must} be specified if
 \code{sigmas} is a vector without names.}
-\item{\code{name_err}}{this option specifies the action that should be taken
-when a variable name is not a fit instrument.
-For \code{"stop"} (the default), the execution of this function is stopped.
+\item{\code{name_err}}{This option specifies the action that should be taken
+when a specified  name is not the name of a fit instrument.
+For \code{"stop"} (the default), an error is issued.
 For \code{"warn"} and \code{"silent"}, the names that are no fit
-instrument names are skipped. \code{"warn"} does, however, give a warning.}
-\item{\code{value}}{a numeric vector of length 1.}
-\item{\code{pattern}}{a regular expression.
+instrument names are skipped. \code{"warn"} gives a warning.}
+\item{\code{value}}{A numeric vector of length 1.}
+\item{\code{pattern}}{A regular expression.
 The action (get or set sigma parameter values) is applied to all sigma
-parameters wiht names
-matching \code{pattern}.}
+parameters for which the names of the corresponding fit instruments
+match \code{pattern}.}
 }
 If neither \code{names} nor \code{pattern} has
 been specified in methods \code{set_param_values} or \code{get_param},
-then the action is applied to all model parameters.
+then the action is applied to all sigma parameters.
 }
 
 \section{Methods}{
@@ -93,7 +98,7 @@ print(mdl$get_sigmas())
 # print names of all active instruments (sigma >= 0):
 print(mdl$get_instrument_names())
 
-# set all sigmas parameters to 1
+# set all sigma parameters to 1
 mdl$set_sigma_values(1)
 
 }

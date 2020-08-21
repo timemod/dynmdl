@@ -163,6 +163,9 @@
 #' @return A \code{DynMdl} object.
 #' @export
 #' @importFrom Rcpp sourceCpp
+#' @importFrom regts as.period
+#' @importFrom regts as.period_range
+#' @importFrom stats frequency
 #' @importFrom tools file_path_sans_ext
 #' @importFrom regts range_union
 #' @importFrom regts as.regts

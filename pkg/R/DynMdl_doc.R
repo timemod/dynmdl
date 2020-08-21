@@ -1200,7 +1200,12 @@ NULL
 #'
 #' @description
 #' \code{\link{DynMdl}} methods \code{set_param} and \code{set_param_values} 
-#' can be used to set the model parameters. Method \code{get_param}
+#' can be used to set the model parameters. 
+#' Method `set_param` can be used to set individual  parameters,
+#' while `set_param_values` is a convenient method to give more than one  
+#' parameter the same value. 
+#' 
+#' Method \code{get_param}
 #' returns model parameters (excluding sigma parameters used in the fit method),
 #' and method `get_all_param` returns parameters including the sigma parameters.
 #' 
@@ -1226,16 +1231,17 @@ NULL
 #' @section Arguments:
 #'
 #' \describe{
-#' \item{\code{params}}{a named numeric vector with parameter values.
-#' The names are the names of the parameters.}
+#' \item{\code{params}}{A (named) numeric vector with parameter values.
+#' The names are the names of the parameters.  In `params` does not have a `names`
+#' attribute, then argument `names` has to be specified.}
 #' \item{\code{names}}{a character vector with names of the parameters.
 #' For method \code{set_param}, this argument *must* be specified if 
 #' \code{params} is a vector without names.}
-#' \item{\code{name_err}}{this option specifies the action that should be taken 
-#' when a specified name is not the name of a model parameter.
-#' For \code{"stop"} (the default), the execution of this function is stopped.
-#' For \code{"warn"} and \code{"silent"} the names that are no model
-#' parameters are skipped. \code{"warn"} does, however, give a warning.}
+#' \item{\code{name_err}}{This option specifies the action that should be taken 
+#' when a specified  name is not the name of a parameter.
+#' For \code{"stop"} (the default), an error is issued.
+#' For \code{"warn"} and \code{"silent"}, the names that are no parameters
+#' names are skipped. \code{"warn"} gives a warning.}
 #' \item{\code{pattern}}{a regular expression. The action (get or
 #' set parameter values) is applied to all parameters wiht names
 #' matching \code{pattern}.}
@@ -1269,7 +1275,7 @@ NULL
 #' # set parameter i0 to 101 and c0 to 110
 #' mdl$set_param(c(i0 = 101, c0 = 110))
 #' 
-#' # set all parameters with names ending with "5" to zero:
+#' # set all parameters with names ending with "5" (c5 and i5) to zero:
 #' mdl$set_param_values(0, pattern = "5$")
 #' 
 #' # print all parameters

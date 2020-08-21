@@ -10,7 +10,6 @@ setOldClass("regts")
 #' @useDynLib dynmdl, .registration = TRUE
 #' @importFrom regts start_period
 #' @importFrom regts end_period
-#' @importFrom regts as.period_range
 #' @importFrom regts nperiod
 #' @importFrom regts period_range
 #' @importFrom regts range_intersect
@@ -371,9 +370,7 @@ DynMdl <- R6Class("DynMdl",
       return(invisible(self))
     },
     set_param_values = function(value, names, pattern) {
-      if (!is.numeric(value) && length(value) != 1) {
-        stop("Argument value should be a scalar numeric")
-      }
+      value <- check_value(value)
       names <- private$get_par_names_(names, pattern)
       if (length(names) > 0) {
         private$mdldef$params[names] <- value
@@ -1886,9 +1883,7 @@ DynMdl <- R6Class("DynMdl",
   },
   set_sigma_values = function(value, names, pattern) {
     private$check_fit()
-    if (!is.numeric(value) && length(value) != 1) {
-      stop("Argument value should be a scalar numeric")
-    }
+    value <- check_value(value)
     inst_names <- private$get_names_("inst", names, pattern)
     if (length(inst_names) > 0) {
       sigma_names <- paste0("sigma_", inst_names)

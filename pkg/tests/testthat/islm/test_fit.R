@@ -580,3 +580,20 @@ test_that("method get_all_param to obtain sigma values", {
     expect_equal(mdl$get_all_param(pattern = "uuu"), params_and_sigmas[character(0)]), 
     "No \\(sigma\\) parameters match pattern \"uuu\"")
 })
+
+test_that("set_sigma_values integer and NA", {
+  expect_silent(mdl$set_sigma_values(555L))
+  expected_result <- c(sigma_ut = 555, sigma_uc = 555, sigma_umd = 555, 
+                       sigma_ui = 555)
+  expect_equal(mdl$get_sigma(), expected_result)
+  expect_silent(mdl$set_sigma_values(NA))
+  expect_equal(mdl$get_sigma(), expected_result * NA_real_)
+})
+
+test_that("errors set_sigma_values", {
+  msg <- "Argument 'value' should be a scalar numeric\\."
+  expect_error(mdl$set_sigma_values("aap"), msg)
+  expect_error(mdl$set_sigma_values(1:2, names = "uc"), msg)
+  expect_error(mdl$set_sigma_values(TRUE), msg)
+})
+  

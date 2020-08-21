@@ -82,10 +82,17 @@ test_that("set_param_values", {
   names(expected_result1) <- paste0("i", 0:5)
   expect_equal(mdl$get_param(pattern = "^i"), expected_result1)
   
-  mdl$set_param_values(222, pattern = "^t", names = "m1")
+  mdl$set_param_values(222L, pattern = "^t", names = "m1")
   
   expected_result2 <- rep(222, 3)
   names(expected_result2) <- c("m1", "t0", "t1")
   expect_equal(mdl$get_param(pattern = "^t", names = "m1"), expected_result2)
+  
+  mdl$set_param_values(NA)
+  expect_true(all(is.na(mdl$get_param())))
+  
+  msg <- "Argument 'value' should be a scalar numeric."
+  expect_error(mdl$set_param_values("xxx", names = "m1"), msg)
+  expect_error(mdl$set_param_values(1:2, names = "m1"), msg)
 })
 
