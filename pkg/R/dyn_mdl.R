@@ -239,11 +239,19 @@ dyn_mdl <- function(mod_file, period, data, base_period,
       stop("Argument 'data' has a different frequency",
            " than argument 'base_period'.")
   }
-
-  if (!file.exists(mod_file)) {
-    stop(paste("ERROR: Could not open file:", mod_file))
-  }
   
+  #
+  # check mod file
+  #
+  if (!is.character(mod_file) | length(mod_file) > 1) {
+    stop("Argument 'mod_file' must be a character vector of length 1.")
+  }
+  if (dir.exists(mod_file)) stop(sprintf("'%s' is a directory", mod_file))
+  if (!file.exists(mod_file)) stop(sprintf("File '%s' does not exist", mod_file))
+  if (.Platform$OS.type == "unix" && startsWith(mod_file, "~")) {
+    mod_file <- normalizePath(mod_file)
+  }
+
   if (calc == "dll") {
     if (missing(dll_dir)) {
       dll_dir <- tempfile(pattern = "dynmdl_dll_")
@@ -299,11 +307,21 @@ dyn_mdl <- function(mod_file, period, data, base_period,
     if (missing(fit_mod_file)) {
       fit_mod_file <- if (debug) "fitmod.mod" else 
                        tempfile(pattern = "fit", fileext = ".mod")
-    } else if (regexpr("trend_var\\(.+\\)", mod_text) != -1) {
-      if (file.exists(fit_mod_file)) unlink(fit_mod_file)
-      stop(paste("For models with trends, it is not possible to create a fit",
+    } else {
+      if (!is.character(fit_mod_file) | length(fit_mod_file) > 1) {
+        stop("Argument 'fit_mod_file' must be a character vector of length 1.")
+      }
+      if (dir.exists(fit_mod_file)) stop(sprintf("'%s' is a directory", 
+                                                 fit_mod_file))
+      if (.Platform$OS.type == "unix" && startsWith(fit_mod_file, "~")) {
+         fit_mod_file <- sub("~", Sys.getenv("HOME"), fit_mod_file)
+      }
+      if (regexpr("trend_var\\(.+\\)", mod_text) != -1) {
+        if (file.exists(fit_mod_file)) unlink(fit_mod_file)
+        stop(paste("For models with trends, it is not possible to create a fit",
                  "mod file that\ncan be used as input mod file for dyn_mdl or",
                  "Dynare."))
+      }
     }
     
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 

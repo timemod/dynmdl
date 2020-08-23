@@ -16,6 +16,15 @@ p1 <- period("2016Q1")
 model_period <- period_range(p1, p1 + nperiods - 1)
 
 unlink(fit_mod_file)
+
+if (.Platform$OS.type == "unix") {
+  # test handling ~ in name of fit_mod_file
+  fit_mod_file <- file.path(normalizePath(dirname(fit_mod_file)), 
+                            basename(fit_mod_file)) 
+  home_dir <- Sys.getenv("HOME") 
+  fit_mod_file <- sub(home_dir, "~", fit_mod_file)
+}
+
 mdl <- dyn_mdl(mod_file, fit_mod_file = fit_mod_file, silent = TRUE)
 
 mdl$solve_steady(control = list(silent = TRUE))
@@ -52,5 +61,12 @@ test_that("get_names", {
   
   sigma_names <- paste0("sigma_u", c("t", "c", "i", "md"))
   expect_equal(mdl$get_sigma_names(), sigma_names)
-  
+})
+
+test_that("error fit_mod_file", {
+  expect_error(dyn_mdl(mod_file, fit_mod_file = "mod_out", silent = TRUE),
+               "'mod_out' is a directory")
+  expect_error(dyn_mdl(mod_file, fit_mod_file = c("mod_out", "x"), silent = TRUE),
+               "Argument 'fit_mod_file' must be a character vector of length 1.")
+
 })
