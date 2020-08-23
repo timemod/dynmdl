@@ -47,8 +47,8 @@ convert_mod <- function(input_file, output_file, fit_cond, fixed_period,
   fit_command <- "%$fit$"
   fit_end     <- "%$endfit$"
   
-  input <- file(input_file, "r")
   output <- file(output_file, open = "a")
+  input <- file(input_file, "r")
   
   # initialisation
   fit_block_found <- FALSE

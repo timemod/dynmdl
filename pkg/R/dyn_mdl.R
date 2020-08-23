@@ -319,8 +319,6 @@ dyn_mdl <- function(mod_file, period, data, base_period,
       }
       if (dir.exists(fit_mod_file)) stop(sprintf("'%s' is a directory", 
                                                  fit_mod_file))
-      if (!file.access(fit_mod_file, 2))  stop(sprintf("'%s' is not writable", 
-                                                      fit_mod_file))
       if (.Platform$OS.type == "unix" && startsWith(fit_mod_file, "~")) {
          fit_mod_file <- sub("~", Sys.getenv("HOME"), fit_mod_file)
       }
