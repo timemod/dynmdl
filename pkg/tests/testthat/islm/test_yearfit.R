@@ -68,5 +68,7 @@ test_that("error fit_mod_file", {
                "'mod_out' is a directory")
   expect_error(dyn_mdl(mod_file, fit_mod_file = c("mod_out", "x"), silent = TRUE),
                "Argument 'fit_mod_file' must be a character vector of length 1.")
+  expect_error(dyn_mdl(mod_file, fit_mod_file = "mod_out/xxx/testje.fmod", silent = TRUE),
+               "cannot open the connection")
 
 })

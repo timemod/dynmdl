@@ -311,17 +311,20 @@ dyn_mdl <- function(mod_file, period, data, base_period,
       if (!is.character(fit_mod_file) | length(fit_mod_file) > 1) {
         stop("Argument 'fit_mod_file' must be a character vector of length 1.")
       }
-      if (dir.exists(fit_mod_file)) stop(sprintf("'%s' is a directory", 
-                                                 fit_mod_file))
-      if (.Platform$OS.type == "unix" && startsWith(fit_mod_file, "~")) {
-         fit_mod_file <- sub("~", Sys.getenv("HOME"), fit_mod_file)
-      }
       if (regexpr("trend_var\\(.+\\)", mod_text) != -1) {
         if (file.exists(fit_mod_file)) unlink(fit_mod_file)
         stop(paste("For models with trends, it is not possible to create a fit",
-                 "mod file that\ncan be used as input mod file for dyn_mdl or",
-                 "Dynare."))
+                   "mod file that\ncan be used as input mod file for dyn_mdl or",
+                   "Dynare."))
       }
+      if (dir.exists(fit_mod_file)) stop(sprintf("'%s' is a directory", 
+                                                 fit_mod_file))
+      if (!file.access(fit_mod_file, 2))  stop(sprintf("'%s' is not writable", 
+                                                      fit_mod_file))
+      if (.Platform$OS.type == "unix" && startsWith(fit_mod_file, "~")) {
+         fit_mod_file <- sub("~", Sys.getenv("HOME"), fit_mod_file)
+      }
+      
     }
     
     fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
