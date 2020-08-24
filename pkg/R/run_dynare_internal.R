@@ -160,7 +160,7 @@ run_dynare_internal  <- function(model_name, mod_file,  mdl, period, data,
     write_header("Running Matlab:")
     matlab_command <- sprintf("\"run('run_%s.m');\"", model_name)
     if (exit_matlab) matlab_command <- paste0(matlab_command, "exit;")
-    system2("matlab", args =  c("-r", "-nosplash", "-nodesktop", "-wait",
+    system2("matlab", args = c("-nosplash", "-nodesktop", "-wait", "-r",
                                 matlab_command))
     write_header("Matlab job finished.")
   }
