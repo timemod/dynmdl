@@ -142,9 +142,10 @@
 #' derived for a fixed period, treating lags and leads as exogenous variables.
 #' If \code{FALSE} (the default), the fit conditions are derived from the
 #' stacked-time equations. This option is particularly useful for backward 
-#' looking models (models without leads). If `fit_fixed_period` is `TRUE`, then
-#' the fit equations will not contain lags or leads. If `fit_fixed_period` is 
-#' `TRUE`, then some fit equation may contain leads.
+#' looking models (models without leads but with lags). 
+#' If `fit_fixed_period` is `TRUE`, then the fit equations do not contain
+#' leads, so the full model is stil backward looking. If `fit_fixed_period` is 
+#' `FALSE`, then some fit equations will contain leads.
 #' @param check_static_eqs a logical. If \code{TRUE} (the default), then 
 #' `dyn_mdl` checks if the mod file contains separate static and dynamic equations (i.e. 
 #' equations tagged with `static` and `dynamic`). If this is the case,

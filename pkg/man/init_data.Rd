@@ -73,7 +73,7 @@ set before with method \code{init_data} or \code{set_period}.
 
 \section{Warning}{
 
-Method \code{init_data} removes all fit targets.
+Method \code{init_data} removes all fit targets for the dynamic model.
 }
 
 \examples{

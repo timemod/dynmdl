@@ -64,7 +64,7 @@
 #' then the data period is unchanged. In that case the data period must have been
 #' set before with method `init_data` or `set_period`.
 #' @section Warning:
-#' Method \code{init_data} removes all fit targets.
+#' Method \code{init_data} removes all fit targets for the dynamic model.
 #' @seealso \code{\link{set_period}}
 #' @examples
 #' mdl <- islm_mdl()
