@@ -112,14 +112,14 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   
   shift_lags <- function(expression, shift) {
     # This function shift lags specified with square brackests (e.g. x[-3]). 
-    # in expressions to lags with () (e.g. x(3)). Lag zero ([0]) is disregarded.
-    # The lags are shifted  with -shift.
+    # The lags are shifted  with -shift, so if shift is -1, the result is
+    # x[-2]. If the shifted lag is zero, then the lag [0] is omitted.
     repl_fun <- function(x) {
       i <- as.integer(x) - shift
       if (i == 0) {
-        return ("")
+        return("")
       } else {
-        return (paste0("[", i, "]"))
+        return(paste0("[", i, "]"))
       }
     }
     return(gsubfn(lag_pattern, repl_fun, expression))
