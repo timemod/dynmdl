@@ -326,7 +326,7 @@ dyn_mdl <- function(mod_file, period, data, base_period,
       
     }
     
-    fit_info <- create_fit_mod(preprocessed_mod_file, fit_mod_file, 
+    fit_info <- create_fit_mod(mod_file, preprocessed_mod_file, fit_mod_file, 
                                instruments, latex_basename, 
                                fixed_period = fit_fixed_period, 
                                check_static_eqs = check_static_eqs,
