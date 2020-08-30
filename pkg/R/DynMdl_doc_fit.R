@@ -414,7 +414,7 @@ NULL
 #' \describe{
 #' \item{\code{sigmas}}{A (named) numeric vector with values of the sigma 
 #' parameters. The names are the name of the instruments (not the names
-#' of the sigma parameters themselves). In `sigmas` does not have a `names`
+#' of the sigma parameters themselves). If `sigmas` does not have a `names`
 #' attribute, then argument `names` has to be specified.}
 #' \item{\code{names}}{A character vector with names of fit instruments.
 #' For method \code{set_sigma}, this argument *must* be specified if 

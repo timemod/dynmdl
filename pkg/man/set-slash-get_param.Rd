@@ -44,7 +44,7 @@ mdl$get_all_param(pattern, names)
 
 \describe{
 \item{\code{params}}{A (named) numeric vector with parameter values.
-The names are the names of the parameters.  In \code{params} does not have a \code{names}
+The names are the names of the parameters.  If \code{params} does not have a \code{names}
 attribute, then argument \code{names} has to be specified.}
 \item{\code{names}}{a character vector with names of the parameters.
 For method \code{set_param}, this argument \emph{must} be specified if

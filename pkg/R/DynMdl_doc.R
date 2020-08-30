@@ -72,7 +72,7 @@
 #' mdl$init_data("2017Q2/2021Q3")
 #' print(mdl)
 #' 
-#' # since are variables have the steady state values, a subsequent solve will
+#' # since all variables have the steady state value, a subsequent solve will
 #' # converge in 0 iterations
 #' mdl$solve()
 NULL
@@ -1237,7 +1237,7 @@ NULL
 #'
 #' \describe{
 #' \item{\code{params}}{A (named) numeric vector with parameter values.
-#' The names are the names of the parameters.  In `params` does not have a `names`
+#' The names are the names of the parameters.  If `params` does not have a `names`
 #' attribute, then argument `names` has to be specified.}
 #' \item{\code{names}}{a character vector with names of the parameters.
 #' For method \code{set_param}, this argument *must* be specified if 

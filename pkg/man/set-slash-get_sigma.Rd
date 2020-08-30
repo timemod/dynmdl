@@ -47,7 +47,7 @@ mdl$get_sigmas()
 \describe{
 \item{\code{sigmas}}{A (named) numeric vector with values of the sigma
 parameters. The names are the name of the instruments (not the names
-of the sigma parameters themselves). In \code{sigmas} does not have a \code{names}
+of the sigma parameters themselves). If \code{sigmas} does not have a \code{names}
 attribute, then argument \code{names} has to be specified.}
 \item{\code{names}}{A character vector with names of fit instruments.
 For method \code{set_sigma}, this argument \emph{must} be specified if

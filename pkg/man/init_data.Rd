@@ -82,7 +82,7 @@ mdl <- islm_mdl()
 mdl$init_data("2017Q2/2021Q3")
 print(mdl)
 
-# since are variables have the steady state values, a subsequent solve will
+# since all variables have the steady state value, a subsequent solve will
 # converge in 0 iterations
 mdl$solve()
 }
