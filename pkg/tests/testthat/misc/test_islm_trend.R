@@ -173,3 +173,9 @@ test_that("get_equations", {
                      "expected_output/islm_trend_orig_eqs.txt")
   
 })
+
+test_that("set_period", {
+  msg <- paste("The specified period \\(2018Q2/2019Q2\\) has a different",
+               "frequency than the data period \\(2019/2021\\)\\.")
+  expect_error(mdl$set_period("2018q2/2019q2"), msg)
+})

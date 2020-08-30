@@ -39,4 +39,11 @@ test_that("data period outside range required by solve", {
   expect_null(mdl$get_base_period())
 })
 
+test_that("other errors", {
+  msg <-  "Argument 'data_period' should have a lower and upper bound"
+  expect_error(mdl$init_data(data_period = "2030/"), msg)
+  expect_error(mdl$init_data(data_period = "/2030"), msg)
+})
+
+
 

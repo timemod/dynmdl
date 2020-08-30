@@ -22,6 +22,7 @@ If the model period has not yet been specified (in function
 this method also sets the model period, the standard period
 for which the model is solved. The model period
 is obtained from the data period by subtracting the lag and lead periods.
+For models with trends, the data period also includes the base period.
 }
 \section{Usage}{
 

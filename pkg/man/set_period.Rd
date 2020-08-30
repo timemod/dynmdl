@@ -10,9 +10,13 @@ This is the default period used when solving the model.
 If the model data has not already been initialized with method
 \code{\link{init_data}}, then \code{set_period} also initializes
 the model data. In that case the model data period is set to the
-specified model period extended with a lag and lead period.
-Model timeseries are initialized with
-with the static values of the exogenous and endogenous model variables.
+specified model period extended with a lag and lead period. For models with
+trends, the data period also includes the base period.
+All endogenous and exogenous variables, fit instruments and lagrange
+multipliers are set to the static values for the whole data period.
+If static fit targets have been
+specified with method \code{\link{set_fit_steady}}, then the dynamic fit
+targets are set to the static fit targets for the whole data period.
 
 If the model data has already been initialized with  method
 \code{\link{init_data}}, then the new model period

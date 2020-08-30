@@ -552,6 +552,9 @@ DynMdl <- R6Class("DynMdl",
       model_period_set <- !is.null(private$model_period)
       if (data_period_present) {
         data_period <- as.period_range(data_period)
+        if (anyNA(data_period[1:2])) {
+           stop("Argument 'data_period' should have a lower and upper bound")
+        }
         if (model_period_set && 
             frequency(private$model_period) != frequency(data_period)) {
           stop("Argument 'data_period' has a different frequency than the ",
@@ -620,7 +623,6 @@ DynMdl <- R6Class("DynMdl",
         # data_period specified. Check if model_period is inside data_period
         # (taking into account lags and leads) and if base_period is inside
         # the model period.
-        data_period <- as.period_range(data_period)
         if (model_period_set) {
           mp <- private$model_period
           startp <- start_period(mp) - private$mdldef$max_lag_orig
@@ -716,10 +718,9 @@ DynMdl <- R6Class("DynMdl",
     },
     set_period = function(period) {
       period <- as.period_range(period)
-      if (is.na(period[1]) || is.na(period[2])) {
-        stop("period should have a lower and upper bound")
+      if (anyNA(period[1:2])) {
+        stop("Argument 'period' should have a lower and upper bound")
       }
-     
       if (is.null(private$data_period)) {
         datap_start <- start_period(period) - private$mdldef$max_lag_orig
         if (!is.null(private$base_period)) {
