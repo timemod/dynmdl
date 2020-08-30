@@ -153,8 +153,11 @@ setOldClass("regts")
 #'
 #' \item{\code{\link{solve}}}{Solves the model}
 #' 
-#' \item{\code{\link{solve_steady_dynare}}}{Solves the steady state and eigenvalues with
+#' \item{\code{\link{solve_steady_dynare}}}{Solves the steady state with
 #' Dynare (emplpying Matlab or Octave)}
+#' 
+#' \item{\code{\link{check_dynare}}}{Calculate the eigenvalues of the 
+#' steady state with Dynare (emplpying Matlab or Octave)}
 #'
 #' \item{\code{\link{solve_dynare}}}{Solves the model with Dynare (employing Octave or Matlab)}
 #' 
@@ -185,9 +188,13 @@ setOldClass("regts")
 #' 
 #' \item{\code{\link{get_equations}}}{Returns a character vector with the 
 #' parsed equations of the model.}
-
+#'
 #' \item{\code{\link{get_original_equations}}}{Returns a character vector with the 
-#' equations of the original model.}
+#' equations of the original model as defined in the mod file.}
+#' 
+#' \item{\code{\link{get_static_equations}}}{Returns a character vector with the 
+#' static equations.}
+#' 
 #' 
 #' \item{\code{\link{copy}}}{Returns a deep copy of the \code{\link{DynMdl}} 
 #' object}
