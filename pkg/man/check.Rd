@@ -5,19 +5,29 @@
 \title{\code{\link{DynMdl}} method: Compute the eigenvalues of the linearized model
 around the steady state.}
 \description{
-This method of R6 class \code{\link{DynMdl}} computes the steady state,
-constructs a linear model around the state steady and finally
-computes the eigenvalues of the linearized model around the steady state. It
-also checks if the Blachard and  Kahn conditions are satisfied. The Blanchard
+This method of R6 class \code{\link{DynMdl}} constructs a linear model
+around the state steady and finally computes the eigenvalues of the
+linearized model around the steady state. It  also checks if the Blachard
+and  Kahn conditions are satisfied. The Blanchard
 and Kahn conditions state that the number of eigenvalues larger than 1
 should be equal to the number of forward looking variables
 (variables with leads).
+
+By default, the steady state is first computed with method \code{solve_steady},
+but computing the steady state can be suppressed by specifying argument
+argument  \code{solve_steady = FALSE}. This argument is useful
+if the steady state cannot be computed, or if you want
+to linearize the model around another point than the steady state.
+If \code{solve_steady} is \code{FALSE}, then the model is linearlized using the
+current values of the static endogenous variables, as specified with for example
+\code{\link{set_static_endos}}.
 }
 \section{Usage}{
 
 
 \preformatted{
-mdl$check(tol = sqrt(.Machine$double.eps))
+mdl$check(tol = sqrt(.Machine$double.eps), solve_steady = TRUE,
+          silent = TRUE, ...)
 }
 
 \code{mdl} is a \code{\link{DynMdl}} object
@@ -31,6 +41,12 @@ mdl$check(tol = sqrt(.Machine$double.eps))
 is significantly larger than 1 when checking the Blanchard-Kahn
 conditions. The default is the square root of the machine precision
 (typically about 1.5e-8). See Details.}
+\item{\code{solve_steady}}{A logical (default \code{TRUE}), indicating when
+\code{check} should first compute the steady state using method
+\code{\link{solve_steady}}.}
+\item{\code{silent}}{A logical. If \code{TRUE} (the default), then all
+output when solving the steady state is suppressed.}
+\item{\code{...}}{Other arguments passed to the \code{\link{solve_steady}}.}
 }
 }
 

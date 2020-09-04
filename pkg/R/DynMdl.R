@@ -1096,14 +1096,15 @@ DynMdl <- R6Class("DynMdl",
       }
       return(invisible(self))
     },
-    check = function(tol = sqrt(.Machine$double.eps)) {
-
-      self$solve_steady(control = list(silent = TRUE))
-      
-      if (private$solve_status != "OK") {
-        stop("No steady state ... checking model is not possible")
+    check = function(tol = sqrt(.Machine$double.eps), solve_steady = TRUE, 
+                     silent = TRUE, ...) {
+      if (solve_steady) {
+        self$solve_steady(silent = silent, ...)
+        if (private$solve_status != "OK") {
+          stop("No steady state ... checking model is not possible.\n",
+               "To suppress this error, specify argument solve_steady = FALSE.")
+        }
       }
-      
       private$prepare_dynamic_model(solve_first_order = TRUE)
       private$ss <- solve_first_order(private$ss, private$calc, 
                                       private$model_index, private$mdldef, 

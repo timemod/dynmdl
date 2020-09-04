@@ -85,6 +85,26 @@ test_that("steady state and eigenvalues", {
                             header = TRUE)
   expect_equal(eigval_data$Real, Re(eigvals), tolerance = 1e-6)
   expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
+  
+
+})
+
+test_that("check argument silent and options passed to solve_steady", {
+  # check argument silent and ... of mdl$check
+  mdl2 <- mdl$copy()
+  mdl2$set_static_endos(mdl2$get_static_endos() * 1.1)
+  
+  expected_output <-  "The maximum number of iterations \\(1\\) has been reached"
+  expected_warning <- paste0("Solving the steady state not succesful.\n", 
+                             expected_output)
+  expected_error <- "No steady state ... checking model is not possible\\."
+  expect_warning(
+    expect_output(
+      expect_error(
+        mdl2$check(control = list(maxiter = 1), silent = FALSE), 
+        expected_error),
+      expected_output),
+    expected_warning)
 })
 
 test_that("static_residual_check", {
