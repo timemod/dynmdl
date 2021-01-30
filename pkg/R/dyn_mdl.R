@@ -750,7 +750,7 @@ convert_trend_info <- function(trend_info, exo_names, endo_names) {
   
   # TODO: check that all trend variables are used in deflators, otherwise
   # give a warning
-  trend_info$has_deflated_endos <- nrow(trend_info$deflated_endo) > 0
+  trend_info$has_deflated_endos <- nrow(trend_info$deflated_endos) > 0
   
   return(trend_info)
 }
