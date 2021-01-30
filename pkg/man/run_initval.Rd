@@ -2,15 +2,14 @@
 % Please edit documentation in R/DynMdl_doc.R
 \name{run_initval}
 \alias{run_initval}
-\title{\code{\link{DynMdl}} method: Evaluate to initval block to obtain new values
-for the static endogenous and exogenous variables based on the current
-parameters.}
+\title{\code{\link{DynMdl}} method: Evaluate the initval block to obtain new values
+of static model variables based on the current parameters.}
 \description{
 This function runs the equations in the initval block using the
 current values of parameters and static model variables. The static
-values of the exogenous and endogenous variables are updated with
-the new values calculated using the initval equations. Static endogenous
-variables are not updated in argument \code{update_endos = FALSE}.
+values of the model variables  are updated with
+the calculated values. Static endogenous
+variables are not updated if argument \code{update_endos = FALSE}.
 
 Variables that do not occur at the left hand side of an equation in the
 initval block are \emph{not} modified. Thus they are not initialized to zero, in
