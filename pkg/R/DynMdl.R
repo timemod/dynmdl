@@ -2236,31 +2236,38 @@ DynMdl <- R6Class("DynMdl",
       apply_fun <- !missing(fun)
       if (upd_mode != "upd" || apply_fun) {
         if (type == "endo") {
-          old_data <- private$endo_data[per, names, drop = FALSE]
+          old_data_detr <- private$endo_data[per, names, drop = FALSE]
         } else {
-          old_data <- private$exo_data[per, names, drop = FALSE]
+          old_data_detr <- private$exo_data[per, names, drop = FALSE]
         }
       }
 
       if (apply_fun) {
-        new_data <- fun(old_data, data)
+        if (type == "endo" && private$mdldef$trend_info$has_deflated_endos) {
+          old_data_trend <- private$trend_endo_data(old_data_detr)
+        } else {
+          old_data_trend <- old_data_detr
+        }
+        new_data_trend <- fun(old_data_trend, data)
       } else {
-        new_data <- data
+        new_data_trend <- data
+      }
+      if (type == "endo" && private$mdldef$trend_info$has_deflated_endos) {
+        new_data_detr <- private$detrend_endo_data(new_data_trend)
+      } else {
+        new_data_detr <- new_data_trend
       }
       
       if (upd_mode == "updval") {
         # restore old values when data is false
-        sel <- is.na(data)
-        new_data[sel] <- old_data[sel]
+        sel <- is.na(new_data_detr)
+        new_data_detr[sel] <- old_data_detr[sel]
       }
       
       if (type == "endo") {
-        if (private$mdldef$trend_info$has_deflated_endos) {
-          new_data <- private$detrend_endo_data(new_data)
-        }
-        private$endo_data[per, names] <- new_data
+        private$endo_data[per, names] <- new_data_detr
       } else {
-        private$exo_data[per, names] <- new_data
+        private$exo_data[per, names] <- new_data_detr
       }
       return(invisible(self))
     },
