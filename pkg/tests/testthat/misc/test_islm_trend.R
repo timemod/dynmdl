@@ -225,13 +225,24 @@ test_that("set_data upd_mode", {
   
   p <- period_range(2019, 2022)
   names <- "y"
-  data <- regts(c(1, NA, 3, 4), period = p)
+  data <- regts(c(1, 2,  NA, 4), period = p)
   
   mdl2$set_data(data, upd_mode = "updval", names = names)
   
   expected_result <- old_data
   expected_result[p, names] <- ifelse(is.na(data), expected_result[p, names],
                                       data)
+  expected_result["2022", ] <- NA
+  
+
+  expect_equal(mdl2$get_data(period = p), expected_result)
+  
+  # restore  original data and then test case with only NA values:
+  mdl2$set_data(old_data[ , names, drop = FALSE])
+
+  mdl2$set_data(data * NA, upd_mode = "updval", names = names)
+  
+  expected_result <- old_data
   expected_result["2022", ] <- NA
   
   expect_equal(mdl2$get_data(period = p), expected_result)
