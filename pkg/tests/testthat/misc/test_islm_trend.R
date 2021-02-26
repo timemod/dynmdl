@@ -179,3 +179,79 @@ test_that("set_period", {
                "frequency than the data period \\(2019/2021\\)\\.")
   expect_error(mdl$set_period("2018q2/2019q2"), msg)
 })
+
+test_that("set_data", {
+  
+  mdl2 <- mdl$copy()
+  old_data <- mdl2$get_data()
+  
+  data <- regts(matrix(1:4, ncol = 2), start = "2019", names = c("y", "t"))
+  mdl2$set_data(data)
+  expected_result <- update_ts(old_data, data)
+  expect_equal(mdl2$get_data(), expected_result)
+})
+
+test_that("set_data fun", {
+  
+  mdl2 <- mdl$copy()
+  old_data <- mdl2$get_data()
+  
+  names <- c("y", "yd")
+  p <- period_range(2019, 2020)
+  
+  data <- regts(matrix(1:4, ncol = 2), period = p, names = names)
+  data[2, 2] <- NA
+  mdl2$set_data(data, fun = `*`)
+  
+  expected_result1 <- old_data  
+  expected_result1[p, names] <- old_data[p, names] * data
+  expect_equal(mdl2$get_data(), expected_result1)
+  
+  # restore  original data and then test additive case:
+  mdl2$set_data(old_data[ , names])
+  
+  mdl2$set_data(data, fun = `+`)
+  
+  expected_result2 <- old_data
+  expected_result2[p, names] <- old_data[p, names] + data
+  
+  expect_equal(mdl2$get_data(), expected_result2)
+})
+
+test_that("set_data upd_mode", {
+  
+  mdl2 <- mdl$copy()
+  old_data <- mdl2$get_data()
+  
+  p <- period_range(2019, 2022)
+  names <- "y"
+  data <- regts(c(1, NA, 3, 4), period = p)
+  
+  mdl2$set_data(data, upd_mode = "updval", names = names)
+  
+  expected_result <- old_data
+  expected_result[p, names] <- ifelse(is.na(data), expected_result[p, names],
+                                      data)
+  expected_result["2022", ] <- NA
+  
+  expect_equal(mdl2$get_data(period = p), expected_result)
+})
+
+test_that("set_data combi fun and upd mode", {
+  
+  mdl2 <- mdl$copy()
+  old_data <- mdl2$get_data()
+  
+  names <- c("y", "r", "yd")
+  p <- period_range(2019, 2021)
+  
+  data <- regts(matrix(1:9, ncol = 3), period = p, names = names)
+  data[2, 2] <- NA
+  data[2:3, 3] <- NA
+  mdl2$set_data(data, fun = `*`, upd_mode = "updval")
+  
+  expected_result <- update_ts(old_data, old_data[p, names] * data,
+                               method = "updval")
+  
+  expect_equal(mdl2$get_data(), expected_result)
+})

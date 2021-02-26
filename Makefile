@@ -14,17 +14,15 @@ RCPP_CXXFLAGS = $(shell Rscript -e "Rcpp:::CxxFlags()")
 # Package name, Version and date from DESCIPTION
 PKG=$(shell grep 'Package:' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2)
 PKGTAR=$(PKG)_$(shell grep 'Version' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2).tar.gz
-PKGDATE=$(shell grep 'Date' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2)
-TODAY=$(shell date "+%Y-%m-%d")
-# make sure that R's variables are used
-# if you don't do this you'll get make's initial values
-# gives error doing syntax target
+
+ifneq ($(OSTYPE), windows)
 CC=$(shell R CMD config CC)
 CPP=$(shell R CMD config CXX)
 CPP_FLAGS=$(shell R CMD config --cppflags)
 RCEREAL_DIR=$(shell Rscript -e "cat(system.file(\"include\", package = \"Rcereal\"))")
 BH_DIR=$(shell Rscript -e "cat(system.file(\"include\", package = \"BH\"))")
 PKG_CXXFLAGS = -DPACKAGE_NAME=\"dynare\" -DPACKAGE_TARNAME=\"dynare\" -DPACKAGE_VERSION=\"R-0.1-unstable\" -DPACKAGE_STRING=\"dynare\ R\ 0.1-unstable\" -DPACKAGE_BUGREPORT=\"\" -DPACKAGE_URL=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_BOOST_GRAPH_ADJACENCY_LIST_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_TRIM_HPP=1 -DHAVE_BOOST_ALGORITHM_STRING_SPLIT_HPP=1 -DHAVE_BOOST_LEXICAL_CAST_HPP=1 -DBOOST_NO_HASH=/\*\*/ -DUSE_R -I$(PKGDIR)/src -I$(RCEREAL_DIR) -I$(BH_DIR) $(RCPP_CXXFLAGS) -std=c++11
+endif
 
 .PHONY: clean cleanx check install uninstall mkpkg bin pdf
 
@@ -46,23 +44,25 @@ help:
 	@echo "   flags     - display R config flags and some macros"
 
 flags:
-	@echo "OSTYPE=$(OSTYPE)"
-	@echo "RCPP_CXXFLAGS=$(RCPP_CXXFLAGS)"
-	@echo "BH_DIR=$(BH_DIR)"
-	@echo "RCEREAL_DIR=$(RCEREAL_DIR)"
-	@echo "CPP_FLAGS=$(CPP_FLAGS)"
-	@echo "PKGDIR=$(PKGDIR)"
-	@echo "PKG=$(PKG)"
-	@echo "PKGTAR=$(PKGTAR)"
-	@echo "PKGDATE=$(PKGDATE)"
-	@echo "CC=$(CC)"
-	@echo "CPP=$(CPP)"
-	@echo "CPP_FLAGS=$(CPP_FLAGS)"
-	@echo "PKG_CXXFLAGS=$(PKG_CXXFLAGS)"
-	@echo ".libPaths():"
+	@echo OSTYPE=$(OSTYPE)
+	@echo PKGDIR=$(PKGDIR)
+	@echo PKG=$(PKG)
+	@echo PKGTAR=$(PKGTAR)
+	@echo PKGDATE=$(PKGDATE)
+ifneq ($(OSTYPE), windows)
+	@echo CC=$(CC)
+	@echo CPP=$(CPP)
+	@echo CPP_FLAGS=$(CPP_FLAGS)
+	@echo PKG_CXXFLAGS=$(PKG_CXXFLAGS)
+	@echo RCPP_CXXFLAGS=$(RCPP_CXXFLAGS)
+	@echo BH_DIR=$(BH_DIR)
+	@echo RCEREAL_DIR=$(RCEREAL_DIR)
+	@echo CPP_FLAGS=$(CPP_FLAGS)
+endif
+	@echo .libPaths:
 	@R --no-save --quiet --slave -e '.libPaths()'
 
-test:
+test: install_deps
 	R --slave -f test.R
 
 test_covr:
@@ -74,14 +74,14 @@ check: cleanx syntax
 	R CMD build $(PKGDIR)
 	R CMD check $(RCHECKARG) $(PKGTAR)
 	@rm -f  $(PKGTAR)
-	@echo "Today                           : $(TODAY)"
-	@echo "Checked package description date: $(PKGDATE)"
-# 	@Rscript -e 'cat("Installed version date          :",packageDescription("nleqslv", fields="Date"))'
-	@echo ""
 
 syntax:
+ifneq ($(OSTYPE), windows)
 	$(CPP) $(CPP_FLAGS) $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/*.c*
 	$(CPP) $(CPP_FLAGS) $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/macro/*.c*
+else
+        @echo Syntax checking not possible on Windows
+endif
 
 cleanx:
 # Apple Finder rubbish
@@ -95,13 +95,14 @@ endif
 # build source package for submission to CRAN
 # after building do a check as CRAN does it
 mkpkg: cleanx syntax install_deps
+ifeq ($(OSTYPE), windows)
+        @echo Please run mkpkg on Linux or MAC OSX
+else
+
 	R CMD build $(PKGDIR)
 	@cp -nv $(PKGTAR) archive
-	@echo "Today                           : $(TODAY)"
-	@echo "Checked package description date: $(PKGDATE)"
-# 	@Rscript -e 'cat("Installed version date          :",packageDescription("nleqslv", fields="Date"))'
-	@echo ""
 	./drat.sh --pkg=$(PKGTAR)
+endif
 
 
 bin: install_deps
