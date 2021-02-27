@@ -80,7 +80,7 @@ ifneq ($(OSTYPE), windows)
 	$(CPP) $(CPP_FLAGS) $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/*.c*
 	$(CPP) $(CPP_FLAGS) $(PKG_CXXFLAGS) -c -fsyntax-only -Wall -pedantic $(PKGDIR)/src/macro/*.c*
 else
-        @echo Syntax checking not possible on Windows
+	@echo Syntax checking not possible on Windows
 endif
 
 cleanx:
@@ -96,9 +96,8 @@ endif
 # after building do a check as CRAN does it
 mkpkg: cleanx syntax install_deps
 ifeq ($(OSTYPE), windows)
-        @echo Please run mkpkg on Linux or MAC OSX
+	@echo Please run mkpkg on Linux or MAC OSX
 else
-
 	R CMD build $(PKGDIR)
 	@cp -nv $(PKGTAR) archive
 	./drat.sh --pkg=$(PKGTAR)
