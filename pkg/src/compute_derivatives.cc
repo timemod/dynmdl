@@ -3,8 +3,7 @@
 #include  "parse.hh"
 
 // [[Rcpp::export]]
-Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename,
-                               Rcpp::CharacterVector instruments,
+Rcpp::List compute_derivatives(std::string modfile, Rcpp::CharacterVector instruments,
                                bool fixed_period, bool check_stat_eqs, bool latex, 
                                Rcpp::List latex_options) {
 
@@ -14,13 +13,13 @@ Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename,
     output_params.set_ndigits_latex(ndigits_latex);
     output_params.set_par_as_num(par_as_num);
 
+    std::string latex_dir = latex_options["dir"];
+    std::string latex_prefix = latex_options["prefix"];
 
     // Compute the derivatives for the fit procedure (first order conditions).
-   
     // The treatement of char in the next statement does not deserve a beauty
     // price
-    ModFile *mod_file = parse((char *) modfile.c_str(), 
-                              (char *) latex_basename.c_str(),
+    ModFile *mod_file = parse((char *) modfile.c_str(),  latex_dir, latex_prefix,
                               false, true, true, true, 0, false, false, latex, output_params);
     
     Rcpp::List retval;

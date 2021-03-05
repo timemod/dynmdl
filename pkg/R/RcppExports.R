@@ -41,12 +41,12 @@ get_triplet_jac_stat <- function(model_index, endos, debug_eqs) {
     .Call(`_dynmdl_get_triplet_jac_stat`, model_index, endos, debug_eqs)
 }
 
-compile_model_ <- function(modfile, latex_basename, use_dll, dll_dir, max_laglead_1, strict, internal_calc, n_fit_derivatives, warn_uninit_param, init_param_na, latex, latex_options) {
-    .Call(`_dynmdl_compile_model_`, modfile, latex_basename, use_dll, dll_dir, max_laglead_1, strict, internal_calc, n_fit_derivatives, warn_uninit_param, init_param_na, latex, latex_options)
+compile_model_ <- function(modfile, use_dll, dll_dir, max_laglead_1, strict, internal_calc, n_fit_derivatives, warn_uninit_param, init_param_na, latex, latex_options) {
+    .Call(`_dynmdl_compile_model_`, modfile, use_dll, dll_dir, max_laglead_1, strict, internal_calc, n_fit_derivatives, warn_uninit_param, init_param_na, latex, latex_options)
 }
 
-compute_derivatives <- function(modfile, latex_basename, instruments, fixed_period, check_stat_eqs, latex, latex_options) {
-    .Call(`_dynmdl_compute_derivatives`, modfile, latex_basename, instruments, fixed_period, check_stat_eqs, latex, latex_options)
+compute_derivatives <- function(modfile, instruments, fixed_period, check_stat_eqs, latex, latex_options) {
+    .Call(`_dynmdl_compute_derivatives`, modfile, instruments, fixed_period, check_stat_eqs, latex, latex_options)
 }
 
 get_residuals_ <- function(endos, icols, exo_data, params, f_dynamic, n_endo, nper, period_shift) {

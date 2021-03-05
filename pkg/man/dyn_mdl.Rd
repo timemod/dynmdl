@@ -197,10 +197,22 @@ When the mod file contains a \code{write_latex_static_model},
 \code{write_latex_dynamic_model} or \code{write_latex_oiriginal_model}
 statement, then the Dynare parser of package \code{dynmdl} generates
 LaTeX files in directory \code{latex}. Argument \code{latex_options} can be
-used to change the format of the LaTeX files.
-It should be a named list containing one or more of
-the following components:
+used to change the filenames of the LaTeX file or
+the format of the LaTeX files. It should be a named list containing one or
+more of the following components:
 \describe{
+\item{\code{dir}}{A character specifying the directory where the LaTeX
+files are created. The default is \code{"latex/<basename>"},
+where \verb{<basename>} is the basename of the mod file excluding the
+extension. For example, if the specified mod file is \code{mod/islm.mod}, then the
+default directory is \code{latex/islm}.}
+\item{\code{file_prefix}}{A character vector specifying a prefix for the
+Latex files. By default no prefix is added. If specified, then
+the LaTeX filenames start with the prefix followed by an underscore.
+For example, if \code{prefix = "islm"}, then name of the LaTeX file with
+dynamic equations is \code{islm_dynamic_fit_content.tex}.
+If \code{prefix} has not been specified, then the filename is
+\code{dynamic_fit_content.tex}.}
 \item{\code{par_as_num}}{A logical. If \code{TRUE}, then the parameters
 are written as numerical constants to the LaTeX file, using the numerical
 values as specified in the mod file. The default is \code{FALSE}.}

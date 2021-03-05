@@ -5816,19 +5816,19 @@ Rcpp::LogicalVector DynamicModel::equation_has_static() const {
    return result;
 }
 
-void DynamicModel::writeLatexFile(const string &dirname, const string &basename, 
+void DynamicModel::writeLatexFile(const string &dir, const string &prefix, 
                                   const bool write_equation_tags, const bool fit,
                                   const OutputParameters &output_params,
                                   const eval_context_t &eval_context) const {
   string model_type = fit ? "dynamic_fit" : "dynamic";
-  writeLatexModelFile(dirname, basename, model_type, oLatexDynamicModel, output_params,
+  writeLatexModelFile(dir, prefix, model_type, oLatexDynamicModel, output_params,
                       eval_context, write_equation_tags);
 }
 
-void DynamicModel::writeLatexOriginalFile(const string &dirname, const string &basename,
+void DynamicModel::writeLatexOriginalFile(const string &dir, const string &prefix,
                                           const OutputParameters &output_params,
                                           const eval_context_t &eval_context) const {
-  writeLatexModelFile(dirname, basename, "original", oLatexDynamicModel, output_params, eval_context);
+  writeLatexModelFile(dir, prefix, "original", oLatexDynamicModel, output_params, eval_context);
 }
 
 

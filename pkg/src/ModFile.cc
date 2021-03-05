@@ -1585,38 +1585,42 @@ int ModFile::get_warning_count() const {
     return(warnings.countWarnings());
 }
 
-
-void createLatexDir(const string &dirname) {
+/* Create LaTeX directory. This code assumes that the directory separator is a '/',
+ * so make sure that Windows backslash separators have been converted to 
+ * forward slashes in the R code */
+void createLatexDir(const string &dir) {
+     int r;
+     size_t pos = 0;
+     do {
+         pos = dir.find_first_of("/", pos + 1);
 #ifdef _WIN32
-     int r1 = mkdir("latex");
-     int r2 = mkdir(dirname.c_str());
+         r = mkdir(dir.substr(0, pos).c_str());
 #else
-     int r1 = mkdir("latex", 07777);
-     int r2 = mkdir(dirname.c_str(), 0777);
+         r = mkdir(dir.substr(0, pos).c_str(), 0777);
 #endif
-     if ((r1 < 0 || r2 < 0) && errno != EEXIST) {
-        dyn_error("ERROR: " + string(std::strerror(errno)));
-    }
+         if (r < 0 && errno != EEXIST) {
+             dyn_error("ERROR creating " + dir.substr(0, pos) + ": " + string(std::strerror(errno)));
+         }
+    } while (pos != std::string::npos);
 }
 
-void ModFile::writeLatexFiles(const string &basename, bool fit, 
-                              const OutputParameters &output_params) {
+void ModFile::writeLatexFiles(const string &dir, const string &prefix,
+                              bool fit, const OutputParameters &output_params) {
 
-// create directory LaTeX if it does not exist
 
+    // create directory LaTeX if it does not exist
     bool dir_created = false;
 
-    const string dirname = "latex/" + basename;
     for (vector<Statement *>::const_iterator it = statements.begin();
           it != statements.end(); it++) {
 
         WriteLatexDynamicModelStatement *wldms = 
               dynamic_cast<WriteLatexDynamicModelStatement *>(*it);
         if (wldms != NULL) {
-           if (!dir_created) createLatexDir(dirname);
+           if (!dir_created) createLatexDir(dir);
            dir_created = true;
            bool write_eq_tags = wldms->get_write_equation_tags();
-           dynamic_model.writeLatexFile(dirname, basename, write_eq_tags, fit, 
+           dynamic_model.writeLatexFile(dir, prefix, write_eq_tags, fit, 
                                         output_params, global_eval_context);
            continue;
         }
@@ -1624,9 +1628,9 @@ void ModFile::writeLatexFiles(const string &basename, bool fit,
         WriteLatexStaticModelStatement *wlsms = 
               dynamic_cast<WriteLatexStaticModelStatement *>(*it);
         if (wlsms != NULL) {
-           if (!dir_created) createLatexDir(dirname);
+           if (!dir_created) createLatexDir(dir);
            dir_created = true;
-           static_model.writeLatexFile(dirname, basename, fit, output_params,
+           static_model.writeLatexFile(dir, prefix, fit, output_params,
                                        global_eval_context);
            continue;
         }
@@ -1638,9 +1642,9 @@ void ModFile::writeLatexFiles(const string &basename, bool fit,
             WriteLatexOriginalModelStatement *wloms = 
                 dynamic_cast<WriteLatexOriginalModelStatement *>(*it);
             if (wloms != NULL) {
-               if (!dir_created) createLatexDir(dirname);
+               if (!dir_created) createLatexDir(dir);
                dir_created = true;
-               original_model.writeLatexOriginalFile(dirname, basename, output_params,
+               original_model.writeLatexOriginalFile(dir, prefix, output_params,
                                                      global_eval_context);
             }
         }
