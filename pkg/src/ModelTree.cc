@@ -1731,6 +1731,8 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
                             << model_type << "_single}" << endl;
              dynamic_cast<ExprNode *>(equations[eq])->writeOutput(single_eq_output, output_type, eval_context,
                                                                   output_params);
+
+             single_eq_output << endl;
              single_eq_output.close();
              break;
           }

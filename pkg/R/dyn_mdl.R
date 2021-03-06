@@ -210,23 +210,25 @@ dyn_mdl <- function(mod_file, period, data, base_period,
                  paste(paste0("\"", invalid_options, "\""), collapse = ", "), 
                  "specified."))
     }
-    if (!is.null(dir <- latex_options$dir) && 
-        (!is.character(dir) || length(dir) != 1 || trimws(dir) == "")) {
-      stop("Latex option 'dir' should be a single non-empty character string.")
+    
+    if (!is.null(dir <- latex_options$dir)) {
+      if (!is.character(dir) || length(dir) != 1 || trimws(dir) == "") {
+        stop("Latex option 'dir' should be a single non-empty character string.")
+      } else if (.Platform$OS.type == "windows") {
+        # The C++ function ModFile::createLatexDir cannot handle backslahes 
+        # as directory separator.
+        # TODO: can we fix this by using Window-specific code in ModFile.cc?
+        latex_options$dir <- gsub("\\\\", "/", dir)
+      }
     }
-    if (!is.null(prefix <- latex_options$dir) && 
-        (!is.character(prefix) || length(prefix) != 1 || trimws(prefix) == "")) {
-      stop("Latex option 'prefix' should be a single nom-empty character ",
-           "string.")
-    }
-    if (.Platform$OS.type == "windows") {
-      # The C++ function ModFile::createLatexDir cannot handle backslahes 
-      # as directory separator.
-      # TODO: can we fix this by using Window-specific code in ModFile.cc?
-      latex_options$dir <- gsub("\\\\", "/", latex_options$dir)
-    }
-    if (grepl("(\\\\|/)", latex_options$prefix)) {
-      stop("latex option prefix should not contain a directory separator")
+    if (!is.null(prefix <- latex_options$prefix)) { 
+        if (!is.character(prefix) || length(prefix) != 1 || 
+            trimws(prefix) == "") {
+          stop("Latex option 'prefix' should be a single nom-empty character ",
+               "string.")
+        } else if (grepl("(\\\\|/)", prefix)) {
+          stop("latex option prefix should not contain a directory separator")
+        }
     }
     
     latex_options_[names(latex_options)] <- latex_options
