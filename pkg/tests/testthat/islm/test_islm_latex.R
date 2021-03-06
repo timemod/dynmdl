@@ -4,8 +4,6 @@ rm(list = ls())
 
 context("ISLM model latex")
 
-source("utils.R")
-
 model_name <- "islm_latex"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 latex_main_dir <- "latex"

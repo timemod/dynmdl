@@ -221,13 +221,14 @@ dyn_mdl <- function(mod_file, period, data, base_period,
         latex_options$dir <- gsub("\\\\", "/", dir)
       }
     }
+    
     if (!is.null(prefix <- latex_options$prefix)) { 
         if (!is.character(prefix) || length(prefix) != 1 || 
             trimws(prefix) == "") {
-          stop("Latex option 'prefix' should be a single nom-empty character ",
+          stop("Latex option 'prefix' should be a single non-empty character ",
                "string.")
         } else if (grepl("(\\\\|/)", prefix)) {
-          stop("latex option prefix should not contain a directory separator")
+          stop("Latex option prefix should not contain a directory separator")
         }
     }
     

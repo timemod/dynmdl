@@ -4,8 +4,6 @@ rm(list = ls())
 
 context("ISLM fit model latex")
 
-source("utils.R")
-
 model_name <- "islm_fit_latex"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 
