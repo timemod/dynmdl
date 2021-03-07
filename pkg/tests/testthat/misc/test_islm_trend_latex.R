@@ -51,6 +51,8 @@ test_that("latex files written correctly", {
 
 test_that("latex files (no_fit) written correctly", {
   latex_dir <- tempfile()
+  # check if it also works with forward slashes (for windows)
+  latex_dir <- gsub("\\\\", "/", latex_dir)
   latex_options <- list(dir = latex_dir, prefix = "islm_trend_no_fit", 
                         par_as_num = TRUE, ndigits = 1)
   expect_warning(

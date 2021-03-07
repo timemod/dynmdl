@@ -1591,15 +1591,36 @@ int ModFile::get_warning_count() const {
 void createLatexDir(const string &dir) {
      int r;
      size_t pos = 0;
-     do {
-         pos = dir.find_first_of("/", pos + 1);
+
 #ifdef _WIN32
-         r = mkdir(dir.substr(0, pos).c_str());
-#else
-         r = mkdir(dir.substr(0, pos).c_str(), 0777);
+     if (dir.length() == 2 && dir.at(1) == ':') {
+         /* dir specifies a disk drive (e.g. c:).
+          * Obviously, it is not possible to create a new drive 
+          * with function mkdir. But if the path is an existing 
+          * drive, mkdir sometimes (but not always) fails.
+          * The failure occurs when we run the dynmdl tests
+          * on Windows. Therefore return in this case */
+         return;
+      }
 #endif
+
+     do {
+#ifdef _WIN32
+         pos = dir.find_first_of("\\/", pos + 1);
+         if (pos == 2 && dir.at(1) == ':') {
+             /* dir.substr(0, pos) specifies a disk drive (e.g. c:).
+              * This can be problematic (see the comments above).
+              * Therefore skip the call of mkdir. */
+             continue;
+         }
+         r = mkdir(dir.substr(0, pos).c_str());
+#else 
+         pos = dir.find_first_of("/", pos + 1);
+         r = mkdir(dir.substr(0, pos).c_str(), 0777);
+#endif 
          if (r < 0 && errno != EEXIST) {
-             dyn_error("ERROR creating " + dir.substr(0, pos) + ": " + string(std::strerror(errno)));
+             dyn_error("ERROR creating " + dir.substr(0, pos) + ": " + 
+                       string(std::strerror(errno)));
          }
     } while (pos != std::string::npos);
 }

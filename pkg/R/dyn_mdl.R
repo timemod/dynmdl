@@ -214,12 +214,7 @@ dyn_mdl <- function(mod_file, period, data, base_period,
     if (!is.null(dir <- latex_options$dir)) {
       if (!is.character(dir) || length(dir) != 1 || trimws(dir) == "") {
         stop("Latex option 'dir' should be a single non-empty character string.")
-      } else if (.Platform$OS.type == "windows") {
-        # The C++ function ModFile::createLatexDir cannot handle backslahes 
-        # as directory separator.
-        # TODO: can we fix this by using Window-specific code in ModFile.cc?
-        latex_options$dir <- gsub("\\\\", "/", dir)
-      }
+      } 
     }
     
     if (!is.null(prefix <- latex_options$prefix)) { 
