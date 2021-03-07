@@ -82,8 +82,8 @@
 #' the LaTeX filenames start with the prefix followed by an underscore. 
 #' For example, if `prefix = "islm"`, then name of the LaTeX file with 
 #' dynamic equations is `islm_dynamic_content.tex`.
-#' If `prefix` has not been specified, then the filename is 
-#' `dynamic_fit_content.tex`. The prefix is also added to the name of the
+#' If `prefix` has not been specified, then the filename would be 
+#' `dynamic_content.tex`. The prefix is also added to the name of the
 #' directory for the single equations.}
 #' \item{\code{par_as_num}}{A logical. If \code{TRUE}, then the parameters
 #' are written as numerical constants to the LaTeX file, using the numerical
@@ -94,7 +94,14 @@
 #' then the number \eqn{\pi} is printed as \code{3.142},
 #' the number 120.25 as \code{120.2}, and the number
 #' 10.1234 as \code{1.012e+05}}
-#' }}
+#' }
+#' 
+#' An example where argument `latex_options` is used:
+#' ```
+#' mdl <- dyn_mdl("islm.mod", latex_options = list(dir = "doc", prefix = "islm",
+#'                 par_as_num = TRUE)
+#' ```
+#' }
 #'
 #' @param mod_file the name of the model file (including extension .mod)
 #' @param period a \code{\link[regts]{period_range}} object specifying the
