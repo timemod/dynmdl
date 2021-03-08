@@ -203,6 +203,8 @@ dyn_mdl <- function(mod_file, period, data, base_period,
   
   calc <- match.arg(calc)
   
+  is_windows <- .Platform$OS.type == 'windows'
+  
   latex_options_ <- list(dir = file.path("latex",
                                          file_path_sans_ext(basename(mod_file))),
                          prefix = "",  par_as_num = FALSE, ndigits = 4)
@@ -224,14 +226,15 @@ dyn_mdl <- function(mod_file, period, data, base_period,
       } 
     }
     
-    if (!is.null(prefix <- latex_options$prefix)) { 
-        if (!is.character(prefix) || length(prefix) != 1 || 
-            trimws(prefix) == "") {
-          stop("Latex option 'prefix' should be a single non-empty character ",
+    if (!is.null(prefix <- latex_options$prefix)) {
+      dirsep_pattern <- if (is_windows) "(\\\\|/)" else "/"   
+      if (!is.character(prefix) || length(prefix) != 1 || 
+           trimws(prefix) == "") {
+        stop("Latex option 'prefix' should be a single non-empty character ",
                "string.")
-        } else if (grepl("(\\\\|/)", prefix)) {
-          stop("Latex option prefix should not contain a directory separator")
-        }
+      } else if (grepl(dirsep_pattern, prefix)) {
+        stop("Latex option prefix should not contain a directory separator")
+      }
     }
     
     latex_options_[names(latex_options)] <- latex_options
@@ -299,7 +302,7 @@ dyn_mdl <- function(mod_file, period, data, base_period,
       unlink(dll_dir, recursive = TRUE)
     }
     dir.create(dll_dir)
-    if (.Platform$OS.type == "windows")  {
+    if (is_windows)  {
       # on Windows, tempdir creates a filename with 
       # backslashes. This should be replaced by a forward
       # slash

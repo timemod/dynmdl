@@ -4,7 +4,6 @@ rm(list = ls())
 
 context("ISLM trend model latex")
 
-
 model_name <- "islm_trend_latex"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 
@@ -92,6 +91,15 @@ test_that("errors", {
   expect_error(dyn_mdl(mod_file, silent = TRUE,
                        latex_options = list(prefix = c("a", "b"))),
                msg)
+  msg <- "Latex option prefix should not contain a directory separator"
+  expect_error(dyn_mdl(mod_file, silent = TRUE,
+                       latex_options = list(prefix = c("a/b"))),
+               msg)
+  if (.Platform$OS.type == "windows") {
+    expect_error(dyn_mdl(mod_file, silent = TRUE,
+                         latex_options = list(prefix = c("a\\b"))),
+                 msg)
+  }
 })
 
 
