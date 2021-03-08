@@ -1597,9 +1597,11 @@ void createLatexDir(const string &dir) {
          /* dir specifies a disk drive (e.g. c:).
           * Obviously, it is not possible to create a new drive 
           * with function mkdir. But if the path is an existing 
-          * drive, mkdir sometimes (but not always) fails.
-          * The failure occurs when we run the dynmdl tests
-          * on Windows. Therefore return in this case */
+          * drive, mkdir sometimes (but not always) fails
+          * with error "Permission denied".
+          * The failure occurs when we run the dynmdl test
+          * tests/testthat/test_islm_trend_latex.R on Windows. 
+          * Therefore return in this case. */
          return;
       }
 #endif
