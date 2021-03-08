@@ -194,11 +194,11 @@ method must be selected.
 
 \subsection{Latex options}{
 When the mod file contains a \code{write_latex_static_model},
-\code{write_latex_dynamic_model} or \code{write_latex_oiriginal_model}
+\code{write_latex_dynamic_model} or \code{write_latex_original_model}
 statement, then the Dynare parser of package \code{dynmdl} generates
-LaTeX files in directory \code{latex}. Argument \code{latex_options} can be
-used to change the filenames of the LaTeX file or
-the format of the LaTeX files. It should be a named list containing one or
+LaTeX files, by default in directory \code{latex}.
+Argument \code{latex_options} can be
+used to specify several options. It should be a named list containing one or
 more of the following components:
 \describe{
 \item{\code{dir}}{A character specifying the directory where the LaTeX
@@ -206,14 +206,14 @@ files are created. The default is \code{"latex/<basename>"},
 where \verb{<basename>} is the basename of the mod file excluding the file
 extension. For example, if the specified mod file is \code{mod/islm.mod}, then the
 default LaTeX directory is \code{latex/islm}.}
-\item{\code{prefix}}{A character vector specifying a prefix for the
-Latex files. By default no prefix is added. If specified, then
+\item{\code{prefix}}{A character specifying a prefix for the
+Latex filenames. By default no prefix is added. If specified, then
 the LaTeX filenames start with the prefix followed by an underscore.
 For example, if \code{prefix = "islm"}, then name of the LaTeX file with
 dynamic equations is \code{islm_dynamic_content.tex}.
 If \code{prefix} has not been specified, then the filename would be
 \code{dynamic_content.tex}. The prefix is also added to the name of the
-directory for the single equations.}
+directories where the single equations are created.}
 \item{\code{par_as_num}}{A logical. If \code{TRUE}, then the parameters
 are written as numerical constants to the LaTeX file, using the numerical
 values as specified in the mod file. The default is \code{FALSE}.}
