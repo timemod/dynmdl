@@ -1591,7 +1591,7 @@ void createSingleEqDir(const string &dirname) {
     int r = mkdir(dirname.c_str(), 0777);
 #endif
     if (r < -1 && errno != EEXIST) {
-        dyn_error("ERROR: " + string(std::strerror(errno)));
+       dyn_error("ERROR creating " + dirname + ": " + string(std::strerror(errno)));
     }
 }
 
@@ -1604,7 +1604,7 @@ string space2underscore(string text) {
     return text;
 }
 
-void ModelTree::writeLatexModelFile(const string &dirname, const string &model_basename, 
+void ModelTree::writeLatexModelFile(const string &dir, const string &prefix, 
                                     const string &model_type, ExprNodeOutputType output_type, 
                                     const OutputParameters &output_params,
                                     const eval_context_t &eval_context,
@@ -1618,12 +1618,17 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
   ofstream output, content_output;
 #ifdef USE_R
   ofstream single_eq_output;
-  string latex_basename_with_path = dirname + "/" + model_type;
-  string single_eq_dir = dirname + "/" + model_type + "_single_eqs";
-  string filename = latex_basename_with_path + ".tex";
-  string content_basename_with_path = latex_basename_with_path + "_content";
-  string content_basename = model_type + "_content";
-  string content_filename = content_basename_with_path + ".tex";
+  string basename;
+  if (prefix.length() > 0) {
+     basename = prefix + "_" + model_type;
+  } else {
+     basename = model_type;
+  }
+  string basename_with_path = dir + "/" + basename;
+  string single_eq_dir = basename_with_path + "_single_eqs";
+  string filename = basename_with_path + ".tex";
+  string content_basename = basename + "_content";
+  string content_filename = basename_with_path + "_content.tex";
 #else
   string filename = basename + ".tex";
   string content_basename = basename + "_content";
@@ -1726,6 +1731,8 @@ ModelTree::writeLatexModelFile(const string &basename, ExprNodeOutputType output
                             << model_type << "_single}" << endl;
              dynamic_cast<ExprNode *>(equations[eq])->writeOutput(single_eq_output, output_type, eval_context,
                                                                   output_params);
+
+             single_eq_output << endl;
              single_eq_output.close();
              break;
           }

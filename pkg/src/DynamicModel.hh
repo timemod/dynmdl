@@ -300,11 +300,11 @@ public:
   void writeLatexOriginalFile(const string &basename) const;
 
 #ifdef USE_R
-  void writeLatexFile(const string &dirname, const string &basename, 
+  void writeLatexFile(const string &dir, const string &prefix, 
                       const bool write_equation_tags, const bool fit,
                       const OutputParameters &output_params,
                       const eval_context_t &eval_context) const;
-  void writeLatexOriginalFile(const string &dirname, const string &basename,
+  void writeLatexOriginalFile(const string &dir, const string &prefix,
                               const OutputParameters &output_params, 
                               const eval_context_t &eval_context) const;
 #endif

@@ -5,15 +5,14 @@
 #' @importFrom gsubfn gsubfn
 #' @importFrom stats aggregate
 # @return a list with information about the derivatives
-get_fit_conditions <- function(mod_file,  instruments, latex_basename, 
+get_fit_conditions <- function(mod_file,  instruments, 
                                fixed_period, check_static_eqs,
                                latex, latex_options, silent) {
   
   # call C++ function compute_derivatives
   call_compute_derivatives <- function() {
-    return(compute_derivatives(mod_file, latex_basename, instruments, 
-                               fixed_period, check_static_eqs, latex, 
-                               latex_options))
+    return(compute_derivatives(mod_file, instruments, fixed_period, 
+                               check_static_eqs, latex, latex_options))
   }
   if (silent) {
     output <- capture.output({

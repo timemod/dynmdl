@@ -193,7 +193,7 @@ public:
   //! Writes LaTeX file with the equations of the static model
   void writeLatexFile(const string &basename) const;
 #ifdef USE_R
-  void writeLatexFile(const string &dirname, const string &basename, const bool fit,
+  void writeLatexFile(const string &dir, const string &prefix, const bool fit,
                       const OutputParameters &output_params,
                       const eval_context_t &eval_context) const;
 #endif

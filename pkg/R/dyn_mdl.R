@@ -65,13 +65,26 @@
 #' 
 #' \subsection{Latex options}{
 #' When the mod file contains a \code{write_latex_static_model},
-#' \code{write_latex_dynamic_model} or \code{write_latex_oiriginal_model} 
+#' \code{write_latex_dynamic_model} or \code{write_latex_original_model} 
 #' statement, then the Dynare parser of package \code{dynmdl} generates
-#' LaTeX files in directory \code{latex}. Argument \code{latex_options} can be
-#' used to change the format of the LaTeX files.
-#' It should be a named list containing one or more of
-#' the following components:
+#' LaTeX files, by default in directory \code{latex}. 
+#' Argument \code{latex_options} can be 
+#' used to specify several options. It should be a named list containing one or 
+#' more of the following components:
 #' \describe{
+#' \item{\code{dir}}{A character specifying the directory where the LaTeX
+#' files are created. The default is `"latex/<basename>"`,
+#' where `<basename>` is the basename of the mod file excluding the file 
+#' extension. For example, if the specified mod file is `mod/islm.mod`, then the
+#' default LaTeX directory is `latex/islm`.}
+#' \item{\code{prefix}}{A character specifying a prefix for the 
+#' Latex filenames. By default no prefix is added. If specified, then
+#' the LaTeX filenames start with the prefix followed by an underscore. 
+#' For example, if `prefix = "islm"`, then name of the LaTeX file with 
+#' dynamic equations is `islm_dynamic_content.tex`.
+#' If `prefix` has not been specified, then the filename would be 
+#' `dynamic_content.tex`. The prefix is also added to the name of the
+#' directories where the single equations are created.}
 #' \item{\code{par_as_num}}{A logical. If \code{TRUE}, then the parameters
 #' are written as numerical constants to the LaTeX file, using the numerical
 #' values as specified in the mod file. The default is \code{FALSE}.}
@@ -81,7 +94,14 @@
 #' then the number \eqn{\pi} is printed as \code{3.142},
 #' the number 120.25 as \code{120.2}, and the number
 #' 10.1234 as \code{1.012e+05}}
-#' }}
+#' }
+#' 
+#' An example where argument `latex_options` is used:
+#' ```
+#' mdl <- dyn_mdl("islm.mod", latex_options = list(dir = "doc", prefix = "islm",
+#'                 par_as_num = TRUE)
+#' ```
+#' }
 #'
 #' @param mod_file the name of the model file (including extension .mod)
 #' @param period a \code{\link[regts]{period_range}} object specifying the
@@ -183,7 +203,11 @@ dyn_mdl <- function(mod_file, period, data, base_period,
   
   calc <- match.arg(calc)
   
-  latex_options_ <- list(par_as_num = FALSE, ndigits = 4)
+  is_windows <- .Platform$OS.type == 'windows'
+  
+  latex_options_ <- list(dir = file.path("latex",
+                                         file_path_sans_ext(basename(mod_file))),
+                         prefix = "",  par_as_num = FALSE, ndigits = 4)
   
   if (!missing(latex_options)) {
     if (!is.list(latex_options) || is.null(names(latex_options))) {
@@ -195,9 +219,27 @@ dyn_mdl <- function(mod_file, period, data, base_period,
                  paste(paste0("\"", invalid_options, "\""), collapse = ", "), 
                  "specified."))
     }
+    
+    if (!is.null(dir <- latex_options$dir)) {
+      if (!is.character(dir) || length(dir) != 1 || trimws(dir) == "") {
+        stop("Latex option 'dir' should be a single non-empty character string.")
+      } 
+    }
+    
+    if (!is.null(prefix <- latex_options$prefix)) {
+      dirsep_pattern <- if (is_windows) "(\\\\|/)" else "/"   
+      if (!is.character(prefix) || length(prefix) != 1 || 
+           trimws(prefix) == "") {
+        stop("Latex option 'prefix' should be a single non-empty character ",
+               "string.")
+      } else if (grepl(dirsep_pattern, prefix)) {
+        stop("Latex option prefix should not contain a directory separator")
+      }
+    }
+    
     latex_options_[names(latex_options)] <- latex_options
   }
-  
+
   # check strict and nostrict
   if (!missing(strict)) {
     if (!is.logical(strict) || length(strict) != 1) {
@@ -260,7 +302,7 @@ dyn_mdl <- function(mod_file, period, data, base_period,
       unlink(dll_dir, recursive = TRUE)
     }
     dir.create(dll_dir)
-    if (.Platform$OS.type == "windows")  {
+    if (is_windows)  {
       # on Windows, tempdir creates a filename with 
       # backslashes. This should be replaced by a forward
       # slash
@@ -270,9 +312,7 @@ dyn_mdl <- function(mod_file, period, data, base_period,
     dll_dir <- NA_character_
   }
   
-  # basename for latex files, only used if the mod file contains a 
-  # write_latex_dynamic_model etc.
-  latex_basename <- file_path_sans_ext(basename(mod_file))
+ 
   
   # run macropreprocessor to preprocess the file, this is necessary
   # for get_equations()
@@ -327,8 +367,7 @@ dyn_mdl <- function(mod_file, period, data, base_period,
     }
     
     fit_info <- create_fit_mod(mod_file, preprocessed_mod_file, fit_mod_file, 
-                               instruments, latex_basename, 
-                               fixed_period = fit_fixed_period, 
+                               instruments, fixed_period = fit_fixed_period, 
                                check_static_eqs = check_static_eqs,
                                latex = latex, latex_options = latex_options_,
                                silent = silent)
@@ -354,10 +393,10 @@ dyn_mdl <- function(mod_file, period, data, base_period,
   # Call C++ function compile_model_
   #
   call_compile_model_  <- function() {
-    return(compile_model_(mod_file_compile, latex_basename, use_dll, 
-                   dll_dir, max_laglead_1, strict, internal_calc,
-                   n_fit_derivatives, warn_uninit_param, init_param_na,
-                   latex, latex_options_))
+    return(compile_model_(mod_file_compile, use_dll, dll_dir, max_laglead_1, 
+                          strict, internal_calc, n_fit_derivatives, 
+                          warn_uninit_param, init_param_na, latex, 
+                          latex_options_))
   }
    
   if (silent) {

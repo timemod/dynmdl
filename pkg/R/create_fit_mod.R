@@ -11,8 +11,8 @@
 # @param instruments a character vector with the names of the fit instruments
 # @return a list with the names of the auxiliary variables
 #' @importFrom stringi stri_split_fixed
-create_fit_mod <- function(mod_file, preprocessed_mod_file, fit_mod, instruments, 
-                           latex_basename, fixed_period, check_static_eqs, 
+create_fit_mod <- function(mod_file, preprocessed_mod_file, fit_mod, 
+                           instruments, fixed_period, check_static_eqs, 
                            latex, latex_options, silent) {
   
   if (file.exists(fit_mod)) {
@@ -21,8 +21,8 @@ create_fit_mod <- function(mod_file, preprocessed_mod_file, fit_mod, instruments
   
   # run the Dynare parser to obtain the first order 
   # conditions for the fit procedure
-  fit_cond <- get_fit_conditions(mod_file, instruments, latex_basename, 
-                                 fixed_period, check_static_eqs, latex = latex, 
+  fit_cond <- get_fit_conditions(mod_file, instruments, fixed_period, 
+                                 check_static_eqs, latex = latex, 
                                  latex_options = latex_options,
                                  silent = silent)
   

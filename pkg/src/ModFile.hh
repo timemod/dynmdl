@@ -188,7 +188,8 @@ public:
                                bool fixed_period, bool check_stat_eqs) const;
   int get_warning_count() const;
   void createPolishModel(PolishModel &mdl) const;
-  void writeLatexFiles(const string &basename, const bool fit, const OutputParameters &output_params);
+  void writeLatexFiles(const string &dir, const string &prefix, const bool fit, 
+                       const OutputParameters &output_params);
 #endif
 
 };

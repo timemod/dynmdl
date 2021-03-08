@@ -199,7 +199,7 @@ protected:
 
 #ifdef USE_R
   //! Writes LaTeX model file
-  void writeLatexModelFile(const string &dirname, const string &basename, 
+  void writeLatexModelFile(const string &dir, const string &prefix, 
                            const string &model_type, ExprNodeOutputType output_type, 
                            const OutputParameters &output_params,
                            const eval_context_t &eval_context,

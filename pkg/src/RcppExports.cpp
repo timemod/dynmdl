@@ -153,13 +153,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // compile_model_
-Rcpp::List compile_model_(std::string modfile, std::string latex_basename, bool use_dll, std::string dll_dir, bool max_laglead_1, bool strict, bool internal_calc, int n_fit_derivatives, bool warn_uninit_param, bool init_param_na, bool latex, Rcpp::List latex_options);
-RcppExport SEXP _dynmdl_compile_model_(SEXP modfileSEXP, SEXP latex_basenameSEXP, SEXP use_dllSEXP, SEXP dll_dirSEXP, SEXP max_laglead_1SEXP, SEXP strictSEXP, SEXP internal_calcSEXP, SEXP n_fit_derivativesSEXP, SEXP warn_uninit_paramSEXP, SEXP init_param_naSEXP, SEXP latexSEXP, SEXP latex_optionsSEXP) {
+Rcpp::List compile_model_(std::string modfile, bool use_dll, std::string dll_dir, bool max_laglead_1, bool strict, bool internal_calc, int n_fit_derivatives, bool warn_uninit_param, bool init_param_na, bool latex, Rcpp::List latex_options);
+RcppExport SEXP _dynmdl_compile_model_(SEXP modfileSEXP, SEXP use_dllSEXP, SEXP dll_dirSEXP, SEXP max_laglead_1SEXP, SEXP strictSEXP, SEXP internal_calcSEXP, SEXP n_fit_derivativesSEXP, SEXP warn_uninit_paramSEXP, SEXP init_param_naSEXP, SEXP latexSEXP, SEXP latex_optionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
-    Rcpp::traits::input_parameter< std::string >::type latex_basename(latex_basenameSEXP);
     Rcpp::traits::input_parameter< bool >::type use_dll(use_dllSEXP);
     Rcpp::traits::input_parameter< std::string >::type dll_dir(dll_dirSEXP);
     Rcpp::traits::input_parameter< bool >::type max_laglead_1(max_laglead_1SEXP);
@@ -170,24 +169,23 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type init_param_na(init_param_naSEXP);
     Rcpp::traits::input_parameter< bool >::type latex(latexSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type latex_options(latex_optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(compile_model_(modfile, latex_basename, use_dll, dll_dir, max_laglead_1, strict, internal_calc, n_fit_derivatives, warn_uninit_param, init_param_na, latex, latex_options));
+    rcpp_result_gen = Rcpp::wrap(compile_model_(modfile, use_dll, dll_dir, max_laglead_1, strict, internal_calc, n_fit_derivatives, warn_uninit_param, init_param_na, latex, latex_options));
     return rcpp_result_gen;
 END_RCPP
 }
 // compute_derivatives
-Rcpp::List compute_derivatives(std::string modfile, std::string latex_basename, Rcpp::CharacterVector instruments, bool fixed_period, bool check_stat_eqs, bool latex, Rcpp::List latex_options);
-RcppExport SEXP _dynmdl_compute_derivatives(SEXP modfileSEXP, SEXP latex_basenameSEXP, SEXP instrumentsSEXP, SEXP fixed_periodSEXP, SEXP check_stat_eqsSEXP, SEXP latexSEXP, SEXP latex_optionsSEXP) {
+Rcpp::List compute_derivatives(std::string modfile, Rcpp::CharacterVector instruments, bool fixed_period, bool check_stat_eqs, bool latex, Rcpp::List latex_options);
+RcppExport SEXP _dynmdl_compute_derivatives(SEXP modfileSEXP, SEXP instrumentsSEXP, SEXP fixed_periodSEXP, SEXP check_stat_eqsSEXP, SEXP latexSEXP, SEXP latex_optionsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type modfile(modfileSEXP);
-    Rcpp::traits::input_parameter< std::string >::type latex_basename(latex_basenameSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type instruments(instrumentsSEXP);
     Rcpp::traits::input_parameter< bool >::type fixed_period(fixed_periodSEXP);
     Rcpp::traits::input_parameter< bool >::type check_stat_eqs(check_stat_eqsSEXP);
     Rcpp::traits::input_parameter< bool >::type latex(latexSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type latex_options(latex_optionsSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_derivatives(modfile, latex_basename, instruments, fixed_period, check_stat_eqs, latex, latex_options));
+    rcpp_result_gen = Rcpp::wrap(compute_derivatives(modfile, instruments, fixed_period, check_stat_eqs, latex, latex_options));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -291,8 +289,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dynmdl_prepare_internal_stat", (DL_FUNC) &_dynmdl_prepare_internal_stat, 3},
     {"_dynmdl_get_residuals_stat", (DL_FUNC) &_dynmdl_get_residuals_stat, 3},
     {"_dynmdl_get_triplet_jac_stat", (DL_FUNC) &_dynmdl_get_triplet_jac_stat, 3},
-    {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 12},
-    {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 7},
+    {"_dynmdl_compile_model_", (DL_FUNC) &_dynmdl_compile_model_, 11},
+    {"_dynmdl_compute_derivatives", (DL_FUNC) &_dynmdl_compute_derivatives, 6},
     {"_dynmdl_get_residuals_", (DL_FUNC) &_dynmdl_get_residuals_, 8},
     {"_dynmdl_get_triplet_jac", (DL_FUNC) &_dynmdl_get_triplet_jac, 9},
     {"_dynmdl_get_jac_backwards", (DL_FUNC) &_dynmdl_get_jac_backwards, 8},
