@@ -5,6 +5,8 @@ context("NK_baseline model")
 
 source("../tools/read_dynare_result.R")
 
+unlink("latex", recursive = TRUE)
+
 model_name <- "NK_baseline"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 mod_file_linlogpow <- file.path("mod", paste0(model_name, "_linlogpow.mod"))
