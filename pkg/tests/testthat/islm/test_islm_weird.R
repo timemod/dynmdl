@@ -61,9 +61,9 @@ test_that("unused exos", {
                  "1 warnings encountered in the preprocessor. Check the output"))
   expect_equal(msg, paste("WARNING: the following exogenous variable(s) not",
                           "used in model block: \"a\" \"abcdefgh\"."))
-  mdl$init_data(data = mdl_base$get_data())
-  expect_output(mdl$solve(), "Convergence after 0 iterations")
-  expect_equal(mdl$get_endo_data(), mdl_base$get_endo_data())
+  mdl2$init_data(data = mdl_base$get_data())
+  expect_output(mdl2$solve(), "Convergence after 0 iterations")
+  expect_equal(mdl2$get_endo_data(), mdl_base$get_endo_data())
 })
 
 test_that("unknown initval", {
