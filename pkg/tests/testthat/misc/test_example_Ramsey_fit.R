@@ -13,22 +13,11 @@ per <- period_range("2001/2100")
 
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 
-warnings <- capture_warnings(
-  capture_output(
-    msg <- capture.output(
-      mdl <- dyn_mdl(mod_file, period = per, nostrict = TRUE),
-      type = "message"
-    )
+test_that("dyn_mdl does not procedure errors or warnings", {
+  expect_silent(
+    mdl <<- dyn_mdl(mod_file, period = per, silent = TRUE)
   )
-)
-
-expect_equal(warnings, 
-            c("Argument 'nostrict' is obsolete. Use argument 'strict' instead.",
-              "1 warnings encountered in the preprocessor. Check the output"))
-              
-              
-expect_equal(msg, 
- 'WARNING: the following exogenous variable(s) not used in model block: "gx".')
+})
 
 dynare_result <- read_dynare_result(sub("_fit$", "", model_name), mdl)
 

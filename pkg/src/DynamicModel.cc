@@ -4004,6 +4004,14 @@ DynamicModel::findUnusedExogenous()
   set<int> usedExo, unusedExo;
   for (int i = 0; i < (int) equations.size(); i++)
     equations[i]->collectVariables(eExogenous, usedExo);
+#ifdef USE_R
+  // add exogenous variables that are used in the trend definitions
+  map<int, expr_t>::const_iterator it;
+  for (it = trend_symbols_map.begin(); it != trend_symbols_map.end(); 
+       ++it) {
+    it->second->collectVariables(eExogenous, usedExo);
+  }
+#endif
   set<int> allExo = symbol_table.getExogenous();
   set_difference(allExo.begin(), allExo.end(),
                  usedExo.begin(), usedExo.end(),

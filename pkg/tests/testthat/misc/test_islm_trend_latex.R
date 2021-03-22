@@ -28,11 +28,9 @@ test_that("latex files written correctly", {
   latex_options <- list(dir = latex_dir, prefix = "islm_trend", 
                         par_as_num = TRUE, ndigits = 1)
   
-  expect_warning(
-    messages <- capture.output(mdl <<- dyn_mdl(mod_file, silent = TRUE,  
-                                               check_static_eqs = TRUE, 
-                                               latex_options = latex_options), 
-                               type = "message")
+  expect_silent(
+    mdl <<- dyn_mdl(mod_file, silent = TRUE, check_static_eqs = TRUE, 
+                    latex_options = latex_options)
   )
   expect_true(dir.exists(latex_dir))
   latex_filenames <- list.files(latex_dir, recursive = TRUE)
@@ -54,12 +52,11 @@ test_that("latex files (no_fit) written correctly", {
   latex_dir <- gsub("\\\\", "/", latex_dir)
   latex_options <- list(dir = latex_dir, prefix = "islm_trend_no_fit", 
                         par_as_num = TRUE, ndigits = 1)
-  expect_warning(
-    messages <- capture.output(mdl <<- dyn_mdl(mod_file, silent = TRUE,  
-                                               check_static_eqs = TRUE, 
-                                               fit = FALSE, strict = FALSE,
-                                               latex_options = latex_options), 
-                               type = "message")
+  expect_silent(
+    mdl <<- dyn_mdl(mod_file, silent = TRUE,  
+                    check_static_eqs = TRUE, 
+                    fit = FALSE, strict = FALSE,
+                    latex_options = latex_options)
   )
   expect_true(dir.exists(latex_dir))
   latex_filenames <- list.files(latex_dir,  recursive = TRUE)

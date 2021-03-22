@@ -13,24 +13,15 @@ per <- period_range("2001/2100")
 
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 
-warnings <- capture_warnings(
-  capture_output(
-    msg <- capture.output(
-      mdl <- dyn_mdl(mod_file, period = per, strict = TRUE),
-      type = "message"
-    )
-  )
-)
-
-expect_equal(warnings, 
-            c("1 warnings encountered in the preprocessor. Check the output",
-              paste("WARNING: trends not compatible with balanced growth",
-                    "path; the second-order cross partial of equation 1",
-                    "(line 34) w.r.t. trend variable x and endogenous",
-                    "variable eps_1 is not null.")))
-              
-expect_equal(msg, 
- 'WARNING: the following exogenous variable(s) not used in model block: "gx".')
+test_that("dyn_mdl gives a warning", {
+  wmsg <- paste("WARNING: trends not compatible with balanced growth",
+                "path; the second-order cross partial of equation 1",
+                 "\\(line 34\\) w\\.r\\.t\\. trend variable x and endogenous",
+                 "variable eps_1 is not null\\.")
+  expect_warning(
+    mdl <<- dyn_mdl(mod_file, period = per, silent = TRUE),
+    wmsg)
+})
 
 dynare_result <- read_dynare_result(sub("_fit2$", "", model_name), mdl)
 
