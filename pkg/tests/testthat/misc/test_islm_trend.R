@@ -1,6 +1,7 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
+
 context("ISLM model with trends")
 
 source("../tools/read_file.R")
@@ -17,11 +18,9 @@ test_that("check_static_eqs = TRUE", {
   expect_error(mdl <- dyn_mdl(mod_file, silent = TRUE, fit_mod_file = "aap",
                               check_static_eqs = FALSE),
                "For models with trends,")
-  expect_warning(
-    messages <- capture.output(mdl <<- dyn_mdl(mod_file, silent = TRUE,  
-                                              check_static_eqs = TRUE, 
-                                              debug = TRUE), 
-                               type = "message")
+  expect_silent(
+    mdl <<- dyn_mdl(mod_file, silent = TRUE,  check_static_eqs = TRUE, 
+                    debug = TRUE)
   )
   fit_mod_file <- tempfile()
   expect_true(file.copy("fitmod.mod", fit_mod_file))
@@ -42,12 +41,11 @@ test_that("check_static_eqs = TRUE", {
                "eq_19")
 })
 test_that("fit_fixed_period = TRUE", {
-  expect_warning(
-    messages <- capture.output(mdl <- dyn_mdl(mod_file, silent = TRUE,  
-                                              check_static_eqs = TRUE,
-                                              fit_fixed_period = TRUE,
-                                              debug = TRUE), 
-                               type = "message")
+  expect_silent(
+    mdl <- dyn_mdl(mod_file, silent = TRUE,  
+                   check_static_eqs = TRUE,
+                   fit_fixed_period = TRUE,
+                   debug = TRUE)
   )
   fit_mod_file <- tempfile()
   expect_true(file.copy("fitmod.mod", fit_mod_file))
@@ -82,71 +80,58 @@ test_that("init data and the base period (1)", {
 
 
 test_that("base period", {
-  expect_warning(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
-                                               period = 2020),
-                               type = "message")
+  expect_silent(
+    mdl2 <- dyn_mdl(mod_file, silent = TRUE, period = 2020)
   )
   expect_equal(mdl2$get_base_period(), period(2020))
-  expect_warning(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
-                                               base_period = 2016),
-                               type = "message")
+  expect_silent(
+    mdl2 <- dyn_mdl(mod_file, silent = TRUE, base_period = 2016)
   )
   expect_equal(mdl2$get_base_period(), period(2016))
   mdl2$set_period(2020)
   expect_equal(mdl2$get_base_period(), period(2016))
   expect_equal(mdl2$get_data_period(), period_range(2016, 2021))
   
-  expect_warning(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
-                                               base_period = 2016,
-                                               period = 2020),
-                               type = "message")
+  expect_silent(
+    mdl2 <- dyn_mdl(mod_file, silent = TRUE, base_period = 2016,
+                    period = 2020)
   )
   expect_equal(mdl2$get_base_period(), period(2016))
   expect_equal(mdl2$get_data_period(), period_range(2016, 2021))
   
   expect_error(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
-                                               base_period = 2016,
-                                               period = "2020q2"),
-                               type = "message"),
-    "Argument 'base_period' has a different frequency than argument 'period'.")
+    mdl2 <- dyn_mdl(mod_file, silent = TRUE, base_period = 2016,
+                    period = "2020q2"),
+    "Argument 'base_period' has a different frequency than argument 'period'."
+  )
   
   data <- regts(matrix(1:10, ncol = 2), start = "2018q1", names = c("c", "i"))
   expect_error(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
-                                               base_period = 2016,
-                                               period = "2020",
-                                               data = data),
-                               type = "message"),
+    mdl2 <- dyn_mdl(mod_file, silent = TRUE, base_period = 2016,
+                    period = "2020", data = data),
     "Argument 'data' has a different frequency than argument 'period'.")
   expect_error(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
-                                               base_period = "2016",
-                                               data = data),
-                               type = "message"),
+    mdl2 <- dyn_mdl(mod_file, silent = TRUE, base_period = "2016",
+                   data = data),
     "Argument 'data' has a different frequency than argument 'base_period'.")
   
-  
   expect_warning(
-  expect_error(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE,
-                                               data = mdl$get_data(period = 2020)),
-                               type = "message"),
-    "The data period is too short. It should contain at least 3 periods"))
+    expect_error(
+      mdl2 <- dyn_mdl(mod_file, silent = TRUE,
+                      data = mdl$get_data(period = 2020)),
+      "The data period is too short. It should contain at least 3 periods"), 
+  NA)
   
-  expect_warning(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE, base_period = 2015,
-                                               data = mdl$get_data(period = 2020)),
-                               type = "message"))
+  expect_silent(
+    mdl2 <- dyn_mdl(mod_file, silent = TRUE, base_period = 2015,
+                    data = mdl$get_data(period = 2020))
+  )
   expect_equal(mdl2$get_base_period(), period(2015))
   expect_equal(mdl2$get_data_period(), period_range(2015, 2020))
   
   expect_warning(
-    messages <- capture.output(mdl2 <- dyn_mdl(mod_file, silent = TRUE),
-                               type = "message")
+    mdl2 <- dyn_mdl(mod_file, silent = TRUE),
+    NA
   )
   expect_null(mdl2$get_base_period())
   expect_null(mdl2$get_period())
