@@ -1,6 +1,9 @@
 # construct the solution of the linear state space model.
 # also computes the eigenvalues.
 #' @importFrom regts printobj
+#' @importFrom geigen geigen
+#' @importFrom geigen gqz
+#' @importFrom geigen gevalues
 solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic, 
                               check = FALSE, debug = FALSE, debug_eqs,
                               check_tol) {
@@ -77,10 +80,10 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
   E[ss$row_indx_de_1, ss$index_e1] <- -aa[ss$row_indx, ss$index_e]
   E[ss$row_indx_de_2, ss$index_e2] <- diag(ss$nboth)
   if (check) {
-    ss$eigval <- geigen::geigen(E, D, only.values = TRUE)$values
+    ss$eigval <- geigen(E, D, symmetric = FALSE, only.values = TRUE)$values
   } else {
-    qz_result <- geigen::gqz(E, D, sort = 'S')
-    ss$eigval <- geigen::gevalues(qz_result)
+    qz_result <- gqz(E, D, sort = 'S')
+    ss$eigval <- gevalues(qz_result)
   }
   
   ss$eigval <- order_eigval(ss$eigval)

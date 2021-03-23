@@ -7,11 +7,11 @@ print(mdl)
 
 mdl$set_static_endos(c(i = 30000))
 print(mdl$run_initval())
-stop("aap")
 
 print(mdl$get_mdldef())
 
 mdl$solve_steady(control = list(trace = TRUE))
+mdl$check()
 mdl$set_period("2017Q1/2019Q3")
 
 #  set exogenous variables
