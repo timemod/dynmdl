@@ -80,33 +80,33 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
   E[ss$row_indx_de_1, ss$index_e1] <- -aa[ss$row_indx, ss$index_e]
   E[ss$row_indx_de_2, ss$index_e2] <- diag(ss$nboth)
   if (check) {
-    ss$eigval <- geigen(E, D, symmetric = FALSE, only.values = TRUE)$values
+    eigval <- geigen(E, D, symmetric = FALSE, only.values = TRUE)$values
   } else {
     qz_result <- gqz(E, D, sort = 'S')
-    ss$eigval <- gevalues(qz_result)
+    eigval <- gevalues(qz_result)
   }
   
-  ss$eigval <- order_eigval(ss$eigval)
+  eigval <- order_eigval(eigval)
 
   if (debug) {
     printobj(D)
     printobj(E)
     if (!check) printobj(qz_result)
   }
-  sdim <- sum(abs(ss$eigval) <= (1 + check_tol))
+  sdim <- sum(abs(eigval) <= (1 + check_tol))
   nba <- ss$nd - sdim
 
   if (check) {
     cat("EIGENVALUES:\n")
     cat(sprintf("%16s%16s%16s\n", "Modulus", "Real", "Imaginary"))
-    for (eigv in ss$eigval) {
+    for (eigv in eigval) {
       cat(sprintf("%16g%16g%16g\n", Mod(eigv), Re(eigv), Im(eigv)))
     }
     cat("\n")
     cat(sprintf("\nThere are %d eigenvalue(s) larger than 1 in modulus\n", nba))
     cat(sprintf("for %d forward-looking variable(s)\n", ss$nsfwrd))
     
-    n_close_to_1 <-  sum(abs(Mod(ss$eigval) - 1) <= check_tol)
+    n_close_to_1 <-  sum(abs(Mod(eigval) - 1) <= check_tol)
     if (n_close_to_1 > 0) {
       cat(sprintf("\n%d eigenvalue(s) are within tolerance %.2g equal to 1\n", 
                   n_close_to_1, check_tol))
@@ -123,9 +123,7 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
     err_fun("Blanchard & Kahn conditions are not satisfied: indeterminacy")
   }
   
-  if (check) {
-    return(ss)
-  }
+  if (check) return(list(ss = ss, eigval = eigval))
   
   A <- aa[, ss$index_m, drop = FALSE]  # Jacobian matrix for lagged endogeneous variables
   B <- matrix(NA, nrow = nrow(aa), ncol = length(ss$index_c))
@@ -210,5 +208,5 @@ solve_first_order <- function(ss, calc, model_index, mdldef, jac_dynamic,
     ss$ghu <- matrix(nrow = 0, ncol = 0)
   }
   ss$Gy <- hx
-  return (ss)
+  return(list(ss = ss, eigval = eigval))
 }

@@ -1106,12 +1106,14 @@ DynMdl <- R6Class("DynMdl",
         }
       }
       private$prepare_dynamic_model(solve_first_order = TRUE)
-      private$ss <- solve_first_order(private$ss, private$calc, 
-                                      private$model_index, private$mdldef, 
-                                      private$jac_dynamic, 
-                                      check = TRUE, debug = FALSE,
-                                      debug_eqs = FALSE,
-                                      check_tol = tol)
+      ret <- solve_first_order(private$ss, private$calc, 
+                               private$model_index, private$mdldef, 
+                               private$jac_dynamic, 
+                               check = TRUE, debug = FALSE,
+                               debug_eqs = FALSE,
+                               check_tol = tol)
+      private$ss <- ret$ss
+      private$eigval <- ret$eigval
       private$clean_dynamic_model()
       return(invisible(self))
     },
@@ -1326,12 +1328,14 @@ DynMdl <- R6Class("DynMdl",
       
       private$prepare_dynamic_model(solve_first_order = TRUE)
       
-      private$ss <- solve_first_order(private$ss, private$calc, 
-                                      private$model_index, private$mdldef, 
-                                      private$jac_dynamic, 
-                                      check = FALSE, debug = FALSE,
-                                      debug_eqs = FALSE,
-                                      check_tol = check_tol)
+      ret <- solve_first_order(private$ss, private$calc, 
+                               private$model_index, private$mdldef, 
+                               private$jac_dynamic, 
+                               check = FALSE, debug = FALSE,
+                               debug_eqs = FALSE,
+                               check_tol = check_tol)
+      private$ss <- ret$ss
+      private$eigval <- ret$eigval
       
       private$endo_data <- solve_perturbation_(private$ss,
                                                private$mdldef$max_endo_lag,
@@ -1453,8 +1457,8 @@ DynMdl <- R6Class("DynMdl",
       }
     },
     get_eigval = function() {
-      if (!is.null(private$ss) && !is.null(private$ss$eigval)) {
-        return(private$ss$eigval)
+      if (!is.null(private$eigval)) {
+        return(private$eigval)
       } else {
         stop(paste("Eigenvalues not available. Calculate the eigenvalues",
                    "with method check()."))
@@ -1583,7 +1587,7 @@ DynMdl <- R6Class("DynMdl",
       ret <- check_dynare_internal(model_name, self, scratch_dir,
                                    dynare_path, model_options, 
                                    use_octave, exit_matlab)
-      private$ss <- list(eigval = ret$eigval)
+      private$eigval <- ret$eigval
       return(invisible(self))
     },
     run_initval = function(update_endos = TRUE) {
@@ -1941,6 +1945,7 @@ DynMdl <- R6Class("DynMdl",
     trend_data = NULL,
     deflator_data = NULL,
     ss = NULL,
+    eigval = NULL,
     calc = NA_character_,
     dll_dir = NA_character_,
     dll_file = NA_character_,
