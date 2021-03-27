@@ -5,6 +5,6 @@ the eigenvalues of the model and perform deterministic simulations.
 
 ## Documentation
 
-[Reference manual](dynmdl.pdf)
+[Reference manual](pkg/vignettes/dynmdl_refman.pdf)
 
 [Vignette](pkg/vignettes/dynmdl.pdf)

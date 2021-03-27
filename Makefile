@@ -113,9 +113,9 @@ bin: install_deps
 
 document: install_deps
 	$(MAKE) -f Makedeps
-	-@rm -f dynmdl.pdf
+	-@rm -f pkg/vignettes/dynmdl_refman.pdf
 	R -e "devtools::document('"$(PKGDIR)"')"
-	R CMD Rd2pdf --batch $(PKGDIR) -o dynmdl.pdf 2>$(PKGDIR).log
+	R CMD Rd2pdf --batch $(PKGDIR) -o pkg/vignettes/dynmdl_refman.pdf 2>refman.log
 
 install: install_deps
 	$(MAKE) -f Makedeps

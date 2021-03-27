@@ -33,5 +33,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    caret
-VignetteBuilder: knitr
+    caret,
+    R.rsp
+VignetteBuilder: knitr,
+                 R.rsp
