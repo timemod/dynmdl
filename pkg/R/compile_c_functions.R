@@ -5,6 +5,18 @@ compile_c_functions <- function(dll_dir) {
   
   cat("Compiling C functions ...\n")
   
+  if (.Platform$OS.type == "windows") {
+    # this fix needed for to prevent messages 
+    # "CMD.EXE was started with the above path as the current directory.
+    # UNC paths are not supported.  Defaulting to Windows directory."
+    cpb_file_pattern <- "^\\\\\\\\cpb-file.+/myshares"
+    wd <- getwd()
+    if (grepl(cpb_file_pattern, wd)) {
+      wd <- sub(cpb_file_pattern, "m:", wd)
+      setwd(wd)
+    }
+  }
+  
   dll_ext <- system("R CMD config SHLIB_EXT", intern = TRUE)
   dll_file <- file.path(dll_dir, paste0("mdl_functions", dll_ext))
   
@@ -12,10 +24,10 @@ compile_c_functions <- function(dll_dir) {
   c_wrapper_files <- dir(path = c_wrappers_dir, full.names = TRUE)
   
   ok <- file.copy(c_wrapper_files, dll_dir)
-  if (any(!  ok)) {
+  if (any(!ok)) {
     stop("Internal error in compile_c_functions: could not copy c wrapper files")
   }
-  
+
   r_home <- R.home(component = "bin")
   R <- file.path(r_home, "R")
   CC <- system("R CMD config CC", intern = TRUE)
@@ -28,6 +40,9 @@ compile_c_functions <- function(dll_dir) {
   function_src <- file.path(dll_dir, c( "f_static.c", "f_dynamic.c"), 
                             fsep = .Platform$file.sep)
   function_obj <- gsub("\\.c$", ".o", function_src)
+  
+
+  
   for (i in seq_along(function_src)) {
     system(paste(CC, cflags, function_src[i], "-o", function_obj[i]))
   }
