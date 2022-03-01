@@ -20,10 +20,10 @@ model;
     @#for lag in 1:4
       + @{p_var}_px___(-@{lag})
     @#endfor
-    )/4;
+    ) / 4;
   @#else
     // annual version of the model
-    @{p_var}_pj___ =  @{p_var}_pj___(-1);
+    @{p_var}_pj___ =  @{p_var}_px___(-1);
   @#endif
 @#endfor
 
