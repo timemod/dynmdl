@@ -8,6 +8,7 @@ source("../tools/read_file.R")
 source("../tools/cat_lines.R")
 
 model_name <- "islm_fit"
+update_expected_output <- FALSE
 
 fit_steady <- c(y = 1300, i = 300)
 
@@ -31,7 +32,8 @@ test_that("check_static_eqs = TRUE", {
   expect_equal(mdl$get_solve_status(), "OK")
   txt <- read_file(fit_mod_file)
   expect_known_output(cat(txt), 
-                      file = "expected_output/islm_trend_fmod1.txt")
+                      file = "expected_output/islm_trend_fmod1.txt",
+                      update = update_expected_output)
   
   mdl$set_period("2020")
   mdl$init_data()
@@ -56,7 +58,8 @@ test_that("fit_fixed_period = TRUE", {
   expect_equal(mdl$get_solve_status(), "OK")
   txt <- read_file(fit_mod_file)
   expect_known_output(cat(txt), 
-                      file = "expected_output/islm_trend_fmod2.txt")
+                      file = "expected_output/islm_trend_fmod2.txt",
+                      update = update_expected_output)
   
   mdl$set_period("2020")
   mdl$init_data()
@@ -151,12 +154,14 @@ test_that("base period", {
 
 test_that("get_equations", {
   expect_known_output(cat_lines(mdl$get_static_equations()), 
-                      "expected_output/islm_trend_stat_eqs.txt")
+                      "expected_output/islm_trend_stat_eqs.txt",
+                      update = update_expected_output)
   expect_known_output(cat_lines(mdl$get_equations()), 
-                      "expected_output/islm_trend_eqs.txt")
+                      "expected_output/islm_trend_eqs.txt",
+                      update = update_expected_output)
   expect_known_output(cat_lines(mdl$get_original_equations()), 
-                     "expected_output/islm_trend_orig_eqs.txt")
-  
+                     "expected_output/islm_trend_orig_eqs.txt",
+                     update = update_expected_output)
 })
 
 test_that("set_period", {

@@ -4,6 +4,8 @@ rm(list = ls())
 
 context("ISLM fit model latex")
 
+update_expected_output <- FALSE
+
 model_name <- "islm_fit_latex"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
 
@@ -41,7 +43,8 @@ test_that("latex files written correctly", {
     filename_no_dir <- sub("(\\\\|/)", "_", filename)
     expected_output_file <- file.path("expected_output", 
                                       paste0("islm_fit_", filename_no_dir))
-    expect_known_output(lines, expected_output_file, print = TRUE)
+    expect_known_output(lines, expected_output_file, print = TRUE,
+                        update = update_expected_output)
   }
 })
 

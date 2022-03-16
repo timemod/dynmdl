@@ -3,6 +3,8 @@ library(testthat)
 rm(list = ls())
 context("NK_baseline model")
 
+update_expected_output <- FALSE
+
 source("../tools/read_dynare_result.R")
 
 unlink("latex", recursive = TRUE)
@@ -94,7 +96,8 @@ test_that("get_orig_equations", {
     eqs_tmp <- eqs
   }
   eqs_tmp <- paste(eqs_tmp, collapse = "\n")
-  expect_known_output(cat(eqs_tmp), file = expected_orig_equations_file)
+  expect_known_output(cat(eqs_tmp), file = expected_orig_equations_file,
+                      update = update_expected_output)
   #print(eqs)
 })
 
@@ -106,7 +109,8 @@ test_that("get_equations", {
     eqs_tmp <- eqs
   }
   eqs_tmp <- paste(eqs_tmp, collapse = "\n")
-  expect_known_output(cat(eqs_tmp), file = expected_equations_file)
+  expect_known_output(cat(eqs_tmp), file = expected_equations_file,
+                      update = update_expected_output)
   #print(eqs)
 })
 
@@ -128,19 +132,24 @@ test_that("solve_perturbation (1) compare with dynare result", {
 test_that("get_names", {
   
   expect_known_output(mdl$get_endo_names(), 
-                      "expected_output/NK_baseline_endo_names.rds")
+                      "expected_output/NK_baseline_endo_names.rds",
+                      update = update_expected_output)
   
   expect_known_output(mdl$get_endo_names(type = "lag"), 
-                      "expected_output/NK_baseline_endo_lag_names.rds")
+                      "expected_output/NK_baseline_endo_lag_names.rds",
+                      update = update_expected_output)
   
   expect_known_output(mdl$get_endo_names(type = "lead"),
-                      "expected_output/NK_baseline_endo_lead_names.rds")
+                      "expected_output/NK_baseline_endo_lead_names.rds",
+                      update = update_expected_output)
   
   expect_known_output(mdl$get_exo_names(),
-                      "expected_output/NK_baseline_exo_names.rds")
+                      "expected_output/NK_baseline_exo_names.rds",
+                      update = update_expected_output)
   
   expect_known_output(mdl$get_par_names(),
-                      "expected_output/NK_baseline_par_names.rds")
+                      "expected_output/NK_baseline_par_names.rds",
+                      update = update_expected_output)
 })
 
 test_that("homotopy", {
@@ -163,7 +172,8 @@ test_that("homotopy", {
   report <- gsub("Convergence after \\d+ iterations", 
                  "Convergence after XXX iterations", report)
   expect_known_output(cat(report), 
-                      "expected_output/NK_baseline_homotopy_report.txt")
+                      "expected_output/NK_baseline_homotopy_report.txt",
+                      update = update_expected_output)
   expect_equal(mdl2$get_solve_status(), "OK")
   
   #print(tsdif(mdl$get_endo_data(), mdl2$get_endo_data(), fun = cvgdif, tol = 1e-1))
@@ -193,7 +203,8 @@ test_that("homotopy backwards", {
   report1 <- gsub("Total number of iterations: \\d+", 
                   "Tota number of iterations: XXX", report1)
   expect_known_output(cat(report1), 
-                      "expected_output/NK_baseline_homotopy_report_back_1.txt")
+                      "expected_output/NK_baseline_homotopy_report_back_1.txt",
+                      update = update_expected_output)
   
   # with shock epds = 5
   mdl2 <- mdl$clone()
@@ -208,5 +219,6 @@ test_that("homotopy backwards", {
   report2 <- gsub("Total number of iterations: \\d+", 
                   "Tota number of iterations: XXX", report2)
   expect_known_output(cat(report2), 
-                      "expected_output/NK_baseline_homotopy_report_back_2.txt")
+                      "expected_output/NK_baseline_homotopy_report_back_2.txt",
+                      update = update_expected_output)
 })

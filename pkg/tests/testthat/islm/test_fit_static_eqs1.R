@@ -5,6 +5,7 @@ context("ISLM model fit with static equations (1)")
 
 source("../tools/read_file.R")
 rds_file <- "islm_model_fit.rds"
+update_expected_output <- FALSE
 
 mdl_ref <- read_mdl(rds_file, silent = TRUE)
 
@@ -28,7 +29,8 @@ test_that("check_static_eqs = FALSE", {
   expect_equal(mdl$get_solve_status(), "ERROR")
   txt <- read_file(fit_mod_file)
   expect_known_output(cat(txt), 
-                      file = "expected_output/fit_static_eqs1_fmod1.txt")
+                      file = "expected_output/fit_static_eqs1_fmod1.txt",
+                      update = update_expected_output)
 })
 
 test_that("check_static_eqs = TRUE", {
@@ -41,7 +43,8 @@ test_that("check_static_eqs = TRUE", {
                expected_result)
   txt <- read_file(fit_mod_file)
   expect_known_output(cat(txt), 
-                      file = "expected_output/fit_static_eqs1_fmod2.txt")
+                      file = "expected_output/fit_static_eqs1_fmod2.txt",
+                      update = update_expected_output)
   
   mdl$set_period("2020")
   mdl$init_data()
@@ -59,7 +62,8 @@ test_that("fit_fixed_period = TRUE", {
   expect_equal(mdl1$get_equations(), mdl2$get_equations())
   txt <- read_file(fit_mod_file)
   expect_known_output(cat(txt), 
-                      file = "expected_output/fit_static_eqs1_fmod3.txt")
+                      file = "expected_output/fit_static_eqs1_fmod3.txt",
+                      update = update_expected_output)
   mdl2$set_fit_steady(fit_steady)
   mdl2$solve_steady(silent = TRUE)
   expect_equal(mdl2$get_solve_status(), "OK")

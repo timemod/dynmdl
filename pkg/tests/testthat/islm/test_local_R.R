@@ -9,6 +9,8 @@ source("utils.R")
 
 mod_name <- "islm_local"
 
+update_expected_output <- FALSE
+
 expect_error(make_mdl(mod_name),
              "Internal calculator does not yet support model-local variables")
 mdl <- make_mdl(mod_name, calc = "R")
@@ -67,7 +69,8 @@ test_that("get_equations", {
   eqs1 <- mdl$get_equations()
   eqs2 <- mdl$get_original_equations()
   expect_equal(eqs1, eqs2)
-  expect_known_output(cat_lines(eqs1), "expected_output/local_eqs.txt")
+  expect_known_output(cat_lines(eqs1), "expected_output/local_eqs.txt",
+                      update = update_expected_output)
 })
 
 

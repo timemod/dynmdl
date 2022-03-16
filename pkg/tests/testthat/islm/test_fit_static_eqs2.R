@@ -5,6 +5,7 @@ context("ISLM model fit with static equations (1)")
 
 source("../tools/read_file.R")
 rds_file <- "islm_model_fit.rds"
+update_expected_output <- FALSE
 
 mdl_ref <- read_mdl(rds_file, silent = TRUE)
 
@@ -22,7 +23,8 @@ test_that("fit_fixed_period = TRUE", {
                           fit_fixed_period = TRUE, fit_mod_file = fit_mod_file)
   txt <- read_file(fit_mod_file)
   expect_known_output(cat(txt), 
-                      file = "expected_output/fit_static_eqs2_fmod2.txt")
+                      file = "expected_output/fit_static_eqs2_fmod2.txt",
+                      update = update_expected_output)
   mdl$set_fit_steady(fit_steady)
   mdl$solve_steady(silent = TRUE)
   expect_equal(mdl$get_solve_status(), "OK")

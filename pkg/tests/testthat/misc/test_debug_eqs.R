@@ -3,7 +3,9 @@ library(testthat)
 
 context("test debug equations")
 
+
 mod_file <- "mod/test_debug_eqs.mod"
+update_expected_output <- FALSE
 
 model_period <- period_range("2018q1", "2019q1")
 
@@ -28,7 +30,8 @@ test_that("solve and residual check", {
   messages <- sub("[eE]([+-]?)0+", "e\\1", messages)
   
   expect_known_output(messages, print = TRUE,
-                      file = "expected_output/test_debug_eqs_solve.txt")
+                      file = "expected_output/test_debug_eqs_solve.txt",
+                      update = update_expected_output)
   
   expect_silent(
     messages <- capture.output(dum <- mdl$residual_check(debug_eqs = TRUE),
@@ -37,7 +40,8 @@ test_that("solve and residual check", {
 
   messages <- sub("[eE]([+-]?)0+", "e\\1", messages)
   expect_known_output(messages, print = TRUE,  
-                      file = "expected_output/test_debug_eqs_solve.txt")
+                      file = "expected_output/test_debug_eqs_solve.txt",
+                      update = update_expected_output)
   
 })
 
@@ -50,7 +54,8 @@ test_that("solve_steady", {
                              type = "message"))
   
   expect_known_output(messages, print = TRUE, 
-                      file = "expected_output/test_debug_eqs_solve_steady.txt")
+                      file = "expected_output/test_debug_eqs_solve_steady.txt",
+                      update = update_expected_output)
   
 })
 

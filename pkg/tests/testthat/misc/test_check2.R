@@ -5,6 +5,7 @@ rm(list = ls())
 context("test for method check for eigenvalues close to 2")
 
 mod_file <- "mod/check2.mod"
+update_expected_output <- FALSE
 
 mdl <- dyn_mdl(mod_file, silent = TRUE)
 
@@ -30,7 +31,8 @@ run_check <- function(...) {
 test_that("eigenvalues", {
   ret <- run_check()
   expect_equal(ret$messages, BB_msgs)
-  expect_known_output(cat(ret$output), "expected_output/check2_1.txt")
+  expect_known_output(cat(ret$output), "expected_output/check2_1.txt",
+                      update = update_expected_output)
   eigvals <- mdl$get_eigval()
   expect_equal(eigvals, c(1, 4))
 })
@@ -40,13 +42,16 @@ test_that("parameter close to 1", {
   mdl$set_param(c(c1 = 1 + eps))
   ret1 <- run_check()
   expect_equal(ret1$messages, character(0))
-  expect_known_output(cat(ret1$output), "expected_output/check2_2.txt")
+  expect_known_output(cat(ret1$output), "expected_output/check2_2.txt",
+                      update = update_expected_output)
   
   ret2 <- run_check(tol = eps / 2)
   expect_equal(ret2$messages, BB_msgs)
-  expect_known_output(cat(ret2$output), "expected_output/check2_3.txt")
+  expect_known_output(cat(ret2$output), "expected_output/check2_3.txt",
+                      update = update_expected_output)
   
   ret3 <- run_check(tol = 1e-12)
   expect_equal(ret2$messages, BB_msgs)
-  expect_known_output(cat(ret2$output), "expected_output/check2_4.txt")
+  expect_known_output(cat(ret2$output), "expected_output/check2_4.txt",
+                      update = update_expected_output)
 })

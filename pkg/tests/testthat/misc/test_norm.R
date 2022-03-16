@@ -4,6 +4,9 @@ library(testthat)
 context("function normcdf and normpdf")
 library(dynmdl)
 
+
+update_expected_output <- FALSE
+
 mod_file <- "mod/norm.mod"
 period <- period("2018")
 
@@ -17,7 +20,8 @@ x <- capture_output({
                               calc = "internal")
   )
   expect_known_output(warnings, "expected_output/norm_warnings.txt",
-                      print = TRUE)
+                      print = TRUE,
+                      update = update_expected_output)
 })
 
 test_that("solve_steady", {
