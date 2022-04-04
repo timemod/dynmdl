@@ -7,6 +7,7 @@ source("../tools/read_dynare_result.R")
 context("ISLM variant 2")
 
 model <- "islm_var2"
+update_expected_output <- FALSE
 
 mod_file <- file.path("mod", paste0(model, ".mod"))
 
@@ -139,7 +140,8 @@ test_that("get_equations", {
     eqs_tmp <- eqs
   }
   eqs_tmp <- paste(eqs_tmp, collapse = "\n")
-  expect_known_output(cat(eqs_tmp), file = expected_equations_file)
+  expect_known_output(cat(eqs_tmp), file = expected_equations_file,
+                      update = update_expected_output)
 })
 
 test_that("lag eand lead shocks", {

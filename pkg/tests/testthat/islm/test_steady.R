@@ -5,6 +5,7 @@ rm(list = ls())
 context("ISLM model steady state")
 
 period = "2017/2022"
+update_expected_output <- FALSE
 
 report <- capture_output(mdl <- islm_mdl())
 
@@ -85,7 +86,8 @@ test_that("non-finite values", {
                                      "Solving the steady state not succesful"))
   expect_known_output(expect_warning(mdl_2$solve_steady(control = list(silent = FALSE)),
                                      "Solving the steady state not succesful"),
-                      file = "expected_output/steady_non_finite_1.txt")
+                      file = "expected_output/steady_non_finite_1.txt",
+                      update = update_expected_output)
 })
 
 test_that("set_static_endos/set_static_exos", {

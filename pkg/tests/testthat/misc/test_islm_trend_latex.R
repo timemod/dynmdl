@@ -6,6 +6,7 @@ context("ISLM trend model latex")
 
 model_name <- "islm_trend_latex"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
+update_expected_output <- FALSE
 
 latex_filenames_ref <- c('islm_trend_dynamic_content.tex', 
                          'islm_trend_dynamic_fit_content.tex', 
@@ -39,7 +40,8 @@ test_that("latex files written correctly", {
     expect_silent(lines <- readLines(file.path(latex_dir, filename)))
     filename_no_dir <- sub("(\\\\|/)", "_", filename)
     expected_output_file <- file.path("expected_output", filename_no_dir)
-    expect_known_output(lines, expected_output_file, print = TRUE)
+    expect_known_output(lines, expected_output_file, print = TRUE,
+                        update = update_expected_output)
   }
   
   if (dir.exists(latex_dir)) unlink(latex_dir, recursive = TRUE)
@@ -70,7 +72,8 @@ test_that("latex files (no_fit) written correctly", {
     expect_silent(lines <- readLines(file.path(latex_dir, filename)))
     filename_no_dir <- sub("(\\\\|/)", "_", filename)
     expected_output_file <- file.path("expected_output", filename_no_dir)
-    expect_known_output(lines, expected_output_file, print = TRUE)
+    expect_known_output(lines, expected_output_file, print = TRUE,
+                        update = update_expected_output)
   }
   
   if (dir.exists(latex_dir)) unlink(latex_dir, recursive = TRUE)

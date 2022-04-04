@@ -5,6 +5,8 @@ rm(list = ls())
 
 context("ISLM model with non finite residuals")
 
+update_expected_output <- FALSE
+
 rep <- capture_output(mdl <- read_mdl("islm_model.rds"))
 
 test_that("single period", {
@@ -17,7 +19,8 @@ test_that("single period", {
   expect_known_output(expect_warning(mdl$solve(control = list(silent = FALSE), 
                                                homotopy = FALSE), 
                                msg),
-                      file = "expected_output/non_finite1.txt")
+                      file = "expected_output/non_finite1.txt",
+                      update = update_expected_output)
 })
 
 test_that("multiple periods", {
@@ -29,5 +32,6 @@ test_that("multiple periods", {
                "\\(starting at index=1\\)")
   expect_known_output(expect_warning(mdl$solve(control = list(silent = FALSE)), 
                                      msg), 
-                      file = "expected_output/non_finite2.txt")
+                      file = "expected_output/non_finite2.txt",
+                      update = update_expected_output)
 })

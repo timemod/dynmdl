@@ -6,6 +6,7 @@ source("../tools/read_dynare_result.R")
 context("ISLM variant 1")
 
 model <- "islm_var1"
+update_expected_output <- FALSE
 
 mod_file <- file.path("mod", paste0(model, ".mod"))
 
@@ -74,7 +75,8 @@ test_that("solve", {
   
   expect_known_output(
     mdl2$solve(mode = "backwards"),
-    "expected_output/islm_var1_back_report1.txt")
+    "expected_output/islm_var1_back_report1.txt",
+    update = update_expected_output)
 })
 
 test_that("solve with Fair-Taylor", {
@@ -176,7 +178,8 @@ test_that("get_equations", {
     eqs_tmp <- eqs
   }
   eqs_tmp <- paste(eqs_tmp, collapse = "\n")
-  expect_known_output(cat(eqs_tmp), file = expected_equations_file)
+  expect_known_output(cat(eqs_tmp), file = expected_equations_file,
+                      update = update_expected_output)
 })
 
 test_that("get_original_equations", {
@@ -187,7 +190,8 @@ test_that("get_original_equations", {
     eqs_tmp <- eqs
   }
   eqs_tmp <- paste(eqs_tmp, collapse = "\n")
-  expect_known_output(cat(eqs_tmp), file = expected_orig_equations_file)
+  expect_known_output(cat(eqs_tmp), file = expected_orig_equations_file,
+                      update = update_expected_output)
 })
 
 #

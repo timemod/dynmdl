@@ -5,6 +5,8 @@ context("ISLM 2 countries model - fit")
 
 mod_file <- "mod/islm_countries_fit.mod"
 period <- "2016Q1/2020Q2"
+update_expected_output <- FALSE
+
 
 report <- capture_output(mdl <- dyn_mdl(mod_file, period = period))
 
@@ -17,7 +19,8 @@ test_that("get_equations works correctly", {
   }
   eqs_txt <- paste(eqs_tmp, collapse = "\n")
   expect_known_output(cat(eqs_txt), 
-                      "expected_output/islm_countries_fit_eqs.txt")
+                      "expected_output/islm_countries_fit_eqs.txt",
+                      update = update_expected_output)
 })
 
 # TODO: test solve_steady and solve

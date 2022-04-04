@@ -5,6 +5,9 @@ context("NK_baseline model fit")
 
 source("../tools/read_dynare_result.R")
 
+
+update_expected_output <- FALSE
+
 unlink("latex", recursive = TRUE)
 
 model_name <- "NK_baseline"
@@ -78,7 +81,8 @@ test_that("solve with fit procedure (1 target)", {
   report <- gsub("Convergence after \\d+ iterations", 
                  "Convergence after XXX iterations", report)
   expect_known_output(cat(report), 
-                     "expected_output/NK_baseline_fit_homotopy_report.txt")
+                     "expected_output/NK_baseline_fit_homotopy_report.txt",
+                     update = update_expected_output)
   
   
   expect_equal(mdl2$get_solve_status(), "OK")

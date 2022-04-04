@@ -8,6 +8,7 @@ context("linlog2")
 source("../tools/read_file.R")
 
 model <- "linlog2"
+update_expected_output <- FALSE
 
 mod_file <- file.path("mod", paste0(model, ".mod"))
 fit_mod_file <- file.path("mod_out", paste0(model, ".mod"))
@@ -28,7 +29,8 @@ correct_result <- c(y1 = 1, y2 = 1)
 test_that("check fit_mod_file", {
   fit_mod_txt <- read_file(fit_mod_file)
   expect_known_output(cat(fit_mod_txt), 
-                      "expected_output/linlog2_fit_mod_file.txt")
+                      "expected_output/linlog2_fit_mod_file.txt",
+                      update = update_expected_output)
 })
 
 test_that("easy starting values (1)", {

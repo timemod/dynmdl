@@ -6,6 +6,7 @@ context("ISLM model with fit procedure with fit_fixed_period = TRUE")
 rds_file <- "islm_model_fit.rds"
 model_name <- "islm_fit"
 fit_mod_file <- "mod_out/islm_fit_fixed_period.mod"
+update_expected_output <- FALSE
 
 source("../tools/read_file.R")
 
@@ -22,7 +23,8 @@ report <- capture_output({
 test_that("generated fit mod file equal to reference ", {
   txt <- read_file(fit_mod_file)
   expect_known_output(cat(txt), 
-                      file = "expected_output/fit_fixed_period_fmod_file.txt")
+                      file = "expected_output/fit_fixed_period_fmod_file.txt",
+                      update = update_expected_output)
 })
 
 test_that("single fit target", {

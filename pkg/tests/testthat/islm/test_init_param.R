@@ -3,6 +3,8 @@ library(testthat)
 rm(list = ls())
 context("ISLM model parameter initialisation")
 
+update_expected_output <- FALSE
+
 source("../tools/read_dynare_result.R")
 source("../tools/cat_lines.R")
 
@@ -16,7 +18,9 @@ test_that("uninitialized parameters are set to zero", {
     "2 warnings encountered in the preprocessor. Check the output")
   expect_silent(dyn_mdl(mod_file, silent = TRUE, warn_uninit_param = FALSE))
   
-  expect_known_output(cat_lines(warnings), "expected_output/init_param_zero.txt")
+  expect_known_output(cat_lines(warnings), 
+                      "expected_output/init_param_zero.txt",
+                      update = update_expected_output)
   
   expect_equal(mdl$get_param(names = c("c0", "t1")),
                c(c0 = 0, t1 = 0))
@@ -33,7 +37,8 @@ test_that("uninitialized parameters are set to NA", {
   expect_silent(dyn_mdl(mod_file, silent = TRUE, warn_uninit_param = FALSE,
                         init_param_na = TRUE))
   
-  expect_known_output(cat_lines(warnings), "expected_output/init_param_na.txt")
+  expect_known_output(cat_lines(warnings), "expected_output/init_param_na.txt",
+                      update = update_expected_output)
   
   expect_equal(mdl$get_param(names = c("c0", "t1")),
                c(c0 = NA_real_, t1 = NA_real_))
