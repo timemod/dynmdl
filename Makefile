@@ -8,7 +8,7 @@ PKGDIR=pkg
 INSTALL_FLAGS=--no-multiarch --with-keep.source 
 RCHECKARG=--no-multiarch
 
-OSTYPE=$(shell Rscript -e "cat(.Platform[['OS.type']])")
+export OSTYPE=$(shell Rscript -e "cat(.Platform[['OS.type']])")
 RCPP_CXXFLAGS = $(shell Rscript -e "Rcpp:::CxxFlags()")
 
 # Package name, Version and date from DESCIPTION
