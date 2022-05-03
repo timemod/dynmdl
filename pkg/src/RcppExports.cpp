@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // prepare_internal_dyn
 void prepare_internal_dyn(int model_index, NumericVector exos, int nrow_exo, NumericVector params, int per_freq, int first_per_subp_count);
 RcppExport SEXP _dynmdl_prepare_internal_dyn(SEXP model_indexSEXP, SEXP exosSEXP, SEXP nrow_exoSEXP, SEXP paramsSEXP, SEXP per_freqSEXP, SEXP first_per_subp_countSEXP) {

@@ -9,7 +9,7 @@ compile_c_functions <- function(dll_dir) {
     # this fix needed for to prevent messages 
     # "CMD.EXE was started with the above path as the current directory.
     # UNC paths are not supported.  Defaulting to Windows directory."
-    cpb_file_pattern <- "^\\\\\\\\cpb-file.+/myshares"
+    cpb_file_pattern <- "^\\\\\\\\cpb-dfs-.+/myshares"
     wd <- getwd()
     if (grepl(cpb_file_pattern, wd)) {
       wd <- sub(cpb_file_pattern, "m:", wd)
