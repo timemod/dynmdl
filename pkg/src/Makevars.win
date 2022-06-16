@@ -17,14 +17,12 @@ all : sublib $(SHLIB)
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 subclean:
-	(cd -P $(SUBDIR) && $(MAKE) clean)
+	(cd $(SUBDIR) && $(MAKE) clean)
 
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
 sublib:
-# argument -P of command cd is necessary if Rtools42 is used and 
-# the package is installed on the CPB file system (the m:-disk).
-	 (cd -P $(SUBDIR)&& $(MAKE) \
+	 (cd $(SUBDIR)&& $(MAKE) \
 	  CXX="$(CXX)" \
           CXXFLAGS="$(CXXFLAGS) $(R_XTRA_CPPFLAGS) $(PKG_CXXFLAGS) $(CPICFLAGS) \
 	            $(CLINK_CPPFLAGS)" \
