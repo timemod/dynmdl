@@ -201,7 +201,7 @@ test_that("init data and steady fit targets", {
   mdl2$set_period("2019q3")
   datap <- period_range("2019q1/2020q1")
   mdl2$init_data(data_period <- datap)
-  expect_equal(ncol(mdl2$residual_check(tol = 1e-7)), 0)
+  expect_null(mdl2$residual_check(tol = 1e-7))
   mdl2$set_fit_values(NA)
   mdl2$init_data()
   expect_equal(mdl2$get_data_period(), datap)

@@ -37,7 +37,7 @@ test_that("check_static_eqs = TRUE", {
   
   mdl$set_period("2020")
   mdl$init_data()
-  expect_equal(ncol(mdl$residual_check(tol = 1e-8)), 0)
+  expect_null(mdl$residual_check(tol = 1e-8))
   expect_equal(colnames(mdl$residual_check(tol = 1e-8, 
                                                     include_fit_eqs = TRUE)),
                "eq_19")
@@ -63,7 +63,7 @@ test_that("fit_fixed_period = TRUE", {
   
   mdl$set_period("2020")
   mdl$init_data()
-  expect_equal(ncol(mdl$residual_check(tol = 1e-8, include_fit_eqs = TRUE)), 0)
+  expect_null(mdl$residual_check(tol = 1e-8, include_fit_eqs = TRUE))
 })
 
 test_that("init data and the base period (1)", {
