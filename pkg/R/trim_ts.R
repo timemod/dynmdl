@@ -26,6 +26,6 @@ trim_ts <- function(x, period, tol) {
     period <- period_range(per, per + length(sel) - 1)
     return(x[period, , drop = FALSE])
   } else {
-    return(x)
+    return(NULL)
   }
 }

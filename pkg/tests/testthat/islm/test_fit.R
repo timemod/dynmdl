@@ -284,9 +284,7 @@ test_that("too many fit targets", {
   expected_result["2015q4", "y"] <- -999
   expect_identical(mdl2$get_fit(), expected_result)
   
-  expect_identical(ncol(mdl2$residual_check(include_fit_eqs = TRUE, 
-                                            tol = 1e-8)), 
-                   0L)
+  expect_null(mdl2$residual_check(include_fit_eqs = TRUE, tol = 1e-8))
   expect_output(mdl2$solve(), "Convergence after 0 iterations")
   
   mdl2$set_fit_values(720, names = "c", period = "2016q1")

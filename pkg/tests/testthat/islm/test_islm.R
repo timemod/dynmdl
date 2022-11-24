@@ -166,9 +166,8 @@ test_that("residual_check", {
   expect_identical(res1a_check, res1a_ref)
   
   res1b <- mdl2$residual_check(tol = 1e-8)
-  expect_equal(ncol(res1b), 0)
-  expect_equal(get_period_range(res1b), mp)
-  
+  expect_null(res1b)
+
   p <- period_range("2011q3/2011q4")
   mdl2$set_exo_values(c(250, 260), names = "g", period = p)
 

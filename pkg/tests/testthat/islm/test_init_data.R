@@ -26,7 +26,7 @@ test_that("init_data does not change the model period", {
   mdl$init_data()
   expect_equal(mdl$get_period(), mp)
   expect_equal(mdl$get_data_period(), mdp)
-  expect_equal(ncol(mdl$residual_check(tol = 1e-8)), 0)
+  expect_null(mdl$residual_check(tol = 1e-8))
 })
 
 test_that("data period outside range required by solve", {
