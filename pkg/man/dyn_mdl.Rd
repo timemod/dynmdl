@@ -225,9 +225,11 @@ the number 120.25 as \code{120.2}, and the number
 10.1234 as \code{1.012e+05}}
 }
 
-An example where argument \code{latex_options} is used:\preformatted{mdl <- dyn_mdl("islm.mod", latex_options = list(dir = "doc", prefix = "islm",
+An example where argument \code{latex_options} is used:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{mdl <- dyn_mdl("islm.mod", latex_options = list(dir = "doc", prefix = "islm",
                 par_as_num = TRUE)
-}
+}\if{html}{\out{</div>}}
 
 }
 }

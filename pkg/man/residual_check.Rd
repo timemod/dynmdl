@@ -7,6 +7,8 @@
 This method of R6 class \code{\link{DynMdl}} calculates the
 residuals for the full model period and returns the
 result  as a \code{\link[regts]{regts}} timeseries object.
+The function returns \code{NULL} if argument \code{tol} has been specified and if all
+differences are smaller than \code{tol}.
 }
 \section{Usage}{
 
@@ -24,7 +26,8 @@ mdl$residual_check(tol, include_fit_eqs = FALSE)
 \describe{
 \item{\code{tol}}{the tolerance parameter.
 If specified, then the return value does not include columns for the equations
-whose residuals are smaller than \code{tol}}
+whose residuals are smaller than \code{tol}. If all residuals are smaller
+than \code{tol} the functions returns \code{NULL}.}
 \item{\code{include_all_eqs}}{a logical value (default \code{FALSE}).
 If \code{TRUE}, then the all equations, including fit equations and
 auxiliary equations (if present),  are included in the residual check.

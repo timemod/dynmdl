@@ -8,7 +8,7 @@ Description: An R version of Dynare.
 SystemRequirements: GNU make
 License: GPL (>= 2)
 LazyData: TRUE
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE, r6 = FALSE)
 LinkingTo: Rcpp, BH, Rcereal
 Imports:
