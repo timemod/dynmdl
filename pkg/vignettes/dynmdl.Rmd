@@ -20,26 +20,26 @@ vignette: >
 
 In this tutorial I show how a simple model with rational expectations
 can be solved with package `dynmdl`.
-The example model is a version of the ISLM model with rational expectations.
+The example model is a version of the IS-LM model with rational expectations.
 This model contains the following variables:
 
 \begin{tabular}{ll|ll}
 \multicolumn{2}{c|}{Endogenous variables} & \multicolumn{2}{c}{Exogenous variables} \\
 \hline
 $Y$      & national income            & $G$      & government spending   \\
-$Y^D$    & dispensible income         & $Ms$     & money supply          \\
+$Y^d$    & disposable income         & $M^s$     & money supply          \\
 $T$      & tax                        &          &                       \\
 $C$      & consumption                &          &                       \\
 $I$      & investments                &          &                       \\
-$M^D$    & money demand               &          &                       \\
+$M^d$    & money demand               &          &                       \\
 \end{tabular}
 
 The model equations are given by
 \begin{eqnarray*}
 Y_t   &=& C_t + I_t + G_t        \label{eqn:islm1:y}\\
-Y^D_t &=& Y_t - T_t            \label{eqn:islm1:yd}\\                   
+Y^d_t &=& Y_t - T_t            \label{eqn:islm1:yd}\\                   
 T_t   &=& t_0 + t_1 Y_t  \label{eqn:islm1:t}\\
-C_t  &=& c_0 + c_1 Y^D_{t-1} + c_2 Y^D_t + c_3 Y^D_{t+1} + c_4 r_t + c_5 r_t\label{eqn:islm1:c}\\
+C_t  &=& c_0 + c_1 Y^d_{t-1} + c_2 Y^d_t + c_3 Y^d_{t+1} + c_4 r_t + c_5 r_t\label{eqn:islm1:c}\\
 I_t   &=& i_0 + i_1  Y_{t-1} + i_2 Y_t + i_3 Y_{t+1} + i_4 r_t + i_5 r_t^2\label{eqn:islm1:i}\\
 M^d_t &=& m_0 + m_1 Y_t + m_2 r_t + m_3 r_t^2 + m_3 r_t^2\label{eqn:islm1:md}\\
 M^d_t &=& M^s_t                                         \label{eqn:islm1:mequ}
@@ -53,7 +53,7 @@ PREPARATIONS
 library(dynmdl)
 
 # input/output chunks are separated
-# R inputlines start with >, outputlines with nothing
+# R input lines start with >, output lines with nothing
 knitr::opts_chunk$set(collapse = FALSE, comment = "", prompt = TRUE)
 ```
 
@@ -63,7 +63,7 @@ knitr::opts_chunk$set(collapse = FALSE, comment = "", prompt = TRUE)
 `parameters`, `model` and `initval` blocks are used. The other blocks in the
 mod file are ignored.
 
-The mod file for the ISLM has the following contents:
+The mod file for the IS-LM has the following contents:
 ```{r echo = FALSE, comment=''}
 cat(readLines('islm.mod'), sep = '\n')
 ```
@@ -84,13 +84,13 @@ For example, for R6 classes methods are part of the object itself and not of
 generic functions. R6 classes behave in a similar way as classes in
 object oriented languages such as Java, C++ or Python. 
 
-For example, the method `get_params()` can be used to
+For example, the method `get_param()` can be used to
 obtain the parameters of the model
 ```{r}
 mdl$get_param()
 ```
 
-Methods starting with `get_`, are ofter called a "getter" methods.
+Methods starting with `get_`, are often called "getter" methods.
 There are also corresponding "setter" methods. For example
 ```{r}
 mdl$set_param(c(m0 = 100))
@@ -110,7 +110,7 @@ Now variables `mdl2` and `mdl` refer to the same object. If you modify
 mdl2$set_param(c(m0 = 75))
 mdl$get_param("m0")
 ```
-The usual copy-on-modify semantics that are used for convential
+The usual copy-on-modify semantics that are used for conventional
 R objects, including S3 or S4 objects, do not apply to R6 classes.
 
 If you want to create a copy of the model, use the `copy()` method.
@@ -127,7 +127,7 @@ To write an `DynMdl`object to a file, use for example
 mdl$write_mdl("islm_mdl.rds")
 ```
 
-This method serialises the model equations, parameters and model data. Also 
+This method serializes the model equations, parameters and model data. Also 
 included are fit targets if the fit method is used for this model.
 
 You can read this model back with the command
@@ -193,9 +193,9 @@ Because the example model has a maximum lag and lead of 1,
 the data period starts one period before the model period
 and ends one quarter after the end of the model period.
 
-Method `set_period()` also initialises the endogenous and exogenous
+Method `set_period()` also initializes the endogenous and exogenous
 model variables for the full data period. 
-They are initialised with the static endogenous and exogenous variables, 
+They are initialized with the static endogenous and exogenous variables, 
 respectively. The method `get_endo_data()` returns the values of the endogenous
 variables as a `regts` object.
 
@@ -232,13 +232,13 @@ plot(mdl$get_endo_data(names = 'y'), type = "o")
 The method `set_value()`  is useful for simple 
 experiments,
 but for more typical applications the exogenous shocks and values of the
-endogenous variables are stored in a csv file. For example,
-consider the following csv file
+endogenous variables are stored in a CSV file. For example,
+consider the following CSV file
 ```{r echo = FALSE, comment=''}
 cat(readLines('input.csv'), sep = '\n')
 ```
 
-To update the model workspace, first read the csv file and convert it to a
+To update the model workspace, first read the CSV file and convert it to a
 `regts`
 ```{r}
 df <- read.csv("input.csv")
