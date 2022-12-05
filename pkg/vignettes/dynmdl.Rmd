@@ -122,7 +122,7 @@ mdl$get_param("m0")
 
 ## Writing and reading `DynMdl` objects
 
-To write an `DynMdl`object to a file, use for example
+To write a `DynMdl`object to a file, use for example
 ```{r}
 mdl$write_mdl("islm_mdl.rds")
 ```
