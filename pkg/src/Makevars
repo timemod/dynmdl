@@ -5,8 +5,8 @@ PKG_CXXFLAGS = -DPACKAGE_NAME=\"dynare\" -DPACKAGE_TARNAME=\"dynare\" -DPACKAGE_
 SUBDIR = macro
 SUBLIB = lib$(SUBDIR).a
 PKG_LIBS = $(SUBDIR)/$(SUBLIB)
-YACC = bison
-LEX = lex
+YACC_CMD = bison
+LEX_CMD = lex
 LEXINC = /usr/bin/../include
 LEX_YACC_DIR = lex_yacc
 
@@ -42,7 +42,7 @@ DynareFlex.o : DynareFlex.cc FlexLexer.h
 DynareBison.o : DynareBison.cc
 
 DynareFlex.cc FlexLexer.h : $(LEX_YACC_DIR)/DynareFlex.ll
-	$(LEX) -o DynareFlex.cc $<
+	$(LEX_CMD) -o DynareFlex.cc $<
         # Copy FlexLexer.h from $LEXINC. Otherwise the code cannot
         # be compiled on systems where lex is not available, or where
         # the version of lex is incompatible with the version used
@@ -51,4 +51,4 @@ DynareFlex.cc FlexLexer.h : $(LEX_YACC_DIR)/DynareFlex.ll
 	touch FlexLexer.h
 
 DynareBison.cc DynareBison.hh location.hh stack.hh position.hh: $(LEX_YACC_DIR)/DynareBison.yy
-	-$(YACC) -o DynareBison.cc $<
+	-$(YACC_CMD) -o DynareBison.cc $<

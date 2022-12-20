@@ -1,8 +1,8 @@
 LIB = libmacro.a
 OBJS = MacroBison.o MacroDriver.o MacroFlex.o MacroValue.o
 
-LEX = flex
-YACC = bison
+LEX_CMD = flex
+YACC_CMD = bison
 
 all : $(LIB)
 
@@ -20,10 +20,10 @@ MacroValue.o : MacroDriver.hh
 
 # rules for flex and bison
 MacroFlex.cc: MacroFlex.ll ../FlexLexer.h
-	-$(LEX) -o MacroFlex.cc MacroFlex.ll
+	-$(LEX_CMD) -o MacroFlex.cc MacroFlex.ll
 
 MacroBison.cc MacroBison.hh location.hh stack.hh position.hh: MacroBison.yy
-	-$(YACC) -o MacroBison.cc MacroBison.yy
+	-$(YACC_CMD) -o MacroBison.cc MacroBison.yy
 
 clean:
 	-rm -r *.o
