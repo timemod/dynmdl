@@ -33,17 +33,17 @@ tic("writing dep_file")
 src_files <- grep("\\.cc$", names(deps), value = TRUE)
 con <- file(dep_file, "wt")
 for (src_file in src_files) {
+  obj_file <- sub("\\.cc$", "", src_file)
   deps <- names(subcomponent(g, src_file, mode = "in")[-1])
   deps <- sort(deps)
-  obj_name <- sub("\\.cc$", ".o", src_file)
-  txt <- paste(obj_name, ":", paste(deps, collapse = " "))
-  lines <- strwrap(txt, width = 80, exdent = nchar(obj_name) + 3)
+  txt <- paste(obj_file, ":", paste(deps, collapse = " "))
+  lines <- strwrap(txt, width = 80, exdent = 4)
   nlines <- length(lines)
   if (nlines > 1) {
     nrs <- 1 : (nlines - 1)
     lines[nrs] <- paste(lines[nrs], "\\")
   }
-  writeLines(lines, con = con)
+  writeLines(c(lines, ""), con = con)
 }
 close(con)
 toc()
