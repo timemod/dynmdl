@@ -7,7 +7,7 @@ rm(list = ls())
 src_dir <- "pkg/src"
 dep_rds <- "deps/deps.rds"
 
-read_includes <- function(filename, is_macro_dir = FALSE) {
+read_includes <- function(filename, src_dir, is_macro_dir = FALSE) {
   include_pattern <- "^#\\s*include\\s+\"(.+)\""
   lines <- readLines(file.path(src_dir, filename))
   includes <- character(0)
@@ -29,37 +29,62 @@ read_includes <- function(filename, is_macro_dir = FALSE) {
   return(includes)
 }
 
-get_dep_list <- function(filenames, is_macro_dir = FALSE) {
-  if (is_macro_dir) filenames <- paste0("macro/", filenames)
+get_dep_list <- function(filenames, src_dir, is_macro_dir = FALSE) {
   retval <- lapply(filenames, FUN = read_includes,
-                   is_macro_dir = is_macro_dir)
+                   src_dir = src_dir, is_macro_dir = is_macro_dir)
   names(retval) <- filenames
   return(retval)
 }
 
-# create dependency structure from scratch
-create_deps <- function() {
+update_deps <- function(deps, filenames, src_dir) {
   
-  # get dependencies of data in directory pkg/src
-  src_files <- list.files(src_dir, pattern = "\\.cc$")
-  header_files <- list.files(src_dir, pattern = "\\.hh$")
-  all_files <- c(src_files, header_files)
-  deps <- get_dep_list(all_files)
+  is_macro_file <- grepl("^macro/", filenames)
   
-  # also get dependencies of macro header files
-  macro_header_files <- list.files(file.path(src_dir, "macro"), 
-                                   pattern = "\\.hh$")
-  macro_header_deps <- get_dep_list(macro_header_files, is_macro_dir = TRUE)
+  macro_files <- filenames[is_macro_file]
+  other_files <- filenames[!is_macro_file]
   
-  deps <- c(deps, macro_header_deps)
-
+  # for macrk-files we only need header files
+  macro_files <-grep("\\.(h|hh)$", macro_files, value = TRUE)
+ 
+  if (length(macro_files) > 0) {
+    macro_deps <- get_dep_list(macro_files, src_dir = src_dir,
+                               is_macro_dir = TRUE)
+    deps[names(macro_deps)] <- macro_deps
+  }
+  if (length(other_files) > 0) {
+    other_deps <- get_dep_list(other_files, src_dir = src_dir,
+                               is_macro_dir = FALSE)
+    deps[names(other_deps)] <- other_deps
+  }
+  
   # remove unnessary dependencies 
   is_null <- sapply(deps, FUN = is.null)
   return(deps[!is_null])
 }
 
-tic("creating dependency information")
-deps <- create_deps()
-toc()
+if (interactive() || !file.exists(dep_rds)) {
+  
+  filenames <- list.files(src_dir, pattern = "\\.(cc|h|hh)$",
+                          recursive = TRUE)
+  
+  cat("\nAnalyzing dependencies of c++ files on header files\n\n")
+  
+  deps <- list()
+  
+} else {
+  
+  filenames <- commandArgs(trailingOnly = TRUE)
+  pattern <- paste0("^", src_dir, "/")
+  pattern <- sub("/", "(/|\\\\\\\\)", pattern)
+  filenames <- sub(pattern, "", filenames)
+  
+  cat("\nUpdating dependencies of C++ files on header files:\n",
+      paste(filenames, collapse = "\n"), "\n\n")
+  
+  deps <- readRDS(dep_rds)
+
+}
+
+deps <- update_deps(deps, filenames, src_dir = src_dir)
 
 saveRDS(deps, dep_rds)

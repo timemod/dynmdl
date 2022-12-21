@@ -31,6 +31,7 @@ toc()
 
 tic("writing dep_file")
 src_files <- grep("\\.cc$", names(deps), value = TRUE)
+src_files <- sort(src_files)
 con <- file(dep_file, "wt")
 for (src_file in src_files) {
   obj_file <- sub("\\.cc$", "", src_file)

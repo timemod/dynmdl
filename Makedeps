@@ -3,10 +3,11 @@
 TOOLDIR = tools
 DEP_DIR = deps
 DEP_FILE = makedeps
-DEP_RDS = dep.rds
+DEP_RDS = deps.rds
 SRC_DIR = pkg/src
 SRC_C = $(wildcard $(SRC_DIR)/*.c*)
 SRC_H = $(wildcard $(SRC_DIR)/*.h*)
+MACRO_H = $(wildcard $(SRC_DIR)/macro/*.h*)
 PYTHON = $(PYTHON)
 SRC_DEP_DIR = $(SRC_DIR)/deps
 
@@ -14,15 +15,14 @@ SRC_DEP_DIR = $(SRC_DIR)/deps
 all: check $(SRC_DEP_DIR)/$(DEP_FILE)
 
 check:
-	@echo checking source files does not work yet
-#	@$(PYTHON) $(TOOLDIR)/check_srcfiles.py $(SRC_DIR) $(DEP_DIR)
+	@Rscript $(TOOLDIR)/check_deleted_files.R
 
 
 $(SRC_DEP_DIR)/$(DEP_FILE) : $(DEP_DIR)/$(DEP_RDS)
-	Rscript $(TOOLDIR)/write_makedeps.R
+	@Rscript $(TOOLDIR)/write_makedeps.R
 
-$(DEP_DIR)/$(DEP_RDS) : $(SRC_C) $(SRC_H)
-	Rscript $(TOOLDIR)/gendepend.R
+$(DEP_DIR)/$(DEP_RDS) : $(SRC_C) $(SRC_H) $(MACRO_H)
+	@Rscript $(TOOLDIR)/gendepend.R $?
 
 clean:
 	@rm -f $(DEP_DIR)/$(DEP_RDS)
