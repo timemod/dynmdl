@@ -82,9 +82,9 @@ if (interactive() || !file.exists(dep_rds)) {
       paste(filenames, collapse = "\n"), "\n\n")
   
   deps <- readRDS(dep_rds)
-
 }
 
+tic("Analyzing dependencies")
 deps <- update_deps(deps, filenames, src_dir = src_dir)
-
+toc()
 saveRDS(deps, dep_rds)
