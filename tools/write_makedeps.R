@@ -1,0 +1,49 @@
+# This scripts creates a dependency file for source codes in directory
+# pkg/src.
+
+library(igraph)
+library(tictoc)
+
+rm(list = ls())
+
+dep_rds <- "deps/deps.rds"
+dep_file <- "pkg/src/deps/makedeps"
+
+deps <- readRDS(dep_rds)
+
+tic("construct matrix")
+all_names <- sort(union(names(deps), unique(unlist(deps))))
+n <- length(all_names)
+dep_mat <- matrix(0, nrow = n, ncol = n,
+                   dimnames = list(all_names, all_names))
+for (naam in names(deps)) {
+  for (dep in deps[[naam]]) {
+    dep_mat[naam, dep] <- 1
+  }
+}
+toc()
+
+tic("create graph")
+g <- graph_from_adjacency_matrix(t(dep_mat))
+toc()
+
+# TODO: give a warning about include files  that are not used
+
+tic("writing dep_file")
+src_files <- grep("\\.cc$", names(deps), value = TRUE)
+con <- file(dep_file, "wt")
+for (src_file in src_files) {
+  deps <- names(subcomponent(g, src_file, mode = "in")[-1])
+  deps <- sort(deps)
+  obj_name <- sub("\\.cc$", ".o", src_file)
+  txt <- paste(obj_name, ":", paste(deps, collapse = " "))
+  lines <- strwrap(txt, width = 80, exdent = nchar(obj_name) + 3)
+  nlines <- length(lines)
+  if (nlines > 1) {
+    nrs <- 1 : (nlines - 1)
+    lines[nrs] <- paste(lines[nrs], "\\")
+  }
+  writeLines(lines, con = con)
+}
+close(con)
+toc()
