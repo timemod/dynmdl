@@ -1,3 +1,8 @@
+#
+# This script is used to check the dependencies for source files in
+# directory pkg/src on the include files in pkg/src and pkg/src/macro.
+# A dependency list is written file deps/deps.rds.
+
 library(igraph)
 library(stringr)
 library(tictoc)
@@ -64,6 +69,11 @@ update_deps <- function(deps, filenames, src_dir) {
 
 if (interactive() || !file.exists(dep_rds)) {
   
+  #
+  # This script is run from RStudio or the dep_rds file
+  # does not exist.
+  #
+  
   filenames <- list.files(src_dir, pattern = "\\.(cc|cpp|h|hh)$",
                           recursive = TRUE)
   
@@ -72,6 +82,10 @@ if (interactive() || !file.exists(dep_rds)) {
   deps <- list()
   
 } else {
+  
+  # This script is called from the makefile Makedeps,
+  # The command line arguments are the names of the files
+  # that are newer than the dep_rds file.
   
   filenames <- commandArgs(trailingOnly = TRUE)
   pattern <- paste0("^", src_dir, "/")
@@ -87,4 +101,5 @@ if (interactive() || !file.exists(dep_rds)) {
 tic("Analyzing dependencies")
 deps <- update_deps(deps, filenames, src_dir = src_dir)
 toc()
+
 saveRDS(deps, dep_rds)

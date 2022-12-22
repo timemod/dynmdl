@@ -1,5 +1,6 @@
-# This scripts creates a dependency file for source codes in directory
-# pkg/src.
+# This scripts creates a Makefile with dependencies of source files in 
+# directory pkg/src on the header files in directory pkg/src and 
+# pkg/src/macro.
 
 library(igraph)
 library(tictoc)
@@ -34,7 +35,7 @@ src_files <- grep("\\.(cc|cpp)$", names(deps), value = TRUE)
 src_files <- sort(src_files)
 con <- file(dep_file, "wt")
 for (src_file in src_files) {
-  obj_file <- sub("\\.cc$", ".o", src_file)
+  obj_file <- sub("\\.(cc|cpp)$", ".o", src_file)
   deps <- names(subcomponent(g, src_file, mode = "in")[-1])
   deps <- sort(deps)
   txt <- paste(obj_file, ":", paste(deps, collapse = " "))
