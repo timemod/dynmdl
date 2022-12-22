@@ -34,7 +34,7 @@ src_files <- grep("\\.cc$", names(deps), value = TRUE)
 src_files <- sort(src_files)
 con <- file(dep_file, "wt")
 for (src_file in src_files) {
-  obj_file <- sub("\\.cc$", "", src_file)
+  obj_file <- sub("\\.cc$", ".o", src_file)
   deps <- names(subcomponent(g, src_file, mode = "in")[-1])
   deps <- sort(deps)
   txt <- paste(obj_file, ":", paste(deps, collapse = " "))
