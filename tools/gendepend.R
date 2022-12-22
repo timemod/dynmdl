@@ -9,8 +9,7 @@ library(tictoc)
 
 rm(list = ls())
 
-src_dir <- "pkg/src"
-dep_rds <- "deps/deps.rds"
+source("tools/parameters.R")
 
 read_includes <- function(filename, src_dir, is_macro_dir = FALSE) {
   include_pattern <- "^#\\s*include\\s+\"(.+)\""
@@ -48,8 +47,10 @@ update_deps <- function(deps, filenames, src_dir) {
   macro_files <- filenames[is_macro_file]
   other_files <- filenames[!is_macro_file]
   
-  # for macrk-files we only need header files
-  macro_files <-grep("\\.(h|hh)$", macro_files, value = TRUE)
+  # for macro files we only need header files
+  header_pattern <- paste0("\\.(",  paste(header_ext, collapse = "|"),
+                                          ")$")
+  macro_files <- grep(header_pattern, macro_files, value = TRUE)
  
   if (length(macro_files) > 0) {
     macro_deps <- get_dep_list(macro_files, src_dir = src_dir,
@@ -74,8 +75,10 @@ if (interactive() || !file.exists(dep_rds)) {
   # does not exist.
   #
   
-  filenames <- list.files(src_dir, pattern = "\\.(cc|cpp|h|hh)$",
-                          recursive = TRUE)
+  pattern <- paste0("\\.(",  
+                    paste(c(src_ext, header_ext), collapse = "|"),
+                    ")$")
+  filenames <- list.files(src_dir, pattern = pattern, recursive = TRUE)
   
   cat("\nAnalyzing dependencies of c++ files on header files\n\n")
   

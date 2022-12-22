@@ -5,7 +5,7 @@ library(tictoc)
 
 rm(list = ls())
 
-dep_file <- "pkg/src/deps/makedeps"
+source("tools/parameters.R")
 
 # read the text of a file into a single character string
 read_file <- function(filename) {

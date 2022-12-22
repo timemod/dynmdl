@@ -7,8 +7,7 @@ library(tictoc)
 
 rm(list = ls())
 
-dep_rds <- "deps/deps.rds"
-dep_file <- "pkg/src/deps/makedeps"
+source("tools/parameters.R")
 
 deps <- readRDS(dep_rds)
 
@@ -31,11 +30,12 @@ toc()
 # TODO: give a warning about include files  that are not used
 
 tic("writing dep_file")
-src_files <- grep("\\.(cc|cpp)$", names(deps), value = TRUE)
+src_pattern <- paste0("\\.(",  paste(src_ext, collapse = "|"), ")$")
+src_files <- grep(src_pattern, names(deps), value = TRUE)
 src_files <- sort(src_files)
 con <- file(dep_file, "wt")
 for (src_file in src_files) {
-  obj_file <- sub("\\.(cc|cpp)$", ".o", src_file)
+  obj_file <- sub(src_pattern, ".o", src_file)
   deps <- names(subcomponent(g, src_file, mode = "in")[-1])
   deps <- sort(deps)
   txt <- paste(obj_file, ":", paste(deps, collapse = " "))
