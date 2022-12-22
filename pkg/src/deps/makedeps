@@ -1,3 +1,9 @@
+calc_internal_dyn.cpp : CallRFunction.hh ExternalFunctionCalc.hh PolishModel.hh \
+    PolishModels.hh
+
+calc_internal_stat.cpp : CallRFunction.hh ExternalFunctionCalc.hh \
+    PolishModel.hh PolishModels.hh
+
 CallRFunction.o : CallRFunction.hh
 
 compile_model.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh DataTree.hh \

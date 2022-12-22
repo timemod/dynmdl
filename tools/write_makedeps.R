@@ -30,7 +30,7 @@ toc()
 # TODO: give a warning about include files  that are not used
 
 tic("writing dep_file")
-src_files <- grep("\\.cc$", names(deps), value = TRUE)
+src_files <- grep("\\.(cc|cpp)$", names(deps), value = TRUE)
 src_files <- sort(src_files)
 con <- file(dep_file, "wt")
 for (src_file in src_files) {

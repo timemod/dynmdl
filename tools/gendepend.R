@@ -64,7 +64,7 @@ update_deps <- function(deps, filenames, src_dir) {
 
 if (interactive() || !file.exists(dep_rds)) {
   
-  filenames <- list.files(src_dir, pattern = "\\.(cc|h|hh)$",
+  filenames <- list.files(src_dir, pattern = "\\.(cc|cpp|h|hh)$",
                           recursive = TRUE)
   
   cat("\nAnalyzing dependencies of c++ files on header files\n\n")
