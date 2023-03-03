@@ -3,7 +3,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("ISLM model get_equations")
 
 update_expected_output <- FALSE
 

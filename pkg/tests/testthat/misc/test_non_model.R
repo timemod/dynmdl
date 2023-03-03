@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("non existing mod file")
 
 rm(list = ls())
 

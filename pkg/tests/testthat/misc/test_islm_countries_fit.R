@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("ISLM 2 countries model - fit")
 
 mod_file <- "mod/islm_countries_fit.mod"
 period <- "2016Q1/2020Q2"

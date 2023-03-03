@@ -2,7 +2,6 @@ library(dynmdl)
 library(testthat)
 
 rm(list = ls())
-context("ISLM model with steady fit procedure")
 
 rds_file <- "islm_model_fit.rds"
 model_name <- "islm_fit"

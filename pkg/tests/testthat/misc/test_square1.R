@@ -1,5 +1,4 @@
 library(dynmdl)
-context("square1")
 
 rm(list = ls())
 

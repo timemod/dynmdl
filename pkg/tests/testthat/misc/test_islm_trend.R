@@ -2,7 +2,6 @@ library(dynmdl)
 library(testthat)
 rm(list = ls())
 
-context("ISLM model with trends")
 
 source("../tools/read_file.R")
 source("../tools/cat_lines.R")

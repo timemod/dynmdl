@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("model non_finite")
 
 mod_file <- "mod/non_finite.mod"
 

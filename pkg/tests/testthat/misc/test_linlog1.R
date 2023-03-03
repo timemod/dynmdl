@@ -3,7 +3,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("linlog1")
 
 model <- "linlog1"
 

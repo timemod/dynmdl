@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("solve_status")
 
 mod_name <- "mod/islm.mod"
 update_expected_output <- FALSE

@@ -4,7 +4,6 @@ rm(list = ls())
 
 source("../tools/read_dynare_result.R")
 
-context("ISLM variant 3")
 
 model <- "islm_var3"
 

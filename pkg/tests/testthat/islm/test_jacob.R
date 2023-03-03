@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("ISLM model get_equations")
 
 report <- capture_output(mdl <- read_mdl("islm_model.rds"))
 

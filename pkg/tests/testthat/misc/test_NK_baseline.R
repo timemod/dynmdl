@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("NK_baseline model")
 
 update_expected_output <- FALSE
 

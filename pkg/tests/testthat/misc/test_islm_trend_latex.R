@@ -2,7 +2,6 @@ library(dynmdl)
 library(testthat)
 rm(list = ls())
 
-context("ISLM trend model latex")
 
 model_name <- "islm_trend_latex"
 mod_file <- file.path("mod", paste0(model_name, ".mod"))

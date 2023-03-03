@@ -4,7 +4,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("islm model with weird mod files")
 
 mdl_base <- read_mdl("islm_model.rds", silent = TRUE)
 

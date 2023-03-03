@@ -2,7 +2,6 @@ library(dynmdl)
 library(testthat)
 rm(list = ls())
 
-context("ISLM model get_period")
 
 library(utils)
 library(dynmdl)

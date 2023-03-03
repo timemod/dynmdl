@@ -4,7 +4,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("set/get parameters")
 
 x <- mdl <- read_mdl("islm_model.rds", silent = TRUE)
 

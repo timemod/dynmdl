@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("NK_baseline model fit")
 
 source("../tools/read_dynare_result.R")
 

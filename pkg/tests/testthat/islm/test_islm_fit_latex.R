@@ -2,7 +2,6 @@ library(dynmdl)
 library(testthat)
 rm(list = ls())
 
-context("ISLM fit model latex")
 
 update_expected_output <- FALSE
 

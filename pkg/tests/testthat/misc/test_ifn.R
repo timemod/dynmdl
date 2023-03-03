@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("IFN model")
 source("../tools/read_dynare_result.R")
 
 # NOTE: the IFN model is not normal DSGE model,

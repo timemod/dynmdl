@@ -3,7 +3,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("linlog2")
 
 source("../tools/read_file.R")
 

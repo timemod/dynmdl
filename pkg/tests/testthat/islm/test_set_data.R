@@ -2,7 +2,6 @@ library(utils)
 library(dynmdl)
 library(testthat)
 
-context("set_data for the ISLM model")
 
 capture_output(mdl <- read_mdl("islm_model.rds"))
 

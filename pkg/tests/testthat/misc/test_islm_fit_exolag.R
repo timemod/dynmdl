@@ -5,7 +5,6 @@ rm(list = ls())
 
 source("../tools/read_dynare_result.R")
 
-context("ISLM fit and exogenous lag")
 
 mod_file <- "mod/islm_fit_exolag1.mod"
 fit_mod_file <- "mod_out/islm_fit_exolag1.mod"

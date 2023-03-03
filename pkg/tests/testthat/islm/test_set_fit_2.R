@@ -1,7 +1,6 @@
 library(testthat)
 library(dynmdl)
 
-context("set_fit (2) for ISLM model")
 
 rds_file <- "islm_model_fit.rds"
 rep <- capture_output(mdl <- read_mdl(rds_file))

@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("Test for DynMdl methods set_data, set_endo_values and set_exo_values")
 
 period <- period_range("2017Q1/2017Q2")
 

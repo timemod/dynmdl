@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("ISLM model parameter initialisation")
 
 update_expected_output <- FALSE
 

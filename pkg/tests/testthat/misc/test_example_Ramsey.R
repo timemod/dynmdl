@@ -5,7 +5,6 @@ rm(list = ls())
 
 model_name <- "example_Ramsey"
 
-context(model_name)
 
 source("../tools/read_dynare_result.R")
 

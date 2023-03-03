@@ -1,6 +1,5 @@
 library(dynmdl)
 library(testthat)
-context("ISLM model with error")
 
 mod_file <- "mod/islm_error1.mod"
 

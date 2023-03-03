@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("model with relational operators")
 
 # NOTE: the IFN model is not normal DSGE model,
 # the steady state is not well defined and

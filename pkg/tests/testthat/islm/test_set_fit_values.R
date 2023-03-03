@@ -4,7 +4,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("set_fit_values for the ISLM model")
 
 rds_file <- "islm_model_fit.rds"
 dum <- capture_output(mdl <- read_mdl(rds_file))

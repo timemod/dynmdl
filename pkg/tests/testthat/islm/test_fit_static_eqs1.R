@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("ISLM model fit with static equations (1)")
 
 source("../tools/read_file.R")
 rds_file <- "islm_model_fit.rds"

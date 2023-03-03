@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("square2")
 
 rm(list = ls())
 

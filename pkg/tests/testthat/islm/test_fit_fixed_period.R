@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("ISLM model with fit procedure with fit_fixed_period = TRUE")
 
 rds_file <- "islm_model_fit.rds"
 model_name <- "islm_fit"

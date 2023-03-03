@@ -3,7 +3,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("change_static_data for the ISLM model")
 
 mdl <- read_mdl("islm_model.rds", silent = TRUE)
 

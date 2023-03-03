@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("function normcdf and normpdf")
 library(dynmdl)
 
 

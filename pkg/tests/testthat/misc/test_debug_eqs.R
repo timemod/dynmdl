@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("test debug equations")
 
 
 mod_file <- "mod/test_debug_eqs.mod"

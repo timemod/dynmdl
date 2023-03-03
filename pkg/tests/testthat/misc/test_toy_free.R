@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 rm(list = ls())
-context("toy_free model")
 
 source("../tools/read_dynare_result.R")
 

@@ -3,7 +3,6 @@ library(dynmdl)
 
 rm(list = ls())
 
-context("svd_analysis")
 
 set.seed(123)
 

@@ -2,7 +2,6 @@ library(dynmdl)
 library(testthat)
 rm(list = ls())
 
-context("test for method check for eigenvalues close to 2")
 
 mod_file <- "mod/check2.mod"
 update_expected_output <- FALSE

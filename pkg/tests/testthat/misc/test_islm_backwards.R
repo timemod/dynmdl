@@ -1,7 +1,6 @@
 library(dynmdl)
 library(testthat)
 
-context("backwards ISLM model")
 update_expected_output <- FALSE
 nperiods <- 18
 mod_file <- "mod/islm_backwards.mod"

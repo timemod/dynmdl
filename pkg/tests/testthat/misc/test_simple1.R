@@ -1,5 +1,4 @@
 library(dynmdl)
-context("simple model with 1 equation")
 
 source("simple_model_utils.R")
 

@@ -2,7 +2,6 @@ library(testthat)
 library(dynmdl)
 rm(list = ls())
 
-context("ISLM model with fit procedure and external functions")
 
 source("../tools/read_dynare_result.R")
 

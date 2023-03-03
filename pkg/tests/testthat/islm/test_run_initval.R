@@ -2,7 +2,6 @@ library(testthat)
 library(dynmdl)
 rm(list = ls())
 
-context("ISLM model run_initval")
 
 initval_data_correct <- c(c =500, g = 240, i = 240,  md = 230, ms = 230, r = 3.5, 
                           t = 100, y = 980, yd = 880)

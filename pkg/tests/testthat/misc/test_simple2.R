@@ -1,6 +1,5 @@
 library(dynmdl)
 
-context("simple model expanded to a model with 4 equations")
 
 source("simple_model_utils.R")
 

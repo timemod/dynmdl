@@ -3,7 +3,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("ISLM model with non finite residuals")
 
 update_expected_output <- FALSE
 

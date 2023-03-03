@@ -4,7 +4,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("change_endo_data and change_exo_data for the ISLM model")
 
 mdl <- read_mdl("islm_model.rds", silent = TRUE)
 

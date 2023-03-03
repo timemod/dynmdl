@@ -3,7 +3,6 @@ library(testthat)
 
 rm(list = ls())
 
-context("model non_finite")
 
 mod_file <- "mod/unit_root.mod"
 

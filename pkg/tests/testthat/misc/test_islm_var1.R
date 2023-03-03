@@ -3,7 +3,6 @@ library(testthat)
 rm(list = ls())
 source("../tools/read_dynare_result.R")
 
-context("ISLM variant 1")
 
 model <- "islm_var1"
 update_expected_output <- FALSE

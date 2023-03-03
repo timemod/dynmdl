@@ -2,7 +2,6 @@ library(testthat)
 library(dynmdl)
 rm(list = ls())
 
-context("ISLM model with year fit")
 
 update_expected_output <- FALSE
 
