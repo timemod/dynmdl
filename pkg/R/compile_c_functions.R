@@ -17,8 +17,8 @@ compile_c_functions <- function(dll_dir) {
     }
   }
 
-  r_home <- R.home(component = "bin")
-  R_cmd <- file.path(r_home, "R", fsep =  .Platform$file.sep)
+  R_home <- R.home(component = "bin")
+  R_cmd <- file.path(R_home, "R", fsep =  .Platform$file.sep)
   
   dll_ext <- system(paste(R_cmd, "CMD config SHLIB_EXT"), intern = TRUE)
   dll_file <- file.path(dll_dir, paste0("mdl_functions", dll_ext))
