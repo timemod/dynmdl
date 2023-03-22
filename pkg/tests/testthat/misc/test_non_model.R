@@ -20,7 +20,8 @@ test_that("dyn_mdl gives an error", {
   if (.Platform$OS.type == "unix") {
     # test handling ~ in filename
     mod_file2 <- normalizePath(mod_file)
-    home_dir <- Sys.getenv("HOME") 
+    # normalizePath is necessary on the Linux severs:
+    home_dir <- normalizePath(Sys.getenv("HOME"))
     mod_file2 <- sub(home_dir, "~", mod_file2)
     msg <- sprintf(paste("ERROR: %s.+/test_ifn.R: line 1, cols 1-7: variable library is not",
                          "a declared parameter or variable."), home_dir)

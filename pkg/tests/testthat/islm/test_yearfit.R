@@ -22,7 +22,8 @@ if (.Platform$OS.type == "unix") {
   # test handling ~ in name of fit_mod_file
   fit_mod_file <- file.path(normalizePath(dirname(fit_mod_file)), 
                             basename(fit_mod_file)) 
-  home_dir <- Sys.getenv("HOME") 
+  # normalizePath is necessary on the Linux servers:
+  home_dir <- normalizePath(Sys.getenv("HOME"))
   fit_mod_file <- sub(home_dir, "~", fit_mod_file)
 }
 
