@@ -16,8 +16,11 @@ compile_c_functions <- function(dll_dir) {
       setwd(wd)
     }
   }
+
+  r_home <- R.home(component = "bin")
+  R_cmd <- file.path(r_home, "R", fsep =  .Platform$file.sep)
   
-  dll_ext <- system("R CMD config SHLIB_EXT", intern = TRUE)
+  dll_ext <- system(paste(R_cmd, "CMD config SHLIB_EXT"), intern = TRUE)
   dll_file <- file.path(dll_dir, paste0("mdl_functions", dll_ext))
   
   c_wrappers_dir <- system.file("c_wrappers", package = "dynmdl")
@@ -28,35 +31,29 @@ compile_c_functions <- function(dll_dir) {
     stop("Internal error in compile_c_functions: could not copy c wrapper files")
   }
 
-  r_home <- R.home(component = "bin")
-  R <- file.path(r_home, "R")
-  CC <- system("R CMD config CC", intern = TRUE)
+  CC <- system(paste(R_cmd, "CMD config CC"), intern = TRUE)
   
-  cpic_flags  <- system("R CMD config CPICFLAGS", intern = TRUE)
+  cpic_flags  <- system(paste(R_cmd, "CMD config CPICFLAGS"), intern = TRUE)
   cflags <- paste("-c", cpic_flags)
-  
+
   # separate compilation of f_static and f_dynamic (because we do not want
   # to use optimalization)
   function_src <- file.path(dll_dir, c( "f_static.c", "f_dynamic.c"), 
                             fsep = .Platform$file.sep)
   function_obj <- gsub("\\.c$", ".o", function_src)
   
-
   
   for (i in seq_along(function_src)) {
     system(paste(CC, cflags, function_src[i], "-o", function_obj[i]))
   }
-  
+
   c_wrapper_files <- file.path(dll_dir, basename(c_wrapper_files),  
                                fsep = .Platform$file.sep)
   src_files <- c(c_wrapper_files, function_src)
   
-  r_cmd <- file.path(r_home, "R", fsep =  .Platform$file.sep)
-  cmd <- paste(r_cmd, "CMD SHLIB -o", dll_file, 
+  cmd <- paste(R_cmd, "CMD SHLIB -o", dll_file, 
                paste(shQuote(src_files), collapse = " "))
   output <- system(cmd, intern = TRUE)
-  cat(output)
-  cat("Done\n")
   
   # remove object files
   unlink(file.path(dll_dir, "*.o*"))
