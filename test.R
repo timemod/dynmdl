@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
 
-if (!require(devtools)) {
-    stop('devtools not installed')
+if (!require(testthat)) {
+    stop('testthat not installed')
 }
-devtools::test('pkg')
+testthat::test_dir("pkg/tests/testthat")
