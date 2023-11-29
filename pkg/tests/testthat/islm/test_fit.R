@@ -51,7 +51,8 @@ test_that("steady state and eigenvalues original model", {
   check_report <- capture_output(mdl$check())
   
   eigvals <- mdl$get_eigval()
-  expect_equal(eigvals[1:6], dynare_result$eigval[1:6, 1])
+  expect_equal(Re(eigvals[1:6]), dynare_result$eigval[1:6, 1])
+  expect_equal(Im(eigvals[1:6]), rep(0, 6))
   expect_equal(is.finite(eigvals[7:8]) & abs(eigvals[7:8]) < 1e8, 
                c(FALSE, FALSE))
   tmpfile <- tempfile()
