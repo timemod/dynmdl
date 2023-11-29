@@ -1,7 +1,7 @@
 Package: dynmdl
 Type: Package
 Title: An R version of Dynare
-Version: 1.8.1
+Version: 1.9.0
 Author: Rob van Harrevelt [aut, cre]
 Maintainer: Rob van Harrevelt <rvanharrevelt@gmail.com>
 Description: An R version of Dynare.
@@ -24,7 +24,8 @@ Imports:
     umfpackr,
     numDeriv,
     openxlsx,
-    tictoc
+    tictoc,
+    readr
 Depends:
     R (>= 3.5.0),
     regts,
