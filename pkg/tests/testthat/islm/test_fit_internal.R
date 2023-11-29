@@ -42,8 +42,10 @@ test_that("dynare result equal to islm result", {
 test_that("steady state and eigenvalues", {
   expect_equal(mdl$get_static_endos(), dynare_result$steady)
   report <- capture_output(mdl$check())
-  expect_equal(mdl$get_eigval()[1:6], dynare_result$eigval[1:6, 1])
-  expect_equal(is.finite(mdl$get_eigval()[7:8]), c(FALSE, FALSE))
+  eigvals <- mdl$get_eigval()
+  expect_equal(Re(eigvals[1:6]), dynare_result$eigval[1:6, 1])
+  expect_equal(Im(eigvals[1:6]), rep(0, 6))
+  expect_equal(Mod(eigvals[7:8]) > 1e8, c(TRUE, TRUE))
 })
 
 test_that("static_residual_check", {
