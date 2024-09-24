@@ -1,6 +1,10 @@
-# This scripts creates a Makefile with dependencies of source files in 
-# directory pkg/src on the header files in directory pkg/src and 
-# pkg/src/macro.
+# This scripts creates a Makefile with dependencies of source files in
+# directory pkg/src on the header files in directory pkg/src and
+# "pkg/src/macro"/
+
+if (!require(igraph)) {
+  install.packages("igraph", repos = "https://cloud.r-project.org")
+}
 
 library(igraph)
 library(tictoc)
@@ -15,7 +19,7 @@ tic("construct matrix")
 all_names <- sort(union(names(deps), unique(unlist(deps))))
 n <- length(all_names)
 dep_mat <- matrix(0, nrow = n, ncol = n,
-                   dimnames = list(all_names, all_names))
+                  dimnames = list(all_names, all_names))
 for (naam in names(deps)) {
   for (dep in deps[[naam]]) {
     dep_mat[naam, dep] <- 1
