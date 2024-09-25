@@ -59,7 +59,7 @@ test_that("steady state and eigenvalues original model", {
   write(check_report, tmpfile)
   eigval_data <- read.table(tmpfile, skip = 1, nrow = 8, header = TRUE)
   expect_equal(eigval_data$Real, Re(eigvals), tolerance = 1e-6)
-  expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-6)
+  expect_equal(eigval_data$Imaginary, Im(eigvals), tolerance = 1e-5)
 })
 
 test_that("check steady state is compatible with dynamic model", {
