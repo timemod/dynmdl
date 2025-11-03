@@ -31,7 +31,7 @@ create_fit_mod <- function(mod_file, preprocessed_mod_file, fit_mod,
               fixed_period = fixed_period, check_static_eqs = check_static_eqs)
   
   # return information about the fit variables
-  with (fit_cond, {
+  with(fit_cond, {
     return(list(fixed_period = fixed_period, orig_endos = vars, 
                 orig_exos = orig_exos, 
                 l_vars = l_vars, fit_vars = fit_vars,
@@ -85,81 +85,79 @@ convert_mod <- function(input_file, output_file, fit_cond, fixed_period,
     return(invisible())
   }
   
-  output <- file(output_file, open = "a")
+  # Open input and output
   encoding <- as.character(readr::guess_encoding(input_file)[1, 1])
   input <- file(input_file, "r", encoding = encoding)
+  on.exit(close(input))
+  output <- file(output_file, open = "a")
+  on.exit(close(output), add = TRUE)
   
-  tryCatch({
-    while (TRUE) {
-      line <- readLines(input, n = 1)
-      if (length(line) == 0 ) {
-        break
-      }
-      if (!fit_block_found && startsWith(trimws(line, "left"), fit_command)) {
-        writeLines(c(
-          "",
-          "% Parameters for the standard deviation for the fit procedure:"
-          ),  con = output)
-        default_sigmas <- setdiff(fit_cond$sigmas, fit_cond$initialized_sigmas)
-        if (length(default_sigmas) > 0) {
-          param_lines <- paste("parameters", paste(default_sigmas,
-                                                   collapse = " "), ";", "")
-          writeLines(strwrap(param_lines, width = 80), con = output)
-          # initial values for the sigmas (-1)
-          writeLines(paste(default_sigmas, " = -1;", collapse = " "), 
-                     con = output)
-        }
-        
-        line <- readLines(input, n = 1)
-        line <- trimws(line)
-        while (!startsWith(line, fit_end)) {
-          writeLines(gsub("varexo", "var   ", line), con = output)
-          line <- readLines(input, n = 1)
-          if (length(line) == 0) {
-            break
-          }
-          line <- trimws(line)
-        }
-        writeLines("", con = output)
-        fit_block_found <- TRUE
-      } else if (!model_block_found && startsWith(trimws(line, "left"), 
-                                                  "model")) {
-        in_model <- TRUE
-        lambda_lines <- paste("var", 
-                              paste(fit_cond$l_vars, collapse = " "), ";", "")
-        writeLines(strwrap(lambda_lines, width = 80), con = output)
-        fit_lines <- paste("varexo", 
-                           paste(fit_cond$fit_vars, collapse = " "), ";", "")
-        writeLines(strwrap(fit_lines, width = 80), con = output)
-        exo_lines <- paste("varexo", 
-                           paste(fit_cond$exo_vars, collapse = " "), ";", "")
-        writeLines(strwrap(exo_lines, width = 80), con = output)
-        exo_lines <- paste("varexo", 
-                           paste(fit_cond$old_instruments, collapse = " "), 
-                           ";", "")
-        writeLines(strwrap(exo_lines, width = 80), con = output)
-        writeLines(c("", line, ""), con = output)
-        writeLines(c("% Model equations", ""), con = output)
-        model_found <- TRUE
-      } else if (in_model && endsWith(trimws(line, "right"), "end;")) {
-        writeLines(gsub("end;", "", line), con = output)
-        writeLines(c("% First order conditions fit instruments:", ""),
-                   con = output)
-        write_first_order_eqs(fit_cond$stat_fit_eqs$instr_equations,
-                              fit_cond$dyn_fit_eqs$instr_equations, output)
-        writeLines(c("", "% First order conditions endogenous variables:",
-                     ""), con = output)
-        write_first_order_eqs(fit_cond$stat_fit_eqs$endo_equations,
-                              fit_cond$dyn_fit_eqs$endo_equations, output)
-        writeLines("end;", con = output)
-        in_model <- FALSE
-      } else {
-        writeLines(line, con = output)
-      }
+  while (TRUE) {
+    line <- readLines(input, n = 1)
+    if (length(line) == 0) {
+      break
     }
-  }, finally = {
-    close(input)
-    close(output)
-  })
+    if (!fit_block_found && startsWith(trimws(line, "left"), fit_command)) {
+      writeLines(c(
+        "",
+        "% Parameters for the standard deviation for the fit procedure:"
+      ),  con = output)
+      default_sigmas <- setdiff(fit_cond$sigmas, fit_cond$initialized_sigmas)
+      if (length(default_sigmas) > 0) {
+        param_lines <- paste("parameters", paste(default_sigmas,
+                                                 collapse = " "), ";", "")
+        writeLines(strwrap(param_lines, width = 80), con = output)
+        # initial values for the sigmas (-1)
+        writeLines(paste(default_sigmas, " = -1;", collapse = " "), 
+                   con = output)
+      }
+      
+      line <- readLines(input, n = 1)
+      line <- trimws(line)
+      while (!startsWith(line, fit_end)) {
+        writeLines(gsub("varexo", "var   ", line), con = output)
+        line <- readLines(input, n = 1)
+        if (length(line) == 0) {
+          break
+        }
+        line <- trimws(line)
+      }
+      writeLines("", con = output)
+      fit_block_found <- TRUE
+    } else if (!model_block_found && startsWith(trimws(line, "left"), 
+                                                "model")) {
+      in_model <- TRUE
+      lambda_lines <- paste("var", 
+                            paste(fit_cond$l_vars, collapse = " "), ";", "")
+      writeLines(strwrap(lambda_lines, width = 80), con = output)
+      fit_lines <- paste("varexo", 
+                         paste(fit_cond$fit_vars, collapse = " "), ";", "")
+      writeLines(strwrap(fit_lines, width = 80), con = output)
+      exo_lines <- paste("varexo", 
+                         paste(fit_cond$exo_vars, collapse = " "), ";", "")
+      writeLines(strwrap(exo_lines, width = 80), con = output)
+      exo_lines <- paste("varexo", 
+                         paste(fit_cond$old_instruments, collapse = " "), 
+                         ";", "")
+      writeLines(strwrap(exo_lines, width = 80), con = output)
+      writeLines(c("", line, ""), con = output)
+      writeLines(c("% Model equations", ""), con = output)
+    } else if (in_model && endsWith(trimws(line, "right"), "end;")) {
+      writeLines(gsub("end;", "", line), con = output)
+      writeLines(c("% First order conditions fit instruments:", ""),
+                 con = output)
+      write_first_order_eqs(fit_cond$stat_fit_eqs$instr_equations,
+                            fit_cond$dyn_fit_eqs$instr_equations, output)
+      writeLines(c("", "% First order conditions endogenous variables:",
+                   ""), con = output)
+      write_first_order_eqs(fit_cond$stat_fit_eqs$endo_equations,
+                            fit_cond$dyn_fit_eqs$endo_equations, output)
+      writeLines("end;", con = output)
+      in_model <- FALSE
+    } else {
+      writeLines(line, con = output)
+    }
+  }
+
   return(invisible(NULL))
 }

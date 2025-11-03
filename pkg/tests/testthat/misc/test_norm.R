@@ -12,7 +12,8 @@ period <- period("2018")
 pnorm_d1 <<- dnorm
 
 x <- capture_output({
-  mdl_dll <- dyn_mdl("mod/norm.mod", period = period, calc = "dll")
+  mdl_dll <- dyn_mdl("mod/norm.mod", period = period, calc = "dll",
+                     silent = TRUE)
   mdl_R <- dyn_mdl("mod/norm.mod", period = period, calc = "R")
   warnings <- capture_warnings(
       mdl_internal <- dyn_mdl("mod/norm.mod", period = period, 

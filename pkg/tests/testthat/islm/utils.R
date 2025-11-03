@@ -11,7 +11,8 @@ make_mdl <- function(model_name, ..., show_report = FALSE) {
   nperiods <- 18
   model_period <- period_range(p1, p1 + nperiods - 1)
   report <- capture_output({
-    mdl <- dyn_mdl(mod_file, period = model_period, ...)
+    mdl <- dyn_mdl(mod_file, period = model_period, silent = !show_report,
+                   ...)
     mdl$solve_steady(control = list(silent = TRUE))
     mdl$put_static_endos()
   })
@@ -30,10 +31,10 @@ simul_islm <- function(mdl) {
   mdl <- mdl$clone()
   p1 <- start_period(mdl$get_period())
   mdl$set_exo_values(c(245, 250, 260), names = "g", 
-                      period = period_range(p1, p1 + 2))
+                     period = period_range(p1, p1 + 2))
   mdl$set_endo_values(1200, names = "y", period = mdl$get_lag_period())
   mdl$set_endo_values(1210.381827, names = "y", 
-                       period = mdl$get_lead_period())
+                      period = mdl$get_lead_period())
   mdl$solve(silent = TRUE)
   return(mdl)
 }
