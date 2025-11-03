@@ -30,7 +30,7 @@ read_mdl <- function(file, dll_dir, silent = FALSE) {
   # object of class serialized_dynmdl. However, for earlier version
   # the class was serialized_fitmdl for fit model.
   if (!(inherits(ser, "serialized_fitmdl") || 
-        inherits(ser, "serialized_dynmdl"))) {
+          inherits(ser, "serialized_dynmdl"))) {
     stop(paste("File", file, "does not contain a serialized DynMdl object."))
   }
   

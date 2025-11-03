@@ -468,4 +468,3 @@ NULL
 #' @seealso \code{\link{get_instrument_names}}, \code{\link{get_sigma_names}}, 
 #' \code{\link{set_fit}} and \code{\link{clear_fit}}
 NULL
-
