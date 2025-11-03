@@ -197,10 +197,8 @@ test_that("get_original_equations", {
 # now with dll option
 #
 
-report <- capture_output(mdl_dll <- dyn_mdl(mod_file, period = "2015/2032",
-                                            max_laglead_1 = TRUE, 
-                                            calc = "dll", 
-                                            warn_uninit_param = FALSE))
+mdl_dll <- dyn_mdl(mod_file, period = "2015/2032", max_laglead_1 = TRUE, 
+                   calc = "dll", warn_uninit_param = FALSE, silent = TRUE)
 mdl_dll$set_param(c(t0 = -15, t1 = 0.22))
 
 test_that("solve_steady with max_laglead_1, dll", {

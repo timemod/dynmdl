@@ -16,7 +16,7 @@ exo_data <- regts(matrix(1:4, ncol = 1), names = "x", start = "2015")
 report <- capture_output({
   mdl_R <- dyn_mdl(mod_file, data = exo_data)$solve()
   mdl_internal <- dyn_mdl(mod_file, data = exo_data, calc = "internal")$solve()
-  mdl_dll <- dyn_mdl(mod_file, data = exo_data, calc = "dll")$solve()
+  mdl_dll <- dyn_mdl(mod_file, data = exo_data, calc = "dll", silent = TRUE)$solve()
 })
 
 test_that("all resuls are equal", {

@@ -443,7 +443,7 @@ dyn_mdl <- function(mod_file, period, data, base_period,
   # create the dll file
   #
   if (calc == "dll") {
-    dll_file <- compile_c_functions(dll_dir)
+    dll_file <- compile_c_functions(dll_dir, silent = silent)
   } else {
     dll_file <- NA_character_
   }

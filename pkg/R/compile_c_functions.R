@@ -1,8 +1,8 @@
 # this function compiled the c functions
 # in directory dll_dir and returns the
 # path name of the generated dll file
-compile_c_functions <- function(dll_dir) {
-  cat("Compiling C functions ...\n")
+compile_c_functions <- function(dll_dir, silent) {
+  if (!silent) cat("Compiling C functions ...\n")
 
   if (.Platform$OS.type == "windows") {
     # this fix needed for to prevent messages
@@ -31,7 +31,6 @@ compile_c_functions <- function(dll_dir) {
   }
 
   CC <- system(paste(R_cmd, "CMD config CC"), intern = TRUE)
-
   cpic_flags <- system(paste(R_cmd, "CMD config CPICFLAGS"), intern = TRUE)
   cflags <- paste("-c", cpic_flags)
 
@@ -42,11 +41,15 @@ compile_c_functions <- function(dll_dir) {
   )
   function_obj <- gsub("\\.c$", ".o", function_src)
 
-
   for (i in seq_along(function_src)) {
     system(paste(CC, cflags, function_src[i], "-o", function_obj[i]))
   }
-
+  
+  on.exit(
+    # remove object files
+    unlink(file.path(dll_dir, "*.o*"))
+  )
+  
   c_wrapper_files <- file.path(dll_dir, basename(c_wrapper_files),
     fsep = .Platform$file.sep
   )
@@ -56,10 +59,10 @@ compile_c_functions <- function(dll_dir) {
     R_cmd, "CMD SHLIB -o", dll_file,
     paste(shQuote(src_files), collapse = " ")
   )
-  output <- system(cmd, intern = TRUE)
 
-  # remove object files
-  unlink(file.path(dll_dir, "*.o*"))
-
+  # Always ignore standard output (which always gives a lot of output), but
+  # only ignore standard error if silent = TRUE.
+  system(cmd, ignore.stdout = TRUE, ignore.stderr = silent)
+  
   return(dll_file)
 }

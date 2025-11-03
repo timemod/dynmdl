@@ -8,8 +8,8 @@ source("utils.R")
 model_name <- "islm_fit"
 
 mod_file <- file.path("mod", paste0(model_name, ".mod"))
-rep <- capture_output(mdl <- dyn_mdl("mod/islm_fit.mod", calc = "dll",
-                              period = "2016Q1/2020Q2"))
+mdl <- dyn_mdl("mod/islm_fit.mod", calc = "dll",
+               period = "2016Q1/2020Q2", silent = TRUE)
 mdl$solve_steady(control = list(trace = FALSE, silent = TRUE))
 mdl$put_static_endos()
 
@@ -98,4 +98,3 @@ test_that("residual_check", {
   res2b <- mdl2$residual_check(tol = 1e-8)
   expect_equal(res2b, expected_res2[p, 2, drop = FALSE])
 })
-
