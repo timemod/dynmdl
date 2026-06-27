@@ -39,20 +39,27 @@ compile_c_functions <- function(dll_dir, silent) {
   function_src <- file.path(dll_dir, c("f_static.c", "f_dynamic.c"),
     fsep = .Platform$file.sep
   )
-  function_obj <- gsub("\\.c$", ".o", function_src)
+  
+  debug <- identical(getOption("dynmdl.dll_debug_mode"), TRUE)
 
-  for (i in seq_along(function_src)) {
-    system(paste(CC, cflags, function_src[i], "-o", function_obj[i]))
+  for (src in function_src) {
+    obj <- gsub("\\.c$", ".o", src)
+    cmd <- paste(CC, cflags, src,  "-o", obj)
+    if (debug) cat("Running commmand '", cmd, "'\n", sep = "")
+    system(cmd)
   }
   
-  on.exit(
-    # remove object files
-    unlink(file.path(dll_dir, "*.o*"))
-  )
+  if (!debug) {
+    on.exit(
+      # remove object files
+      unlink(file.path(dll_dir, "*.o"))
+    )
+  }
   
   c_wrapper_files <- file.path(dll_dir, basename(c_wrapper_files),
     fsep = .Platform$file.sep
-  )
+  ) |>
+    grep(pattern = "\\.c$", value = TRUE)
   src_files <- c(c_wrapper_files, function_src)
 
   cmd <- paste(
@@ -62,7 +69,8 @@ compile_c_functions <- function(dll_dir, silent) {
 
   # Always ignore standard output (which always gives a lot of output), but
   # only ignore standard error if silent = TRUE.
-  system(cmd, ignore.stdout = TRUE, ignore.stderr = silent)
+  if (debug) if (debug) cat("Running commmand '", cmd, "'\n", sep = "")
+  system(cmd, ignore.stdout = !debug , ignore.stderr = silent)
   
   return(dll_file)
 }
