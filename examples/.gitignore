@@ -6,3 +6,4 @@ latex
 fitmod.mod
 preprocessed.mod
 tmp/*
+dll_dir

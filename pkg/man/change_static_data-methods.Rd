@@ -57,9 +57,9 @@ The function result must be a vector of length one.
 including fit instruments and Lagrange multipliers used in the fit method
 (if present).}
 \item{\code{change_static_exos}}{Changes the static values of exogenous model variables}
-\item{\code{change_static_data}}{Changes the static values of endogenous and/or exogenous model variables,
-including fit instruments and Lagrange multipliers used in the fit method
-(if present).}
+\item{\code{change_static_data}}{Changes the static values of endogenous and/or
+exogenous model variables, including fit instruments and Lagrange multipliers used in
+the fit method (if present).}
 }
 }
 

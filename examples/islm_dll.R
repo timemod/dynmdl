@@ -1,11 +1,13 @@
-# Basic example of the ISLM model with lags
-
 library(dynmdl)
 
-mdl <- dyn_mdl("mod/islm.mod", calc = "dll")
+options(dynmdl.dll_debug_mode = TRUE)
+
+
+mdl <- dyn_mdl("mod/islm.mod", calc = "dll", dll_dir = "dll_dir", silent = FALSE)
 print(mdl)
 
 mdl$solve_steady(control = list(trace = TRUE))
+
 mdl$set_period("2017Q1/2019Q3")
 
 # set lags

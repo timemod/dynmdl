@@ -56,10 +56,12 @@ compile_c_functions <- function(dll_dir, silent) {
     )
   }
   
-  c_wrapper_files <- file.path(dll_dir, basename(c_wrapper_files),
+  c_wrapper_files <- file.path(
+    dll_dir, 
+    basename(c_wrapper_files),
     fsep = .Platform$file.sep
-  ) |>
-    grep(pattern = "\\.c$", value = TRUE)
+  )
+  c_wrapper_files <- grep("\\.c$", c_wrapper_files, value = TRUE)
   src_files <- c(c_wrapper_files, function_src)
 
   cmd <- paste(

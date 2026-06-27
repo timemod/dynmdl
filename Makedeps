@@ -25,4 +25,4 @@ $(DEP_DIR)/$(DEP_RDS) : $(SRC_C) $(SRC_H) $(MACRO_H)
 	@Rscript $(TOOLDIR)/gendepend.R $?
 
 clean:
-	@rm -f $(DEP_DIR)/$(DEP_RDS)
+	-@rm -f $(DEP_DIR)/$(DEP_RDS)

@@ -193,7 +193,7 @@ NULL
 #' \code{\link{DynMdl}} methods: Retrieve timeseries from the model data
 #' @name get_data-methods
 #' @aliases get_data get_endo_data get_exo_data get_trend_data, get_all_endo_data
-#' get_all_exo_data get_all_data
+#' @aliases get_all_exo_data get_all_data
 #' @description
 #' These methods of R6 class \code{\link{DynMdl}} 
 #' can be used to retrieve timeseries from the model data.
@@ -1059,10 +1059,10 @@ NULL
 #' model variables
 #' @name set/get_static_endos/exos
 #' @aliases set_static_exos set_static_endos 
-#'          set_static_data 
-#'          get_static_endos get_static_exos
-#'          get_static_data get_all_static_endos
-#'          get_all_static_data
+#' @aliases set_static_data 
+#' @aliases get_static_endos get_static_exos
+#' @aliases get_static_data get_all_static_endos
+#' @aliases get_all_static_data
 #'
 #' @description
 #' 
