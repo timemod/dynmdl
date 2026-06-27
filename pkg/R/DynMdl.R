@@ -2965,7 +2965,7 @@ DynMdl <- R6Class("DynMdl",
         private$f_static <- function(y, x, params) {
           # NOTE: creating a new res array every function call is
           # inefficient, therefore use private$res.
-          .Call("f_static_", y, x, params, private$res, 
+          .Call("f_static", y, x, params, private$res, 
                 PACKAGE = "mdl_functions")
           return(private$res)
         }
@@ -2973,7 +2973,7 @@ DynMdl <- R6Class("DynMdl",
         private$jac_static <- function(y, x, params) {
           # NOTE: creating a new jac_steady every function call is
           # inefficient, therefore use private$jac_steady.
-          .Call("jac_static_", y, x, params, private$jac_steady$rows,
+          .Call("jac_static", y, x, params, private$jac_steady$rows,
                 private$jac_steady$cols, private$jac_steady$values,
                 PACKAGE = "mdl_functions")
           return(private$jac_steady)
@@ -2982,15 +2982,15 @@ DynMdl <- R6Class("DynMdl",
         private$f_dynamic <- function(y, x, params, it) {
           # NOTE: creating a new res array every function call is
           # inefficient, therefore use private$res.
-          .Call("f_dynamic_", y, x, params, it - 1, 
-                nrow(x), private$res, PACKAGE = "mdl_functions")
+          .Call("f_dynamic", y, x, nrow(x), params, it - 1, 
+                private$res, PACKAGE = "mdl_functions")
           return(private$res)
         }
         
         private$jac_dynamic <- function(y, x, params, it) {
           # NOTE: creating a new jac every function call is
           # inefficient, therefore use private$jac
-          .Call("jac_dynamic_", y, x, params, it - 1, nrow(x),
+          .Call("jac_dynamic", y, x, nrow(x), params, it - 1,
                 private$jac$rows, private$jac$cols, private$jac$values,
                 PACKAGE = "mdl_functions")
           return(private$jac)
