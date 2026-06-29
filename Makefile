@@ -14,25 +14,26 @@ export OSTYPE=$(shell Rscript -e "cat(.Platform[['OS.type']])")
 PKG=$(shell grep 'Package:' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2)
 PKGTAR=$(PKG)_$(shell grep 'Version' $(PKGDIR)/DESCRIPTION  | cut -d " " -f 2).tar.gz
 
-LEX_CMD = lex
-BISON_CMD = bison
-
-# Determine the include directory for FlexHeader file.
-# For Linux /usr/include, for MAC OSX a more complicated.
+# Determine the Flex and bison commands and the include directory for FlexLexer.h file
+# for Unix systems (Linux or MAC OS).
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
+  LEX_CMD := lex
   LEX_INC := /usr/include
+  BISON_CMD := bison
 else ifeq ($(UNAME_S),Darwin)
-  # prefer Homebrew on Apple Silicon, then Intel Homebrew
   ifneq ($(wildcard /opt/homebrew/opt/flex/include/FlexLexer.h),)
+    LEX_CMD := /opt/homebrew/opt/flex/bin/flex
     LEX_INC := /opt/homebrew/opt/flex/include
-  else ifneq ($(wildcard /usr/local/opt/flex/include/FlexLexer.h),)
-    LEX_INC := /usr/local/opt/flex/include
   else
+    LEX_CMD := 
     LEX_INC :=
   endif
-else
-  LEX_INC :=
+  ifneq ($(wildcard /opt/homebrew/opt/bison/bin/bison),)
+    BISON_CMD :=  /opt/homebrew/opt/bison/bin/bison
+  else 
+    BISON_CMD := 
+  endif
 endif
 
 SRC_DIR = pkg/src
@@ -118,27 +119,30 @@ document: install_deps
 	R -e "devtools::document('"$(PKGDIR)"')"
 	R CMD Rd2pdf --no-preview $(PKGDIR) -o refman.pdf 2>&1 >refman.log
 
+
+.PHONY: flex
 flex:
 ifeq ($(OSTYPE), windows)
 	@echo Flex can not run on Windows
+else ifeq ($(strip $(LEX_CMD)),)
+	$(warning "Unknown Flex location")
 else
 	$(LEX_CMD) -o $(SRC_DIR)/DynareFlex.cc $(LEX_YACC_DIR)/DynareFlex.ll 
 	$(LEX_CMD) -o $(MACRO_DIR)/MarcoFlex.cc $(MACRO_DIR)/MacroFlex.ll 
 	@# Copy FlexLexer.h from $LEX_INC to pkg/src. Otherwise the code cannot
 	@# be compiled on systems where FLex is not available, or where
 	@# the version of lex is incompatible with the version used
-	@# to generate DynareFlex.cc
-  ifeq ($(strip $(LEXINC)),)
-    $(warning "FlexLexer.h not found automatically; set LEXINC in Makefile or install flex via Homebrew.")
-  else 
-		cp $(LEX_INC)/FlexLexer.h $(SRC_DIR)
-		touch pkg/src/FlexLexer.h
-  endif
+	@# to generate DynareFlex.cc.
+	cp $(LEX_INC)/FlexLexer.h $(SRC_DIR)
+	touch pkg/src/FlexLexer.h
 endif
 
+.PHONY: bison
 bison:
 ifeq ($(OSTYPE), windows)
 	@echo Bison can not run on Windows
+else ifeq ($(strip $(LEX_CMD)),)
+	$(warning "Unknown Bison location")
 else
 	$(BISON_CMD) -o $(SRC_DIR)/DynareBison.cc $(LEX_YACC_DIR)/DynareBison.yy
 	$(BISON_CMD) -o $(MACRO_DIR)/MacroBison.cc $(MACRO_DIR)/MacroBison.yy

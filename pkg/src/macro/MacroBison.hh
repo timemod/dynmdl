@@ -1,8 +1,8 @@
-// A Bison parser, made by GNU Bison 3.0.4.
+// A Bison parser, made by GNU Bison 3.8.2.
 
 // Skeleton interface for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015, 2018-2021 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // As a special exception, you may create a larger work that contains
 // part or all of the Bison parser skeleton and distribute that work
@@ -30,21 +30,26 @@
 // This special exception was added by the Free Software Foundation in
 // version 2.2 of Bison.
 
+
 /**
- ** \file MacroBison.hh
+ ** \file pkg/src/macro/MacroBison.hh
  ** Define the Macro::parser class.
  */
 
 // C++ LALR(1) parser skeleton written by Akim Demaille.
 
-#ifndef YY_MACRO_MACROBISON_HH_INCLUDED
-# define YY_MACRO_MACROBISON_HH_INCLUDED
-// //                    "%code requires" blocks.
-#line 44 "MacroBison.yy" // lalr1.cc:377
+// DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+// especially those whose name start with YY_ or yy_.  They are
+// private implementation details that can be changed or removed.
+
+#ifndef YY_MACRO_PKG_SRC_MACRO_MACROBISON_HH_INCLUDED
+# define YY_MACRO_PKG_SRC_MACRO_MACROBISON_HH_INCLUDED
+// "%code requires" blocks.
+#line 44 "pkg/src/macro/MacroBison.yy"
 
 #include "MacroValue.hh"
 
-#line 48 "MacroBison.hh" // lalr1.cc:377
+#line 53 "pkg/src/macro/MacroBison.hh"
 
 
 # include <cstdlib> // std::abort
@@ -52,51 +57,82 @@
 # include <stdexcept>
 # include <string>
 # include <vector>
-# include "stack.hh"
+
+#if defined __cplusplus
+# define YY_CPLUSPLUS __cplusplus
+#else
+# define YY_CPLUSPLUS 199711L
+#endif
+
+// Support move semantics when possible.
+#if 201103L <= YY_CPLUSPLUS
+# define YY_MOVE           std::move
+# define YY_MOVE_OR_COPY   move
+# define YY_MOVE_REF(Type) Type&&
+# define YY_RVREF(Type)    Type&&
+# define YY_COPY(Type)     Type
+#else
+# define YY_MOVE
+# define YY_MOVE_OR_COPY   copy
+# define YY_MOVE_REF(Type) Type&
+# define YY_RVREF(Type)    const Type&
+# define YY_COPY(Type)     const Type&
+#endif
+
+// Support noexcept when possible.
+#if 201103L <= YY_CPLUSPLUS
+# define YY_NOEXCEPT noexcept
+# define YY_NOTHROW
+#else
+# define YY_NOEXCEPT
+# define YY_NOTHROW throw ()
+#endif
+
+// Support constexpr when possible.
+#if 201703 <= YY_CPLUSPLUS
+# define YY_CONSTEXPR constexpr
+#else
+# define YY_CONSTEXPR
+#endif
 # include "location.hh"
 
 
-#ifndef YY_ATTRIBUTE
-# if (defined __GNUC__                                               \
-      && (2 < __GNUC__ || (__GNUC__ == 2 && 96 <= __GNUC_MINOR__)))  \
-     || defined __SUNPRO_C && 0x5110 <= __SUNPRO_C
-#  define YY_ATTRIBUTE(Spec) __attribute__(Spec)
+#ifndef YY_ATTRIBUTE_PURE
+# if defined __GNUC__ && 2 < __GNUC__ + (96 <= __GNUC_MINOR__)
+#  define YY_ATTRIBUTE_PURE __attribute__ ((__pure__))
 # else
-#  define YY_ATTRIBUTE(Spec) /* empty */
+#  define YY_ATTRIBUTE_PURE
 # endif
 #endif
 
-#ifndef YY_ATTRIBUTE_PURE
-# define YY_ATTRIBUTE_PURE   YY_ATTRIBUTE ((__pure__))
-#endif
-
 #ifndef YY_ATTRIBUTE_UNUSED
-# define YY_ATTRIBUTE_UNUSED YY_ATTRIBUTE ((__unused__))
-#endif
-
-#if !defined _Noreturn \
-     && (!defined __STDC_VERSION__ || __STDC_VERSION__ < 201112)
-# if defined _MSC_VER && 1200 <= _MSC_VER
-#  define _Noreturn __declspec (noreturn)
+# if defined __GNUC__ && 2 < __GNUC__ + (7 <= __GNUC_MINOR__)
+#  define YY_ATTRIBUTE_UNUSED __attribute__ ((__unused__))
 # else
-#  define _Noreturn YY_ATTRIBUTE ((__noreturn__))
+#  define YY_ATTRIBUTE_UNUSED
 # endif
 #endif
 
 /* Suppress unused-variable warnings by "using" E.  */
 #if ! defined lint || defined __GNUC__
-# define YYUSE(E) ((void) (E))
+# define YY_USE(E) ((void) (E))
 #else
-# define YYUSE(E) /* empty */
+# define YY_USE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN \
-    _Pragma ("GCC diagnostic push") \
-    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")\
+#if defined __GNUC__ && ! defined __ICC && 406 <= __GNUC__ * 100 + __GNUC_MINOR__
+# if __GNUC__ * 100 + __GNUC_MINOR__ < 407
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")
+# else
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
     _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
-# define YY_IGNORE_MAYBE_UNINITIALIZED_END \
+# endif
+# define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
     _Pragma ("GCC diagnostic pop")
 #else
 # define YY_INITIAL_VALUE(Value) Value
@@ -109,15 +145,46 @@
 # define YY_INITIAL_VALUE(Value) /* Nothing. */
 #endif
 
+#if defined __cplusplus && defined __GNUC__ && ! defined __ICC && 6 <= __GNUC__
+# define YY_IGNORE_USELESS_CAST_BEGIN                          \
+    _Pragma ("GCC diagnostic push")                            \
+    _Pragma ("GCC diagnostic ignored \"-Wuseless-cast\"")
+# define YY_IGNORE_USELESS_CAST_END            \
+    _Pragma ("GCC diagnostic pop")
+#endif
+#ifndef YY_IGNORE_USELESS_CAST_BEGIN
+# define YY_IGNORE_USELESS_CAST_BEGIN
+# define YY_IGNORE_USELESS_CAST_END
+#endif
+
+# ifndef YY_CAST
+#  ifdef __cplusplus
+#   define YY_CAST(Type, Val) static_cast<Type> (Val)
+#   define YY_REINTERPRET_CAST(Type, Val) reinterpret_cast<Type> (Val)
+#  else
+#   define YY_CAST(Type, Val) ((Type) (Val))
+#   define YY_REINTERPRET_CAST(Type, Val) ((Type) (Val))
+#  endif
+# endif
+# ifndef YY_NULLPTR
+#  if defined __cplusplus
+#   if 201103L <= __cplusplus
+#    define YY_NULLPTR nullptr
+#   else
+#    define YY_NULLPTR 0
+#   endif
+#  else
+#   define YY_NULLPTR ((void*)0)
+#  endif
+# endif
+
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 1
 #endif
 
-
 namespace Macro {
-#line 120 "MacroBison.hh" // lalr1.cc:377
-
+#line 188 "pkg/src/macro/MacroBison.hh"
 
 
 
@@ -126,93 +193,174 @@ namespace Macro {
   class parser
   {
   public:
-#ifndef YYSTYPE
+#ifdef YYSTYPE
+# ifdef __GNUC__
+#  pragma GCC message "bison: do not #define YYSTYPE in C++, use %define api.value.type"
+# endif
+    typedef YYSTYPE value_type;
+#else
     /// Symbol semantic values.
-    union semantic_type
+    union value_type
     {
-    #line 49 "MacroBison.yy" // lalr1.cc:377
+#line 49 "pkg/src/macro/MacroBison.yy"
 
   string *string_val;
   int int_val;
   const MacroValue *mv;
 
-#line 140 "MacroBison.hh" // lalr1.cc:377
+#line 212 "pkg/src/macro/MacroBison.hh"
+
     };
-#else
-    typedef YYSTYPE semantic_type;
 #endif
+    /// Backward compatibility (Bison 3.8).
+    typedef value_type semantic_type;
+
     /// Symbol locations.
     typedef location location_type;
 
     /// Syntax errors thrown from user actions.
     struct syntax_error : std::runtime_error
     {
-      syntax_error (const location_type& l, const std::string& m);
+      syntax_error (const location_type& l, const std::string& m)
+        : std::runtime_error (m)
+        , location (l)
+      {}
+
+      syntax_error (const syntax_error& s)
+        : std::runtime_error (s.what ())
+        , location (s.location)
+      {}
+
+      ~syntax_error () YY_NOEXCEPT YY_NOTHROW;
+
       location_type location;
     };
 
-    /// Tokens.
+    /// Token kinds.
     struct token
     {
-      enum yytokentype
+      enum token_kind_type
       {
-        DEFINE = 258,
-        LINE = 259,
-        FOR = 260,
-        IN = 261,
-        IF = 262,
-        ELSE = 263,
-        ENDIF = 264,
-        ECHO_DIR = 265,
-        ERROR = 266,
-        IFDEF = 267,
-        IFNDEF = 268,
-        LPAREN = 269,
-        RPAREN = 270,
-        LBRACKET = 271,
-        RBRACKET = 272,
-        EQUAL = 273,
-        EOL = 274,
-        LENGTH = 275,
-        INTEGER = 276,
-        NAME = 277,
-        STRING = 278,
-        COMMA = 279,
-        LOGICAL_OR = 280,
-        LOGICAL_AND = 281,
-        LESS = 282,
-        GREATER = 283,
-        LESS_EQUAL = 284,
-        GREATER_EQUAL = 285,
-        EQUAL_EQUAL = 286,
-        EXCLAMATION_EQUAL = 287,
-        COLON = 288,
-        PLUS = 289,
-        MINUS = 290,
-        TIMES = 291,
-        DIVIDE = 292,
-        UMINUS = 293,
-        UPLUS = 294,
-        EXCLAMATION = 295
+        YYEMPTY = -2,
+    YYEOF = 0,                     // "end of file"
+    YYerror = 256,                 // error
+    YYUNDEF = 257,                 // "invalid token"
+    DEFINE = 258,                  // DEFINE
+    LINE = 259,                    // LINE
+    FOR = 260,                     // FOR
+    IN = 261,                      // IN
+    IF = 262,                      // IF
+    ELSE = 263,                    // ELSE
+    ENDIF = 264,                   // ENDIF
+    ECHO_DIR = 265,                // ECHO_DIR
+    ERROR = 266,                   // ERROR
+    IFDEF = 267,                   // IFDEF
+    IFNDEF = 268,                  // IFNDEF
+    LPAREN = 269,                  // LPAREN
+    RPAREN = 270,                  // RPAREN
+    LBRACKET = 271,                // LBRACKET
+    RBRACKET = 272,                // RBRACKET
+    EQUAL = 273,                   // EQUAL
+    EOL = 274,                     // EOL
+    LENGTH = 275,                  // LENGTH
+    INTEGER = 276,                 // INTEGER
+    NAME = 277,                    // NAME
+    STRING = 278,                  // STRING
+    COMMA = 279,                   // COMMA
+    LOGICAL_OR = 280,              // LOGICAL_OR
+    LOGICAL_AND = 281,             // LOGICAL_AND
+    LESS = 282,                    // LESS
+    GREATER = 283,                 // GREATER
+    LESS_EQUAL = 284,              // LESS_EQUAL
+    GREATER_EQUAL = 285,           // GREATER_EQUAL
+    EQUAL_EQUAL = 286,             // EQUAL_EQUAL
+    EXCLAMATION_EQUAL = 287,       // EXCLAMATION_EQUAL
+    COLON = 288,                   // COLON
+    PLUS = 289,                    // PLUS
+    MINUS = 290,                   // MINUS
+    TIMES = 291,                   // TIMES
+    DIVIDE = 292,                  // DIVIDE
+    UMINUS = 293,                  // UMINUS
+    UPLUS = 294,                   // UPLUS
+    EXCLAMATION = 295              // EXCLAMATION
+      };
+      /// Backward compatibility alias (Bison 3.6).
+      typedef token_kind_type yytokentype;
+    };
+
+    /// Token kind, as returned by yylex.
+    typedef token::token_kind_type token_kind_type;
+
+    /// Backward compatibility alias (Bison 3.6).
+    typedef token_kind_type token_type;
+
+    /// Symbol kinds.
+    struct symbol_kind
+    {
+      enum symbol_kind_type
+      {
+        YYNTOKENS = 41, ///< Number of tokens.
+        S_YYEMPTY = -2,
+        S_YYEOF = 0,                             // "end of file"
+        S_YYerror = 1,                           // error
+        S_YYUNDEF = 2,                           // "invalid token"
+        S_DEFINE = 3,                            // DEFINE
+        S_LINE = 4,                              // LINE
+        S_FOR = 5,                               // FOR
+        S_IN = 6,                                // IN
+        S_IF = 7,                                // IF
+        S_ELSE = 8,                              // ELSE
+        S_ENDIF = 9,                             // ENDIF
+        S_ECHO_DIR = 10,                         // ECHO_DIR
+        S_ERROR = 11,                            // ERROR
+        S_IFDEF = 12,                            // IFDEF
+        S_IFNDEF = 13,                           // IFNDEF
+        S_LPAREN = 14,                           // LPAREN
+        S_RPAREN = 15,                           // RPAREN
+        S_LBRACKET = 16,                         // LBRACKET
+        S_RBRACKET = 17,                         // RBRACKET
+        S_EQUAL = 18,                            // EQUAL
+        S_EOL = 19,                              // EOL
+        S_LENGTH = 20,                           // LENGTH
+        S_INTEGER = 21,                          // INTEGER
+        S_NAME = 22,                             // NAME
+        S_STRING = 23,                           // STRING
+        S_COMMA = 24,                            // COMMA
+        S_LOGICAL_OR = 25,                       // LOGICAL_OR
+        S_LOGICAL_AND = 26,                      // LOGICAL_AND
+        S_LESS = 27,                             // LESS
+        S_GREATER = 28,                          // GREATER
+        S_LESS_EQUAL = 29,                       // LESS_EQUAL
+        S_GREATER_EQUAL = 30,                    // GREATER_EQUAL
+        S_EQUAL_EQUAL = 31,                      // EQUAL_EQUAL
+        S_EXCLAMATION_EQUAL = 32,                // EXCLAMATION_EQUAL
+        S_COLON = 33,                            // COLON
+        S_PLUS = 34,                             // PLUS
+        S_MINUS = 35,                            // MINUS
+        S_TIMES = 36,                            // TIMES
+        S_DIVIDE = 37,                           // DIVIDE
+        S_UMINUS = 38,                           // UMINUS
+        S_UPLUS = 39,                            // UPLUS
+        S_EXCLAMATION = 40,                      // EXCLAMATION
+        S_YYACCEPT = 41,                         // $accept
+        S_statement_list_or_nothing = 42,        // statement_list_or_nothing
+        S_statement_list = 43,                   // statement_list
+        S_statement = 44,                        // statement
+        S_expr = 45,                             // expr
+        S_array_expr = 46                        // array_expr
       };
     };
 
-    /// (External) token type, as returned by yylex.
-    typedef token::yytokentype token_type;
+    /// (Internal) symbol kind.
+    typedef symbol_kind::symbol_kind_type symbol_kind_type;
 
-    /// Symbol type: an internal symbol number.
-    typedef int symbol_number_type;
-
-    /// The symbol type number to denote an empty symbol.
-    enum { empty_symbol = -2 };
-
-    /// Internal symbol number for tokens (subsumed by symbol_number_type).
-    typedef unsigned char token_number_type;
+    /// The number of tokens.
+    static const symbol_kind_type YYNTOKENS = symbol_kind::YYNTOKENS;
 
     /// A complete symbol.
     ///
-    /// Expects its Base type to provide access to the symbol type
-    /// via type_get().
+    /// Expects its Base type to provide access to the symbol kind
+    /// via kind ().
     ///
     /// Provide access to semantic value and location.
     template <typename Base>
@@ -222,84 +370,134 @@ namespace Macro {
       typedef Base super_type;
 
       /// Default constructor.
-      basic_symbol ();
+      basic_symbol () YY_NOEXCEPT
+        : value ()
+        , location ()
+      {}
+
+#if 201103L <= YY_CPLUSPLUS
+      /// Move constructor.
+      basic_symbol (basic_symbol&& that)
+        : Base (std::move (that))
+        , value (std::move (that.value))
+        , location (std::move (that.location))
+      {}
+#endif
 
       /// Copy constructor.
-      basic_symbol (const basic_symbol& other);
-
+      basic_symbol (const basic_symbol& that);
       /// Constructor for valueless symbols.
       basic_symbol (typename Base::kind_type t,
-                    const location_type& l);
+                    YY_MOVE_REF (location_type) l);
 
       /// Constructor for symbols with semantic value.
       basic_symbol (typename Base::kind_type t,
-                    const semantic_type& v,
-                    const location_type& l);
+                    YY_RVREF (value_type) v,
+                    YY_RVREF (location_type) l);
 
       /// Destroy the symbol.
-      ~basic_symbol ();
+      ~basic_symbol ()
+      {
+        clear ();
+      }
+
+
 
       /// Destroy contents, and record that is empty.
-      void clear ();
+      void clear () YY_NOEXCEPT
+      {
+        Base::clear ();
+      }
+
+      /// The user-facing name of this symbol.
+      std::string name () const YY_NOEXCEPT
+      {
+        return parser::symbol_name (this->kind ());
+      }
+
+      /// Backward compatibility (Bison 3.6).
+      symbol_kind_type type_get () const YY_NOEXCEPT;
 
       /// Whether empty.
-      bool empty () const;
+      bool empty () const YY_NOEXCEPT;
 
       /// Destructive move, \a s is emptied into this.
       void move (basic_symbol& s);
 
       /// The semantic value.
-      semantic_type value;
+      value_type value;
 
       /// The location.
       location_type location;
 
     private:
+#if YY_CPLUSPLUS < 201103L
       /// Assignment operator.
-      basic_symbol& operator= (const basic_symbol& other);
+      basic_symbol& operator= (const basic_symbol& that);
+#endif
     };
 
     /// Type access provider for token (enum) based symbols.
-    struct by_type
+    struct by_kind
     {
+      /// The symbol kind as needed by the constructor.
+      typedef token_kind_type kind_type;
+
       /// Default constructor.
-      by_type ();
+      by_kind () YY_NOEXCEPT;
+
+#if 201103L <= YY_CPLUSPLUS
+      /// Move constructor.
+      by_kind (by_kind&& that) YY_NOEXCEPT;
+#endif
 
       /// Copy constructor.
-      by_type (const by_type& other);
-
-      /// The symbol type as needed by the constructor.
-      typedef token_type kind_type;
+      by_kind (const by_kind& that) YY_NOEXCEPT;
 
       /// Constructor from (external) token numbers.
-      by_type (kind_type t);
+      by_kind (kind_type t) YY_NOEXCEPT;
+
+
 
       /// Record that this symbol is empty.
-      void clear ();
+      void clear () YY_NOEXCEPT;
 
-      /// Steal the symbol type from \a that.
-      void move (by_type& that);
+      /// Steal the symbol kind from \a that.
+      void move (by_kind& that);
 
       /// The (internal) type number (corresponding to \a type).
       /// \a empty when empty.
-      symbol_number_type type_get () const;
+      symbol_kind_type kind () const YY_NOEXCEPT;
 
-      /// The token.
-      token_type token () const;
+      /// Backward compatibility (Bison 3.6).
+      symbol_kind_type type_get () const YY_NOEXCEPT;
 
-      /// The symbol type.
-      /// \a empty_symbol when empty.
-      /// An int, not token_number_type, to be able to store empty_symbol.
-      int type;
+      /// The symbol kind.
+      /// \a S_YYEMPTY when empty.
+      symbol_kind_type kind_;
     };
 
-    /// "External" symbols: returned by the scanner.
-    typedef basic_symbol<by_type> symbol_type;
+    /// Backward compatibility for a private implementation detail (Bison 3.6).
+    typedef by_kind by_type;
 
+    /// "External" symbols: returned by the scanner.
+    struct symbol_type : basic_symbol<by_kind>
+    {};
 
     /// Build a parser object.
     parser (MacroDriver &driver_yyarg, ostream &out_yyarg);
     virtual ~parser ();
+
+#if 201103L <= YY_CPLUSPLUS
+    /// Non copyable.
+    parser (const parser&) = delete;
+    /// Non copyable.
+    parser& operator= (const parser&) = delete;
+#endif
+
+    /// Parse.  An alias for parse ().
+    /// \returns  0 iff parsing succeeded.
+    int operator() ();
 
     /// Parse.
     /// \returns  0 iff parsing succeeded.
@@ -327,92 +525,125 @@ namespace Macro {
     /// Report a syntax error.
     void error (const syntax_error& err);
 
-  private:
-    /// This class is not copyable.
-    parser (const parser&);
-    parser& operator= (const parser&);
+    /// The user-facing name of the symbol whose (internal) number is
+    /// YYSYMBOL.  No bounds checking.
+    static std::string symbol_name (symbol_kind_type yysymbol);
 
-    /// State numbers.
-    typedef int state_type;
+
+
+    class context
+    {
+    public:
+      context (const parser& yyparser, const symbol_type& yyla);
+      const symbol_type& lookahead () const YY_NOEXCEPT { return yyla_; }
+      symbol_kind_type token () const YY_NOEXCEPT { return yyla_.kind (); }
+      const location_type& location () const YY_NOEXCEPT { return yyla_.location; }
+
+      /// Put in YYARG at most YYARGN of the expected tokens, and return the
+      /// number of tokens stored in YYARG.  If YYARG is null, return the
+      /// number of expected tokens (guaranteed to be less than YYNTOKENS).
+      int expected_tokens (symbol_kind_type yyarg[], int yyargn) const;
+
+    private:
+      const parser& yyparser_;
+      const symbol_type& yyla_;
+    };
+
+  private:
+#if YY_CPLUSPLUS < 201103L
+    /// Non copyable.
+    parser (const parser&);
+    /// Non copyable.
+    parser& operator= (const parser&);
+#endif
+
+
+    /// Stored state numbers (used for stacks).
+    typedef signed char state_type;
+
+    /// The arguments of the error message.
+    int yy_syntax_error_arguments_ (const context& yyctx,
+                                    symbol_kind_type yyarg[], int yyargn) const;
 
     /// Generate an error message.
-    /// \param yystate   the state where the error occurred.
-    /// \param yyla      the lookahead token.
-    virtual std::string yysyntax_error_ (state_type yystate,
-                                         const symbol_type& yyla) const;
-
+    /// \param yyctx     the context in which the error occurred.
+    virtual std::string yysyntax_error_ (const context& yyctx) const;
     /// Compute post-reduction state.
     /// \param yystate   the current state
     /// \param yysym     the nonterminal to push on the stack
-    state_type yy_lr_goto_state_ (state_type yystate, int yysym);
+    static state_type yy_lr_goto_state_ (state_type yystate, int yysym);
 
     /// Whether the given \c yypact_ value indicates a defaulted state.
     /// \param yyvalue   the value to check
-    static bool yy_pact_value_is_default_ (int yyvalue);
+    static bool yy_pact_value_is_default_ (int yyvalue) YY_NOEXCEPT;
 
     /// Whether the given \c yytable_ value indicates a syntax error.
     /// \param yyvalue   the value to check
-    static bool yy_table_value_is_error_ (int yyvalue);
+    static bool yy_table_value_is_error_ (int yyvalue) YY_NOEXCEPT;
 
     static const signed char yypact_ninf_;
     static const signed char yytable_ninf_;
 
-    /// Convert a scanner token number \a t to a symbol number.
-    static token_number_type yytranslate_ (int t);
-
-    // Tables.
-  // YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-  // STATE-NUM.
-  static const short int yypact_[];
-
-  // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
-  // Performed when YYTABLE does not specify something else to do.  Zero
-  // means the default is an error.
-  static const unsigned char yydefact_[];
-
-  // YYPGOTO[NTERM-NUM].
-  static const signed char yypgoto_[];
-
-  // YYDEFGOTO[NTERM-NUM].
-  static const signed char yydefgoto_[];
-
-  // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
-  // positive, shift that token.  If negative, reduce the rule whose
-  // number is the opposite.  If YYTABLE_NINF, syntax error.
-  static const signed char yytable_[];
-
-  static const signed char yycheck_[];
-
-  // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
-  // symbol of state STATE-NUM.
-  static const unsigned char yystos_[];
-
-  // YYR1[YYN] -- Symbol number of symbol that rule YYN derives.
-  static const unsigned char yyr1_[];
-
-  // YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.
-  static const unsigned char yyr2_[];
-
+    /// Convert a scanner token kind \a t to a symbol kind.
+    /// In theory \a t should be a token_kind_type, but character literals
+    /// are valid, yet not members of the token_kind_type enum.
+    static symbol_kind_type yytranslate_ (int t) YY_NOEXCEPT;
 
     /// Convert the symbol name \a n to a form suitable for a diagnostic.
-    static std::string yytnamerr_ (const char *n);
-
+    static std::string yytnamerr_ (const char *yystr);
 
     /// For a symbol, its name in clear.
     static const char* const yytname_[];
-#if YYDEBUG
-  // YYRLINE[YYN] -- Source line where rule number YYN was defined.
-  static const unsigned char yyrline_[];
-    /// Report on the debug stream that the rule \a r is going to be reduced.
-    virtual void yy_reduce_print_ (int r);
-    /// Print the state stack on the debug stream.
-    virtual void yystack_print_ ();
 
-    // Debugging.
+
+    // Tables.
+    // YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+    // STATE-NUM.
+    static const short yypact_[];
+
+    // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+    // Performed when YYTABLE does not specify something else to do.  Zero
+    // means the default is an error.
+    static const signed char yydefact_[];
+
+    // YYPGOTO[NTERM-NUM].
+    static const signed char yypgoto_[];
+
+    // YYDEFGOTO[NTERM-NUM].
+    static const signed char yydefgoto_[];
+
+    // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+    // positive, shift that token.  If negative, reduce the rule whose
+    // number is the opposite.  If YYTABLE_NINF, syntax error.
+    static const signed char yytable_[];
+
+    static const signed char yycheck_[];
+
+    // YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
+    // state STATE-NUM.
+    static const signed char yystos_[];
+
+    // YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.
+    static const signed char yyr1_[];
+
+    // YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.
+    static const signed char yyr2_[];
+
+
+#if YYDEBUG
+    // YYRLINE[YYN] -- Source line where rule number YYN was defined.
+    static const unsigned char yyrline_[];
+    /// Report on the debug stream that the rule \a r is going to be reduced.
+    virtual void yy_reduce_print_ (int r) const;
+    /// Print the state stack on the debug stream.
+    virtual void yy_stack_print_ () const;
+
+    /// Debugging level.
     int yydebug_;
+    /// Debug stream.
     std::ostream* yycdebug_;
 
-    /// \brief Display a symbol type, value and location.
+    /// \brief Display a symbol kind, value and location.
     /// \param yyo    The output stream.
     /// \param yysym  The symbol.
     template <typename Base>
@@ -431,29 +662,30 @@ namespace Macro {
     struct by_state
     {
       /// Default constructor.
-      by_state ();
+      by_state () YY_NOEXCEPT;
 
-      /// The symbol type as needed by the constructor.
+      /// The symbol kind as needed by the constructor.
       typedef state_type kind_type;
 
       /// Constructor.
-      by_state (kind_type s);
+      by_state (kind_type s) YY_NOEXCEPT;
 
       /// Copy constructor.
-      by_state (const by_state& other);
+      by_state (const by_state& that) YY_NOEXCEPT;
 
       /// Record that this symbol is empty.
-      void clear ();
+      void clear () YY_NOEXCEPT;
 
-      /// Steal the symbol type from \a that.
+      /// Steal the symbol kind from \a that.
       void move (by_state& that);
 
-      /// The (internal) type number (corresponding to \a state).
-      /// \a empty_symbol when empty.
-      symbol_number_type type_get () const;
+      /// The symbol kind (corresponding to \a state).
+      /// \a symbol_kind::S_YYEMPTY when empty.
+      symbol_kind_type kind () const YY_NOEXCEPT;
 
       /// The state number used to denote an empty symbol.
-      enum { empty_state = -1 };
+      /// We use the initial state, as it does not have a value.
+      enum { empty_state = 0 };
 
       /// The state.
       /// \a empty when empty.
@@ -467,11 +699,138 @@ namespace Macro {
       typedef basic_symbol<by_state> super_type;
       /// Construct an empty symbol.
       stack_symbol_type ();
+      /// Move or copy construction.
+      stack_symbol_type (YY_RVREF (stack_symbol_type) that);
       /// Steal the contents from \a sym to build this.
-      stack_symbol_type (state_type s, symbol_type& sym);
-      /// Assignment, needed by push_back.
+      stack_symbol_type (state_type s, YY_MOVE_REF (symbol_type) sym);
+#if YY_CPLUSPLUS < 201103L
+      /// Assignment, needed by push_back by some old implementations.
+      /// Moves the contents of that.
+      stack_symbol_type& operator= (stack_symbol_type& that);
+
+      /// Assignment, needed by push_back by other implementations.
+      /// Needed by some other old implementations.
       stack_symbol_type& operator= (const stack_symbol_type& that);
+#endif
     };
+
+    /// A stack with random access from its top.
+    template <typename T, typename S = std::vector<T> >
+    class stack
+    {
+    public:
+      // Hide our reversed order.
+      typedef typename S::iterator iterator;
+      typedef typename S::const_iterator const_iterator;
+      typedef typename S::size_type size_type;
+      typedef typename std::ptrdiff_t index_type;
+
+      stack (size_type n = 200) YY_NOEXCEPT
+        : seq_ (n)
+      {}
+
+#if 201103L <= YY_CPLUSPLUS
+      /// Non copyable.
+      stack (const stack&) = delete;
+      /// Non copyable.
+      stack& operator= (const stack&) = delete;
+#endif
+
+      /// Random access.
+      ///
+      /// Index 0 returns the topmost element.
+      const T&
+      operator[] (index_type i) const
+      {
+        return seq_[size_type (size () - 1 - i)];
+      }
+
+      /// Random access.
+      ///
+      /// Index 0 returns the topmost element.
+      T&
+      operator[] (index_type i)
+      {
+        return seq_[size_type (size () - 1 - i)];
+      }
+
+      /// Steal the contents of \a t.
+      ///
+      /// Close to move-semantics.
+      void
+      push (YY_MOVE_REF (T) t)
+      {
+        seq_.push_back (T ());
+        operator[] (0).move (t);
+      }
+
+      /// Pop elements from the stack.
+      void
+      pop (std::ptrdiff_t n = 1) YY_NOEXCEPT
+      {
+        for (; 0 < n; --n)
+          seq_.pop_back ();
+      }
+
+      /// Pop all elements from the stack.
+      void
+      clear () YY_NOEXCEPT
+      {
+        seq_.clear ();
+      }
+
+      /// Number of elements on the stack.
+      index_type
+      size () const YY_NOEXCEPT
+      {
+        return index_type (seq_.size ());
+      }
+
+      /// Iterator on top of the stack (going downwards).
+      const_iterator
+      begin () const YY_NOEXCEPT
+      {
+        return seq_.begin ();
+      }
+
+      /// Bottom of the stack.
+      const_iterator
+      end () const YY_NOEXCEPT
+      {
+        return seq_.end ();
+      }
+
+      /// Present a slice of the top of a stack.
+      class slice
+      {
+      public:
+        slice (const stack& stack, index_type range) YY_NOEXCEPT
+          : stack_ (stack)
+          , range_ (range)
+        {}
+
+        const T&
+        operator[] (index_type i) const
+        {
+          return stack_[range_ - i];
+        }
+
+      private:
+        const stack& stack_;
+        index_type range_;
+      };
+
+    private:
+#if YY_CPLUSPLUS < 201103L
+      /// Non copyable.
+      stack (const stack&);
+      /// Non copyable.
+      stack& operator= (const stack&);
+#endif
+      /// The wrapped container.
+      S seq_;
+    };
+
 
     /// Stack type.
     typedef stack<stack_symbol_type> stack_type;
@@ -482,45 +841,41 @@ namespace Macro {
     /// Push a new state on the stack.
     /// \param m    a debug message to display
     ///             if null, no trace is output.
-    /// \param s    the symbol
+    /// \param sym  the symbol
     /// \warning the contents of \a s.value is stolen.
-    void yypush_ (const char* m, stack_symbol_type& s);
+    void yypush_ (const char* m, YY_MOVE_REF (stack_symbol_type) sym);
 
     /// Push a new look ahead token on the state on the stack.
     /// \param m    a debug message to display
     ///             if null, no trace is output.
     /// \param s    the state
     /// \param sym  the symbol (for its value and location).
-    /// \warning the contents of \a s.value is stolen.
-    void yypush_ (const char* m, state_type s, symbol_type& sym);
+    /// \warning the contents of \a sym.value is stolen.
+    void yypush_ (const char* m, state_type s, YY_MOVE_REF (symbol_type) sym);
 
-    /// Pop \a n symbols the three stacks.
-    void yypop_ (unsigned int n = 1);
+    /// Pop \a n symbols from the stack.
+    void yypop_ (int n = 1) YY_NOEXCEPT;
 
     /// Constants.
     enum
     {
-      yyeof_ = 0,
       yylast_ = 267,     ///< Last index in yytable_.
       yynnts_ = 6,  ///< Number of nonterminal symbols.
-      yyfinal_ = 37, ///< Termination state number.
-      yyterror_ = 1,
-      yyerrcode_ = 256,
-      yyntokens_ = 41  ///< Number of tokens.
+      yyfinal_ = 37 ///< Termination state number.
     };
 
 
     // User arguments.
     MacroDriver &driver;
     ostream &out;
+
   };
 
 
-
 } // Macro
-#line 522 "MacroBison.hh" // lalr1.cc:377
+#line 877 "pkg/src/macro/MacroBison.hh"
 
 
 
 
-#endif // !YY_MACRO_MACROBISON_HH_INCLUDED
+#endif // !YY_MACRO_PKG_SRC_MACRO_MACROBISON_HH_INCLUDED

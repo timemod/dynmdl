@@ -1,6 +1,6 @@
-#line 2 "pkg/src/macro/MarcoFlex.cc"
+#line 1 "pkg/src/macro/MarcoFlex.cc"
 
-#line 4 "pkg/src/macro/MarcoFlex.cc"
+#line 3 "pkg/src/macro/MarcoFlex.cc"
 
 #define  YY_INT_ALIGNED short int
 
@@ -759,13 +759,13 @@ typedef Macro::parser::token token;
    Unfortunately yyterminate by default returns 0, which is
    not of token_type.  */
 #define yyterminate() return Macro::parser::token_type (0);
-#line 763 "pkg/src/macro/MarcoFlex.cc"
+#line 762 "pkg/src/macro/MarcoFlex.cc"
 
 #line 59 "pkg/src/macro/MacroFlex.ll"
 // Increments location counter for every token read
 #define YY_USER_ACTION yylloc->columns(yyleng);
+#line 767 "pkg/src/macro/MarcoFlex.cc"
 #line 768 "pkg/src/macro/MarcoFlex.cc"
-#line 769 "pkg/src/macro/MarcoFlex.cc"
 
 #define INITIAL 0
 #define STMT 1
@@ -974,7 +974,7 @@ YY_DECL
   yylloc->step();
 
 
-#line 978 "pkg/src/macro/MarcoFlex.cc"
+#line 977 "pkg/src/macro/MarcoFlex.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1657,7 +1657,7 @@ YY_RULE_SETUP
 #line 413 "pkg/src/macro/MacroFlex.ll"
 ECHO;
 	YY_BREAK
-#line 1661 "pkg/src/macro/MarcoFlex.cc"
+#line 1660 "pkg/src/macro/MarcoFlex.cc"
 
 	case YY_END_OF_BUFFER:
 		{
