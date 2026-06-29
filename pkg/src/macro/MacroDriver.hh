@@ -38,7 +38,7 @@ using namespace std;
 // Declare MacroFlexLexer class
 #ifndef __FLEX_LEXER_H
 # define yyFlexLexer MacroFlexLexer
-# include <FlexLexer.h>
+# include "FlexLexerLocal.h"
 # undef yyFlexLexer
 #endif
 

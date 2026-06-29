@@ -54,6 +54,7 @@ get_fit_conditions <- function(mod_file,  instruments,
   old_instruments <- paste0(instruments, "_old")
   initialized_sigmas <- intersect(sigmas, param_names)
   equation_has_static <- deriv_info$equation_has_static
+
   
   # TODO: check that the intersection of fit_vars, exo_vars,
   # l_vars and sigmas with endo_names and exo_names is zero.
@@ -68,6 +69,7 @@ get_fit_conditions <- function(mod_file,  instruments,
                                    endo_names, instruments, sigmas, l_vars,
                                    fit_vars, old_instruments, exo_vars,
                                    fixed_period, dynamic = TRUE)
+
 
   if (write_static_eqs) {
     if (fixed_period) {
@@ -104,6 +106,7 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
                               sigmas, l_vars, fit_vars, old_instruments, 
                               exo_vars, fixed_period, dynamic) {
   
+
   lag_pattern <- "\\[(-?\\d+)\\]"
   # 
   # several function definitions
@@ -121,7 +124,8 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
         return(paste0("[", i, "]"))
       }
     }
-    return(gsubfn(lag_pattern, repl_fun, expression))
+
+    gsubfn(lag_pattern, repl_fun, expression, engine = "R")
   }
   
   mult_lagrange <- function(x, l_names) {
@@ -144,6 +148,7 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   deriv_eq <- aggregate(instr_deriv$expressions, 
                         by = list(instr_index = instr_deriv$instr_index),
                         FUN = function(x) {paste(x, collapse = " + ")})
+
   
   if (nrow(deriv_eq) < length(instruments)) {
     problem_instruments <- instruments[setdiff(seq_along(instruments), 
@@ -168,7 +173,7 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   l_names <- l_vars
   if (dynamic && !fixed_period) l_names <- paste0(l_vars, "[0]")
   endo_deriv <- mult_lagrange(endo_deriv, l_names)
-  
+
   if (dynamic && !fixed_period) {
     endo_deriv$expressions <- mapply(FUN = shift_lags, 
                                      endo_deriv$expressions, 
@@ -195,7 +200,6 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
                 "."))
   }
   deriv_eq <- deriv_eq$x
-  
   
   endo_equations <- paste0(fit_vars, " * (", endo_names, " - ", exo_vars, 
                            ") + (1 - ",  fit_vars, ") * (", deriv_eq, ")", 

@@ -14,12 +14,12 @@ $(LIB) : $(OBJS)
 
 # dependencies on headers
 MacroBison.o : MacroBison.hh MacroDriver.hh
-MacroDriver.o : MacroDriver.hh ../dyn_error.hh ../FlexLexer.h
-MacroFlex.o : MacroDriver.hh ../FlexLexer.h
+MacroDriver.o : MacroDriver.hh ../dyn_error.hh ../FlexLexerLocal.h
+MacroFlex.o : MacroDriver.hh ../FlexLexerLocal.h
 MacroValue.o : MacroDriver.hh
 
 # rules for flex and bison
-MacroFlex.cc: MacroFlex.ll ../FlexLexer.h
+MacroFlex.cc: MacroFlex.ll ../FlexLexerLocal.h
 	-$(LEX_CMD) -o MacroFlex.cc MacroFlex.ll
 
 MacroBison.cc MacroBison.hh location.hh stack.hh position.hh: MacroBison.yy

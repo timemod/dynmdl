@@ -15,7 +15,7 @@ LEX_YACC_DIR = lex_yacc
 
 # While developping on the same architecture is not not necessary
 # to clean sublib
-all : FlexLexer.h sublib $(SHLIB) DynareFlex.o DynareBison.o
+all : FlexLexerLocal.h sublib $(SHLIB) DynareFlex.o DynareBison.o
 
 $(SHLIB) : $(OBJECTS) $(SUBDIR)/$(SUBLIB)
 
@@ -36,17 +36,17 @@ DEP_FILE = $(DEPS_DIR)/makedeps
 # dependencies C files
 include $(DEP_FILE)
 
-DynareFlex.o : DynareFlex.cc FlexLexer.h
+DynareFlex.o : DynareFlex.cc FlexLexerLocal.h
 DynareBison.o : DynareBison.cc
 
-DynareFlex.cc FlexLexer.h : $(LEX_YACC_DIR)/DynareFlex.ll
+DynareFlex.cc FlexLexerLocal.h : $(LEX_YACC_DIR)/DynareFlex.ll
 	$(LEX_CMD) -o DynareFlex.cc $<
-        # Copy FlexLexer.h from $LEXINC. Otherwise the code cannot
-        # be compiled on systems where lex is not available, or where
-        # the version of lex is incompatible with the version used
-        # to generate DynareFlex.cc
-	cp $(LEXINC)/FlexLexer.h .
-	touch FlexLexer.h
+	# Copy FlexLexer.h from $LEXINC to FlexLexerLocal.h.
+        # Otherwise the code cannot be compiled on systems where lex is
+        # not available, or where the version of lex is incompatible with
+        # the version used to generate DynareFlex.cc
+	cp $(LEXINC)/FlexLexer.h FlexLexerLocal.h
+	touch FlexLexerLocal.h
 
 DynareBison.cc DynareBison.hh location.hh stack.hh position.hh: $(LEX_YACC_DIR)/DynareBison.yy
 	-$(YACC_CMD) -o DynareBison.cc $<

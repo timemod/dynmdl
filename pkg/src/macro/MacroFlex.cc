@@ -22,7 +22,7 @@
 #endif
 
 /* %if-c++-only */
-    /* The c++ scanner is a mess. The FlexLexer.h header file relies on the
+    /* The c++ scanner is a mess. The FlexLexerLocal.h header file relies on the
      * following macro. This is required in order to pass the c++-multiple-scanners
      * test in the regression suite. We get reports that it breaks inheritance.
      * We will address this in a future release of flex, or omit the C++ scanner
@@ -383,7 +383,7 @@ typedef flex_uint8_t YY_CHAR;
 
 #define yytext_ptr yytext
 
-#include <FlexLexer.h>
+#include "FlexLexerLocal.h"
 
 int yyFlexLexer::yywrap() { return 1; }
 
