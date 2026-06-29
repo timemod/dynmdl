@@ -31,12 +31,12 @@
 // version 2.2 of Bison.
 
 /**
- ** \file pkg/src/macro/location.hh
+ ** \file location.hh
  ** Define the Macro::location class.
  */
 
-#ifndef YY_MACRO_PKG_SRC_MACRO_LOCATION_HH_INCLUDED
-# define YY_MACRO_PKG_SRC_MACRO_LOCATION_HH_INCLUDED
+#ifndef YY_MACRO_LOCATION_HH_INCLUDED
+# define YY_MACRO_LOCATION_HH_INCLUDED
 
 # include <iostream>
 # include <string>
@@ -54,7 +54,7 @@
 # endif
 
 namespace Macro {
-#line 58 "pkg/src/macro/location.hh"
+#line 58 "location.hh"
 
   /// A point in a source file.
   class position
@@ -299,6 +299,6 @@ namespace Macro {
   }
 
 } // Macro
-#line 303 "pkg/src/macro/location.hh"
+#line 303 "location.hh"
 
-#endif // !YY_MACRO_PKG_SRC_MACRO_LOCATION_HH_INCLUDED
+#endif // !YY_MACRO_LOCATION_HH_INCLUDED

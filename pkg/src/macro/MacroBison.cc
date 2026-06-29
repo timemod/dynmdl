@@ -35,11 +35,11 @@
 // private implementation details that can be changed or removed.
 
 // "%code top" blocks.
-#line 24 "pkg/src/macro/MacroBison.yy"
+#line 24 "MacroBison.yy"
 
 class MacroDriver;
 
-#line 43 "pkg/src/macro/MacroBison.cc"
+#line 43 "MacroBison.cc"
 
 // Take the name prefix into account.
 #define yylex   Macrolex
@@ -50,7 +50,7 @@ class MacroDriver;
 
 
 // Unqualified %code blocks.
-#line 55 "pkg/src/macro/MacroBison.yy"
+#line 55 "MacroBison.yy"
 
 #include <cstdlib>  // Pour atoi()
 #include "MacroDriver.hh"
@@ -71,7 +71,7 @@ class MacroDriver;
     }
 
 
-#line 75 "pkg/src/macro/MacroBison.cc"
+#line 75 "MacroBison.cc"
 
 
 #ifndef YY_
@@ -163,7 +163,7 @@ class MacroDriver;
 #define YYRECOVERING()  (!!yyerrstatus_)
 
 namespace Macro {
-#line 167 "pkg/src/macro/MacroBison.cc"
+#line 167 "MacroBison.cc"
 
   /// Build a parser object.
   parser::parser (MacroDriver &driver_yyarg, ostream &out_yyarg)
@@ -503,13 +503,13 @@ namespace Macro {
 
 
     // User initialization code.
-#line 36 "pkg/src/macro/MacroBison.yy"
+#line 36 "MacroBison.yy"
 {
   // Initialize the location filenames
   yyla.location.begin.filename = yyla.location.end.filename = &driver.file;
 }
 
-#line 513 "pkg/src/macro/MacroBison.cc"
+#line 513 "MacroBison.cc"
 
 
     /* Initialize the stack.  The initial state will be set in
@@ -645,67 +645,67 @@ namespace Macro {
           switch (yyn)
             {
   case 6: // statement: expr
-#line 107 "pkg/src/macro/MacroBison.yy"
+#line 107 "MacroBison.yy"
             { out << (yystack_[0].value.mv)->toString(); }
-#line 651 "pkg/src/macro/MacroBison.cc"
+#line 651 "MacroBison.cc"
     break;
 
   case 7: // statement: DEFINE NAME EQUAL expr
-#line 109 "pkg/src/macro/MacroBison.yy"
+#line 109 "MacroBison.yy"
             { driver.set_variable(*(yystack_[2].value.string_val), (yystack_[0].value.mv)); delete (yystack_[2].value.string_val); }
-#line 657 "pkg/src/macro/MacroBison.cc"
+#line 657 "MacroBison.cc"
     break;
 
   case 8: // statement: FOR NAME IN expr
-#line 111 "pkg/src/macro/MacroBison.yy"
+#line 111 "MacroBison.yy"
             { TYPERR_CATCH(driver.init_loop(*(yystack_[2].value.string_val), (yystack_[0].value.mv)), yylhs.location); delete (yystack_[2].value.string_val); }
-#line 663 "pkg/src/macro/MacroBison.cc"
+#line 663 "MacroBison.cc"
     break;
 
   case 9: // statement: IF expr
-#line 113 "pkg/src/macro/MacroBison.yy"
+#line 113 "MacroBison.yy"
             { TYPERR_CATCH(driver.begin_if((yystack_[0].value.mv)), yylhs.location); }
-#line 669 "pkg/src/macro/MacroBison.cc"
+#line 669 "MacroBison.cc"
     break;
 
   case 10: // statement: IFDEF NAME
-#line 115 "pkg/src/macro/MacroBison.yy"
+#line 115 "MacroBison.yy"
             { TYPERR_CATCH(driver.begin_ifdef(*(yystack_[0].value.string_val)), yylhs.location); delete (yystack_[0].value.string_val); }
-#line 675 "pkg/src/macro/MacroBison.cc"
+#line 675 "MacroBison.cc"
     break;
 
   case 11: // statement: IFNDEF NAME
-#line 117 "pkg/src/macro/MacroBison.yy"
+#line 117 "MacroBison.yy"
             { TYPERR_CATCH(driver.begin_ifndef(*(yystack_[0].value.string_val)), yylhs.location); delete (yystack_[0].value.string_val); }
-#line 681 "pkg/src/macro/MacroBison.cc"
+#line 681 "MacroBison.cc"
     break;
 
   case 12: // statement: ECHO_DIR expr
-#line 119 "pkg/src/macro/MacroBison.yy"
+#line 119 "MacroBison.yy"
             { TYPERR_CATCH(driver.echo(yylhs.location, (yystack_[0].value.mv)), yylhs.location); }
-#line 687 "pkg/src/macro/MacroBison.cc"
+#line 687 "MacroBison.cc"
     break;
 
   case 13: // statement: ERROR expr
-#line 121 "pkg/src/macro/MacroBison.yy"
+#line 121 "MacroBison.yy"
             { TYPERR_CATCH(driver.error(yylhs.location, (yystack_[0].value.mv)), yylhs.location); }
-#line 693 "pkg/src/macro/MacroBison.cc"
+#line 693 "MacroBison.cc"
     break;
 
   case 15: // expr: INTEGER
-#line 127 "pkg/src/macro/MacroBison.yy"
+#line 127 "MacroBison.yy"
        { (yylhs.value.mv) = new IntMV(driver, (yystack_[0].value.int_val)); }
-#line 699 "pkg/src/macro/MacroBison.cc"
+#line 699 "MacroBison.cc"
     break;
 
   case 16: // expr: STRING
-#line 129 "pkg/src/macro/MacroBison.yy"
+#line 129 "MacroBison.yy"
        { (yylhs.value.mv) = new StringMV(driver, *(yystack_[0].value.string_val)); delete (yystack_[0].value.string_val); }
-#line 705 "pkg/src/macro/MacroBison.cc"
+#line 705 "MacroBison.cc"
     break;
 
   case 17: // expr: NAME
-#line 131 "pkg/src/macro/MacroBison.yy"
+#line 131 "MacroBison.yy"
        {
          try
            {
@@ -717,118 +717,118 @@ namespace Macro {
            }
          delete (yystack_[0].value.string_val);
        }
-#line 721 "pkg/src/macro/MacroBison.cc"
+#line 721 "MacroBison.cc"
     break;
 
   case 18: // expr: LENGTH LPAREN expr RPAREN
-#line 143 "pkg/src/macro/MacroBison.yy"
+#line 143 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = (yystack_[1].value.mv)->length(), yylhs.location); }
-#line 727 "pkg/src/macro/MacroBison.cc"
+#line 727 "MacroBison.cc"
     break;
 
   case 19: // expr: LPAREN expr RPAREN
-#line 145 "pkg/src/macro/MacroBison.yy"
+#line 145 "MacroBison.yy"
        { (yylhs.value.mv) = (yystack_[1].value.mv); }
-#line 733 "pkg/src/macro/MacroBison.cc"
+#line 733 "MacroBison.cc"
     break;
 
   case 20: // expr: expr PLUS expr
-#line 147 "pkg/src/macro/MacroBison.yy"
+#line 147 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) + *(yystack_[0].value.mv), yylhs.location); }
-#line 739 "pkg/src/macro/MacroBison.cc"
+#line 739 "MacroBison.cc"
     break;
 
   case 21: // expr: expr MINUS expr
-#line 149 "pkg/src/macro/MacroBison.yy"
+#line 149 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) - *(yystack_[0].value.mv), yylhs.location); }
-#line 745 "pkg/src/macro/MacroBison.cc"
+#line 745 "MacroBison.cc"
     break;
 
   case 22: // expr: expr TIMES expr
-#line 151 "pkg/src/macro/MacroBison.yy"
+#line 151 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) * *(yystack_[0].value.mv), yylhs.location); }
-#line 751 "pkg/src/macro/MacroBison.cc"
+#line 751 "MacroBison.cc"
     break;
 
   case 23: // expr: expr DIVIDE expr
-#line 153 "pkg/src/macro/MacroBison.yy"
+#line 153 "MacroBison.yy"
        {
          if (dynamic_cast<const IntMV *>((yystack_[0].value.mv)) != NULL
              && ((IntMV *)(yystack_[0].value.mv))->get_int_value() == 0)
            driver.error(yylhs.location, "Division by zero");
          TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) / *(yystack_[0].value.mv), yylhs.location);
        }
-#line 762 "pkg/src/macro/MacroBison.cc"
+#line 762 "MacroBison.cc"
     break;
 
   case 24: // expr: expr LESS expr
-#line 160 "pkg/src/macro/MacroBison.yy"
+#line 160 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) < *(yystack_[0].value.mv), yylhs.location); }
-#line 768 "pkg/src/macro/MacroBison.cc"
+#line 768 "MacroBison.cc"
     break;
 
   case 25: // expr: expr GREATER expr
-#line 162 "pkg/src/macro/MacroBison.yy"
+#line 162 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) > *(yystack_[0].value.mv), yylhs.location); }
-#line 774 "pkg/src/macro/MacroBison.cc"
+#line 774 "MacroBison.cc"
     break;
 
   case 26: // expr: expr LESS_EQUAL expr
-#line 164 "pkg/src/macro/MacroBison.yy"
+#line 164 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) <= *(yystack_[0].value.mv), yylhs.location); }
-#line 780 "pkg/src/macro/MacroBison.cc"
+#line 780 "MacroBison.cc"
     break;
 
   case 27: // expr: expr GREATER_EQUAL expr
-#line 166 "pkg/src/macro/MacroBison.yy"
+#line 166 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) >= *(yystack_[0].value.mv), yylhs.location); }
-#line 786 "pkg/src/macro/MacroBison.cc"
+#line 786 "MacroBison.cc"
     break;
 
   case 28: // expr: expr EQUAL_EQUAL expr
-#line 168 "pkg/src/macro/MacroBison.yy"
+#line 168 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) == *(yystack_[0].value.mv), yylhs.location); }
-#line 792 "pkg/src/macro/MacroBison.cc"
+#line 792 "MacroBison.cc"
     break;
 
   case 29: // expr: expr EXCLAMATION_EQUAL expr
-#line 170 "pkg/src/macro/MacroBison.yy"
+#line 170 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) != *(yystack_[0].value.mv), yylhs.location); }
-#line 798 "pkg/src/macro/MacroBison.cc"
+#line 798 "MacroBison.cc"
     break;
 
   case 30: // expr: expr LOGICAL_OR expr
-#line 172 "pkg/src/macro/MacroBison.yy"
+#line 172 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) || *(yystack_[0].value.mv), yylhs.location); }
-#line 804 "pkg/src/macro/MacroBison.cc"
+#line 804 "MacroBison.cc"
     break;
 
   case 31: // expr: expr LOGICAL_AND expr
-#line 174 "pkg/src/macro/MacroBison.yy"
+#line 174 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) && *(yystack_[0].value.mv), yylhs.location); }
-#line 810 "pkg/src/macro/MacroBison.cc"
+#line 810 "MacroBison.cc"
     break;
 
   case 32: // expr: MINUS expr
-#line 176 "pkg/src/macro/MacroBison.yy"
+#line 176 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = -*(yystack_[0].value.mv), yylhs.location); }
-#line 816 "pkg/src/macro/MacroBison.cc"
+#line 816 "MacroBison.cc"
     break;
 
   case 33: // expr: PLUS expr
-#line 178 "pkg/src/macro/MacroBison.yy"
+#line 178 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = +(*(yystack_[0].value.mv)), yylhs.location); }
-#line 822 "pkg/src/macro/MacroBison.cc"
+#line 822 "MacroBison.cc"
     break;
 
   case 34: // expr: EXCLAMATION expr
-#line 180 "pkg/src/macro/MacroBison.yy"
+#line 180 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = !*(yystack_[0].value.mv), yylhs.location); }
-#line 828 "pkg/src/macro/MacroBison.cc"
+#line 828 "MacroBison.cc"
     break;
 
   case 35: // expr: expr LBRACKET array_expr RBRACKET
-#line 182 "pkg/src/macro/MacroBison.yy"
+#line 182 "MacroBison.yy"
        {
          TYPERR_CATCH((yylhs.value.mv) = (*(yystack_[3].value.mv))[*(yystack_[1].value.mv)], yylhs.location)
          catch(MacroValue::OutOfBoundsError)
@@ -836,41 +836,41 @@ namespace Macro {
              error(yylhs.location, "Index out of bounds");
            }
        }
-#line 840 "pkg/src/macro/MacroBison.cc"
+#line 840 "MacroBison.cc"
     break;
 
   case 36: // expr: LBRACKET array_expr RBRACKET
-#line 190 "pkg/src/macro/MacroBison.yy"
+#line 190 "MacroBison.yy"
        { (yylhs.value.mv) = (yystack_[1].value.mv); }
-#line 846 "pkg/src/macro/MacroBison.cc"
+#line 846 "MacroBison.cc"
     break;
 
   case 37: // expr: expr COLON expr
-#line 192 "pkg/src/macro/MacroBison.yy"
+#line 192 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = IntMV::new_range(driver, (yystack_[2].value.mv), (yystack_[0].value.mv)), yylhs.location); }
-#line 852 "pkg/src/macro/MacroBison.cc"
+#line 852 "MacroBison.cc"
     break;
 
   case 38: // expr: expr IN expr
-#line 194 "pkg/src/macro/MacroBison.yy"
+#line 194 "MacroBison.yy"
        { TYPERR_CATCH((yylhs.value.mv) = (yystack_[2].value.mv)->in((yystack_[0].value.mv)), yylhs.location); }
-#line 858 "pkg/src/macro/MacroBison.cc"
+#line 858 "MacroBison.cc"
     break;
 
   case 39: // array_expr: expr
-#line 198 "pkg/src/macro/MacroBison.yy"
+#line 198 "MacroBison.yy"
              { (yylhs.value.mv) = (yystack_[0].value.mv)->toArray(); }
-#line 864 "pkg/src/macro/MacroBison.cc"
+#line 864 "MacroBison.cc"
     break;
 
   case 40: // array_expr: array_expr COMMA expr
-#line 200 "pkg/src/macro/MacroBison.yy"
+#line 200 "MacroBison.yy"
              { TYPERR_CATCH((yylhs.value.mv) = (yystack_[0].value.mv)->append((yystack_[2].value.mv)), yylhs.location); }
-#line 870 "pkg/src/macro/MacroBison.cc"
+#line 870 "MacroBison.cc"
     break;
 
 
-#line 874 "pkg/src/macro/MacroBison.cc"
+#line 874 "MacroBison.cc"
 
             default:
               break;
@@ -1474,9 +1474,9 @@ namespace Macro {
   }
 
 } // Macro
-#line 1478 "pkg/src/macro/MacroBison.cc"
+#line 1478 "MacroBison.cc"
 
-#line 203 "pkg/src/macro/MacroBison.yy"
+#line 203 "MacroBison.yy"
 
 
 void

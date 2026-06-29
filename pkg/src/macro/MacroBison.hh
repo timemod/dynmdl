@@ -32,7 +32,7 @@
 
 
 /**
- ** \file pkg/src/macro/MacroBison.hh
+ ** \file MacroBison.hh
  ** Define the Macro::parser class.
  */
 
@@ -42,14 +42,14 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_MACRO_PKG_SRC_MACRO_MACROBISON_HH_INCLUDED
-# define YY_MACRO_PKG_SRC_MACRO_MACROBISON_HH_INCLUDED
+#ifndef YY_MACRO_MACROBISON_HH_INCLUDED
+# define YY_MACRO_MACROBISON_HH_INCLUDED
 // "%code requires" blocks.
-#line 44 "pkg/src/macro/MacroBison.yy"
+#line 44 "MacroBison.yy"
 
 #include "MacroValue.hh"
 
-#line 53 "pkg/src/macro/MacroBison.hh"
+#line 53 "MacroBison.hh"
 
 
 # include <cstdlib> // std::abort
@@ -184,7 +184,7 @@
 #endif
 
 namespace Macro {
-#line 188 "pkg/src/macro/MacroBison.hh"
+#line 188 "MacroBison.hh"
 
 
 
@@ -202,13 +202,13 @@ namespace Macro {
     /// Symbol semantic values.
     union value_type
     {
-#line 49 "pkg/src/macro/MacroBison.yy"
+#line 49 "MacroBison.yy"
 
   string *string_val;
   int int_val;
   const MacroValue *mv;
 
-#line 212 "pkg/src/macro/MacroBison.hh"
+#line 212 "MacroBison.hh"
 
     };
 #endif
@@ -873,9 +873,9 @@ namespace Macro {
 
 
 } // Macro
-#line 877 "pkg/src/macro/MacroBison.hh"
+#line 877 "MacroBison.hh"
 
 
 
 
-#endif // !YY_MACRO_PKG_SRC_MACRO_MACROBISON_HH_INCLUDED
+#endif // !YY_MACRO_MACROBISON_HH_INCLUDED

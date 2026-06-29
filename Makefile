@@ -128,7 +128,7 @@ else ifeq ($(strip $(LEX_CMD)),)
 	$(warning "Unknown Flex location")
 else
 	$(LEX_CMD) -o $(SRC_DIR)/DynareFlex.cc $(LEX_YACC_DIR)/DynareFlex.ll 
-	$(LEX_CMD) -o $(MACRO_DIR)/MarcoFlex.cc $(MACRO_DIR)/MacroFlex.ll 
+	$(LEX_CMD) -o $(MACRO_DIR)/MacroFlex.cc $(MACRO_DIR)/MacroFlex.ll 
 	@# Copy FlexLexer.h from $LEX_INC to pkg/src. Otherwise the code cannot
 	@# be compiled on systems where FLex is not available, or where
 	@# the version of lex is incompatible with the version used
