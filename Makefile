@@ -120,7 +120,6 @@ document: install_deps
 	R CMD Rd2pdf --no-preview $(PKGDIR) -o refman.pdf 2>&1 >refman.log
 
 
-.PHONY: flex
 flex:
 ifeq ($(OSTYPE), windows)
 	@echo Flex can not run on Windows
@@ -137,7 +136,6 @@ else
 	touch pkg/src/FlexLexer.h
 endif
 
-.PHONY: bison
 bison:
 ifeq ($(OSTYPE), windows)
 	@echo Bison can not run on Windows
@@ -148,12 +146,13 @@ else
 	$(BISON_CMD) -o $(MACRO_DIR)/MacroBison.cc $(MACRO_DIR)/MacroBison.yy
 endif
 
-install: install_deps
+makedeps:
 	$(MAKE) -f Makedeps
+
+install: makedeps install_deps
 	R CMD INSTALL $(INSTALL_FLAGS) $(PKGDIR)
 
-installv: install_deps
-	$(MAKE) -f Makedeps
+installv: makedeps install_deps
 	R CMD build $(PKGDIR)
 	R CMD INSTALL $(INSTALL_FLAGS) $(PKGTAR)
 

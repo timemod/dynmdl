@@ -28,11 +28,6 @@ sublib:
 	            $(CLINK_CPPFLAGS)" \
 	  AR="$(AR)" RANLIB="$(RANLIB)")
 
-# TODO: flex/bison and python do not work on Windows within the Rtools
-# environment. Therefore, for the moment the package should only be developped
-# in a Linux environment. In a later stage we have to check if there is an
-# alternative solution for Windows.
-
 # dependencies C files
 DEPS_DIR = deps
 DEP_FILE = $(DEPS_DIR)/makedeps

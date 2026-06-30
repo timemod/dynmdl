@@ -10,25 +10,27 @@ compile_model.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh DataTree.hh 
     dyn_error.hh DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
     ExternalFunctionCalc.hh ExternalFunctionsTable.hh location.hh ModelTree.hh \
     ModFile.hh NumericalConstants.hh NumericalInitialization.hh \
-    OutputParameters.hh parse.hh PolishModel.hh Statement.hh StaticModel.hh \
-    SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
+    OutputParameters.hh parse.hh PolishModel.hh position.hh Statement.hh \
+    StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+    WarningConsolidation.hh
 
 compute_derivatives.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh \
     DataTree.hh dyn_error.hh DynamicModel.hh ExprNode.hh \
     ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    parse.hh PolishModel.hh Statement.hh StaticModel.hh SteadyStateModel.hh \
-    SymbolList.hh SymbolTable.hh WarningConsolidation.hh
+    parse.hh PolishModel.hh position.hh Statement.hh StaticModel.hh \
+    SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 ComputingTasks.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
     DataTree.hh dyn_error.hh DynamicModel.hh dynout.hh ExprNode.hh \
     ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh NumericalConstants.hh \
-    OutputParameters.hh PolishModel.hh Statement.hh StaticModel.hh \
+    OutputParameters.hh PolishModel.hh position.hh Statement.hh StaticModel.hh \
     SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
-ConfigFile.o : ConfigFile.hh dyn_error.hh location.hh WarningConsolidation.hh
+ConfigFile.o : ConfigFile.hh dyn_error.hh location.hh position.hh \
+    WarningConsolidation.hh
 
 DataTree.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh dyn_error.hh \
     dynout.hh ExprNode.hh ExternalFunctionCalc.hh ExternalFunctionsTable.hh \
@@ -47,25 +49,25 @@ DynareBison.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
     ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    ParsingDriver.hh PolishModel.hh Shocks.hh SigmaeInitialization.hh \
-    Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
-    SymbolTable.hh WarningConsolidation.hh
+    ParsingDriver.hh PolishModel.hh position.hh Shocks.hh \
+    SigmaeInitialization.hh stack.hh Statement.hh StaticModel.hh \
+    SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 DynareFlex.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
     ConfigFile.hh DataTree.hh dyn_error.hh DynamicModel.hh DynareBison.hh \
     ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    ParsingDriver.hh PolishModel.hh Shocks.hh SigmaeInitialization.hh \
-    Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
-    SymbolTable.hh WarningConsolidation.hh
+    ParsingDriver.hh PolishModel.hh position.hh Shocks.hh \
+    SigmaeInitialization.hh stack.hh Statement.hh StaticModel.hh \
+    SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 ExprNode.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh DataTree.hh \
     dyn_error.hh DynamicModel.hh dynout.hh ExprNode.hh \
     ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    PolishModel.hh Statement.hh StaticModel.hh SteadyStateModel.hh \
+    PolishModel.hh position.hh Statement.hh StaticModel.hh SteadyStateModel.hh \
     SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 ExternalFunctionCalc.o : CallRFunction.hh ExternalFunctionCalc.hh
@@ -86,7 +88,7 @@ ModFile.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh 
     ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    PolishModel.hh PolishModels.hh Statement.hh StaticModel.hh \
+    PolishModel.hh PolishModels.hh position.hh Statement.hh StaticModel.hh \
     SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 NumericalConstants.o : NumericalConstants.hh
@@ -94,8 +96,8 @@ NumericalConstants.o : NumericalConstants.hh
 NumericalInitialization.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh \
     dyn_error.hh dynout.hh ExprNode.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh NumericalConstants.hh \
-    NumericalInitialization.hh PolishModel.hh Statement.hh SymbolList.hh \
-    SymbolTable.hh WarningConsolidation.hh
+    NumericalInitialization.hh PolishModel.hh position.hh Statement.hh \
+    SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 parse_macro.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh DataTree.hh \
     dyn_error.hh DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
@@ -103,7 +105,7 @@ parse_macro.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh DataTree.hh \
     macro/location.hh macro/MacroBison.hh macro/MacroDriver.hh \
     macro/MacroValue.hh ModelTree.hh ModFile.hh NumericalConstants.hh \
     NumericalInitialization.hh OutputParameters.hh parse.hh PolishModel.hh \
-    Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
+    position.hh Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
     SymbolTable.hh WarningConsolidation.hh
 
 parse_post_macro.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
@@ -111,27 +113,27 @@ parse_post_macro.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
     ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    parse.hh ParsingDriver.hh PolishModel.hh Shocks.hh SigmaeInitialization.hh \
-    Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
-    SymbolTable.hh WarningConsolidation.hh
+    parse.hh ParsingDriver.hh PolishModel.hh position.hh Shocks.hh \
+    SigmaeInitialization.hh stack.hh Statement.hh StaticModel.hh \
+    SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 parse.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh ConfigFile.hh \
     DataTree.hh dyn_error.hh DynamicModel.hh DynareBison.hh dynout.hh \
     ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    parse.hh ParsingDriver.hh PolishModel.hh run_dynare.hh Shocks.hh \
-    SigmaeInitialization.hh Statement.hh StaticModel.hh SteadyStateModel.hh \
-    SymbolList.hh SymbolTable.hh WarningConsolidation.hh
+    parse.hh ParsingDriver.hh PolishModel.hh position.hh run_dynare.hh \
+    Shocks.hh SigmaeInitialization.hh stack.hh Statement.hh StaticModel.hh \
+    SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 ParsingDriver.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
     ConfigFile.hh DataTree.hh dyn_error.hh DynamicModel.hh DynareBison.hh \
     ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    ParsingDriver.hh PolishModel.hh Shocks.hh SigmaeInitialization.hh \
-    Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
-    SymbolTable.hh WarningConsolidation.hh
+    ParsingDriver.hh PolishModel.hh position.hh Shocks.hh \
+    SigmaeInitialization.hh stack.hh Statement.hh StaticModel.hh \
+    SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
 PolishModel.o : CallRFunction.hh ExternalFunctionCalc.hh PolishModel.hh
 
@@ -143,9 +145,10 @@ run_macro_.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
     dynout.hh ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
     ExternalFunctionsTable.hh location.hh ModelTree.hh ModFile.hh \
     NumericalConstants.hh NumericalInitialization.hh OutputParameters.hh \
-    parse.hh ParsingDriver.hh PolishModel.hh run_dynare.hh run_macro_.hh \
-    Shocks.hh SigmaeInitialization.hh Statement.hh StaticModel.hh \
-    SteadyStateModel.hh SymbolList.hh SymbolTable.hh WarningConsolidation.hh
+    parse.hh ParsingDriver.hh PolishModel.hh position.hh run_dynare.hh \
+    run_macro_.hh Shocks.hh SigmaeInitialization.hh stack.hh Statement.hh \
+    StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+    WarningConsolidation.hh
 
 run_macro.o : run_macro_.hh
 
@@ -154,15 +157,16 @@ serialize_polish.o : CallRFunction.hh ExternalFunctionCalc.hh PolishModel.hh \
 
 Shocks.o : CallRFunction.hh CodeInterpreter.hh dyn_error.hh ExprNode.hh \
     ExternalFunctionCalc.hh ExternalFunctionsTable.hh location.hh \
-    PolishModel.hh Shocks.hh Statement.hh SymbolList.hh SymbolTable.hh \
-    WarningConsolidation.hh
+    PolishModel.hh position.hh Shocks.hh Statement.hh SymbolList.hh \
+    SymbolTable.hh WarningConsolidation.hh
 
 SigmaeInitialization.o : CallRFunction.hh CodeInterpreter.hh ExprNode.hh \
     ExternalFunctionCalc.hh ExternalFunctionsTable.hh location.hh \
-    PolishModel.hh SigmaeInitialization.hh Statement.hh SymbolList.hh \
-    SymbolTable.hh WarningConsolidation.hh
+    PolishModel.hh position.hh SigmaeInitialization.hh Statement.hh \
+    SymbolList.hh SymbolTable.hh WarningConsolidation.hh
 
-Statement.o : location.hh Statement.hh SymbolList.hh WarningConsolidation.hh
+Statement.o : location.hh position.hh Statement.hh SymbolList.hh \
+    WarningConsolidation.hh
 
 StaticModel.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh dyn_error.hh \
     dynout.hh ExprNode.hh ExtendedPreprocessorTypes.hh ExternalFunctionCalc.hh \
@@ -172,8 +176,8 @@ StaticModel.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh dyn_error.hh \
 SteadyStateModel.o : CallRFunction.hh CodeInterpreter.hh DataTree.hh \
     dyn_error.hh dynout.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
     ExternalFunctionCalc.hh ExternalFunctionsTable.hh location.hh ModelTree.hh \
-    NumericalConstants.hh OutputParameters.hh PolishModel.hh StaticModel.hh \
-    SteadyStateModel.hh SymbolTable.hh WarningConsolidation.hh
+    NumericalConstants.hh OutputParameters.hh PolishModel.hh position.hh \
+    StaticModel.hh SteadyStateModel.hh SymbolTable.hh WarningConsolidation.hh
 
 SymbolList.o : SymbolList.hh
 
@@ -181,5 +185,6 @@ SymbolTable.o : CallRFunction.hh CodeInterpreter.hh dyn_error.hh ExprNode.hh \
     ExternalFunctionCalc.hh ExternalFunctionsTable.hh PolishModel.hh \
     SymbolTable.hh
 
-WarningConsolidation.o : dynout.hh location.hh WarningConsolidation.hh
+WarningConsolidation.o : dynout.hh location.hh position.hh \
+    WarningConsolidation.hh
 

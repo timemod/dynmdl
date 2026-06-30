@@ -38,5 +38,6 @@ DEP_FILE = $(DEPS_DIR)/makedeps
 # dependencies C files
 include $(DEP_FILE)
 
-DynareFlex.o : DynareFlex.cc FlexLexer.h
-DynareBison.o : DynareBison.cc
+# Extra dependencies on FlexLexer.h
+DynareFlex.o : FlexLexer.h
+ParsingDriver.o : FlexLexer.h
