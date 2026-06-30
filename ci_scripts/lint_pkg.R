@@ -10,7 +10,6 @@ exclusions <- list(
   "R/endo_data_solve.R",
   "R/get_data_period.R",
   "R/get_dynare_option_string.R",
-  "R/get_fit_conditions.R",
   "R/get_power_deriv.R",
   "R/get_var_indices_back.R",
   "R/init_state_space.R",

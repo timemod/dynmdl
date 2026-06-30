@@ -1,9 +1,6 @@
 LIB = libmacro.a
 OBJS = MacroBison.o MacroDriver.o MacroFlex.o MacroValue.o
 
-LEX_CMD = flex
-YACC_CMD = bison
-
 all : $(LIB)
 
 $(LIB) : $(OBJS)
@@ -13,17 +10,11 @@ $(LIB) : $(OBJS)
 	$(CXX) $(CXXFLAGS) -I.. -c -o $@ $<
 
 # dependencies on headers
-MacroBison.o : MacroBison.hh MacroDriver.hh
-MacroDriver.o : MacroDriver.hh ../dyn_error.hh ../FlexLexer.h
-MacroFlex.o : MacroDriver.hh ../FlexLexer.h
-MacroValue.o : MacroDriver.hh
-
-# rules for flex and bison
-MacroFlex.cc: MacroFlex.ll ../FlexLexer.h
-	-$(LEX_CMD) -o MacroFlex.cc MacroFlex.ll
-
-MacroBison.cc MacroBison.hh location.hh stack.hh position.hh: MacroBison.yy
-	-$(YACC_CMD) -o MacroBison.cc MacroBison.yy
+MacroBison.o : MacroBison.hh MacroDriver.hh MacroValue.hh ../FlexLexer.h
+MacroDriver.o : MacroDriver.hh ../dynout.hh ../dyn_error.hh ../FlexLexer.h \
+                MacroValue.hh MacroBison.hh
+MacroFlex.o : MacroDriver.hh MacroValue.hh MacroBison.hh ../FlexLexer.h
+MacroValue.o : MacroDriver.hh MacroValue.hh MacroBison.hh
 
 clean:
 	-rm -r *.o

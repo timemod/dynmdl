@@ -15,7 +15,7 @@ get_fit_conditions <- function(mod_file,  instruments,
                                check_static_eqs, latex, latex_options))
   }
   if (silent) {
-    output <- capture.output({
+    capture.output({
       deriv_info <- call_compute_derivatives()
     })
   } else {
@@ -77,13 +77,13 @@ get_fit_conditions <- function(mod_file,  instruments,
       # because in that case the static derivatives are the same as the dynamic
       # derivatives (with lags and leads replaced).
       deriv_stat <- convert_deriv_stat(deriv_stat, deriv_dyn, 
-                                           equation_has_static)
+                                       equation_has_static)
     }
     stat_fit_eqs <- get_fit_equations(deriv_stat$instr_deriv, 
-                                    deriv_stat$endo_deriv,
-                                    endo_names, instruments, sigmas, l_vars,
-                                    fit_vars, old_instruments, exo_vars,
-                                    fixed_period, dynamic = FALSE)
+                                      deriv_stat$endo_deriv,
+                                      endo_names, instruments, sigmas, l_vars,
+                                      fit_vars, old_instruments, exo_vars,
+                                      fixed_period, dynamic = FALSE)
   } else {
     stat_fit_eqs <- NULL  
   }
@@ -121,7 +121,8 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
         return(paste0("[", i, "]"))
       }
     }
-    return(gsubfn(lag_pattern, repl_fun, expression))
+
+    gsubfn(lag_pattern, repl_fun, expression, engine = "R")
   }
   
   mult_lagrange <- function(x, l_names) {
@@ -143,8 +144,8 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   # sum the expressions of all entries with the same fit instrument
   deriv_eq <- aggregate(instr_deriv$expressions, 
                         by = list(instr_index = instr_deriv$instr_index),
-                        FUN = function(x) {paste(x, collapse = " + ")})
-  
+                        FUN = function(x) paste(x, collapse = " + "))
+
   if (nrow(deriv_eq) < length(instruments)) {
     problem_instruments <- instruments[setdiff(seq_along(instruments), 
                                                deriv_eq$instr_index)]
@@ -168,7 +169,7 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   l_names <- l_vars
   if (dynamic && !fixed_period) l_names <- paste0(l_vars, "[0]")
   endo_deriv <- mult_lagrange(endo_deriv, l_names)
-  
+
   if (dynamic && !fixed_period) {
     endo_deriv$expressions <- mapply(FUN = shift_lags, 
                                      endo_deriv$expressions, 
@@ -182,11 +183,11 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   deriv_eq <- aggregate(endo_deriv$expressions, 
                         by = list(eq = endo_deriv$eq, 
                                   endo_index = endo_deriv$endo_index),
-                        FUN = function(x) {paste(rev(x), collapse = " + ")})
+                        FUN = function(x) paste(rev(x), collapse = " + "))
   
   # now sum all equations with derivatives to the same variable
   deriv_eq <- aggregate(deriv_eq$x, by = list(endo_index = deriv_eq$endo_index),
-                        FUN = function(x) {paste(x, collapse = " + ")})
+                        FUN = function(x) paste(x, collapse = " + "))
   n_endo <- length(endo_names)
   if (nrow(deriv_eq) < n_endo) {
     problem_endos <- endo_names[setdiff(1:n_endo, deriv_eq$endo_index)]
@@ -195,7 +196,6 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
                 "."))
   }
   deriv_eq <- deriv_eq$x
-  
   
   endo_equations <- paste0(fit_vars, " * (", endo_names, " - ", exo_vars, 
                            ") + (1 - ",  fit_vars, ") * (", deriv_eq, ")", 
