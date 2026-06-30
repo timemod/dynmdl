@@ -69,10 +69,10 @@ compile_c_functions <- function(dll_dir, silent) {
     paste(shQuote(src_files), collapse = " ")
   )
 
-  # Always ignore standard output (which always gives a lot of output), but
-  # only ignore standard error if silent = TRUE.
+  # Ignore standard output for the debug mode, but only ignore standard error
+  # if silent = TRUE.
   if (debug) if (debug) cat("Running commmand '", cmd, "'\n", sep = "")
-  system(cmd, ignore.stdout = !debug , ignore.stderr = silent)
+  system(cmd, ignore.stdout = !debug, ignore.stderr = silent)
   
   return(dll_file)
 }

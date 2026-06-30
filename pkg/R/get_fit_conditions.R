@@ -15,7 +15,7 @@ get_fit_conditions <- function(mod_file,  instruments,
                                check_static_eqs, latex, latex_options))
   }
   if (silent) {
-    output <- capture.output({
+    capture.output({
       deriv_info <- call_compute_derivatives()
     })
   } else {
@@ -54,7 +54,6 @@ get_fit_conditions <- function(mod_file,  instruments,
   old_instruments <- paste0(instruments, "_old")
   initialized_sigmas <- intersect(sigmas, param_names)
   equation_has_static <- deriv_info$equation_has_static
-
   
   # TODO: check that the intersection of fit_vars, exo_vars,
   # l_vars and sigmas with endo_names and exo_names is zero.
@@ -70,7 +69,6 @@ get_fit_conditions <- function(mod_file,  instruments,
                                    fit_vars, old_instruments, exo_vars,
                                    fixed_period, dynamic = TRUE)
 
-
   if (write_static_eqs) {
     if (fixed_period) {
       # For those equations that do no have a separate static and dynamic
@@ -79,13 +77,13 @@ get_fit_conditions <- function(mod_file,  instruments,
       # because in that case the static derivatives are the same as the dynamic
       # derivatives (with lags and leads replaced).
       deriv_stat <- convert_deriv_stat(deriv_stat, deriv_dyn, 
-                                           equation_has_static)
+                                       equation_has_static)
     }
     stat_fit_eqs <- get_fit_equations(deriv_stat$instr_deriv, 
-                                    deriv_stat$endo_deriv,
-                                    endo_names, instruments, sigmas, l_vars,
-                                    fit_vars, old_instruments, exo_vars,
-                                    fixed_period, dynamic = FALSE)
+                                      deriv_stat$endo_deriv,
+                                      endo_names, instruments, sigmas, l_vars,
+                                      fit_vars, old_instruments, exo_vars,
+                                      fixed_period, dynamic = FALSE)
   } else {
     stat_fit_eqs <- NULL  
   }
@@ -106,7 +104,6 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
                               sigmas, l_vars, fit_vars, old_instruments, 
                               exo_vars, fixed_period, dynamic) {
   
-
   lag_pattern <- "\\[(-?\\d+)\\]"
   # 
   # several function definitions
@@ -147,9 +144,8 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   # sum the expressions of all entries with the same fit instrument
   deriv_eq <- aggregate(instr_deriv$expressions, 
                         by = list(instr_index = instr_deriv$instr_index),
-                        FUN = function(x) {paste(x, collapse = " + ")})
+                        FUN = function(x) paste(x, collapse = " + "))
 
-  
   if (nrow(deriv_eq) < length(instruments)) {
     problem_instruments <- instruments[setdiff(seq_along(instruments), 
                                                deriv_eq$instr_index)]
@@ -187,11 +183,11 @@ get_fit_equations <- function(instr_deriv, endo_deriv, endo_names, instruments,
   deriv_eq <- aggregate(endo_deriv$expressions, 
                         by = list(eq = endo_deriv$eq, 
                                   endo_index = endo_deriv$endo_index),
-                        FUN = function(x) {paste(rev(x), collapse = " + ")})
+                        FUN = function(x) paste(rev(x), collapse = " + "))
   
   # now sum all equations with derivatives to the same variable
   deriv_eq <- aggregate(deriv_eq$x, by = list(endo_index = deriv_eq$endo_index),
-                        FUN = function(x) {paste(x, collapse = " + ")})
+                        FUN = function(x) paste(x, collapse = " + "))
   n_endo <- length(endo_names)
   if (nrow(deriv_eq) < n_endo) {
     problem_endos <- endo_names[setdiff(1:n_endo, deriv_eq$endo_index)]
