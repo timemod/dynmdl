@@ -26,11 +26,11 @@ if (!require("pak", character.only = TRUE, quietly = TRUE)) {
 
 # Install extra packages
 extra_packages <- c("devtools", "igraph", "lintr")
-for (extra_package in extra_packages) {
-  if (!require(extra_package, character.only = TRUE, quietly = TRUE)) {
+for (pkg in extra_packages) {
+  if (!require(pkg, character.only = TRUE, quietly = TRUE)) {
     pak::pkg_install(pkg, lib = .libPaths(), upgrade = FALSE)
   } else {
-    unloadNamespace(extra_package)
+    unloadNamespace(pkg)
   }
 }
 
