@@ -103,10 +103,11 @@ parse_macro.o : CallRFunction.hh CodeInterpreter.hh ConfigFile.hh DataTree.hh \
     dyn_error.hh DynamicModel.hh ExprNode.hh ExtendedPreprocessorTypes.hh \
     ExternalFunctionCalc.hh ExternalFunctionsTable.hh location.hh \
     macro/location.hh macro/MacroBison.hh macro/MacroDriver.hh \
-    macro/MacroValue.hh ModelTree.hh ModFile.hh NumericalConstants.hh \
-    NumericalInitialization.hh OutputParameters.hh parse.hh PolishModel.hh \
-    position.hh Statement.hh StaticModel.hh SteadyStateModel.hh SymbolList.hh \
-    SymbolTable.hh WarningConsolidation.hh
+    macro/MacroValue.hh macro/position.hh macro/stack.hh ModelTree.hh \
+    ModFile.hh NumericalConstants.hh NumericalInitialization.hh \
+    OutputParameters.hh parse.hh PolishModel.hh position.hh Statement.hh \
+    StaticModel.hh SteadyStateModel.hh SymbolList.hh SymbolTable.hh \
+    WarningConsolidation.hh
 
 parse_post_macro.o : CallRFunction.hh CodeInterpreter.hh ComputingTasks.hh \
     ConfigFile.hh DataTree.hh dyn_error.hh DynamicModel.hh DynareBison.hh \

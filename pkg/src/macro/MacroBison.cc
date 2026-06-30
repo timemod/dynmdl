@@ -1,8 +1,8 @@
-// A Bison parser, made by GNU Bison 3.8.2.
+// A Bison parser, made by GNU Bison 3.0.4.
 
 // Skeleton implementation for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2015, 2018-2021 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // As a special exception, you may create a larger work that contains
 // part or all of the Bison parser skeleton and distribute that work
@@ -29,28 +29,35 @@
 
 // This special exception was added by the Free Software Foundation in
 // version 2.2 of Bison.
-
-// DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
-// especially those whose name start with YY_ or yy_.  They are
-// private implementation details that can be changed or removed.
-
-// "%code top" blocks.
-#line 24 "MacroBison.yy"
+// //                    "%code top" blocks.
+#line 24 "MacroBison.yy" // lalr1.cc:397
 
 class MacroDriver;
 
-#line 43 "MacroBison.cc"
+#line 38 "MacroBison.cc" // lalr1.cc:397
 
 // Take the name prefix into account.
 #define yylex   Macrolex
 
+// First part of user declarations.
 
+#line 45 "MacroBison.cc" // lalr1.cc:404
+
+# ifndef YY_NULLPTR
+#  if defined __cplusplus && 201103L <= __cplusplus
+#   define YY_NULLPTR nullptr
+#  else
+#   define YY_NULLPTR 0
+#  endif
+# endif
 
 #include "MacroBison.hh"
 
+// User implementation prologue.
 
+#line 59 "MacroBison.cc" // lalr1.cc:412
 // Unqualified %code blocks.
-#line 55 "MacroBison.yy"
+#line 55 "MacroBison.yy" // lalr1.cc:413
 
 #include <cstdlib>  // Pour atoi()
 #include "MacroDriver.hh"
@@ -71,7 +78,7 @@ class MacroDriver;
     }
 
 
-#line 75 "MacroBison.cc"
+#line 82 "MacroBison.cc" // lalr1.cc:413
 
 
 #ifndef YY_
@@ -83,16 +90,6 @@ class MacroDriver;
 # endif
 # ifndef YY_
 #  define YY_(msgid) msgid
-# endif
-#endif
-
-
-// Whether we are compiled with exception support.
-#ifndef YY_EXCEPTIONS
-# if defined __GNUC__ && !defined __EXCEPTIONS
-#  define YY_EXCEPTIONS 0
-# else
-#  define YY_EXCEPTIONS 1
 # endif
 #endif
 
@@ -113,9 +110,12 @@ class MacroDriver;
         {                                                               \
           (Current).begin = (Current).end = YYRHSLOC (Rhs, 0).end;      \
         }                                                               \
-    while (false)
+    while (/*CONSTCOND*/ false)
 # endif
 
+
+// Suppress unused-variable warnings by "using" E.
+#define YYUSE(E) ((void) (E))
 
 // Enable debugging if requested.
 #if YYDEBUG
@@ -129,7 +129,7 @@ class MacroDriver;
     {                                           \
       *yycdebug_ << Title << ' ';               \
       yy_print_ (*yycdebug_, Symbol);           \
-      *yycdebug_ << '\n';                       \
+      *yycdebug_ << std::endl;                  \
     }                                           \
   } while (false)
 
@@ -142,15 +142,15 @@ class MacroDriver;
 # define YY_STACK_PRINT()               \
   do {                                  \
     if (yydebug_)                       \
-      yy_stack_print_ ();                \
+      yystack_print_ ();                \
   } while (false)
 
 #else // !YYDEBUG
 
 # define YYCDEBUG if (false) std::cerr
-# define YY_SYMBOL_PRINT(Title, Symbol)  YY_USE (Symbol)
-# define YY_REDUCE_PRINT(Rule)           static_cast<void> (0)
-# define YY_STACK_PRINT()                static_cast<void> (0)
+# define YY_SYMBOL_PRINT(Title, Symbol)  YYUSE(Symbol)
+# define YY_REDUCE_PRINT(Rule)           static_cast<void>(0)
+# define YY_STACK_PRINT()                static_cast<void>(0)
 
 #endif // !YYDEBUG
 
@@ -162,16 +162,54 @@ class MacroDriver;
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
+
 namespace Macro {
-#line 167 "MacroBison.cc"
+#line 168 "MacroBison.cc" // lalr1.cc:479
+
+  /* Return YYSTR after stripping away unnecessary quotes and
+     backslashes, so that it's suitable for yyerror.  The heuristic is
+     that double-quoting is unnecessary unless the string contains an
+     apostrophe, a comma, or backslash (other than backslash-backslash).
+     YYSTR is taken from yytname.  */
+  std::string
+  parser::yytnamerr_ (const char *yystr)
+  {
+    if (*yystr == '"')
+      {
+        std::string yyr = "";
+        char const *yyp = yystr;
+
+        for (;;)
+          switch (*++yyp)
+            {
+            case '\'':
+            case ',':
+              goto do_not_strip_quotes;
+
+            case '\\':
+              if (*++yyp != '\\')
+                goto do_not_strip_quotes;
+              // Fall through.
+            default:
+              yyr += *yyp;
+              break;
+
+            case '"':
+              return yyr;
+            }
+      do_not_strip_quotes: ;
+      }
+
+    return yystr;
+  }
+
 
   /// Build a parser object.
   parser::parser (MacroDriver &driver_yyarg, ostream &out_yyarg)
-#if YYDEBUG
-    : yydebug_ (false),
-      yycdebug_ (&std::cerr),
-#else
     :
+#if YYDEBUG
+      yydebug_ (false),
+      yycdebug_ (&std::cerr),
 #endif
       driver (driver_yyarg),
       out (out_yyarg)
@@ -180,128 +218,144 @@ namespace Macro {
   parser::~parser ()
   {}
 
-  parser::syntax_error::~syntax_error () YY_NOEXCEPT YY_NOTHROW
-  {}
 
-  /*---------.
-  | symbol.  |
-  `---------*/
+  /*---------------.
+  | Symbol types.  |
+  `---------------*/
+
+  inline
+  parser::syntax_error::syntax_error (const location_type& l, const std::string& m)
+    : std::runtime_error (m)
+    , location (l)
+  {}
 
   // basic_symbol.
   template <typename Base>
-  parser::basic_symbol<Base>::basic_symbol (const basic_symbol& that)
-    : Base (that)
-    , value (that.value)
-    , location (that.location)
+  inline
+  parser::basic_symbol<Base>::basic_symbol ()
+    : value ()
+  {}
+
+  template <typename Base>
+  inline
+  parser::basic_symbol<Base>::basic_symbol (const basic_symbol& other)
+    : Base (other)
+    , value ()
+    , location (other.location)
+  {
+    value = other.value;
+  }
+
+
+  template <typename Base>
+  inline
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const semantic_type& v, const location_type& l)
+    : Base (t)
+    , value (v)
+    , location (l)
   {}
 
 
   /// Constructor for valueless symbols.
   template <typename Base>
-  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, YY_MOVE_REF (location_type) l)
+  inline
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const location_type& l)
     : Base (t)
     , value ()
     , location (l)
   {}
 
   template <typename Base>
-  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, YY_RVREF (value_type) v, YY_RVREF (location_type) l)
-    : Base (t)
-    , value (YY_MOVE (v))
-    , location (YY_MOVE (l))
-  {}
-
-
-  template <typename Base>
-  parser::symbol_kind_type
-  parser::basic_symbol<Base>::type_get () const YY_NOEXCEPT
+  inline
+  parser::basic_symbol<Base>::~basic_symbol ()
   {
-    return this->kind ();
+    clear ();
   }
 
+  template <typename Base>
+  inline
+  void
+  parser::basic_symbol<Base>::clear ()
+  {
+    Base::clear ();
+  }
 
   template <typename Base>
+  inline
   bool
-  parser::basic_symbol<Base>::empty () const YY_NOEXCEPT
+  parser::basic_symbol<Base>::empty () const
   {
-    return this->kind () == symbol_kind::S_YYEMPTY;
+    return Base::type_get () == empty_symbol;
   }
 
   template <typename Base>
+  inline
   void
   parser::basic_symbol<Base>::move (basic_symbol& s)
   {
-    super_type::move (s);
-    value = YY_MOVE (s.value);
-    location = YY_MOVE (s.location);
+    super_type::move(s);
+    value = s.value;
+    location = s.location;
   }
 
-  // by_kind.
-  parser::by_kind::by_kind () YY_NOEXCEPT
-    : kind_ (symbol_kind::S_YYEMPTY)
+  // by_type.
+  inline
+  parser::by_type::by_type ()
+    : type (empty_symbol)
   {}
 
-#if 201103L <= YY_CPLUSPLUS
-  parser::by_kind::by_kind (by_kind&& that) YY_NOEXCEPT
-    : kind_ (that.kind_)
-  {
-    that.clear ();
-  }
-#endif
-
-  parser::by_kind::by_kind (const by_kind& that) YY_NOEXCEPT
-    : kind_ (that.kind_)
+  inline
+  parser::by_type::by_type (const by_type& other)
+    : type (other.type)
   {}
 
-  parser::by_kind::by_kind (token_kind_type t) YY_NOEXCEPT
-    : kind_ (yytranslate_ (t))
+  inline
+  parser::by_type::by_type (token_type t)
+    : type (yytranslate_ (t))
   {}
 
-
-
+  inline
   void
-  parser::by_kind::clear () YY_NOEXCEPT
+  parser::by_type::clear ()
   {
-    kind_ = symbol_kind::S_YYEMPTY;
+    type = empty_symbol;
   }
 
+  inline
   void
-  parser::by_kind::move (by_kind& that)
+  parser::by_type::move (by_type& that)
   {
-    kind_ = that.kind_;
+    type = that.type;
     that.clear ();
   }
 
-  parser::symbol_kind_type
-  parser::by_kind::kind () const YY_NOEXCEPT
+  inline
+  int
+  parser::by_type::type_get () const
   {
-    return kind_;
+    return type;
   }
-
-
-  parser::symbol_kind_type
-  parser::by_kind::type_get () const YY_NOEXCEPT
-  {
-    return this->kind ();
-  }
-
 
 
   // by_state.
-  parser::by_state::by_state () YY_NOEXCEPT
+  inline
+  parser::by_state::by_state ()
     : state (empty_state)
   {}
 
-  parser::by_state::by_state (const by_state& that) YY_NOEXCEPT
-    : state (that.state)
+  inline
+  parser::by_state::by_state (const by_state& other)
+    : state (other.state)
   {}
 
+  inline
   void
-  parser::by_state::clear () YY_NOEXCEPT
+  parser::by_state::clear ()
   {
     state = empty_state;
   }
 
+  inline
   void
   parser::by_state::move (by_state& that)
   {
@@ -309,39 +363,36 @@ namespace Macro {
     that.clear ();
   }
 
-  parser::by_state::by_state (state_type s) YY_NOEXCEPT
+  inline
+  parser::by_state::by_state (state_type s)
     : state (s)
   {}
 
-  parser::symbol_kind_type
-  parser::by_state::kind () const YY_NOEXCEPT
+  inline
+  parser::symbol_number_type
+  parser::by_state::type_get () const
   {
     if (state == empty_state)
-      return symbol_kind::S_YYEMPTY;
+      return empty_symbol;
     else
-      return YY_CAST (symbol_kind_type, yystos_[+state]);
+      return yystos_[state];
   }
 
+  inline
   parser::stack_symbol_type::stack_symbol_type ()
   {}
 
-  parser::stack_symbol_type::stack_symbol_type (YY_RVREF (stack_symbol_type) that)
-    : super_type (YY_MOVE (that.state), YY_MOVE (that.value), YY_MOVE (that.location))
+
+  inline
+  parser::stack_symbol_type::stack_symbol_type (state_type s, symbol_type& that)
+    : super_type (s, that.location)
   {
-#if 201103L <= YY_CPLUSPLUS
+    value = that.value;
     // that is emptied.
-    that.state = empty_state;
-#endif
+    that.type = empty_symbol;
   }
 
-  parser::stack_symbol_type::stack_symbol_type (state_type s, YY_MOVE_REF (symbol_type) that)
-    : super_type (s, YY_MOVE (that.value), YY_MOVE (that.location))
-  {
-    // that is emptied.
-    that.kind_ = symbol_kind::S_YYEMPTY;
-  }
-
-#if YY_CPLUSPLUS < 201103L
+  inline
   parser::stack_symbol_type&
   parser::stack_symbol_type::operator= (const stack_symbol_type& that)
   {
@@ -351,19 +402,9 @@ namespace Macro {
     return *this;
   }
 
-  parser::stack_symbol_type&
-  parser::stack_symbol_type::operator= (stack_symbol_type& that)
-  {
-    state = that.state;
-    value = that.value;
-    location = that.location;
-    // that is emptied.
-    that.state = empty_state;
-    return *this;
-  }
-#endif
 
   template <typename Base>
+  inline
   void
   parser::yy_destroy_ (const char* yymsg, basic_symbol<Base>& yysym) const
   {
@@ -371,51 +412,50 @@ namespace Macro {
       YY_SYMBOL_PRINT (yymsg, yysym);
 
     // User destructor.
-    YY_USE (yysym.kind ());
+    YYUSE (yysym.type_get ());
   }
 
 #if YYDEBUG
   template <typename Base>
   void
-  parser::yy_print_ (std::ostream& yyo, const basic_symbol<Base>& yysym) const
+  parser::yy_print_ (std::ostream& yyo,
+                                     const basic_symbol<Base>& yysym) const
   {
     std::ostream& yyoutput = yyo;
-    YY_USE (yyoutput);
+    YYUSE (yyoutput);
+    symbol_number_type yytype = yysym.type_get ();
+    // Avoid a (spurious) G++ 4.8 warning about "array subscript is
+    // below array bounds".
     if (yysym.empty ())
-      yyo << "empty symbol";
-    else
-      {
-        symbol_kind_type yykind = yysym.kind ();
-        yyo << (yykind < YYNTOKENS ? "token" : "nterm")
-            << ' ' << yysym.name () << " ("
-            << yysym.location << ": ";
-        YY_USE (yykind);
-        yyo << ')';
-      }
+      std::abort ();
+    yyo << (yytype < yyntokens_ ? "token" : "nterm")
+        << ' ' << yytname_[yytype] << " ("
+        << yysym.location << ": ";
+    YYUSE (yytype);
+    yyo << ')';
   }
 #endif
 
+  inline
   void
-  parser::yypush_ (const char* m, YY_MOVE_REF (stack_symbol_type) sym)
+  parser::yypush_ (const char* m, state_type s, symbol_type& sym)
+  {
+    stack_symbol_type t (s, sym);
+    yypush_ (m, t);
+  }
+
+  inline
+  void
+  parser::yypush_ (const char* m, stack_symbol_type& s)
   {
     if (m)
-      YY_SYMBOL_PRINT (m, sym);
-    yystack_.push (YY_MOVE (sym));
+      YY_SYMBOL_PRINT (m, s);
+    yystack_.push (s);
   }
 
+  inline
   void
-  parser::yypush_ (const char* m, state_type s, YY_MOVE_REF (symbol_type) sym)
-  {
-#if 201103L <= YY_CPLUSPLUS
-    yypush_ (m, stack_symbol_type (s, std::move (sym)));
-#else
-    stack_symbol_type ss (s, sym);
-    yypush_ (m, ss);
-#endif
-  }
-
-  void
-  parser::yypop_ (int n) YY_NOEXCEPT
+  parser::yypop_ (unsigned int n)
   {
     yystack_.pop (n);
   }
@@ -447,37 +487,32 @@ namespace Macro {
   }
 #endif // YYDEBUG
 
-  parser::state_type
+  inline parser::state_type
   parser::yy_lr_goto_state_ (state_type yystate, int yysym)
   {
-    int yyr = yypgoto_[yysym - YYNTOKENS] + yystate;
+    int yyr = yypgoto_[yysym - yyntokens_] + yystate;
     if (0 <= yyr && yyr <= yylast_ && yycheck_[yyr] == yystate)
       return yytable_[yyr];
     else
-      return yydefgoto_[yysym - YYNTOKENS];
+      return yydefgoto_[yysym - yyntokens_];
   }
 
-  bool
-  parser::yy_pact_value_is_default_ (int yyvalue) YY_NOEXCEPT
+  inline bool
+  parser::yy_pact_value_is_default_ (int yyvalue)
   {
     return yyvalue == yypact_ninf_;
   }
 
-  bool
-  parser::yy_table_value_is_error_ (int yyvalue) YY_NOEXCEPT
+  inline bool
+  parser::yy_table_value_is_error_ (int yyvalue)
   {
     return yyvalue == yytable_ninf_;
   }
 
   int
-  parser::operator() ()
-  {
-    return parse ();
-  }
-
-  int
   parser::parse ()
   {
+    // State.
     int yyn;
     /// Length of the RHS of the rule being reduced.
     int yylen = 0;
@@ -495,91 +530,68 @@ namespace Macro {
     /// The return value of parse ().
     int yyresult;
 
-#if YY_EXCEPTIONS
+    // FIXME: This shoud be completely indented.  It is not yet to
+    // avoid gratuitous conflicts when merging into the master branch.
     try
-#endif // YY_EXCEPTIONS
       {
-    YYCDEBUG << "Starting parse\n";
+    YYCDEBUG << "Starting parse" << std::endl;
 
 
     // User initialization code.
-#line 36 "MacroBison.yy"
+    #line 36 "MacroBison.yy" // lalr1.cc:741
 {
   // Initialize the location filenames
   yyla.location.begin.filename = yyla.location.end.filename = &driver.file;
 }
 
-#line 513 "MacroBison.cc"
-
+#line 548 "MacroBison.cc" // lalr1.cc:741
 
     /* Initialize the stack.  The initial state will be set in
        yynewstate, since the latter expects the semantical and the
        location values to have been already stored, initialize these
        stacks with a primary value.  */
     yystack_.clear ();
-    yypush_ (YY_NULLPTR, 0, YY_MOVE (yyla));
+    yypush_ (YY_NULLPTR, 0, yyla);
 
-  /*-----------------------------------------------.
-  | yynewstate -- push a new symbol on the stack.  |
-  `-----------------------------------------------*/
+    // A new symbol was pushed on the stack.
   yynewstate:
-    YYCDEBUG << "Entering state " << int (yystack_[0].state) << '\n';
-    YY_STACK_PRINT ();
+    YYCDEBUG << "Entering state " << yystack_[0].state << std::endl;
 
     // Accept?
     if (yystack_[0].state == yyfinal_)
-      YYACCEPT;
+      goto yyacceptlab;
 
     goto yybackup;
 
-
-  /*-----------.
-  | yybackup.  |
-  `-----------*/
+    // Backup.
   yybackup:
+
     // Try to take a decision without lookahead.
-    yyn = yypact_[+yystack_[0].state];
+    yyn = yypact_[yystack_[0].state];
     if (yy_pact_value_is_default_ (yyn))
       goto yydefault;
 
     // Read a lookahead token.
     if (yyla.empty ())
       {
-        YYCDEBUG << "Reading a token\n";
-#if YY_EXCEPTIONS
+        YYCDEBUG << "Reading a token: ";
         try
-#endif // YY_EXCEPTIONS
           {
-            yyla.kind_ = yytranslate_ (yylex (&yyla.value, &yyla.location, driver));
+            yyla.type = yytranslate_ (yylex (&yyla.value, &yyla.location, driver));
           }
-#if YY_EXCEPTIONS
         catch (const syntax_error& yyexc)
           {
-            YYCDEBUG << "Caught exception: " << yyexc.what() << '\n';
             error (yyexc);
             goto yyerrlab1;
           }
-#endif // YY_EXCEPTIONS
       }
     YY_SYMBOL_PRINT ("Next token is", yyla);
 
-    if (yyla.kind () == symbol_kind::S_YYerror)
-    {
-      // The scanner already issued an error message, process directly
-      // to error recovery.  But do not keep the error token as
-      // lookahead, it is too special and may lead us to an endless
-      // loop in error recovery. */
-      yyla.kind_ = symbol_kind::S_YYUNDEF;
-      goto yyerrlab1;
-    }
-
     /* If the proper action on seeing token YYLA.TYPE is to reduce or
        to detect an error, take that action.  */
-    yyn += yyla.kind ();
-    if (yyn < 0 || yylast_ < yyn || yycheck_[yyn] != yyla.kind ())
-      {
-        goto yydefault;
-      }
+    yyn += yyla.type_get ();
+    if (yyn < 0 || yylast_ < yyn || yycheck_[yyn] != yyla.type_get ())
+      goto yydefault;
 
     // Reduce or error.
     yyn = yytable_[yyn];
@@ -596,28 +608,26 @@ namespace Macro {
       --yyerrstatus_;
 
     // Shift the lookahead token.
-    yypush_ ("Shifting", state_type (yyn), YY_MOVE (yyla));
+    yypush_ ("Shifting", yyn, yyla);
     goto yynewstate;
-
 
   /*-----------------------------------------------------------.
   | yydefault -- do the default action for the current state.  |
   `-----------------------------------------------------------*/
   yydefault:
-    yyn = yydefact_[+yystack_[0].state];
+    yyn = yydefact_[yystack_[0].state];
     if (yyn == 0)
       goto yyerrlab;
     goto yyreduce;
 
-
   /*-----------------------------.
-  | yyreduce -- do a reduction.  |
+  | yyreduce -- Do a reduction.  |
   `-----------------------------*/
   yyreduce:
     yylen = yyr2_[yyn];
     {
       stack_symbol_type yylhs;
-      yylhs.state = yy_lr_goto_state_ (yystack_[yylen].state, yyr1_[yyn]);
+      yylhs.state = yy_lr_goto_state_(yystack_[yylen].state, yyr1_[yyn]);
       /* If YYLEN is nonzero, implement the default value of the
          action: '$$ = $1'.  Otherwise, use the top of the stack.
 
@@ -629,84 +639,81 @@ namespace Macro {
       else
         yylhs.value = yystack_[0].value;
 
-      // Default location.
+      // Compute the default @$.
       {
-        stack_type::slice range (yystack_, yylen);
-        YYLLOC_DEFAULT (yylhs.location, range, yylen);
-        yyerror_range[1].location = yylhs.location;
+        slice<stack_symbol_type, stack_type> slice (yystack_, yylen);
+        YYLLOC_DEFAULT (yylhs.location, slice, yylen);
       }
 
       // Perform the reduction.
       YY_REDUCE_PRINT (yyn);
-#if YY_EXCEPTIONS
       try
-#endif // YY_EXCEPTIONS
         {
           switch (yyn)
             {
-  case 6: // statement: expr
-#line 107 "MacroBison.yy"
-            { out << (yystack_[0].value.mv)->toString(); }
-#line 651 "MacroBison.cc"
+  case 6:
+#line 107 "MacroBison.yy" // lalr1.cc:859
+    { out << (yystack_[0].value.mv)->toString(); }
+#line 658 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 7: // statement: DEFINE NAME EQUAL expr
-#line 109 "MacroBison.yy"
-            { driver.set_variable(*(yystack_[2].value.string_val), (yystack_[0].value.mv)); delete (yystack_[2].value.string_val); }
-#line 657 "MacroBison.cc"
+  case 7:
+#line 109 "MacroBison.yy" // lalr1.cc:859
+    { driver.set_variable(*(yystack_[2].value.string_val), (yystack_[0].value.mv)); delete (yystack_[2].value.string_val); }
+#line 664 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 8: // statement: FOR NAME IN expr
-#line 111 "MacroBison.yy"
-            { TYPERR_CATCH(driver.init_loop(*(yystack_[2].value.string_val), (yystack_[0].value.mv)), yylhs.location); delete (yystack_[2].value.string_val); }
-#line 663 "MacroBison.cc"
+  case 8:
+#line 111 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH(driver.init_loop(*(yystack_[2].value.string_val), (yystack_[0].value.mv)), yylhs.location); delete (yystack_[2].value.string_val); }
+#line 670 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 9: // statement: IF expr
-#line 113 "MacroBison.yy"
-            { TYPERR_CATCH(driver.begin_if((yystack_[0].value.mv)), yylhs.location); }
-#line 669 "MacroBison.cc"
+  case 9:
+#line 113 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH(driver.begin_if((yystack_[0].value.mv)), yylhs.location); }
+#line 676 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 10: // statement: IFDEF NAME
-#line 115 "MacroBison.yy"
-            { TYPERR_CATCH(driver.begin_ifdef(*(yystack_[0].value.string_val)), yylhs.location); delete (yystack_[0].value.string_val); }
-#line 675 "MacroBison.cc"
+  case 10:
+#line 115 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH(driver.begin_ifdef(*(yystack_[0].value.string_val)), yylhs.location); delete (yystack_[0].value.string_val); }
+#line 682 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 11: // statement: IFNDEF NAME
-#line 117 "MacroBison.yy"
-            { TYPERR_CATCH(driver.begin_ifndef(*(yystack_[0].value.string_val)), yylhs.location); delete (yystack_[0].value.string_val); }
-#line 681 "MacroBison.cc"
+  case 11:
+#line 117 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH(driver.begin_ifndef(*(yystack_[0].value.string_val)), yylhs.location); delete (yystack_[0].value.string_val); }
+#line 688 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 12: // statement: ECHO_DIR expr
-#line 119 "MacroBison.yy"
-            { TYPERR_CATCH(driver.echo(yylhs.location, (yystack_[0].value.mv)), yylhs.location); }
-#line 687 "MacroBison.cc"
+  case 12:
+#line 119 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH(driver.echo(yylhs.location, (yystack_[0].value.mv)), yylhs.location); }
+#line 694 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 13: // statement: ERROR expr
-#line 121 "MacroBison.yy"
-            { TYPERR_CATCH(driver.error(yylhs.location, (yystack_[0].value.mv)), yylhs.location); }
-#line 693 "MacroBison.cc"
+  case 13:
+#line 121 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH(driver.error(yylhs.location, (yystack_[0].value.mv)), yylhs.location); }
+#line 700 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 15: // expr: INTEGER
-#line 127 "MacroBison.yy"
-       { (yylhs.value.mv) = new IntMV(driver, (yystack_[0].value.int_val)); }
-#line 699 "MacroBison.cc"
+  case 15:
+#line 127 "MacroBison.yy" // lalr1.cc:859
+    { (yylhs.value.mv) = new IntMV(driver, (yystack_[0].value.int_val)); }
+#line 706 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 16: // expr: STRING
-#line 129 "MacroBison.yy"
-       { (yylhs.value.mv) = new StringMV(driver, *(yystack_[0].value.string_val)); delete (yystack_[0].value.string_val); }
-#line 705 "MacroBison.cc"
+  case 16:
+#line 129 "MacroBison.yy" // lalr1.cc:859
+    { (yylhs.value.mv) = new StringMV(driver, *(yystack_[0].value.string_val)); delete (yystack_[0].value.string_val); }
+#line 712 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 17: // expr: NAME
-#line 131 "MacroBison.yy"
-       {
+  case 17:
+#line 131 "MacroBison.yy" // lalr1.cc:859
+    {
          try
            {
              (yylhs.value.mv) = driver.get_variable(*(yystack_[0].value.string_val));
@@ -717,182 +724,178 @@ namespace Macro {
            }
          delete (yystack_[0].value.string_val);
        }
-#line 721 "MacroBison.cc"
+#line 728 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 18: // expr: LENGTH LPAREN expr RPAREN
-#line 143 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = (yystack_[1].value.mv)->length(), yylhs.location); }
-#line 727 "MacroBison.cc"
+  case 18:
+#line 143 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = (yystack_[1].value.mv)->length(), yylhs.location); }
+#line 734 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 19: // expr: LPAREN expr RPAREN
-#line 145 "MacroBison.yy"
-       { (yylhs.value.mv) = (yystack_[1].value.mv); }
-#line 733 "MacroBison.cc"
+  case 19:
+#line 145 "MacroBison.yy" // lalr1.cc:859
+    { (yylhs.value.mv) = (yystack_[1].value.mv); }
+#line 740 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 20: // expr: expr PLUS expr
-#line 147 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) + *(yystack_[0].value.mv), yylhs.location); }
-#line 739 "MacroBison.cc"
+  case 20:
+#line 147 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) + *(yystack_[0].value.mv), yylhs.location); }
+#line 746 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 21: // expr: expr MINUS expr
-#line 149 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) - *(yystack_[0].value.mv), yylhs.location); }
-#line 745 "MacroBison.cc"
+  case 21:
+#line 149 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) - *(yystack_[0].value.mv), yylhs.location); }
+#line 752 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 22: // expr: expr TIMES expr
-#line 151 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) * *(yystack_[0].value.mv), yylhs.location); }
-#line 751 "MacroBison.cc"
+  case 22:
+#line 151 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) * *(yystack_[0].value.mv), yylhs.location); }
+#line 758 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 23: // expr: expr DIVIDE expr
-#line 153 "MacroBison.yy"
-       {
+  case 23:
+#line 153 "MacroBison.yy" // lalr1.cc:859
+    {
          if (dynamic_cast<const IntMV *>((yystack_[0].value.mv)) != NULL
              && ((IntMV *)(yystack_[0].value.mv))->get_int_value() == 0)
            driver.error(yylhs.location, "Division by zero");
          TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) / *(yystack_[0].value.mv), yylhs.location);
        }
-#line 762 "MacroBison.cc"
+#line 769 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 24: // expr: expr LESS expr
-#line 160 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) < *(yystack_[0].value.mv), yylhs.location); }
-#line 768 "MacroBison.cc"
+  case 24:
+#line 160 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) < *(yystack_[0].value.mv), yylhs.location); }
+#line 775 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 25: // expr: expr GREATER expr
-#line 162 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) > *(yystack_[0].value.mv), yylhs.location); }
-#line 774 "MacroBison.cc"
+  case 25:
+#line 162 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) > *(yystack_[0].value.mv), yylhs.location); }
+#line 781 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 26: // expr: expr LESS_EQUAL expr
-#line 164 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) <= *(yystack_[0].value.mv), yylhs.location); }
-#line 780 "MacroBison.cc"
+  case 26:
+#line 164 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) <= *(yystack_[0].value.mv), yylhs.location); }
+#line 787 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 27: // expr: expr GREATER_EQUAL expr
-#line 166 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) >= *(yystack_[0].value.mv), yylhs.location); }
-#line 786 "MacroBison.cc"
+  case 27:
+#line 166 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) >= *(yystack_[0].value.mv), yylhs.location); }
+#line 793 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 28: // expr: expr EQUAL_EQUAL expr
-#line 168 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) == *(yystack_[0].value.mv), yylhs.location); }
-#line 792 "MacroBison.cc"
+  case 28:
+#line 168 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) == *(yystack_[0].value.mv), yylhs.location); }
+#line 799 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 29: // expr: expr EXCLAMATION_EQUAL expr
-#line 170 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) != *(yystack_[0].value.mv), yylhs.location); }
-#line 798 "MacroBison.cc"
+  case 29:
+#line 170 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) != *(yystack_[0].value.mv), yylhs.location); }
+#line 805 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 30: // expr: expr LOGICAL_OR expr
-#line 172 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) || *(yystack_[0].value.mv), yylhs.location); }
-#line 804 "MacroBison.cc"
+  case 30:
+#line 172 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) || *(yystack_[0].value.mv), yylhs.location); }
+#line 811 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 31: // expr: expr LOGICAL_AND expr
-#line 174 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) && *(yystack_[0].value.mv), yylhs.location); }
-#line 810 "MacroBison.cc"
+  case 31:
+#line 174 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = *(yystack_[2].value.mv) && *(yystack_[0].value.mv), yylhs.location); }
+#line 817 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 32: // expr: MINUS expr
-#line 176 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = -*(yystack_[0].value.mv), yylhs.location); }
-#line 816 "MacroBison.cc"
+  case 32:
+#line 176 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = -*(yystack_[0].value.mv), yylhs.location); }
+#line 823 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 33: // expr: PLUS expr
-#line 178 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = +(*(yystack_[0].value.mv)), yylhs.location); }
-#line 822 "MacroBison.cc"
+  case 33:
+#line 178 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = +(*(yystack_[0].value.mv)), yylhs.location); }
+#line 829 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 34: // expr: EXCLAMATION expr
-#line 180 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = !*(yystack_[0].value.mv), yylhs.location); }
-#line 828 "MacroBison.cc"
+  case 34:
+#line 180 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = !*(yystack_[0].value.mv), yylhs.location); }
+#line 835 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 35: // expr: expr LBRACKET array_expr RBRACKET
-#line 182 "MacroBison.yy"
-       {
+  case 35:
+#line 182 "MacroBison.yy" // lalr1.cc:859
+    {
          TYPERR_CATCH((yylhs.value.mv) = (*(yystack_[3].value.mv))[*(yystack_[1].value.mv)], yylhs.location)
          catch(MacroValue::OutOfBoundsError)
            {
              error(yylhs.location, "Index out of bounds");
            }
        }
-#line 840 "MacroBison.cc"
+#line 847 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 36: // expr: LBRACKET array_expr RBRACKET
-#line 190 "MacroBison.yy"
-       { (yylhs.value.mv) = (yystack_[1].value.mv); }
-#line 846 "MacroBison.cc"
+  case 36:
+#line 190 "MacroBison.yy" // lalr1.cc:859
+    { (yylhs.value.mv) = (yystack_[1].value.mv); }
+#line 853 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 37: // expr: expr COLON expr
-#line 192 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = IntMV::new_range(driver, (yystack_[2].value.mv), (yystack_[0].value.mv)), yylhs.location); }
-#line 852 "MacroBison.cc"
+  case 37:
+#line 192 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = IntMV::new_range(driver, (yystack_[2].value.mv), (yystack_[0].value.mv)), yylhs.location); }
+#line 859 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 38: // expr: expr IN expr
-#line 194 "MacroBison.yy"
-       { TYPERR_CATCH((yylhs.value.mv) = (yystack_[2].value.mv)->in((yystack_[0].value.mv)), yylhs.location); }
-#line 858 "MacroBison.cc"
+  case 38:
+#line 194 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = (yystack_[2].value.mv)->in((yystack_[0].value.mv)), yylhs.location); }
+#line 865 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 39: // array_expr: expr
-#line 198 "MacroBison.yy"
-             { (yylhs.value.mv) = (yystack_[0].value.mv)->toArray(); }
-#line 864 "MacroBison.cc"
+  case 39:
+#line 198 "MacroBison.yy" // lalr1.cc:859
+    { (yylhs.value.mv) = (yystack_[0].value.mv)->toArray(); }
+#line 871 "MacroBison.cc" // lalr1.cc:859
     break;
 
-  case 40: // array_expr: array_expr COMMA expr
-#line 200 "MacroBison.yy"
-             { TYPERR_CATCH((yylhs.value.mv) = (yystack_[0].value.mv)->append((yystack_[2].value.mv)), yylhs.location); }
-#line 870 "MacroBison.cc"
+  case 40:
+#line 200 "MacroBison.yy" // lalr1.cc:859
+    { TYPERR_CATCH((yylhs.value.mv) = (yystack_[0].value.mv)->append((yystack_[2].value.mv)), yylhs.location); }
+#line 877 "MacroBison.cc" // lalr1.cc:859
     break;
 
 
-#line 874 "MacroBison.cc"
-
+#line 881 "MacroBison.cc" // lalr1.cc:859
             default:
               break;
             }
         }
-#if YY_EXCEPTIONS
       catch (const syntax_error& yyexc)
         {
-          YYCDEBUG << "Caught exception: " << yyexc.what() << '\n';
           error (yyexc);
           YYERROR;
         }
-#endif // YY_EXCEPTIONS
       YY_SYMBOL_PRINT ("-> $$ =", yylhs);
       yypop_ (yylen);
       yylen = 0;
+      YY_STACK_PRINT ();
 
       // Shift the result of the reduction.
-      yypush_ (YY_NULLPTR, YY_MOVE (yylhs));
+      yypush_ (YY_NULLPTR, yylhs);
     }
     goto yynewstate;
-
 
   /*--------------------------------------.
   | yyerrlab -- here on detecting error.  |
@@ -902,9 +905,7 @@ namespace Macro {
     if (!yyerrstatus_)
       {
         ++yynerrs_;
-        context yyctx (*this, yyla);
-        std::string msg = yysyntax_error_ (yyctx);
-        error (yyla.location, YY_MOVE (msg));
+        error (yyla.location, yysyntax_error_ (yystack_[0].state, yyla));
       }
 
 
@@ -915,7 +916,7 @@ namespace Macro {
            error, discard it.  */
 
         // Return failure if at end of input.
-        if (yyla.kind () == symbol_kind::S_YYEOF)
+        if (yyla.type_get () == yyeof_)
           YYABORT;
         else if (!yyla.empty ())
           {
@@ -932,81 +933,69 @@ namespace Macro {
   | yyerrorlab -- error raised explicitly by YYERROR.  |
   `---------------------------------------------------*/
   yyerrorlab:
-    /* Pacify compilers when the user code never invokes YYERROR and
-       the label yyerrorlab therefore never appears in user code.  */
-    if (false)
-      YYERROR;
 
+    /* Pacify compilers like GCC when the user code never invokes
+       YYERROR and the label yyerrorlab therefore never appears in user
+       code.  */
+    if (false)
+      goto yyerrorlab;
+    yyerror_range[1].location = yystack_[yylen - 1].location;
     /* Do not reclaim the symbols of the rule whose action triggered
        this YYERROR.  */
     yypop_ (yylen);
     yylen = 0;
-    YY_STACK_PRINT ();
     goto yyerrlab1;
-
 
   /*-------------------------------------------------------------.
   | yyerrlab1 -- common code for both syntax error and YYERROR.  |
   `-------------------------------------------------------------*/
   yyerrlab1:
     yyerrstatus_ = 3;   // Each real token shifted decrements this.
-    // Pop stack until we find a state that shifts the error token.
-    for (;;)
-      {
-        yyn = yypact_[+yystack_[0].state];
-        if (!yy_pact_value_is_default_ (yyn))
-          {
-            yyn += symbol_kind::S_YYerror;
-            if (0 <= yyn && yyn <= yylast_
-                && yycheck_[yyn] == symbol_kind::S_YYerror)
-              {
-                yyn = yytable_[yyn];
-                if (0 < yyn)
-                  break;
-              }
-          }
-
-        // Pop the current state because it cannot handle the error token.
-        if (yystack_.size () == 1)
-          YYABORT;
-
-        yyerror_range[1].location = yystack_[0].location;
-        yy_destroy_ ("Error: popping", yystack_[0]);
-        yypop_ ();
-        YY_STACK_PRINT ();
-      }
     {
       stack_symbol_type error_token;
+      for (;;)
+        {
+          yyn = yypact_[yystack_[0].state];
+          if (!yy_pact_value_is_default_ (yyn))
+            {
+              yyn += yyterror_;
+              if (0 <= yyn && yyn <= yylast_ && yycheck_[yyn] == yyterror_)
+                {
+                  yyn = yytable_[yyn];
+                  if (0 < yyn)
+                    break;
+                }
+            }
+
+          // Pop the current state because it cannot handle the error token.
+          if (yystack_.size () == 1)
+            YYABORT;
+
+          yyerror_range[1].location = yystack_[0].location;
+          yy_destroy_ ("Error: popping", yystack_[0]);
+          yypop_ ();
+          YY_STACK_PRINT ();
+        }
 
       yyerror_range[2].location = yyla.location;
       YYLLOC_DEFAULT (error_token.location, yyerror_range, 2);
 
       // Shift the error token.
-      error_token.state = state_type (yyn);
-      yypush_ ("Shifting", YY_MOVE (error_token));
+      error_token.state = yyn;
+      yypush_ ("Shifting", error_token);
     }
     goto yynewstate;
 
-
-  /*-------------------------------------.
-  | yyacceptlab -- YYACCEPT comes here.  |
-  `-------------------------------------*/
+    // Accept.
   yyacceptlab:
     yyresult = 0;
     goto yyreturn;
 
-
-  /*-----------------------------------.
-  | yyabortlab -- YYABORT comes here.  |
-  `-----------------------------------*/
+    // Abort.
   yyabortlab:
     yyresult = 1;
     goto yyreturn;
 
-
-  /*-----------------------------------------------------.
-  | yyreturn -- parsing is finished, return the result.  |
-  `-----------------------------------------------------*/
   yyreturn:
     if (!yyla.empty ())
       yy_destroy_ ("Cleanup: discarding lookahead", yyla);
@@ -1014,7 +1003,6 @@ namespace Macro {
     /* Do not reclaim the symbols of the rule whose action triggered
        this YYABORT or YYACCEPT.  */
     yypop_ (yylen);
-    YY_STACK_PRINT ();
     while (1 < yystack_.size ())
       {
         yy_destroy_ ("Cleanup: popping", yystack_[0]);
@@ -1023,12 +1011,12 @@ namespace Macro {
 
     return yyresult;
   }
-#if YY_EXCEPTIONS
     catch (...)
       {
-        YYCDEBUG << "Exception caught: cleaning lookahead and stack\n";
+        YYCDEBUG << "Exception caught: cleaning lookahead and stack"
+                 << std::endl;
         // Do not try to display the values of the reclaimed symbols,
-        // as their printers might throw an exception.
+        // as their printer might throw an exception.
         if (!yyla.empty ())
           yy_destroy_ (YY_NULLPTR, yyla);
 
@@ -1039,112 +1027,26 @@ namespace Macro {
           }
         throw;
       }
-#endif // YY_EXCEPTIONS
   }
 
   void
   parser::error (const syntax_error& yyexc)
   {
-    error (yyexc.location, yyexc.what ());
+    error (yyexc.location, yyexc.what());
   }
 
-  /* Return YYSTR after stripping away unnecessary quotes and
-     backslashes, so that it's suitable for yyerror.  The heuristic is
-     that double-quoting is unnecessary unless the string contains an
-     apostrophe, a comma, or backslash (other than backslash-backslash).
-     YYSTR is taken from yytname.  */
+  // Generate an error message.
   std::string
-  parser::yytnamerr_ (const char *yystr)
+  parser::yysyntax_error_ (state_type yystate, const symbol_type& yyla) const
   {
-    if (*yystr == '"')
-      {
-        std::string yyr;
-        char const *yyp = yystr;
+    // Number of reported tokens (one for the "unexpected", one per
+    // "expected").
+    size_t yycount = 0;
+    // Its maximum.
+    enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
+    // Arguments of yyformat.
+    char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
 
-        for (;;)
-          switch (*++yyp)
-            {
-            case '\'':
-            case ',':
-              goto do_not_strip_quotes;
-
-            case '\\':
-              if (*++yyp != '\\')
-                goto do_not_strip_quotes;
-              else
-                goto append;
-
-            append:
-            default:
-              yyr += *yyp;
-              break;
-
-            case '"':
-              return yyr;
-            }
-      do_not_strip_quotes: ;
-      }
-
-    return yystr;
-  }
-
-  std::string
-  parser::symbol_name (symbol_kind_type yysymbol)
-  {
-    return yytnamerr_ (yytname_[yysymbol]);
-  }
-
-
-
-  // parser::context.
-  parser::context::context (const parser& yyparser, const symbol_type& yyla)
-    : yyparser_ (yyparser)
-    , yyla_ (yyla)
-  {}
-
-  int
-  parser::context::expected_tokens (symbol_kind_type yyarg[], int yyargn) const
-  {
-    // Actual number of expected tokens
-    int yycount = 0;
-
-    const int yyn = yypact_[+yyparser_.yystack_[0].state];
-    if (!yy_pact_value_is_default_ (yyn))
-      {
-        /* Start YYX at -YYN if negative to avoid negative indexes in
-           YYCHECK.  In other words, skip the first -YYN actions for
-           this state because they are default actions.  */
-        const int yyxbegin = yyn < 0 ? -yyn : 0;
-        // Stay within bounds of both yycheck and yytname.
-        const int yychecklim = yylast_ - yyn + 1;
-        const int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-        for (int yyx = yyxbegin; yyx < yyxend; ++yyx)
-          if (yycheck_[yyx + yyn] == yyx && yyx != symbol_kind::S_YYerror
-              && !yy_table_value_is_error_ (yytable_[yyx + yyn]))
-            {
-              if (!yyarg)
-                ++yycount;
-              else if (yycount == yyargn)
-                return 0;
-              else
-                yyarg[yycount++] = YY_CAST (symbol_kind_type, yyx);
-            }
-      }
-
-    if (yyarg && yycount == 0 && 0 < yyargn)
-      yyarg[0] = symbol_kind::S_YYEMPTY;
-    return yycount;
-  }
-
-
-
-
-
-
-  int
-  parser::yy_syntax_error_arguments_ (const context& yyctx,
-                                                 symbol_kind_type yyarg[], int yyargn) const
-  {
     /* There are many possibilities here to consider:
        - If this state is a consistent state with a default action, then
          the only way this function was invoked is if the default action
@@ -1163,32 +1065,41 @@ namespace Macro {
        - Of course, the expected token list depends on states to have
          correct lookahead information, and it depends on the parser not
          to perform extra reductions after fetching a lookahead from the
-         scanner and before detecting a syntax error.  Thus, state merging
-         (from LALR or IELR) and default reductions corrupt the expected
-         token list.  However, the list is correct for canonical LR with
-         one exception: it will still contain any token that will not be
-         accepted due to an error action in a later state.
+         scanner and before detecting a syntax error.  Thus, state
+         merging (from LALR or IELR) and default reductions corrupt the
+         expected token list.  However, the list is correct for
+         canonical LR with one exception: it will still contain any
+         token that will not be accepted due to an error action in a
+         later state.
     */
-
-    if (!yyctx.lookahead ().empty ())
+    if (!yyla.empty ())
       {
-        if (yyarg)
-          yyarg[0] = yyctx.token ();
-        int yyn = yyctx.expected_tokens (yyarg ? yyarg + 1 : yyarg, yyargn - 1);
-        return yyn + 1;
+        int yytoken = yyla.type_get ();
+        yyarg[yycount++] = yytname_[yytoken];
+        int yyn = yypact_[yystate];
+        if (!yy_pact_value_is_default_ (yyn))
+          {
+            /* Start YYX at -YYN if negative to avoid negative indexes in
+               YYCHECK.  In other words, skip the first -YYN actions for
+               this state because they are default actions.  */
+            int yyxbegin = yyn < 0 ? -yyn : 0;
+            // Stay within bounds of both yycheck and yytname.
+            int yychecklim = yylast_ - yyn + 1;
+            int yyxend = yychecklim < yyntokens_ ? yychecklim : yyntokens_;
+            for (int yyx = yyxbegin; yyx < yyxend; ++yyx)
+              if (yycheck_[yyx + yyn] == yyx && yyx != yyterror_
+                  && !yy_table_value_is_error_ (yytable_[yyx + yyn]))
+                {
+                  if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+                    {
+                      yycount = 1;
+                      break;
+                    }
+                  else
+                    yyarg[yycount++] = yytname_[yyx];
+                }
+          }
       }
-    return 0;
-  }
-
-  // Generate an error message.
-  std::string
-  parser::yysyntax_error_ (const context& yyctx) const
-  {
-    // Its maximum.
-    enum { YYARGS_MAX = 5 };
-    // Arguments of yyformat.
-    symbol_kind_type yyarg[YYARGS_MAX];
-    int yycount = yy_syntax_error_arguments_ (yyctx, yyarg, YYARGS_MAX);
 
     char const* yyformat = YY_NULLPTR;
     switch (yycount)
@@ -1197,23 +1108,22 @@ namespace Macro {
         case N:                               \
           yyformat = S;                       \
         break
-      default: // Avoid compiler warnings.
-        YYCASE_ (0, YY_("syntax error"));
-        YYCASE_ (1, YY_("syntax error, unexpected %s"));
-        YYCASE_ (2, YY_("syntax error, unexpected %s, expecting %s"));
-        YYCASE_ (3, YY_("syntax error, unexpected %s, expecting %s or %s"));
-        YYCASE_ (4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
-        YYCASE_ (5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
+        YYCASE_(0, YY_("syntax error"));
+        YYCASE_(1, YY_("syntax error, unexpected %s"));
+        YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
+        YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
+        YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
+        YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
 #undef YYCASE_
       }
 
     std::string yyres;
     // Argument number.
-    std::ptrdiff_t yyi = 0;
+    size_t yyi = 0;
     for (char const* yyp = yyformat; *yyp; ++yyp)
       if (yyp[0] == '%' && yyp[1] == 's' && yyi < yycount)
         {
-          yyres += symbol_name (yyarg[yyi++]);
+          yyres += yytnamerr_ (yyarg[yyi++]);
           ++yyp;
         }
       else
@@ -1226,7 +1136,7 @@ namespace Macro {
 
   const signed char parser::yytable_ninf_ = -1;
 
-  const short
+  const short int
   parser::yypact_[] =
   {
       54,   -14,    -5,    -3,   227,   227,   227,     3,     4,   227,
@@ -1240,7 +1150,7 @@ namespace Macro {
      139,   -15,   -15
   };
 
-  const signed char
+  const unsigned char
   parser::yydefact_[] =
   {
        2,     0,     0,     0,     0,     0,     0,     0,     0,     0,
@@ -1263,7 +1173,7 @@ namespace Macro {
   const signed char
   parser::yydefgoto_[] =
   {
-       0,    18,    19,    20,    21,    32
+      -1,    18,    19,    20,    21,    32
   };
 
   const signed char
@@ -1330,7 +1240,7 @@ namespace Macro {
       -1,    34,    35,    -1,    -1,    -1,    -1,    40
   };
 
-  const signed char
+  const unsigned char
   parser::yystos_[] =
   {
        0,     3,     4,     5,     7,    10,    11,    12,    13,    14,
@@ -1344,7 +1254,7 @@ namespace Macro {
       45,    15,    17
   };
 
-  const signed char
+  const unsigned char
   parser::yyr1_[] =
   {
        0,    41,    42,    42,    43,    43,    44,    44,    44,    44,
@@ -1354,7 +1264,7 @@ namespace Macro {
       46
   };
 
-  const signed char
+  const unsigned char
   parser::yyr2_[] =
   {
        0,     2,     0,     1,     2,     3,     1,     4,     4,     2,
@@ -1365,24 +1275,21 @@ namespace Macro {
   };
 
 
-#if YYDEBUG || 1
+
   // YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
-  // First, the terminals, then, starting at \a YYNTOKENS, nonterminals.
+  // First, the terminals, then, starting at \a yyntokens_, nonterminals.
   const char*
   const parser::yytname_[] =
   {
-  "\"end of file\"", "error", "\"invalid token\"", "DEFINE", "LINE",
-  "FOR", "IN", "IF", "ELSE", "ENDIF", "ECHO_DIR", "ERROR", "IFDEF",
-  "IFNDEF", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET", "EQUAL", "EOL",
-  "LENGTH", "INTEGER", "NAME", "STRING", "COMMA", "LOGICAL_OR",
-  "LOGICAL_AND", "LESS", "GREATER", "LESS_EQUAL", "GREATER_EQUAL",
-  "EQUAL_EQUAL", "EXCLAMATION_EQUAL", "COLON", "PLUS", "MINUS", "TIMES",
-  "DIVIDE", "UMINUS", "UPLUS", "EXCLAMATION", "$accept",
-  "statement_list_or_nothing", "statement_list", "statement", "expr",
-  "array_expr", YY_NULLPTR
+  "$end", "error", "$undefined", "DEFINE", "LINE", "FOR", "IN", "IF",
+  "ELSE", "ENDIF", "ECHO_DIR", "ERROR", "IFDEF", "IFNDEF", "LPAREN",
+  "RPAREN", "LBRACKET", "RBRACKET", "EQUAL", "EOL", "LENGTH", "INTEGER",
+  "NAME", "STRING", "COMMA", "LOGICAL_OR", "LOGICAL_AND", "LESS",
+  "GREATER", "LESS_EQUAL", "GREATER_EQUAL", "EQUAL_EQUAL",
+  "EXCLAMATION_EQUAL", "COLON", "PLUS", "MINUS", "TIMES", "DIVIDE",
+  "UMINUS", "UPLUS", "EXCLAMATION", "$accept", "statement_list_or_nothing",
+  "statement_list", "statement", "expr", "array_expr", YY_NULLPTR
   };
-#endif
-
 
 #if YYDEBUG
   const unsigned char
@@ -1395,26 +1302,28 @@ namespace Macro {
      199
   };
 
+  // Print the state stack on the debug stream.
   void
-  parser::yy_stack_print_ () const
+  parser::yystack_print_ ()
   {
     *yycdebug_ << "Stack now";
     for (stack_type::const_iterator
            i = yystack_.begin (),
            i_end = yystack_.end ();
          i != i_end; ++i)
-      *yycdebug_ << ' ' << int (i->state);
-    *yycdebug_ << '\n';
+      *yycdebug_ << ' ' << i->state;
+    *yycdebug_ << std::endl;
   }
 
+  // Report on the debug stream that the rule \a yyrule is going to be reduced.
   void
-  parser::yy_reduce_print_ (int yyrule) const
+  parser::yy_reduce_print_ (int yyrule)
   {
-    int yylno = yyrline_[yyrule];
+    unsigned int yylno = yyrline_[yyrule];
     int yynrhs = yyr2_[yyrule];
     // Print the symbols being reduced, and their result.
     *yycdebug_ << "Reducing stack by rule " << yyrule - 1
-               << " (line " << yylno << "):\n";
+               << " (line " << yylno << "):" << std::endl;
     // The symbols being reduced.
     for (int yyi = 0; yyi < yynrhs; yyi++)
       YY_SYMBOL_PRINT ("   $" << yyi + 1 << " =",
@@ -1422,16 +1331,16 @@ namespace Macro {
   }
 #endif // YYDEBUG
 
-  parser::symbol_kind_type
-  parser::yytranslate_ (int t) YY_NOEXCEPT
+  // Symbol number corresponding to token number t.
+  inline
+  parser::token_number_type
+  parser::yytranslate_ (int t)
   {
-    // YYTRANSLATE[TOKEN-NUM] -- Symbol number corresponding to
-    // TOKEN-NUM as returned by yylex.
     static
-    const signed char
+    const token_number_type
     translate_table[] =
     {
-       0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1462,21 +1371,21 @@ namespace Macro {
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40
     };
-    // Last valid token kind.
-    const int code_max = 295;
+    const unsigned int user_token_number_max_ = 295;
+    const token_number_type undef_token_ = 2;
 
-    if (t <= 0)
-      return symbol_kind::S_YYEOF;
-    else if (t <= code_max)
-      return static_cast <symbol_kind_type> (translate_table[t]);
+    if (static_cast<int>(t) <= yyeof_)
+      return yyeof_;
+    else if (static_cast<unsigned int> (t) <= user_token_number_max_)
+      return translate_table[t];
     else
-      return symbol_kind::S_YYUNDEF;
+      return undef_token_;
   }
 
-} // Macro
-#line 1478 "MacroBison.cc"
 
-#line 203 "MacroBison.yy"
+} // Macro
+#line 1388 "MacroBison.cc" // lalr1.cc:1167
+#line 203 "MacroBison.yy" // lalr1.cc:1168
 
 
 void
