@@ -7,7 +7,7 @@ $(LIB) : $(OBJS)
 	$(AR) -rucs $@ $^
 
 %.o : %.cc
-	$(CXX) $(CXXFLAGS) -I.. -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -I. -I.. -c -o $@ $<
 
 # dependencies C files on headers
 include makedeps
