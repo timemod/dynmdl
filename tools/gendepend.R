@@ -11,61 +11,66 @@ rm(list = ls())
 
 source("tools/parameters.R")
 
-read_includes <- function(filename, src_dir, is_macro_dir = FALSE) {
-  include_pattern <- "^#\\s*include\\s+\"(.+)\""
-  lines <- readLines(file.path(src_dir, filename))
-  includes <- character(0)
-  for (line in lines) {
-    ma <- str_match(line, include_pattern)
-    include <- ma[, 2]
-    if (!is.na(include)) {
-      if (is_macro_dir) include <- paste0("macro/", include)
-      if (file.exists(file.path(src_dir, include))) {
-        includes <- c(includes, include)
-      }
-    }
+#' Returns included header files in a C-file or another header file.
+#'
+#' @param filename Character of length 1: the relative path of the file (relative
+#' to `src_dir`).
+#' @param src_dir The directory with source files (pkg_src_dir) 
+#'
+#' @return A character vector with the names of the included header files 
+#' (the relative path with respect to `src_dir`), or `NULL` if the files not
+#' have any dependencies.
+#' 
+#' @noRd
+read_includes <- function(filename, src_dir) {
+  src_path <- file.path(src_dir, filename)
+  
+  lines <- readLines(src_path, warn = FALSE)
+  if (length(lines) == 0L) return(NULL)
+  
+  # Lines that look like include directives (quick filter)
+  inc_lines <- grep("^\\s*#\\s*include\\s+", lines, value = TRUE, perl = TRUE)
+  if (length(inc_lines) == 0L) return(NULL)
+  
+  # Quoted includes: #include "some/path.h"
+  quoted <- grep('^\\s*#\\s*include\\s+"([^"]+)"', inc_lines, value = TRUE,
+                 perl = TRUE) 
+  if (length(quoted) > 0) {
+    quoted <- sub('^\\s*#\\s*include\\s+"([^"]+)".*$', '\\1',
+                  quoted, perl = TRUE)
   }
-  if (length(includes) == 0) {
-    return(NULL)
-  } else {
-    return(includes)
+  
+  # Special-case FlexLexer.h in angle brackets: #include <FlexLexer.h>
+  flex_mask <- grepl('<\\s*FlexLexer\\.h\\s*>', inc_lines, perl = TRUE)
+  flex <- if (any(flex_mask)) "FlexLexer.h" else character(0)
+  
+  # If the source file is inside macro/, prefix quoted includes that are not already prefixed
+  if (startsWith(filename, "macro/") && length(quoted) > 0L) {
+    pref_mask <- startsWith(quoted, "macro/")
+    quoted[!pref_mask] <- paste0("macro/", quoted[!pref_mask])
   }
+  
+  # Keep quoted includes only if they exist under src_dir (preserve original behavior)
+  if (length(quoted) > 0L) {
+    exists_mask <- file.exists(file.path(src_dir, quoted))
+    quoted <- quoted[exists_mask]
+  }
+  
+  # Combine and return unique includes in encounter order
+  includes <- c(quoted, flex)
+  if (length(includes) == 0L) return(NULL)
+  includes <- unique(includes)
   return(includes)
 }
 
-get_dep_list <- function(filenames, src_dir, is_macro_dir = FALSE) {
-  retval <- lapply(filenames, FUN = read_includes,
-                   src_dir = src_dir, is_macro_dir = is_macro_dir)
-  names(retval) <- filenames
-  return(retval)
-}
+update_deps <- function(deps, filenames, src_dir) {
+  
+  deps_new <- lapply(filenames, FUN = read_includes, src_dir = src_dir)
+  names(deps_new) <- filenames
+  
+  deps[names(deps_new)] <- deps_new
 
-update_deps <- function(deps, filenames, src_dir, header_ext) {
-
-  is_macro_file <- grepl("^macro/", filenames)
-
-  macro_files <- filenames[is_macro_file]
-  other_files <- filenames[!is_macro_file]
-
-  # for macro files we only need header files
-  header_pattern <- paste0("\\.(",  paste(header_ext, collapse = "|"), ")$")
-  print(header_pattern)
-  macro_files <- grep(header_pattern, macro_files, value = TRUE)
-  cat("\nmacro_files\n")
-  print(macro_files)
-
-  if (length(macro_files) > 0) {
-    macro_deps <- get_dep_list(macro_files, src_dir = src_dir,
-                               is_macro_dir = TRUE)
-    deps[names(macro_deps)] <- macro_deps
-  }
-  if (length(other_files) > 0) {
-    other_deps <- get_dep_list(other_files, src_dir = src_dir,
-                               is_macro_dir = FALSE)
-    deps[names(other_deps)] <- other_deps
-  }
-
-  # remove unnessary dependencies
+  # remove files wiithout dependencies
   is_null <- sapply(deps, FUN = is.null)
   return(deps[!is_null])
 }
@@ -92,6 +97,7 @@ if (interactive() || !file.exists(dep_rds)) {
   # The command line arguments are the names of the files
   # that are newer than the dep_rds file.
 
+
   filenames <- commandArgs(trailingOnly = TRUE)
   pattern <- paste0("^", src_dir, "/")
   pattern <- sub("/", "(/|\\\\\\\\)", pattern)
@@ -104,8 +110,7 @@ if (interactive() || !file.exists(dep_rds)) {
 }
 
 tic("Analyzing dependencies")
-deps <- update_deps(deps, filenames, src_dir = src_dir,
-                    header_ext = header_ext)
+deps <- update_deps(deps, filenames, src_dir = src_dir)
 toc()
 
 saveRDS(deps, dep_rds)
