@@ -147,7 +147,7 @@ else
 endif
 
 makedeps:
-	$(MAKE) -f Makedeps
+	R --slave -f tools/create_makedeps_files.R
 
 install: makedeps install_deps
 	R CMD INSTALL $(INSTALL_FLAGS) $(PKGDIR)
