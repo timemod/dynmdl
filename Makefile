@@ -78,9 +78,8 @@ test: install_deps
 test_covr:
 	R --slave -f test_covr.R
 
-check: cleanx 
+check: cleanx makedeps
 	@echo " *** Running R CMD check ***"
-	$(MAKE) -f Makedeps
 	R CMD build $(PKGDIR)
 	R CMD check $(RCHECKARG) $(PKGTAR)
 	@rm -f  $(PKGTAR)

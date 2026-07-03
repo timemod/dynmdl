@@ -4,7 +4,7 @@
 # A dependency list is written file deps/deps.rds.
 
 src_dir <- "pkg/src"
-dep_file <- "pkg/src/makedeps"
-dep_file_macro <- "pkg/src/macro/makedeps"
+dep_file <- "pkg/src/makedeps.mk"
+dep_file_macro <- "pkg/src/macro/makedeps.mk"
 src_ext <- c("cc", "cpp") # possible extensions for source files
 header_ext <- "hh" # possible extensions for header files

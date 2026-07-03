@@ -33,5 +33,4 @@ sublib:
 	  AR="$(AR)" RANLIB="$(RANLIB)")
 
 # dependencies C files on headers
-include makedeps
-
+include makedeps.mk

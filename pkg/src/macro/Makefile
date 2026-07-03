@@ -10,7 +10,7 @@ $(LIB) : $(OBJS)
 	$(CXX) $(CXXFLAGS) -I. -I.. -c -o $@ $<
 
 # dependencies C files on headers
-include makedeps
+include makedeps.mk
 
 clean:
 	-rm -r *.o
