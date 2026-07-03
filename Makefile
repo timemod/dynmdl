@@ -163,7 +163,6 @@ uninstall:
 	R CMD REMOVE $(PKG)
 
 clean:
-	$(MAKE) -f Makedeps clean
 	$(MAKE) -C $(PKGDIR)/src/macro clean
 	-rm -fr $(PKGDIR).Rcheck
 	-rm -fr tmp
