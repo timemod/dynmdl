@@ -78,7 +78,7 @@ test: install_deps
 test_covr:
 	R --slave -f test_covr.R
 
-check: cleanx makedeps
+check: cleanx install_deps makedeps
 	@echo " *** Running R CMD check ***"
 	R CMD build $(PKGDIR)
 	R CMD check $(RCHECKARG) $(PKGTAR)
@@ -145,13 +145,13 @@ else
 	$(BISON_CMD) -o $(MACRO_DIR)/MacroBison.cc $(MACRO_DIR)/MacroBison.yy
 endif
 
-makedeps:
+makedeps: install_deps
 	R --slave -f tools/create_makedeps_files.R
 
-install: makedeps install_deps
+install: install_deps makedeps 
 	R CMD INSTALL $(INSTALL_FLAGS) $(PKGDIR)
 
-installv: makedeps install_deps
+installv: install_deps makedeps
 	R CMD build $(PKGDIR)
 	R CMD INSTALL $(INSTALL_FLAGS) $(PKGTAR)
 
