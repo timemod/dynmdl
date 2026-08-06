@@ -162,12 +162,9 @@ uninstall:
 	R CMD REMOVE $(PKG)
 
 clean:
-	$(MAKE) -C $(PKGDIR)/src/macro clean
+	$(MAKE) -C $(PKGDIR)/src -f Makevars clean
 	-rm -fr $(PKGDIR).Rcheck
 	-rm -fr tmp
 	-rm -f $(PKGTAR)
 	-rm -f $(PKGDIR).pdf
 	-rm -f $(PKGDIR).log
-	-rm -f $(PKGDIR)/src/*.o
-	-rm -f $(PKGDIR)/src/*.so
-	-rm -f $(PKGDIR)/src/*.dll

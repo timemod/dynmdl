@@ -34,3 +34,9 @@ sublib:
 
 # dependencies C files on headers
 include makedeps.mk
+
+clean:
+	-rm -f *.o
+	-rm -f *.so
+	-rm -f *.dll
+	$(MAKE) -C macro clean
